@@ -29,6 +29,14 @@ namespace CheonMyeong.EditorTools
         private const string PoolObjectName = "EnemyPool";
         private const string SpawnerObjectName = "EnemySpawner";
 
+        /// <summary>
+        /// 적 전용 레이어 이름. EnemyPool이 런타임에 이 레이어끼리의 충돌/트리거
+        /// 판정 자체를 꺼서(Physics2D.IgnoreLayerCollision) 수백 마리가 겹쳤을 때
+        /// 벌어지는 적-적 OnTriggerStay2D 폭증(조합 폭발)을 막는다. 이름은
+        /// EnemyPool.EnemyLayerName과 반드시 같아야 한다.
+        /// </summary>
+        private const string EnemyLayerName = "Enemy";
+
         [MenuItem("CheonMyeong/Setup/Create Hayoung Prototype Object")]
         public static void CreateHayoungPrototype()
         {
@@ -106,9 +114,8 @@ namespace CheonMyeong.EditorTools
 
             Selection.activeGameObject = spawnerGo;
             Debug.Log("[CheonMyeong] 적 프로토타입(풀+스포너) 생성/연결 완료. " +
-                      "Play 누르면 1초마다 하영 주변 반경 10유닛 밖에서 적이 스폰되어 추적합니다. " +
-                      "주의: 아직 플레이어 쪽에 IDamageable(체력)이 없어서 적 접촉 피해는 무시됩니다 - " +
-                      "체력/UI 시스템은 별도 단계에서 다룹니다. " +
+                      "'Enemy' 레이어도 자동 생성됐고, Play 시작하면 EnemyPool이 적-적 레이어 " +
+                      "충돌/트리거 판정을 꺼서 수백 마리가 겹쳐도 판정 폭증이 안 생기게 처리합니다. " +
                       "스폰 방식(웨이브/지속)은 미정이라 지금은 지속 스폰 임시 구현입니다.");
         }
 
@@ -163,10 +170,13 @@ namespace CheonMyeong.EditorTools
 
         private static Enemy EnsureEnemyPrefab(EnemyStatsSO stats)
         {
+            EnsureLayer(EnemyLayerName);
+            int enemyLayer = LayerMask.NameToLayer(EnemyLayerName);
+
             var existing = AssetDatabase.LoadAssetAtPath<Enemy>(EnemyPrefabPath);
             if (existing != null)
             {
-                MigrateColliderToTrigger();
+                MigrateEnemyPrefab(enemyLayer);
                 return AssetDatabase.LoadAssetAtPath<Enemy>(EnemyPrefabPath);
             }
 
@@ -174,6 +184,8 @@ namespace CheonMyeong.EditorTools
 
             // 임시 비주얼 - 스프라이트 미정이라 기본 스프라이트 + 빨간색으로만 표시.
             var temp = new GameObject("Enemy_Basic_Temp");
+            temp.layer = enemyLayer;
+
             var sr = temp.AddComponent<SpriteRenderer>();
             sr.color = Color.red;
 
@@ -198,20 +210,72 @@ namespace CheonMyeong.EditorTools
         }
 
         /// <summary>
-        /// 이전에 솔리드 콜라이더로 만들어진 Enemy_Basic 프리팹이 이미 있다면
-        /// isTrigger = true로 고쳐서 다시 저장한다. (적끼리 뭉쳐서 멈추는 문제 수정)
+        /// 이전 버전으로 만들어진 Enemy_Basic 프리팹을 고쳐서 다시 저장한다:
+        /// 1) 콜라이더 isTrigger = true (적끼리 뭉쳐서 멈추는 문제 수정)
+        /// 2) 레이어를 "Enemy"로 변경 (EnemyPool이 끄는 적-적 충돌 판정 대상이 되려면 필요)
         /// </summary>
-        private static void MigrateColliderToTrigger()
+        private static void MigrateEnemyPrefab(int enemyLayer)
         {
             GameObject contents = PrefabUtility.LoadPrefabContents(EnemyPrefabPath);
+            bool changed = false;
+
             var collider = contents.GetComponent<CircleCollider2D>();
             if (collider != null && !collider.isTrigger)
             {
                 collider.isTrigger = true;
+                changed = true;
+            }
+
+            if (contents.layer != enemyLayer)
+            {
+                contents.layer = enemyLayer;
+                changed = true;
+            }
+
+            if (changed)
+            {
                 PrefabUtility.SaveAsPrefabAsset(contents, EnemyPrefabPath);
-                Debug.Log("[CheonMyeong] 기존 Enemy_Basic 프리팹의 콜라이더를 Trigger로 수정했습니다.");
+                Debug.Log("[CheonMyeong] 기존 Enemy_Basic 프리팹을 Trigger + 'Enemy' 레이어로 수정했습니다.");
             }
             PrefabUtility.UnloadPrefabContents(contents);
+        }
+
+        /// <summary>
+        /// 프로젝트에 해당 이름의 레이어가 없으면 비어있는 User Layer 슬롯(8~31)에
+        /// 추가한다. Edit/Project Settings/Tags and Layers를 수동으로 누르는 대신
+        /// 코드로 처리해서 git diff(ProjectSettings/TagManager.asset)로 추적되게 한다.
+        /// </summary>
+        private static void EnsureLayer(string layerName)
+        {
+            if (LayerMask.NameToLayer(layerName) != -1)
+            {
+                return;
+            }
+
+            var tagManagerAssets = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset");
+            if (tagManagerAssets.Length == 0)
+            {
+                Debug.LogError("[CheonMyeong] ProjectSettings/TagManager.asset을 찾지 못했습니다.");
+                return;
+            }
+
+            var tagManager = new SerializedObject(tagManagerAssets[0]);
+            var layersProp = tagManager.FindProperty("layers");
+
+            for (int i = 8; i < layersProp.arraySize; i++) // 0~7은 유니티 내장 레이어라 건드리지 않음
+            {
+                SerializedProperty layerSlot = layersProp.GetArrayElementAtIndex(i);
+                if (string.IsNullOrEmpty(layerSlot.stringValue))
+                {
+                    layerSlot.stringValue = layerName;
+                    tagManager.ApplyModifiedProperties();
+                    Debug.Log($"[CheonMyeong] '{layerName}' 레이어를 슬롯 {i}에 생성했습니다.");
+                    return;
+                }
+            }
+
+            Debug.LogError($"[CheonMyeong] 빈 User Layer 슬롯이 없어서 '{layerName}' 레이어를 만들지 못했습니다. " +
+                            "Edit > Project Settings > Tags and Layers에서 직접 확인해주세요.");
         }
 
         private static GameObject EnsurePrototypeObject()
