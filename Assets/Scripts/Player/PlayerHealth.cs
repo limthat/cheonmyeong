@@ -34,6 +34,7 @@ namespace CheonMyeong.Player
             }
 
             currentHealth -= amount;
+
             if (currentHealth <= 0f)
             {
                 currentHealth = 0f;
