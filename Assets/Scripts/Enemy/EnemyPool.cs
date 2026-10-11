@@ -12,7 +12,7 @@ namespace CheonMyeong.Enemies
     {
         [SerializeField] private Enemy enemyPrefab;
         [SerializeField] private int defaultCapacity = 32;
-        [SerializeField] private int maxSize = 256;
+        [SerializeField] private int maxSize = 512; // "수백 마리" 부하 테스트 기준 - 모자라면 Inspector에서 올리면 됨
 
         private ObjectPool<Enemy> pool;
 

@@ -15,6 +15,10 @@ namespace CheonMyeong.Enemies
         [SerializeField] private float spawnInterval = 1f;
         [SerializeField] private float spawnRadius = 10f;
 
+        [Header("부하 테스트용 - 평소엔 1")]
+        [Tooltip("한 번 스폰할 때 몇 마리씩 뿌릴지. 부하 테스트할 때만 Inspector에서 올렸다 내리면 됨.")]
+        [SerializeField] private int enemiesPerTick = 1;
+
         private float timer;
 
         private void Update()
@@ -27,7 +31,10 @@ namespace CheonMyeong.Enemies
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
-                SpawnOne();
+                for (int i = 0; i < enemiesPerTick; i++)
+                {
+                    SpawnOne();
+                }
                 timer = spawnInterval;
             }
         }
