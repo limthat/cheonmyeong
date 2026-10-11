@@ -1,7 +1,10 @@
 using CheonMyeong.Data;
 using CheonMyeong.Enemies;
 using CheonMyeong.Input;
+using CheonMyeong.Networking;
 using CheonMyeong.Player;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -28,6 +31,7 @@ namespace CheonMyeong.EditorTools
         private const string PrototypeObjectName = "Hayoung_Prototype";
         private const string PoolObjectName = "EnemyPool";
         private const string SpawnerObjectName = "EnemySpawner";
+        private const string NetworkBootstrapObjectName = "NetworkBootstrap";
 
         /// <summary>
         /// 적 전용 레이어 이름. EnemyPool이 런타임에 이 레이어끼리의 충돌/트리거
@@ -117,6 +121,39 @@ namespace CheonMyeong.EditorTools
                       "'Enemy' 레이어도 자동 생성됐고, Play 시작하면 EnemyPool이 적-적 레이어 " +
                       "충돌/트리거 판정을 꺼서 수백 마리가 겹쳐도 판정 폭증이 안 생기게 처리합니다. " +
                       "스폰 방식(웨이브/지속)은 미정이라 지금은 지속 스폰 임시 구현입니다.");
+        }
+
+        [MenuItem("CheonMyeong/Setup/Create Network Bootstrap")]
+        public static void CreateNetworkBootstrap()
+        {
+            GameObject go = EnsureSceneObject(NetworkBootstrapObjectName);
+
+            var networkManager = go.GetComponent<NetworkManager>();
+            if (networkManager == null) networkManager = go.AddComponent<NetworkManager>();
+
+            var transport = go.GetComponent<UnityTransport>();
+            if (transport == null) transport = go.AddComponent<UnityTransport>();
+
+            // NGO 버전에 따라 필드명이 다를 수 있어서 못 찾으면 에러 로그로
+            // 알려주고 수동 연결을 안내한다 (임의 추측 금지 원칙).
+            AssignNestedField(networkManager, "NetworkConfig", "NetworkTransport", transport);
+
+            var services = go.GetComponent<GameServicesBootstrap>();
+            if (services == null) services = go.AddComponent<GameServicesBootstrap>();
+
+            var sessionManager = go.GetComponent<SessionManager>();
+            if (sessionManager == null) sessionManager = go.AddComponent<SessionManager>();
+
+            EditorUtility.SetDirty(networkManager);
+            EditorUtility.SetDirty(sessionManager);
+            EditorSceneManager.MarkSceneDirty(go.scene);
+
+            Selection.activeGameObject = go;
+            Debug.Log($"[CheonMyeong] '{NetworkBootstrapObjectName}' 생성/연결 완료. " +
+                      "Inspector에서 NetworkManager의 Network Transport 칸에 UnityTransport가 " +
+                      "실제로 연결됐는지 꼭 확인하세요(에디터 스크립트로 못 찾았으면 위에 에러 로그가 떴을 겁니다). " +
+                      "Play 누르면 화면 좌상단에 임시 '호스트 시작'/'코드로 참가' 버튼이 뜹니다 - " +
+                      "Unity Cloud 프로젝트 연결 + 대시보드에서 Relay/Lobby 서비스 활성화가 먼저 돼 있어야 동작합니다.");
         }
 
         private static CharacterStatsSO EnsureHayoungStats()
@@ -313,6 +350,35 @@ namespace CheonMyeong.EditorTools
                 return;
             }
             prop.objectReferenceValue = value;
+            so.ApplyModifiedProperties();
+        }
+
+        /// <summary>
+        /// "NetworkConfig.NetworkTransport"처럼 중첩된(직렬화된) 필드에 값을
+        /// 할당한다. NGO 버전마다 내부 구조가 다를 수 있어서 못 찾으면 추측하지
+        /// 않고 에러를 남긴 뒤 수동 연결을 안내한다.
+        /// </summary>
+        private static void AssignNestedField(Object target, string topField, string nestedField, Object value)
+        {
+            var so = new SerializedObject(target);
+            var topProp = so.FindProperty(topField);
+            if (topProp == null)
+            {
+                Debug.LogError($"[CheonMyeong] {target.GetType().Name}에서 필드 '{topField}'를 찾지 못했습니다. " +
+                                "설치된 Netcode for GameObjects 버전이 달라서일 수 있습니다 - " +
+                                "Inspector에서 Network Transport를 직접 연결해주세요.");
+                return;
+            }
+
+            var nestedProp = topProp.FindPropertyRelative(nestedField);
+            if (nestedProp == null)
+            {
+                Debug.LogError($"[CheonMyeong] {target.GetType().Name}.{topField}에서 필드 '{nestedField}'를 찾지 못했습니다. " +
+                                "Inspector에서 Network Transport를 직접 연결해주세요.");
+                return;
+            }
+
+            nestedProp.objectReferenceValue = value;
             so.ApplyModifiedProperties();
         }
     }
