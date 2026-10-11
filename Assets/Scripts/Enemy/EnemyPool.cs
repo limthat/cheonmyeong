@@ -56,6 +56,9 @@ namespace CheonMyeong.Enemies
             Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
         }
 
+        /// <summary>현재 풀에서 꺼내져 활성 상태인(=살아있는) 적 수.</summary>
+        public int ActiveCount => pool.CountActive;
+
         public Enemy Get(Vector2 position, Transform chaseTarget)
         {
             Enemy enemy = pool.Get();

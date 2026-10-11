@@ -19,6 +19,10 @@ namespace CheonMyeong.Enemies
         [Tooltip("한 번 스폰할 때 몇 마리씩 뿌릴지. 부하 테스트할 때만 Inspector에서 올렸다 내리면 됨.")]
         [SerializeField] private int enemiesPerTick = 1;
 
+        [Tooltip("동시에 살아있을 수 있는 적의 최대 수. 이 값을 넘으면 스폰을 쉰다 - " +
+                 "상한이 없으면 처치 속도보다 스폰 속도가 빠를 때 무한정 쌓인다. 값은 미정 - 밸런스에 맞춰 조정.")]
+        [SerializeField] private int maxAliveEnemies = 100;
+
         private float timer;
 
         private void Update()
@@ -31,11 +35,21 @@ namespace CheonMyeong.Enemies
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
+                timer = spawnInterval;
+
+                if (pool.ActiveCount >= maxAliveEnemies)
+                {
+                    return; // 상한 도달 - 누가 죽어서 자리가 빌 때까지 스폰 대기
+                }
+
                 for (int i = 0; i < enemiesPerTick; i++)
                 {
+                    if (pool.ActiveCount >= maxAliveEnemies)
+                    {
+                        break;
+                    }
                     SpawnOne();
                 }
-                timer = spawnInterval;
             }
         }
 
