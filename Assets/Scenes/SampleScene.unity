@@ -371,9 +371,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Enemies.EnemySpawner
   pool: {fileID: 1224551628}
   player: {fileID: 1062227917}
-  spawnInterval: 0.1
+  spawnInterval: 1
   spawnRadius: 10
-  enemiesPerTick: 10
+  enemiesPerTick: 1
 --- !u!4 &710201706
 Transform:
   m_ObjectHideFlags: 0
