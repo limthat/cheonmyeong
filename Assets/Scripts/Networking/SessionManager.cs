@@ -12,81 +12,89 @@ namespace CheonMyeong.Networking
     /// host/client로 자동 시작해준다 - 직접 NetworkManager.StartHost() /
     /// StartClient()를 호출할 필요가 없다(공식 문서 기준, 2.4 버전).
     ///
-    /// UI 화면 흐름이 아직 기획에 없어서(미정) OnGUI로 임시 버튼만 둔다.
-    /// 기획 확정되면 이 OnGUI 블록만 들어내고 정식 UI에서 HostAsync/JoinAsync를
-    /// 호출하도록 바꾸면 된다.
+    /// 기획 확정(261013, UI 전반 구현 1순위) - 임시 OnGUI 디버그 버튼은 제거했다.
+    /// 이제 ChoiceMapScreen(방 만들기/참가 코드 입력)과 WaitRoomScreen(초대 코드
+    /// 표시)이 HostAsync/JoinAsync/JoinCode를 직접 호출·참조한다.
     /// </summary>
     public class SessionManager : MonoBehaviour
     {
         [SerializeField] private int maxPlayers = 4; // 인원수 미정 - 임시값
 
         private ISession currentSession;
-        private string statusText = "대기 중";
-        private string joinCodeInput = string.Empty;
-        private bool isBusy;
+
+        /// <summary>참가 코드. 세션이 없으면 null - WaitRoomScreen이 매 프레임 읽어서 표시한다.</summary>
+        public string JoinCode => currentSession?.Code;
+
+        /// <summary>호스트/참가 작업이 진행 중인지 - UI가 중복 클릭을 막는 데 쓸 수 있다.</summary>
+        public bool IsBusy { get; private set; }
 
         public async Task HostAsync()
         {
-            await GameServicesBootstrap.Instance.InitializeAsync();
+            IsBusy = true;
+            try
+            {
+                await GameServicesBootstrap.Instance.InitializeAsync();
 
-            SessionOptions options = new SessionOptions { MaxPlayers = maxPlayers }.WithRelayNetwork();
-            currentSession = await MultiplayerService.Instance.CreateSessionAsync(options);
+                SessionOptions options = new SessionOptions { MaxPlayers = maxPlayers }.WithRelayNetwork();
+                currentSession = await MultiplayerService.Instance.CreateSessionAsync(options);
 
-            statusText = $"호스트 시작 - 참가 코드: {currentSession.Code}";
-            Debug.Log($"[CheonMyeong] 세션 생성 완료 (Id: {currentSession.Id}, Code: {currentSession.Code})");
+                Debug.Log($"[CheonMyeong] 세션 생성 완료 (Id: {currentSession.Id}, Code: {currentSession.Code})");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         public async Task JoinAsync(string code)
         {
-            await GameServicesBootstrap.Instance.InitializeAsync();
-
-            currentSession = await MultiplayerService.Instance.JoinSessionByCodeAsync(code);
-
-            statusText = $"참가 완료 (Id: {currentSession.Id})";
-            Debug.Log($"[CheonMyeong] 세션 참가 완료: {currentSession.Id}");
-        }
-
-        // ----- 임시 디버그 UI (OnGUI) - 정식 UI/UX 확정 전까지만 사용 -----
-        private void OnGUI()
-        {
-            GUILayout.BeginArea(new Rect(10, 10, 320, 160));
-            GUILayout.Box($"[네트워크 테스트] {statusText}");
-
-            GUI.enabled = !isBusy && currentSession == null;
-
-            if (GUILayout.Button("호스트 시작"))
-            {
-                _ = RunSafely(HostAsync, "호스트 시작");
-            }
-
-            GUILayout.BeginHorizontal();
-            joinCodeInput = GUILayout.TextField(joinCodeInput, GUILayout.Width(200));
-            if (GUILayout.Button("코드로 참가"))
-            {
-                string code = joinCodeInput;
-                _ = RunSafely(() => JoinAsync(code), "세션 참가");
-            }
-            GUILayout.EndHorizontal();
-
-            GUI.enabled = true;
-            GUILayout.EndArea();
-        }
-
-        private async Task RunSafely(Func<Task> action, string label)
-        {
-            isBusy = true;
+            IsBusy = true;
             try
             {
-                await action();
-            }
-            catch (Exception e)
-            {
-                statusText = $"{label} 실패: {e.Message}";
-                Debug.LogException(e);
+                await GameServicesBootstrap.Instance.InitializeAsync();
+
+                currentSession = await MultiplayerService.Instance.JoinSessionByCodeAsync(code);
+
+                Debug.Log($"[CheonMyeong] 세션 참가 완료: {currentSession.Id}");
             }
             finally
             {
-                isBusy = false;
+                IsBusy = false;
+            }
+        }
+
+        /// <summary>
+        /// 261014 추가 - Play 모드 종료 시 콘솔에 뜨던
+        /// "GameObjectsNetcodeNetworkHandler.StopAsync: Failed to stop session: session was
+        /// never started" 경고 보완. 원인: 이 프로젝트 어디에도 세션을 정리하는 코드가 없어서
+        /// (currentSession을 만들기만 하고 끝낼 때 아무것도 안 호출함), Play 모드를 끄면 Unity
+        /// Services Multiplayer SDK가 내부적으로 자체 정리를 시도하다 이 경고를 남긴 것으로
+        /// 보인다(SDK 내부 소스는 파일 접근 한계로 끝까지 확인은 못 했음 - 확인 못 함). Unity
+        /// 공식 문서("Best practices for Joining and Leaving multiple Sessions")가 세션을 끝낼
+        /// 때의 유일한 정석 경로로 명시한 ISession.LeaveAsync()를 OnApplicationQuit에서 호출해서
+        /// 세션이 존재하면 정상적으로 정리하게 한다 - 에디터에서 Play 모드를 끌 때도, 실제
+        /// 빌드에서 앱을 종료할 때도 OnApplicationQuit은 동일하게 호출된다. 메모리 누수 예방
+        /// 차원에서도(세션/Relay 리소스를 정리 없이 그냥 버려두지 않음) 맞는 방향이라 적용함.
+        /// 기존 HostAsync/JoinAsync 동작은 전혀 건드리지 않았다 - 순수 추가.
+        /// </summary>
+        private async void OnApplicationQuit()
+        {
+            if (currentSession == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await currentSession.LeaveAsync();
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[CheonMyeong] 세션 정리(LeaveAsync) 중 오류: {e.Message}");
+            }
+            finally
+            {
+                currentSession = null;
             }
         }
     }

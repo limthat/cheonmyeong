@@ -15,6 +15,6 @@ MonoBehaviour:
   enemyId: basic
   displayName: "\uAE30\uBCF8 \uC801(\uC774\uB984 \uBBF8\uC815)"
   maxHealth: 20
-  moveSpeed: 2
+  moveSpeed: 1.2
   contactDamage: 5
   contactDamageInterval: 1

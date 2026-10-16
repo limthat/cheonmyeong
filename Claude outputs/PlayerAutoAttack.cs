@@ -1,0 +1,271 @@
+using CheonMyeong.Combat;
+using CheonMyeong.Data;
+using CheonMyeong.Input;
+using CheonMyeong.Progression;
+using Unity.Netcode;
+using UnityEngine;
+
+namespace CheonMyeong.Player
+{
+    /// <summary>
+    /// 하영의 기본 무기 - 네트워크 버전. 조준 방향은 오너가 네트워크 변수에
+    /// 써서 전원이 복제받는다. 실제 피해 판정(Attack)은 서버만 수행한다 -
+    /// 클라이언트가 직접 때리면 치팅/중복 피해 위험이 있다.
+    ///
+    /// 방향 연출(회전)은 이 스크립트에서 더 이상 하지 않는다 - 예전엔 facingPivot을
+    /// 한 번도 안 연결해서(에디터 셋업에서 할당 누락) 사실상 루트 transform 전체를
+    /// 조준 각도로 계속 회전시키고 있었는데, 몸통+검이 한 장으로 그려진 실제 도트
+    /// 아트가 들어오면서 이 방식대로 두면 조준 방향에 따라 캐릭터가 기울어지거나
+    /// 거꾸로 보인다. 지금은 PlayerAnimator가 AimPosition만 읽어서 SpriteRenderer.flipX로
+    /// 좌우만 반전시키는 방식으로 바꿨다 - 그래서 networkAimPosition은 그대로 두고
+    /// 외부에서 읽을 수 있게 AimPosition 프로퍼티만 추가했다.
+    /// </summary>
+    public class PlayerAutoAttack : NetworkBehaviour
+    {
+        [SerializeField] private PlayerInputReader inputReader;
+        [SerializeField] private CharacterStatsSO stats;
+        [SerializeField] private LayerMask enemyLayer;
+
+        private const int MaxHitsPerAttack = 32;
+        private readonly Collider2D[] hitBuffer = new Collider2D[MaxHitsPerAttack];
+        private ContactFilter2D contactFilter;
+
+        private float attackTimer;
+
+        /// <summary>
+        /// 261014 추가 - "공격 판정이 모션보다 먼저 온다"(예섭 표현: "번개처럼 빛(판정)이 먼저
+        /// 치고 소리(모션)가 뒤늦게 따라온다") 버그의 진짜 원인 수정용 타이머. 이전까지는
+        /// Attack()이 PlayAttackAnimRpc()(모션 트리거)와 실제 OverlapCircle+TakeDamage 판정을
+        /// 같은 메서드, 같은 프레임에서 동시에 처리했다 - 그래서 피해는 공격을 "결정한" 바로 그
+        /// 순간 즉발로 들어가는데, 화면에 칼을 휘두르는 모션이 실제로 보이기까지는 Animator가
+        /// Attack 상태로 전환하고 몇 프레임 재생되는 시간이 더 걸렸다. 음수(-1)면 "대기 중인
+        /// 타격 없음" - Attack()이 모션 트리거를 쏘는 순간 이 값을 양수로 채워두고, Update()가
+        /// 매 프레임 줄이다가 0 이하가 되는 순간 ApplyHit()(실제 판정)을 그제서야 실행한다.
+        /// </summary>
+        private float pendingHitDelay = -1f;
+
+        /// <summary>
+        /// 261014 추가 - 모션 트리거 시점부터 실제 타격 판정까지 기다리는 시간을, 공격 한
+        /// 주기(AttackInterval) 대비 비율로 둔다(초 단위 고정값 대신 비율을 쓰는 이유 -
+        /// attacksPerSecond가 바뀌면 애니메이션 재생 속도도 같이 바뀌므로, 고정 초 단위로
+        /// 두면 공속이 빨라질수록 "스윙 전체보다 긴 대기시간"이 되는 모순이 생긴다).
+        /// 확인 못 함 - 정확한 임팩트 프레임 비율은 실제 스윙 애니메이션 클립을 보고 맞춰야
+        /// 하는 영역이라(기획 미정), "스윙 중간 지점" 정도인 0.35를 임시값으로 둔다 - 실제
+        /// 손맛 보고 Inspector에서 조정 가능.
+        /// </summary>
+        [SerializeField] private float attackHitDelayRatio = 0.35f;
+
+        private readonly NetworkVariable<Vector3> networkAimPosition = new NetworkVariable<Vector3>(
+            default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+        /// <summary>
+        /// 261013 수정 - 원래 NetworkVariable&lt;int&gt; 카운터 + OnValueChanged 구독 방식이었는데,
+        /// "스윙 애니메이션/피격 연출이 한 박자 늦게 보인다"는 재현 버그의 원인이었다. 공식 문서
+        /// 확인(NGO 2.x, 2026-10-13): NetworkVariable 변경사항은 "매 프레임이 아니라 네트워크
+        /// 틱마다 모아서" 전파되기 때문에, 같은 프로세스인 호스트 자기 자신이 봐도 값이 바뀐
+        /// 프레임에 바로 OnValueChanged가 오지 않고 다음 틱까지 미뤄질 수 있었다(틱레이트가
+        /// 렌더 프레임레이트보다 낮으면 몇 프레임 지연으로 보임). 반면 Rpc는 "호스트가 호출하면
+        /// 호스트 자기 자신에게는 같은 스택에서 즉시 실행된다"고 공식 문서에 명시돼 있어서,
+        /// 상태 동기화가 필요 없는 일회성 신호(스윙 연출 트리거)는 Rpc로 바꿨다. 호스트의 손맛
+        /// 테스트뿐 아니라 실제 접속 클라이언트에게도(ClientsAndHost) 프레임 끝에 바로 전달된다.
+        /// </summary>
+        public event System.Action OnAttackTriggered;
+
+        public Vector3 AimPosition => networkAimPosition.Value;
+
+        /// <summary>
+        /// PlayerAnimator가 읽는 용도 - 공속(attacksPerSecond)이 바뀌어도 Attack
+        /// 애니메이션 클립 길이는 그대로 두고 재생 속도만 맞추기 위해 "초 단위 간격"으로
+        /// 변환해서 노출한다. stats.attacksPerSecond는 공식 스탯 시트와 같은 의미
+        /// (값이 클수록 빠름)라서, 여기서는 1 / attacksPerSecond로 뒤집어 간격(초)을
+        /// 계산한다. stats가 비어있거나 attacksPerSecond가 0 이하면(에디터 셋업 누락 등)
+        /// 1초를 기본값으로 둬서 0으로 나누는 사고를 방지.
+        /// </summary>
+        public float AttackInterval =>
+            stats != null && stats.attacksPerSecond > 0.0001f ? 1f / stats.attacksPerSecond : 1f;
+
+        private void Awake()
+        {
+            // Physics2D.OverlapCircleNonAlloc은 Unity 6000.x부터 Obsolete 처리됐다.
+            // 대신 ContactFilter2D + 배열을 받는 OverlapCircle 오버로드를 쓴다 (여전히 논얼록).
+            contactFilter = new ContactFilter2D();
+            contactFilter.SetLayerMask(enemyLayer);
+            contactFilter.useTriggers = true; // 적 콜라이더가 트리거로 구성될 수도 있어 포함
+        }
+
+        private void Update()
+        {
+            if (IsOwner && inputReader != null)
+            {
+                networkAimPosition.Value = inputReader.AimWorldPosition;
+            }
+
+            // 공격 판정(피해 적용)은 서버만 - 클라이언트 각자 판정하면 중복/불일치 생긴다.
+            if (!IsServer || stats == null)
+            {
+                return;
+            }
+
+            // 261014 추가 - 일시정지 중엔 공격 타이머도 함께 멈춘다. 여기서 멈추지 않으면
+            // 증강 선택 화면이 떠 있는 동안에도 attackTimer가 계속 줄어들다가, 재개되는
+            // 순간 밀린 공격이 한꺼번에 나가버린다.
+            if (PartyProgress.Instance != null && PartyProgress.Instance.IsPaused)
+            {
+                return;
+            }
+
+            // 261014 추가 - 대기 중인 타격 판정(Attack()이 예약해둔 것)을 먼저 처리한다.
+            // attackTimer와는 완전히 독립적인 별개의 타이머 - 공격 "트리거 여부"를 결정하는
+            // 주기와 "이미 트리거된 공격의 판정이 언제 들어가는지"는 서로 다른 문제라서
+            // 하나로 합치지 않았다.
+            if (pendingHitDelay >= 0f)
+            {
+                pendingHitDelay -= Time.deltaTime;
+                if (pendingHitDelay <= 0f)
+                {
+                    pendingHitDelay = -1f;
+                    ApplyHit();
+                }
+            }
+
+            attackTimer -= Time.deltaTime;
+            if (attackTimer <= 0f)
+            {
+                // attackRange * attackAwarenessRangeMultiplier(몬스터 인지거리, 기본값은
+                // attackRange와 동일한 1배) 반경 안에 적이 하나도 없으면 공격을 쏘지 않는다.
+                // 이때 타이머는 리셋하지 않고 0 이하로 그대로 둔다 - 그래야 적이 범위
+                // 안으로 들어오는 순간 대기 없이 바로 공격이 나간다. 이동 중 Idle/Walk는
+                // PlayerAnimator가 MoveInput만 보고 따로 판단하므로 여기선 신경 쓸 필요 없음.
+                if (HasTargetInRange(stats.attackRange * stats.attackAwarenessRangeMultiplier))
+                {
+                    Attack();
+                    // attacksPerSecond(공식 스탯 시트 단위 - 클수록 빠름)를 타이머가 쓰는
+                    // "초 단위 간격"으로 변환. 0 이하 방지 가드는 AttackInterval 프로퍼티와
+                    // 동일하게 여기서도 둔다(에디터 셋업 누락 등으로 0이 들어올 가능성 대비).
+                    attackTimer = stats.attacksPerSecond > 0.0001f ? 1f / stats.attacksPerSecond : 1f;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 실제 피해 판정과 같은 enemyLayer 필터를 재사용해서 "공격을 시도할 가치가
+        /// 있는지"만 싼 값에 확인한다 - hitBuffer를 공유해도 Attack()이 곧바로 다시
+        /// 채워 넣어서 결과가 섞일 일은 없다(같은 프레임 안에서 순차 실행).
+        /// </summary>
+        private bool HasTargetInRange(float radius)
+        {
+            Vector2 origin = transform.position;
+            int hitCount = Physics2D.OverlapCircle(origin, radius, contactFilter, hitBuffer);
+            return hitCount > 0;
+        }
+
+        private void Attack()
+        {
+            // 맞았는지와 무관하게 "시도" 자체를 애니메이션 트리거로 삼는다 - 허공을
+            // 휘둘러도 모션은 재생돼야 자연스럽다.
+            PlayAttackAnimRpc();
+
+            // 261014 추가 - 실제 타격 판정(ApplyHit)은 여기서 바로 하지 않고 attackHitDelayRatio만큼
+            // 미뤄서 Update()가 나중에 실행하게 한다(위 pendingHitDelay 필드 설명 참고) - "판정이
+            // 모션보다 먼저 온다" 버그 수정의 핵심.
+            pendingHitDelay = AttackInterval * attackHitDelayRatio;
+        }
+
+        /// <summary>
+        /// 261014 추가 - 기존 Attack()에 있던 실제 타격 판정 부분을 그대로 분리해온 것(로직
+        /// 변경 없음, 호출 시점만 늦춤). pendingHitDelay가 다 지난 뒤 Update()가 호출한다 -
+        /// 그 사이 적이 움직였을 수 있으므로 판정 시점에 origin/적 위치를 다시 계산하는 게
+        /// 오히려 더 정확하다(트리거 시점 값을 스냅샷해두지 않는 이유).
+        /// </summary>
+        private void ApplyHit()
+        {
+            Vector2 origin = transform.position;
+
+            // 버그 수정: 공격을 "시작"하는 판정(attackRange * attackAwarenessRangeMultiplier
+            // = 몬스터 인지거리)과 실제 "타격" 판정 반경이 서로 달랐었다 - 예전엔 여기서
+            // stats.attackRange(좁은 쪽)만 썼는데, 그러면 몬스터가 시작 판정엔 걸렸지만
+            // 아직 좁은 사거리까진 덜 들어온 타이밍에 스윙이 나가면 완전히 빗나가고,
+            // 계속 다가오던 몬스터가 다음 공속 주기(attackInterval)가 돼서야 진짜 사거리에
+            // 들어와 맞는 "스윙 이후 한 박자 늦게 피격되는" 증상이 생겼다. 공격을
+            // 시작하기로 한 판정 반경 그대로 실제 타격도 판정하도록 통일해서 해결.
+            // attackAwarenessRangeMultiplier 기본값을 attackRange와 동일한 1배로 둬서,
+            // 이 반경이 attackRange보다 실질적으로 더 커지지 않도록(=사거리 롤백이
+            // 무의미해지지 않도록) 함.
+            float hitRadius = stats.attackRange * stats.attackAwarenessRangeMultiplier;
+            int hitCount = Physics2D.OverlapCircle(origin, hitRadius, contactFilter, hitBuffer);
+
+            // 조준 방향을 중심으로 한 부채꼴(attackArcDegrees)만 실제 피해 판정에 포함한다
+            // (기획 지시: "공격 폭이 너무 넓다, 지금 거의 180도인데 반으로 줄이자").
+            // 조준 정보가 아직 없으면(스폰 직후 한 프레임 등) 판정을 통째로 누락시키지
+            // 않기 위해 전방위로 취급한다.
+            Vector2 aimDir = (Vector2)networkAimPosition.Value - origin;
+            bool hasAimDir = aimDir.sqrMagnitude > 0.0001f;
+            float halfArcDegrees = stats.attackArcDegrees * 0.5f;
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                if (hasAimDir)
+                {
+                    Vector2 toTarget = (Vector2)hitBuffer[i].transform.position - origin;
+                    if (toTarget.sqrMagnitude > 0.0001f && Vector2.Angle(aimDir, toTarget) > halfArcDegrees)
+                    {
+                        continue; // 사거리 안이어도 부채꼴 밖이면 미스
+                    }
+                }
+
+                if (hitBuffer[i].TryGetComponent(out IDamageable damageable))
+                {
+                    damageable.TakeDamage(stats.attackPower);
+                    // 공격 모션/이펙트가 아직 없어서(미정) 맞았는지 눈으로 확인이 안 되는 동안
+                    // 디버그 확인용 - 연출 붙으면 지워도 됨.
+                    Debug.Log($"[CheonMyeong] 하영 공격 적중: {hitBuffer[i].name}에 {stats.attackPower} 피해");
+                }
+            }
+        }
+
+        /// <summary>서버만 호출. ClientsAndHost로 보내서 호스트 자신을 포함해 접속한 모든
+        /// 클라이언트에서 즉시(호스트는 동기적으로, 원격 클라이언트는 프레임 끝에) Attack
+        /// 애니메이션 트리거가 울린다.</summary>
+        [Rpc(SendTo.ClientsAndHost)]
+        private void PlayAttackAnimRpc()
+        {
+            OnAttackTriggered?.Invoke();
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (stats == null)
+            {
+                return;
+            }
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, stats.attackRange); // 기준값(attackRange) 참고용 - 실제 판정 반경 아님
+
+            // 주황 - 공격 시작 판정과 실제 타격 판정이 공유하는 반경(attackRange * attackAwarenessRangeMultiplier).
+            Gizmos.color = new Color(1f, 0.5f, 0f, 0.6f);
+            Gizmos.DrawWireSphere(transform.position, stats.attackRange * stats.attackAwarenessRangeMultiplier);
+
+            // 공격 부채꼴(attackArcDegrees) 시각화 - Play 중이고 조준 정보가 있으면 실제 조준
+            // 방향 기준, 아니면(에디터에서 선택만 한 상태) 오브젝트의 +X축 기준으로 폭만 표시.
+            Vector2 origin = transform.position;
+            Vector2 aimDir = Application.isPlaying && networkAimPosition.Value != default
+                ? (Vector2)networkAimPosition.Value - origin
+                : Vector2.right;
+            if (aimDir.sqrMagnitude < 0.0001f)
+            {
+                aimDir = Vector2.right;
+            }
+            aimDir.Normalize();
+
+            float halfArc = stats.attackArcDegrees * 0.5f;
+            Vector2 leftEdge = Quaternion.Euler(0f, 0f, halfArc) * aimDir;
+            Vector2 rightEdge = Quaternion.Euler(0f, 0f, -halfArc) * aimDir;
+
+            float arcLineLength = stats.attackRange * stats.attackAwarenessRangeMultiplier; // 실제 타격 판정 반경과 맞춤
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(origin, origin + leftEdge * arcLineLength);
+            Gizmos.DrawLine(origin, origin + rightEdge * arcLineLength);
+        }
+    }
+}

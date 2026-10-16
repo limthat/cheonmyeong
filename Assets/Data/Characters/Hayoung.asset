@@ -15,7 +15,9 @@ MonoBehaviour:
   characterId: hayoung
   displayName: "\uD558\uC601"
   maxHealth: 100
-  moveSpeed: 5
+  moveSpeed: 3.2
   attackPower: 10
-  attackInterval: 1
+  attacksPerSecond: 0.8
   attackRange: 2
+  attackAwarenessRangeMultiplier: 1
+  attackArcDegrees: 90

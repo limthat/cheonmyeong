@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a954dcef54c74cd469da79ca95a865f3, type: 3}
+  m_Name: CharacterCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Data.CharacterCatalogSO
+  characters:
+  - characterId: hayoung
+    displayName: "\uD558\uC601"
+    weaponCaption: "\uC0AC\uC778\uAC80 \xB7 \uADFC\uC811 \xB7 \uB2E4\uC218"
+    isUnlocked: 1
+  - characterId: hanjuwon
+    displayName: "\uD55C\uC8FC\uC6D0"
+    weaponCaption: "\uBD80\uC801 \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C (\uCD94\uD6C4
+      \uAC1C\uBC1C)"
+    isUnlocked: 0
+  - characterId: parkgyuhyeok
+    displayName: "\uBC15\uADDC\uD601"
+    weaponCaption: "\uC0BC\uC9C0\uCC3D \xB7 \uADFC\uC811 \xB7 \uB2E8\uC77C (\uCD94\uD6C4
+      \uAC1C\uBC1C)"
+    isUnlocked: 0
+  - characterId: leeara
+    displayName: "\uC774\uC544\uB77C"
+    weaponCaption: "\uC2E0\uCE7C \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C (\uCD94\uD6C4
+      \uAC1C\uBC1C)"
+    isUnlocked: 0
+  - characterId: choihwanjo
+    displayName: "\uCD5C\uD658\uC870"
+    weaponCaption: "\uD65C \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C (\uCD94\uD6C4
+      \uAC1C\uBC1C)"
+    isUnlocked: 0
+  - characterId: sinjihyeon
+    displayName: "\uC2E0\uC9C0\uD604"
+    weaponCaption: "\uACE1\uB3C4 \xB7 \uADFC\uC811 \xB7 \uB2E4\uC218 (\uCD94\uD6C4
+      \uAC1C\uBC1C)"
+    isUnlocked: 0
+  - characterId: imhun
+    displayName: "\uC784\uD6C8"
+    weaponCaption: "\uCC3D \xB7 \uADFC\uC811 \xB7 \uB2E8\uC77C (\uCD94\uD6C4 \uAC1C\uBC1C)"
+    isUnlocked: 0
+  - characterId: simyeore
+    displayName: "\uC2EC\uC5EC\uB808"
+    weaponCaption: "\uBD80\uCC44 \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E4\uC218 \xB7 \uB109\uBC31
+      (\uCD94\uD6C4 \uAC1C\uBC1C)"
+    isUnlocked: 0
