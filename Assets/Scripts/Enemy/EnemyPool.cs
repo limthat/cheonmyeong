@@ -1,3 +1,4 @@
+using CheonMyeong.Data;
 using CheonMyeong.Networking;
 using Unity.Netcode;
 using UnityEngine;
@@ -20,7 +21,13 @@ namespace CheonMyeong.Enemies
         /// </summary>
         private const string EnemyLayerName = "Enemy";
 
+        /// <summary>CheonMyeongPrototypeSetup의 맵 빌드 메뉴가 담/대숲 타일맵에 지정하는 레이어 이름.</summary>
+        private const string MapLayerName = "Map";
+
         [SerializeField] private Enemy enemyPrefab;
+
+        /// <summary>261027 추가 - EnemySpawner가 웨이브 구성(WaveSpawnEntry.enemy)과 이 풀을 짝짓는 키.</summary>
+        public EnemyStatsSO PrefabStats => enemyPrefab != null ? enemyPrefab.Stats : null;
 
         private void Awake()
         {
@@ -46,6 +53,14 @@ namespace CheonMyeong.Enemies
             }
 
             Physics2D.IgnoreLayerCollision(enemyLayer, enemyLayer, true);
+
+            // 261027 추가 - 원귀(트리거 콜라이더)와 맵 담/대숲(Map 레이어)은 서로 판정할 필요가 없다. 안 끄면
+            // 담 근처 원귀 수백 마리가 매 물리 스텝 트리거 이벤트를 만들어 비용만 든다(원귀는 원래 담을 통과).
+            int mapLayer = LayerMask.NameToLayer(MapLayerName);
+            if (mapLayer != -1)
+            {
+                Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, true);
+            }
         }
 
         /// <summary>

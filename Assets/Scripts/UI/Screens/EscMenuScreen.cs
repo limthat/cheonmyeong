@@ -1,5 +1,6 @@
 using CheonMyeong.Data;
 using CheonMyeong.Networking;
+using CheonMyeong.Progression;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,6 +43,9 @@ namespace CheonMyeong.UI.Screens
             // TODO(네트워크 세션 종료): NetworkManager.Singleton.Shutdown() 등 실제 세션
             // 이탈 처리가 필요하지만, 중간 이탈 시 동료 쪽 처리 규칙이 미정이라 세션은
             // 그대로 두고 Gameplay 씬만 내린다 - 확정되면 여기 채울 것.
+            // 261101 - 중간에 나가도 그때까지 주운 엽전은 받는다(예섭 확정, 기획서 "연결 끊김" 규칙과 같게).
+            PlayerProgress.SettleLocalPlayerRunGold();
+
             string sceneName = CurrentRun.SelectedMap != null ? CurrentRun.SelectedMap.gameplaySceneName : null;
             if (!string.IsNullOrEmpty(sceneName))
             {

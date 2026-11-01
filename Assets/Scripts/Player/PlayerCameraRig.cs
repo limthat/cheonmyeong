@@ -44,6 +44,12 @@ namespace CheonMyeong.Player
         [Tooltip("카메라 Z 위치 - 탑뷰 2D라 X/Y만 타겟을 따라가고 Z(원근/정렬용)는 고정 유지한다.")]
         [SerializeField] private float fixedZ = -10f;
 
+        [Tooltip("261101 추가 - 인게임 카메라 크기(orthographicSize). 맵 타일이 1유닛(64px, PPU 64)으로 커진 만큼 예전 5를\n" +
+                 "5 ÷ 0.64 = 7.8125로 키워 예전과 같은 칸 수(세로 약 15.6칸)가 보이게 했다. 따라갈 대상이 정해질 때(인게임 시작)\n" +
+                 "적용한다 - 타이틀 화면은 같은 카메라로 원래 크기 그대로 보인다. 0 이하면 바꾸지 않는다.")]
+        [SerializeField] private float gameplayOrthographicSize = 7.8125f;
+
+        private Camera rigCamera;
         private Transform followTarget;
         private Rigidbody2D followTargetBody;
 
@@ -79,6 +85,7 @@ namespace CheonMyeong.Player
                 return;
             }
             followTarget = target;
+            ApplyGameplayZoom();
             // 타겟이 바뀔 때 한 번만 TryGetComponent - 매 프레임 컴포넌트 조회를 피한다.
             // 못 찾으면 null로 둬서 아래에서 lookahead 없이 안전하게 폴백.
             followTargetBody = target.TryGetComponent(out Rigidbody2D rb) ? rb : null;
@@ -100,6 +107,8 @@ namespace CheonMyeong.Player
                 targetPos.y += predictedOffset.y;
             }
 
+            targetPos = ClampToMap(targetPos);
+
             if (followSpeed <= 0f)
             {
                 transform.position = targetPos;
@@ -109,7 +118,58 @@ namespace CheonMyeong.Player
             // 프레임레이트에 무관한 지수 감쇠 보간 - Lerp(a, b, t)에 고정 t를 매 프레임
             // 그대로 쓰면 프레임레이트가 달라질 때 체감 속도가 달라지는 흔한 실수를 피한다.
             float t = 1f - Mathf.Exp(-followSpeed * Time.deltaTime);
-            transform.position = Vector3.Lerp(transform.position, targetPos, t);
+            transform.position = ClampToMap(Vector3.Lerp(transform.position, targetPos, t));
+        }
+
+        /// <summary>
+        /// 261101 추가 - "카메라가 맵 넘어서까지 보인다"(예섭). 화면 가장자리(orthographicSize × 화면비)가 MapBounds.CameraArea
+        /// (타일맵 전체 범위) 밖으로 나가지 않게 카메라 중심을 제한한다. 맵이 화면보다 작은 축은 맵 가운데에 고정한다.
+        /// 로비 등 MapBounds가 없는 씬에서는 아무것도 안 한다.
+        /// </summary>
+        private Vector3 ClampToMap(Vector3 position)
+        {
+            Maps.MapBounds bounds = Maps.MapBounds.Instance;
+            if (bounds == null)
+            {
+                return position;
+            }
+
+            Rect area = bounds.CameraArea;
+            if (area.width <= 0f || area.height <= 0f)
+            {
+                return position;
+            }
+
+            if (rigCamera == null && !TryGetComponent(out rigCamera))
+            {
+                rigCamera = Camera.main;
+            }
+            if (rigCamera == null || !rigCamera.orthographic)
+            {
+                return position;
+            }
+
+            float halfHeight = rigCamera.orthographicSize;
+            float halfWidth = halfHeight * rigCamera.aspect;
+            position.x = area.width <= halfWidth * 2f ? area.center.x : Mathf.Clamp(position.x, area.xMin + halfWidth, area.xMax - halfWidth);
+            position.y = area.height <= halfHeight * 2f ? area.center.y : Mathf.Clamp(position.y, area.yMin + halfHeight, area.yMax - halfHeight);
+            return position;
+        }
+
+        private void ApplyGameplayZoom()
+        {
+            if (gameplayOrthographicSize <= 0f)
+            {
+                return;
+            }
+            if (rigCamera == null && !TryGetComponent(out rigCamera))
+            {
+                rigCamera = Camera.main;
+            }
+            if (rigCamera != null && rigCamera.orthographic)
+            {
+                rigCamera.orthographicSize = gameplayOrthographicSize;
+            }
         }
     }
 }

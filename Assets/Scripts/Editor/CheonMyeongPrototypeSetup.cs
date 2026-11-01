@@ -3,18 +3,22 @@ using System.IO;
 using CheonMyeong.Data;
 using CheonMyeong.Enemies;
 using CheonMyeong.Input;
+using CheonMyeong.Maps;
 using CheonMyeong.Networking;
 using CheonMyeong.Player;
 using CheonMyeong.Progression;
 using CheonMyeong.UI.Title;
+using CheonMyeong.Waves;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using Unity.Netcode.Transports.UTP;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
+using UnityEditor.U2D.Sprites;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 namespace CheonMyeong.EditorTools
 {
@@ -37,6 +41,55 @@ namespace CheonMyeong.EditorTools
         private const string PlayerPrefabPath = PrefabsFolder + "/Hayoung_Player.prefab";
         private const string GoldLootPrefabPath = PrefabsFolder + "/Loot_Gold.prefab";
         private const string ExpLootPrefabPath = PrefabsFolder + "/Loot_Exp.prefab";
+
+        // 261027 추가/수정 - 원귀 3종(기획서 5-6/5-10). 시트-원귀 대응은 그림으로 확인:
+        // ghost_1 = 몽달귀(기본, 기존 Enemy_Basic/BasicEnemy.asset 재사용), ghost_2 = 달걀귀신(얼굴 없는
+        // 알 머리), ghost_3 = 손각시(흰 옷 + 붉은 댕기). 시트는 64x64 칸(기획서 8 "원귀 64px")이고 행마다
+        // 동작이 다르다: 0행 = 이동 루프, 1행 = 팔 뻗기/앞으로 숙이기, 2행 = 사라짐(기획서 8 "공통 사라짐
+        // 이펙트"). 원귀는 공격 모션이 없어서(접촉 피해) 0행 = Move, 2행 = Die만 쓴다.
+        private const string MonsterArtFolder = "Assets/Art/Monster";
+        private const string GhostMonsterFolder = MonsterArtFolder + "/Common";
+        private const int MonsterFrameSize = 64;
+        private const int GhostMoveRow = 0;
+        private const int GhostDieRow = 2;
+        private const float GhostMoveFps = 8f;
+        private const float GhostDieFps = 12f;
+        private const string Ghost2StatsPath = EnemiesFolder + "/Ghost2.asset";
+        private const string Ghost3StatsPath = EnemiesFolder + "/Ghost3.asset";
+        private const string Ghost2PrefabPath = PrefabsFolder + "/Enemy_Ghost2.prefab";
+        private const string Ghost3PrefabPath = PrefabsFolder + "/Enemy_Ghost3.prefab";
+        private const string EnemyAnimFolder = "Assets/Animations/Enemies";
+
+        // 261027 추가 - 드랍 아이템 아트(32x32 칸: 윗줄 영혼 3단계, 아랫줄 엽전 3색).
+        private const string GoodsSheetPath = "Assets/Art/Goods/coin_xp-Sheet.png";
+
+        // 261027 추가 - 달밤의 폐장터 타일맵(BuildDalbamMap 참고). 배치는 CSV(Assets/Data/Maps)에서 읽는다.
+        private const string DalbamTileFolder = "Assets/Art/Tiles/Dalbam";
+        private const string DalbamTileAssetFolder = DalbamTileFolder + "/Tiles";
+        private const string DalbamGroundCsvPath = "Assets/Data/Maps/Dalbam_Ground.csv";
+        private const string DalbamBlockingCsvPath = "Assets/Data/Maps/Dalbam_Blocking.csv";
+        private const string DalbamMapRootName = "Map_DalbamPyejangteo";
+        private const float DalbamCellSize = 1f; // 261101 - 기획서 v0.9.3 "타일 64×64px, PPU 64" → 1타일 = 1유닛, 40×40맵 = 40유닛
+        private const float DalbamTilePixelsPerUnit = 64f;
+        private const int DalbamEntranceColumn = 19; // 남쪽 입구 길 열(CSV 기준, 0부터)
+        private const int DalbamStartRow = 35;       // 시작 줄(CSV 기준 위에서부터, 남쪽 담 바로 위)
+        private const string MapLayerName = "Map";
+        private const int GoodsFrameSize = 32;
+
+        // 261027 추가 - 웨이브 시스템. 아래 값들은 "처음 생성되는 기본 에셋(DefaultWaves.asset)"의 초기값일
+        // 뿐이다(출처: 기획서 5-1/5-2/5-3/5-10). 생성 후엔 에셋을 Inspector에서 고치면 되고, 런타임
+        // 코드(WaveManager/EnemySpawner)는 이 숫자들을 전혀 모른다.
+        private const string WavesFolder = DataFolder + "/Waves";
+        private const string DefaultWaveConfigPath = WavesFolder + "/DefaultWaves.asset";
+        private static readonly int[] InitialWaveEnemyCounts = { 125, 175, 225, 275, 150, 350, 410, 475, 540, 625 }; // 기획서 v0.9.3
+        private const int InitialWeightMongdal = 60, InitialWeightEgg = 30, InitialWeightSongaksi = 10;
+
+        // 261027 추가 - "다른 캐릭터도 만들어야함"(예섭 요청). 8명 로스터 중 아트(스프라이트
+        // 시트)가 이미 Assets/Art/Char에 들어와 있는 이아라(LeeAra)를 먼저 데이터만 스캐폴딩한다.
+        // 정확한 스탯은 여전히 팀 확정 전이라(하영 외 캐릭터는 "MVP 범위 미정") 하영 기준 비율로
+        // 잡은 placeholder - 애니메이터/프리팹/플레이어 전환(네트워크화)은 하영 때처럼 프레임
+        // 구간을 사람이 눈으로 대조해 확정해야 하는 작업이라 이번 패스에는 포함하지 않았다.
+        private const string LeeAraStatsPath = CharactersFolder + "/LeeAra.asset";
 
         private const string PrototypeObjectName = "Hayoung_Prototype";
         private const string PoolObjectName = "EnemyPool";
@@ -71,16 +124,21 @@ namespace CheonMyeong.EditorTools
         /// 슬라이스된 조각들 - Hayoung-Sheet_7/_17/_29 - 은 제외함). 30~39번은
         /// 2026-10-12 기준 용도 미확인이라 어떤 클립에도 안 넣었다.
         /// </summary>
-        private const string HayoungSpriteSheetPath = "Assets/img/ch/Hayoung-Sheet.png";
+        // 261027 수정 - 아트 폴더 재구성(Assets/img/ → Assets/Art/...)으로 실제 파일은 진작
+        // Assets/Art/Char/HaYoung/으로 옮겨졌는데 이 경로 상수만 안 따라와서 재실행하면
+        // "스프라이트를 찾을 수 없다"는 에러가 났을 상수 - UICanvasBuilder의 UI 패널 스프라이트
+        // 경로에서 났던 것과 같은 종류의 버그(claude/augment-card-selection_261027.md 참고).
+        private const string HayoungSpriteSheetPath = "Assets/Art/Char/HaYoung/HaYoung-Sheet.png";
         private const string HayoungSpriteBaseName = "Hayoung-Sheet";
         private const string HayoungAnimFolder = "Assets/Animations/Hayoung";
         private const string HayoungIdleClipPath = HayoungAnimFolder + "/Hayoung_Idle.anim";
         private const string HayoungWalkClipPath = HayoungAnimFolder + "/Hayoung_Walk.anim";
         private const string HayoungAttackClipPath = HayoungAnimFolder + "/Hayoung_Attack.anim";
         private const string HayoungAnimatorControllerPath = HayoungAnimFolder + "/Hayoung_Animator.controller";
-        private const int IdleFrameStart = 0, IdleFrameEnd = 6;
-        private const int WalkFrameStart = 8, WalkFrameEnd = 16;
-        private const int AttackFrameStart = 18, AttackFrameEnd = 28;
+        // 261101 수정 - 예전엔 프레임 번호를 직접 적어뒀는데(Idle 0~6 / Walk 8~16 / Attack 18~28) 지금 HaYoung-Sheet와 안 맞았다
+        // (실제: 줄마다 한 동작 - IDLE 0~6, WALK 7~13, ATK 14~22, DIE 23~24, EFFECT 25~33). 이제 시트의 "줄"로 고른다.
+        private const int HayoungIdleRow = 0, HayoungWalkRow = 1, HayoungAttackRow = 2;
+        private const float HayoungFramesPerSecond = 10f; // 기획서: IDLE · WALK · ATK 각 100ms
 
         /// <summary>
         /// 이동속도 임시 너프. 이미 만들어진 스탯 에셋(Hayoung.asset, BasicEnemy.asset)의
@@ -330,7 +388,11 @@ namespace CheonMyeong.EditorTools
             GameObject spawnerGo = EnsureSceneObject(SpawnerObjectName);
             var spawner = spawnerGo.GetComponent<EnemySpawner>();
             if (spawner == null) spawner = spawnerGo.AddComponent<EnemySpawner>();
-            AssignPrivateField(spawner, "pool", pool);
+            // 261027 수정 - EnemySpawner.pool(단일) → pools(배열)로 바뀜("몹 다양성" 지원,
+            // Create Enemy Variants 메뉴가 Ghost2/Ghost3도 이 배열에 추가해준다). 여기서는
+            // 일단 기본 적 하나만 들어간 배열로 초기화 - 이 메뉴만 단독으로 실행해도(Variants
+            // 메뉴를 아직 안 돌렸어도) 기존처럼 동작은 한다.
+            AssignPrivateObjectArrayField(spawner, "pools", new Object[] { pool });
 
             EditorUtility.SetDirty(pool);
             EditorUtility.SetDirty(spawner);
@@ -342,7 +404,645 @@ namespace CheonMyeong.EditorTools
                       "충돌/트리거 판정을 꺼서 수백 마리가 겹쳐도 판정 폭증이 안 생기게 처리합니다. " +
                       "스폰은 서버(호스트)에서만 실행되고 접속해 있는 플레이어 중 무작위로 " +
                       "주변에 스폰합니다. 스폰 방식(웨이브/지속)과 타겟팅 전략은 미정이라 " +
-                      "지금은 가장 단순한 지속 스폰 + 최근접 추적 임시 구현입니다.");
+                      "지금은 가장 단순한 지속 스폰 + 최근접 추적 임시 구현입니다. " +
+                      "몹 종류를 늘리려면 'CheonMyeong/Setup/Create Enemy Variants (Ghost 2-3)'를 이어서 실행하세요.");
+        }
+
+        /// <summary>
+        /// 261027 추가 - Assets/Art/Monster 아래의 모든 원귀 시트를 64x64 격자로 자른다. Sprite Editor의
+        /// Slice → Grid By Cell Size(64x64, Offset/Padding 0, Keep Empty Rects 끔, Pivot Center,
+        /// Delete Existing)와 같은 결과 - 이름도 Unity 기본 규칙("시트명_0, _1, ..." 왼쪽 위부터)과 같다.
+        /// </summary>
+        [MenuItem("CheonMyeong/Setup/Slice Monster Sheets (64x64 Grid)")]
+        public static void SliceMonsterSheets()
+        {
+            int count = 0;
+            foreach (string guid in AssetDatabase.FindAssets("t:Texture2D", new[] { MonsterArtFolder }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (path.EndsWith(".png"))
+                {
+                    SliceToGrid(path, MonsterFrameSize);
+                    count++;
+                }
+            }
+            Debug.Log($"[CheonMyeong] 원귀 시트 {count}장 {MonsterFrameSize}x{MonsterFrameSize} 슬라이스 완료.");
+        }
+
+        /// <summary>
+        /// 261027 추가 - "엽전이랑 경험치가 아이템 형식으로 안 떨어짐"(예섭) 대응. 원인: Loot_Gold/Loot_Exp
+        /// 프리팹의 SpriteRenderer에 스프라이트가 없고 색만 지정돼 있었다(스프라이트가 없으면 아무것도 안
+        /// 그려짐 - 드랍/수거는 실제로 되고 있었지만 안 보였던 것). Assets/Art/Goods/coin_xp-Sheet.png를
+        /// 32x32로 잘라서 윗줄(청록/보라/붉은 영혼 = 기획서 작은/중간/큰 영혼)은 Loot_Exp에, 아랫줄 금색
+        /// 엽전은 Loot_Gold에 연결한다. 원귀보다 아래에 그려지도록 sortingOrder를 -1로 둔다.
+        /// </summary>
+        [MenuItem("CheonMyeong/Setup/Setup Loot Visuals (Goods Sheet)")]
+        public static void SetupLootVisuals()
+        {
+            if (!IsGridSliced(GoodsSheetPath, GoodsFrameSize))
+            {
+                SliceToGrid(GoodsSheetPath, GoodsFrameSize);
+            }
+
+            List<Sprite[]> rows = LoadSheetRows(GoodsSheetPath);
+            if (rows.Count < 2 || rows[0].Length == 0 || rows[1].Length == 0)
+            {
+                Debug.LogError($"[CheonMyeong] '{GoodsSheetPath}'에서 영혼(윗줄)/엽전(아랫줄) 스프라이트를 찾지 못했습니다.");
+                return;
+            }
+            Sprite[] souls = rows[0];
+            Sprite[] coins = rows[1];
+            Sprite goldCoin = coins[coins.Length - 1]; // 아랫줄 오른쪽 끝 = 금색 엽전
+
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(ExpLootPrefabPath) == null
+                || AssetDatabase.LoadAssetAtPath<GameObject>(GoldLootPrefabPath) == null)
+            {
+                Debug.LogError("[CheonMyeong] Loot_Exp/Loot_Gold 프리팹이 없습니다 - " +
+                               "'Create Progression Prototype (Loot + Party Progress)'를 먼저 실행하세요.");
+                return;
+            }
+
+            GameObject expContents = PrefabUtility.LoadPrefabContents(ExpLootPrefabPath);
+            SpriteRenderer expRenderer = ConfigureLootRenderer(expContents, souls[0]);
+            var expPickup = expContents.GetComponent<ExpLootPickup>();
+            if (expPickup != null)
+            {
+                AssignPrivateField(expPickup, "spriteRenderer", expRenderer);
+                AssignPrivateObjectArrayField(expPickup, "tierSprites", souls);
+            }
+            PrefabUtility.SaveAsPrefabAsset(expContents, ExpLootPrefabPath);
+            PrefabUtility.UnloadPrefabContents(expContents);
+
+            GameObject goldContents = PrefabUtility.LoadPrefabContents(GoldLootPrefabPath);
+            ConfigureLootRenderer(goldContents, goldCoin);
+            PrefabUtility.SaveAsPrefabAsset(goldContents, GoldLootPrefabPath);
+            PrefabUtility.UnloadPrefabContents(goldContents);
+
+            AssetDatabase.SaveAssets();
+            Debug.Log("[CheonMyeong] 드랍 아이템 비주얼 연결 완료 - 영혼(가치 1/2/5 → 청록/보라/붉은), 엽전(금색).");
+        }
+
+        private static SpriteRenderer ConfigureLootRenderer(GameObject root, Sprite sprite)
+        {
+            var sr = root.GetComponent<SpriteRenderer>();
+            if (sr == null) sr = root.AddComponent<SpriteRenderer>();
+            sr.sprite = sprite;
+            sr.color = Color.white; // 예전 색 placeholder 해제
+            sr.sortingOrder = -1;
+            return sr;
+        }
+
+        /// <summary>
+        /// 261027 추가 - 원귀 3종(몽달귀/달걀귀신/손각시, 기획서 5-6) 프리팹 + 애니메이션 + 풀 등록.
+        /// 시트가 64x64로 안 잘려 있으면 먼저 자른다. 스탯은 기획서 5-10 초안 수치로 맞춘다.
+        /// EnemySpawner가 있는 Gameplay 씬이 지금 안 열려 있어도 Build Settings에서 찾아 잠깐 열고
+        /// 작업한 뒤 저장하고 닫는다(261027 - "첫번째부터 막힘" 원인: Gameplay 씬이 안 열려 있었음).
+        /// 재실행해도 안전.
+        /// </summary>
+        [MenuItem("CheonMyeong/Setup/Create Enemy Variants (Ghost 2-3)")]
+        public static void CreateEnemyVariants()
+        {
+            if (AssetDatabase.LoadAssetAtPath<Enemy>(EnemyPrefabPath) == null)
+            {
+                Debug.LogError($"[CheonMyeong] '{EnemyPrefabPath}'가 없습니다 - " +
+                               "'CheonMyeong/Setup/Create Enemy Prototype (Pool + Spawner)'를 먼저 실행하세요.");
+                return;
+            }
+
+            foreach (string sheetName in new[] { "ghost_1-Sheet", "ghost_2-Sheet", "ghost_3-Sheet" })
+            {
+                string sheetPath = GhostSheetPath(sheetName);
+                if (!IsGridSliced(sheetPath, MonsterFrameSize))
+                {
+                    SliceToGrid(sheetPath, MonsterFrameSize);
+                }
+            }
+
+            // 1) 에셋(스탯/프리팹/애니메이션) - 씬과 무관해서 한 번만.
+            EnemyStatsSO mongdal = EnsureBasicEnemyStats();
+            ApplyGhostDesignStats(mongdal, "mongdalgwi", "몽달귀", 18f, 2.5f, 5f, 1, 0.02f, 1);
+            EnemyStatsSO egg = EnsureGhostStats(Ghost2StatsPath);
+            ApplyGhostDesignStats(egg, "dalgyal_gwisin", "달걀귀신", 10f, 3f, 8f, 2, 0.03f, 1);
+            EnemyStatsSO songaksi = EnsureGhostStats(Ghost3StatsPath);
+            ApplyGhostDesignStats(songaksi, "songaksi", "손각시", 120f, 2f, 10f, 5, 0.10f, 2);
+
+            SetupGhostPrefab(EnemyPrefabPath, mongdal, "ghost_1-Sheet", EnemyAnimFolder + "/Mongdal");
+            Enemy eggPrefab = SetupGhostPrefab(Ghost2PrefabPath, egg, "ghost_2-Sheet", EnemyAnimFolder + "/Egg");
+            Enemy songaksiPrefab = SetupGhostPrefab(Ghost3PrefabPath, songaksi, "ghost_3-Sheet", EnemyAnimFolder + "/Songaksi");
+            AssetDatabase.SaveAssets();
+
+            // 2) 씬(풀/스포너) - EnemySpawner가 있는 모든 Gameplay 씬에 대해.
+            int sceneCount = ForEachSceneContaining(SpawnerObjectName, (scene, spawnerGo) =>
+            {
+                var spawner = spawnerGo.GetComponent<EnemySpawner>();
+                if (spawner == null)
+                {
+                    return;
+                }
+
+                GameObject basicPoolGo = FindInScene(scene, PoolObjectName);
+                EnemyPool basicPool = basicPoolGo != null ? basicPoolGo.GetComponent<EnemyPool>() : null;
+                EnemyPool eggPool = EnsureEnemyVariantPool(scene, "EnemyPool_Ghost2", eggPrefab);
+                EnemyPool songaksiPool = EnsureEnemyVariantPool(scene, "EnemyPool_Ghost3", songaksiPrefab);
+
+                var pools = new List<Object>();
+                if (basicPool != null) pools.Add(basicPool);
+                pools.Add(eggPool);
+                pools.Add(songaksiPool);
+                AssignPrivateObjectArrayField(spawner, "pools", pools.ToArray());
+                // poolWeights는 WaveManager가 없을 때만 쓰는 대체값 - 기획서 비율과 같게.
+                AssignPrivateIntArrayField(spawner, "poolWeights", basicPool != null
+                    ? new[] { InitialWeightMongdal, InitialWeightEgg, InitialWeightSongaksi }
+                    : new[] { InitialWeightEgg, InitialWeightSongaksi });
+                EditorUtility.SetDirty(spawner);
+            });
+
+            if (sceneCount == 0)
+            {
+                Debug.LogError($"[CheonMyeong] '{SpawnerObjectName}'가 있는 씬을 찾지 못했습니다(열린 씬 + Build Settings). " +
+                               "'Create Enemy Prototype' → 'Split Into Bootstrap + Gameplay Scenes' 순서로 실행됐는지 확인하세요.");
+                return;
+            }
+
+            Debug.Log("[CheonMyeong] 원귀 3종(몽달귀/달걀귀신/손각시) 프리팹 + 이동/사라짐 애니메이션 + 풀 등록 완료 " +
+                      $"(씬 {sceneCount}개 저장됨). 스탯은 기획서 5-10 초안 수치로 맞췄습니다. " +
+                      "달걀귀신 돌진·손각시 둔화 오라 같은 고유 행동은 아직 없습니다.");
+        }
+
+        private static string GhostSheetPath(string sheetName) => $"{GhostMonsterFolder}/{sheetName}.png";
+
+        private static EnemyStatsSO EnsureGhostStats(string statsPath)
+        {
+            EnsureFolder(DataFolder, "Assets");
+            EnsureFolder(EnemiesFolder, DataFolder);
+            var stats = AssetDatabase.LoadAssetAtPath<EnemyStatsSO>(statsPath);
+            if (stats == null)
+            {
+                stats = ScriptableObject.CreateInstance<EnemyStatsSO>();
+                AssetDatabase.CreateAsset(stats, statsPath);
+            }
+            return stats;
+        }
+
+        /// <summary>기획서 5-10 원귀 표(체력/이동 속도/접촉 피해/영혼 가치/엽전 확률 × 개수)를 그대로 적용.</summary>
+        private static void ApplyGhostDesignStats(EnemyStatsSO stats, string enemyId, string displayName, float maxHealth,
+            float moveSpeed, float contactDamage, int expReward, float goldDropChance, int goldReward)
+        {
+            stats.enemyId = enemyId;
+            stats.displayName = displayName;
+            stats.maxHealth = maxHealth;
+            stats.moveSpeed = moveSpeed;
+            stats.contactDamage = contactDamage;
+            stats.expReward = expReward;
+            stats.goldDropChance = goldDropChance;
+            stats.goldReward = goldReward;
+            stats.grudgeWeight = 1f;
+            EditorUtility.SetDirty(stats);
+        }
+
+        /// <summary>
+        /// 프리팹(없으면 생성) + 0행 이동 루프/2행 사라짐 애니메이터 + 첫 프레임 스프라이트 + Enemy.animator 연결.
+        /// 사망 경직 시간은 사라짐 애니메이션 길이에 맞춘다(끝까지 보이고 나서 풀로 돌아가게).
+        /// </summary>
+        private static Enemy SetupGhostPrefab(string prefabPath, EnemyStatsSO stats, string sheetName, string animFolder)
+        {
+            List<Sprite[]> rows = LoadSheetRows(GhostSheetPath(sheetName));
+            Sprite[] moveFrames = rows.Count > GhostMoveRow ? rows[GhostMoveRow] : new Sprite[0];
+            Sprite[] dieFrames = rows.Count > GhostDieRow ? rows[GhostDieRow] : new Sprite[0];
+            if (moveFrames.Length == 0)
+            {
+                Debug.LogError($"[CheonMyeong] '{sheetName}'에서 이동 프레임(0행)을 찾지 못했습니다.");
+            }
+
+            EnsurePrefabExists(prefabPath, stats);
+
+            AnimatorController controller = CreateGhostAnimator(animFolder, moveFrames, dieFrames);
+            if (dieFrames.Length > 0)
+            {
+                stats.deathStaggerDuration = dieFrames.Length / GhostDieFps;
+                EditorUtility.SetDirty(stats);
+            }
+
+            GameObject contents = PrefabUtility.LoadPrefabContents(prefabPath);
+            var sr = contents.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                if (moveFrames.Length > 0) sr.sprite = moveFrames[0];
+                sr.color = Color.white; // 예전 빨간 placeholder 해제
+            }
+            var animator = contents.GetComponent<Animator>();
+            if (animator == null) animator = contents.AddComponent<Animator>();
+            animator.runtimeAnimatorController = controller;
+            var enemy = contents.GetComponent<Enemy>();
+            AssignPrivateField(enemy, "stats", stats);
+            AssignPrivateField(enemy, "spriteRenderer", sr);
+            AssignPrivateField(enemy, "animator", animator);
+            PrefabUtility.SaveAsPrefabAsset(contents, prefabPath);
+            PrefabUtility.UnloadPrefabContents(contents);
+
+            return AssetDatabase.LoadAssetAtPath<Enemy>(prefabPath);
+        }
+
+        /// <summary>EnsureEnemyPrefab과 같은 조립 방식(트리거 콜라이더 + Rigidbody2D + NetworkObject/Transform).</summary>
+        private static void EnsurePrefabExists(string prefabPath, EnemyStatsSO stats)
+        {
+            if (AssetDatabase.LoadAssetAtPath<Enemy>(prefabPath) != null)
+            {
+                return;
+            }
+
+            EnsureLayer(EnemyLayerName);
+            EnsureFolder(PrefabsFolder, "Assets");
+
+            var temp = new GameObject("Enemy_Variant_Temp");
+            temp.layer = LayerMask.NameToLayer(EnemyLayerName);
+            var sr = temp.AddComponent<SpriteRenderer>();
+            var collider = temp.AddComponent<CircleCollider2D>();
+            collider.radius = 0.4f;
+            collider.isTrigger = true;
+            var rb = temp.AddComponent<Rigidbody2D>();
+            rb.gravityScale = 0f;
+            rb.freezeRotation = true;
+            var enemy = temp.AddComponent<Enemy>();
+            AssignPrivateField(enemy, "stats", stats);
+            AssignPrivateField(enemy, "spriteRenderer", sr);
+            if (temp.GetComponent<NetworkObject>() == null) temp.AddComponent<NetworkObject>();
+            if (temp.GetComponent<NetworkTransform>() == null) temp.AddComponent<NetworkTransform>();
+
+            PrefabUtility.SaveAsPrefabAsset(temp, prefabPath);
+            Object.DestroyImmediate(temp);
+        }
+
+        /// <summary>
+        /// Move(기본, 루프) → Die(트리거 "Die", 1회 재생 후 마지막 프레임 유지). 재실행 시 트랜지션이
+        /// 중복으로 쌓이지 않도록 컨트롤러를 지우고 새로 만든다(프리팹 연결은 바로 뒤에서 다시 함).
+        /// 상태 이름 "Move"/"Die"는 Enemy.cs의 MoveStateHash/DieTriggerHash와 맞아야 한다.
+        /// </summary>
+        private static AnimatorController CreateGhostAnimator(string animFolder, Sprite[] moveFrames, Sprite[] dieFrames)
+        {
+            EnsureFolderRecursive(animFolder);
+
+            AnimationClip moveClip = moveFrames.Length > 0
+                ? CreateSpriteAnimationClip(animFolder + "/Move.anim", moveFrames, GhostMoveFps, true)
+                : null;
+            AnimationClip dieClip = dieFrames.Length > 0
+                ? CreateSpriteAnimationClip(animFolder + "/Die.anim", dieFrames, GhostDieFps, false)
+                : null;
+
+            string controllerPath = animFolder + "/Animator.controller";
+            if (AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPath) != null)
+            {
+                AssetDatabase.DeleteAsset(controllerPath);
+            }
+            AnimatorController controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
+            controller.AddParameter("Die", AnimatorControllerParameterType.Trigger);
+
+            AnimatorStateMachine stateMachine = controller.layers[0].stateMachine;
+            AnimatorState moveState = stateMachine.AddState("Move");
+            moveState.motion = moveClip;
+            stateMachine.defaultState = moveState;
+
+            if (dieClip != null)
+            {
+                AnimatorState dieState = stateMachine.AddState("Die");
+                dieState.motion = dieClip;
+                AnimatorStateTransition toDie = moveState.AddTransition(dieState);
+                toDie.hasExitTime = false;
+                toDie.duration = 0f;
+                toDie.AddCondition(AnimatorConditionMode.If, 0f, "Die");
+            }
+
+            EditorUtility.SetDirty(controller);
+            return controller;
+        }
+
+        private static EnemyPool EnsureEnemyVariantPool(Scene scene, string poolObjectName, Enemy prefab)
+        {
+            GameObject poolGo = FindInScene(scene, poolObjectName);
+            if (poolGo == null)
+            {
+                poolGo = new GameObject(poolObjectName);
+                SceneManager.MoveGameObjectToScene(poolGo, scene);
+            }
+
+            var pool = poolGo.GetComponent<EnemyPool>();
+            if (pool == null) pool = poolGo.AddComponent<EnemyPool>();
+            AssignPrivateField(pool, "enemyPrefab", prefab);
+            EditorUtility.SetDirty(pool);
+            return pool;
+        }
+
+        /// <summary>
+        /// objectName을 가진 오브젝트가 있는 씬마다 action을 실행한다. 이미 열린 씬을 먼저 보고, 그다음
+        /// Build Settings의 씬 중 안 열린 것을 Additive로 잠깐 열어서 찾는다 - 그렇게 연 씬은 저장 후
+        /// 다시 닫고, 원래 열려 있던 씬은 저장만 한다(사용자가 열어둔 씬 구성은 그대로). 처리한 씬 수 반환.
+        /// </summary>
+        private static int ForEachSceneContaining(string objectName, System.Action<Scene, GameObject> action)
+        {
+            int processed = 0;
+            foreach (EditorBuildSettingsScene buildScene in EditorBuildSettings.scenes)
+            {
+                if (string.IsNullOrEmpty(buildScene.path))
+                {
+                    continue;
+                }
+
+                Scene scene = SceneManager.GetSceneByPath(buildScene.path);
+                bool openedHere = false;
+                if (!scene.IsValid() || !scene.isLoaded)
+                {
+                    scene = EditorSceneManager.OpenScene(buildScene.path, OpenSceneMode.Additive);
+                    openedHere = true;
+                }
+
+                GameObject target = FindInScene(scene, objectName);
+                if (target != null)
+                {
+                    action(scene, target);
+                    EditorSceneManager.MarkSceneDirty(scene);
+                    EditorSceneManager.SaveScene(scene);
+                    processed++;
+                }
+
+                if (openedHere)
+                {
+                    EditorSceneManager.CloseScene(scene, true);
+                }
+            }
+            return processed;
+        }
+
+        private static GameObject FindInScene(Scene scene, string name)
+        {
+            if (!scene.IsValid() || !scene.isLoaded)
+            {
+                return null;
+            }
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                GameObject found = FindInHierarchyIncludingInactive(root.transform, name);
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+            return null;
+        }
+
+        private static bool IsGridSliced(string sheetPath, int cellSize)
+        {
+            bool any = false;
+            foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(sheetPath))
+            {
+                if (asset is Sprite sprite)
+                {
+                    any = true;
+                    if (Mathf.RoundToInt(sprite.rect.width) != cellSize || Mathf.RoundToInt(sprite.rect.height) != cellSize)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return any;
+        }
+
+        /// <summary>
+        /// 2D Sprite 패키지(com.unity.2d.sprite)의 ISpriteEditorDataProvider로 Sprite Editor의
+        /// Grid By Cell Size 슬라이스를 코드로 수행한다. 완전히 투명한 칸은 건너뛴다(Keep Empty Rects 끔).
+        /// 원본 PNG는 File.ReadAllBytes로 읽어 임시 텍스처에서 알파만 확인한다 - 임포트 설정의 Read/Write를
+        /// 켜면 런타임에 텍스처 사본이 메모리에 하나 더 남기 때문.
+        /// </summary>
+        private static void SliceToGrid(string sheetPath, int cellSize)
+        {
+            var importer = AssetImporter.GetAtPath(sheetPath) as TextureImporter;
+            if (importer == null)
+            {
+                Debug.LogError($"[CheonMyeong] '{sheetPath}'의 TextureImporter를 찾지 못했습니다.");
+                return;
+            }
+
+            if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Multiple)
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Multiple;
+                importer.SaveAndReimport();
+            }
+
+            var tex = new Texture2D(2, 2);
+            tex.LoadImage(File.ReadAllBytes(sheetPath));
+            int width = tex.width;
+            int height = tex.height;
+            Color32[] pixels = tex.GetPixels32();
+            Object.DestroyImmediate(tex);
+
+            var factory = new SpriteDataProviderFactories();
+            factory.Init();
+            ISpriteEditorDataProvider dataProvider = factory.GetSpriteEditorDataProviderFromObject(importer);
+            dataProvider.InitSpriteEditorDataProvider();
+
+            string baseName = Path.GetFileNameWithoutExtension(sheetPath);
+            var rects = new List<SpriteRect>();
+            var namePairs = new List<SpriteNameFileIdPair>();
+            int rows = height / cellSize;
+            int cols = width / cellSize;
+            int index = 0;
+            for (int row = 0; row < rows; row++)
+            {
+                int y = height - (row + 1) * cellSize; // 스프라이트 rect는 왼쪽 아래가 원점 - 위쪽 행부터
+                for (int col = 0; col < cols; col++)
+                {
+                    int x = col * cellSize;
+                    if (IsCellEmpty(pixels, width, x, y, cellSize))
+                    {
+                        continue;
+                    }
+
+                    var spriteRect = new SpriteRect
+                    {
+                        name = $"{baseName}_{index}",
+                        spriteID = GUID.Generate(),
+                        rect = new Rect(x, y, cellSize, cellSize),
+                        alignment = SpriteAlignment.Center,
+                        pivot = new Vector2(0.5f, 0.5f)
+                    };
+                    rects.Add(spriteRect);
+                    namePairs.Add(new SpriteNameFileIdPair(spriteRect.name, spriteRect.spriteID));
+                    index++;
+                }
+            }
+
+            dataProvider.SetSpriteRects(rects.ToArray());
+            dataProvider.GetDataProvider<ISpriteNameFileIdDataProvider>().SetNameFileIdPairs(namePairs);
+            dataProvider.Apply();
+            importer.SaveAndReimport();
+
+            Debug.Log($"[CheonMyeong] '{sheetPath}' {cellSize}x{cellSize} 슬라이스 완료 - 프레임 {rects.Count}개.");
+        }
+
+        private static bool IsCellEmpty(Color32[] pixels, int width, int x, int y, int cellSize)
+        {
+            for (int py = y; py < y + cellSize; py++)
+            {
+                int rowStart = py * width;
+                for (int px = x; px < x + cellSize; px++)
+                {
+                    if (pixels[rowStart + px].a > 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 시트의 스프라이트를 "행"별로 묶는다(rect.y가 같은 것끼리, 위쪽 행부터, 행 안에서는 왼쪽부터).
+        /// 이름 규칙에 기대지 않아서 Sprite Editor로 직접 잘라도 그대로 동작한다.
+        /// </summary>
+        private static List<Sprite[]> LoadSheetRows(string sheetPath)
+        {
+            var byY = new SortedDictionary<int, List<Sprite>>();
+            foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(sheetPath))
+            {
+                if (asset is Sprite sprite)
+                {
+                    int y = Mathf.RoundToInt(sprite.rect.y);
+                    if (!byY.TryGetValue(y, out List<Sprite> list))
+                    {
+                        list = new List<Sprite>();
+                        byY.Add(y, list);
+                    }
+                    list.Add(sprite);
+                }
+            }
+
+            var rows = new List<Sprite[]>();
+            foreach (KeyValuePair<int, List<Sprite>> pair in byY)
+            {
+                pair.Value.Sort((a, b) => a.rect.x.CompareTo(b.rect.x));
+                rows.Insert(0, pair.Value.ToArray()); // y가 큰(위쪽) 행이 앞에 오도록
+            }
+            return rows;
+        }
+
+        /// <summary>
+        /// 261027 추가 - 웨이브 시스템 생성/연결. ProgressionSystems(PartyProgress가 붙은 Gameplay 씬의
+        /// in-scene NetworkObject)에 WaveManager를 붙이고, 기본 웨이브 구성 에셋(DefaultWaves.asset)을
+        /// 만들어 연결한다. Gameplay 씬이 안 열려 있어도 Build Settings에서 찾아서 처리한다.
+        /// 에셋이 이미 있으면 덮어쓰지 않는다 - Inspector에서 고친 값 보호.
+        /// </summary>
+        [MenuItem("CheonMyeong/Setup/Create Wave System")]
+        public static void CreateWaveSystem()
+        {
+            WaveConfigSO config = EnsureDefaultWaveConfig();
+
+            int sceneCount = ForEachSceneContaining(ProgressionRootObjectName, (scene, rootGo) =>
+            {
+                if (rootGo.GetComponent<PartyProgress>() == null)
+                {
+                    return;
+                }
+                var waveManager = rootGo.GetComponent<WaveManager>();
+                if (waveManager == null) waveManager = rootGo.AddComponent<WaveManager>();
+                AssignPrivateField(waveManager, "config", config);
+                EditorUtility.SetDirty(waveManager);
+            });
+
+            if (sceneCount == 0)
+            {
+                Debug.LogError($"[CheonMyeong] '{ProgressionRootObjectName}'(PartyProgress)가 있는 씬을 찾지 못했습니다 - " +
+                               "'CheonMyeong/Setup/Create Progression Prototype (Loot + Party Progress)'를 먼저 실행하세요.");
+                return;
+            }
+
+            Selection.activeObject = config;
+            Debug.Log($"[CheonMyeong] 웨이브 시스템 연결 완료(씬 {sceneCount}개 저장됨) - 구성 에셋: {DefaultWaveConfigPath}. " +
+                      "웨이브 수/길이/원귀 수/비율/체력 증가/징 회복량은 전부 이 에셋에서 고치면 됩니다.");
+        }
+
+        private static WaveConfigSO EnsureDefaultWaveConfig()
+        {
+            EnsureFolder(DataFolder, "Assets");
+            EnsureFolder(WavesFolder, DataFolder);
+
+            var config = AssetDatabase.LoadAssetAtPath<WaveConfigSO>(DefaultWaveConfigPath);
+            if (config != null)
+            {
+                return config;
+            }
+
+            var mongdal = AssetDatabase.LoadAssetAtPath<EnemyStatsSO>(BasicEnemyStatsPath);
+            var egg = AssetDatabase.LoadAssetAtPath<EnemyStatsSO>(Ghost2StatsPath);
+            var songaksi = AssetDatabase.LoadAssetAtPath<EnemyStatsSO>(Ghost3StatsPath);
+            if (egg == null || songaksi == null)
+            {
+                Debug.LogWarning("[CheonMyeong] 달걀귀신/손각시 스탯이 아직 없습니다 - 'Create Enemy Variants'를 먼저 실행하면 " +
+                                 "웨이브 구성에 3종이 다 들어갑니다(지금 만들면 있는 것만 들어감).");
+            }
+
+            config = ScriptableObject.CreateInstance<WaveConfigSO>();
+            for (int i = 0; i < InitialWaveEnemyCounts.Length; i++)
+            {
+                var wave = new WaveDefinition { label = $"{i + 1}웨이브", enemyCount = InitialWaveEnemyCounts[i] };
+                if (mongdal != null) wave.spawns.Add(new WaveSpawnEntry { enemy = mongdal, weight = InitialWeightMongdal });
+                if (egg != null) wave.spawns.Add(new WaveSpawnEntry { enemy = egg, weight = InitialWeightEgg });
+                if (songaksi != null) wave.spawns.Add(new WaveSpawnEntry { enemy = songaksi, weight = InitialWeightSongaksi });
+                config.waves.Add(wave);
+            }
+
+            AssetDatabase.CreateAsset(config, DefaultWaveConfigPath);
+            AssetDatabase.SaveAssets();
+            return config;
+        }
+
+        /// <summary>
+        /// 261027 추가 - "다른 캐릭터도 만들어야함"(예섭 요청). 8명 로스터 중 아트가 이미 있는
+        /// 이아라(LeeAra) 데이터만 먼저 만든다. 하영 기준 스탯에 비율을 곱한 placeholder -
+        /// 정확한 수치는 팀 확정 전(design-reference 기준 하영 외 캐릭터는 "MVP 범위 미정").
+        /// 애니메이터/프리팹/네트워크 플레이어 전환은 다음 패스(프레임 구간을 사람이 눈으로
+        /// 대조해야 하는 작업 - CreateHayoungAnimationsAndAnimator 참고).
+        /// </summary>
+        [MenuItem("CheonMyeong/Setup/Create LeeAra Character Stats (Data Only)")]
+        public static void CreateLeeAraStats()
+        {
+            EnsureFolder(DataFolder, "Assets");
+            EnsureFolder(CharactersFolder, DataFolder);
+
+            var stats = AssetDatabase.LoadAssetAtPath<CharacterStatsSO>(LeeAraStatsPath);
+            if (stats == null)
+            {
+                CharacterStatsSO hayoung = AssetDatabase.LoadAssetAtPath<CharacterStatsSO>(HayoungStatsPath);
+
+                stats = ScriptableObject.CreateInstance<CharacterStatsSO>();
+                stats.characterId = "lee_ara";
+                stats.displayName = "이아라(가제)";
+
+                // 하영 100% 기준 - 이아라는 민첩/저체력 타입으로 임시 설정(속도↑/체력↓, 스탯
+                // 시트에 이아라 행 자체가 없어서 근거 없는 정확한 수치가 아니라 방향성만 반영한
+                // placeholder - 공식 스탯 시트에 행이 추가되면 교체해야 함).
+                float baseHealth = hayoung != null ? hayoung.maxHealth : 150f;
+                float baseSpeed = hayoung != null ? hayoung.moveSpeed : 5f;
+                float baseAttackPower = hayoung != null ? hayoung.attackPower : 20f;
+                float baseAttacksPerSecond = hayoung != null ? hayoung.attacksPerSecond : 0.8f;
+                float baseAttackRange = hayoung != null ? hayoung.attackRange : 1f;
+
+                stats.maxHealth = baseHealth * 0.85f;
+                stats.moveSpeed = baseSpeed * 1.15f;
+                stats.attackPower = baseAttackPower * 0.9f;
+                stats.attacksPerSecond = baseAttacksPerSecond * 1.1f;
+                stats.attackRange = baseAttackRange;
+                stats.attackAwarenessRangeMultiplier = 1f;
+                stats.attackArcDegrees = 90f;
+                stats.magnetRadius = 0f; // 261027 - 처음엔 직접 닿아야 습득(획득 범위는 증강으로)
+
+                AssetDatabase.CreateAsset(stats, LeeAraStatsPath);
+                AssetDatabase.SaveAssets();
+            }
+
+            Selection.activeObject = stats;
+            Debug.Log($"[CheonMyeong] '{LeeAraStatsPath}' 생성/확인 완료 - 하영 비율 기준 placeholder 스탯입니다. " +
+                      "공식 스탯 시트에 이아라 행이 추가되면 수치를 교체하세요. " +
+                      "프리팹/애니메이터/네트워크 플레이어 전환은 별도 작업(프레임 구간 확정 필요).");
         }
 
         /// <summary>
@@ -472,6 +1172,302 @@ namespace CheonMyeong.EditorTools
             PrefabUtility.UnloadPrefabContents(contents);
 
             Debug.Log($"[CheonMyeong] '{PlayerPrefabPath}'에 PlayerProgress(개인 엽전) 컴포넌트를 추가했습니다.");
+        }
+
+        /// <summary>
+        /// 261027 추가 - 달밤의 폐장터 타일맵("맵도 ppt에 있는 거랑 최대한 비슷하게" - 예섭). [소개] 천명_게임소개_261013.pptx
+        /// 18번 슬라이드(40×40, 64px 타일 21종)를 기준으로 만들었다:
+        /// - 타일 그림: 슬라이드의 타일 미리보기(64px 타일을 2×2로 반복한 128px 이미지)에서 64px 한 장씩 잘라
+        ///   Assets/Art/Tiles/Dalbam/tile_*.png로 넣었다. 담/울타리 타일의 회색 배경은 투명으로 바꿨다(미리보기에서
+        ///   투명 부분이 회색으로 채워져 있었음).
+        /// - 배치: 슬라이드의 전체 맵 이미지를 칸 단위로 대조해서 Assets/Data/Maps/Dalbam_Ground.csv(바닥)/
+        ///   Dalbam_Blocking.csv(대숲·담·울타리 - 못 지나감)로 정리. 칸 값 = 타일 이름, "|r90/r180/r270/fx/fy" = 회전/뒤집기.
+        ///   CSV를 고친 뒤 이 메뉴를 다시 돌리면 다시 깔린다(만든 뒤 Tile Palette로 직접 칠해도 됨 - 그러면 다시 돌리지 말 것).
+        /// - 크기: 캐릭터와 같은 픽셀 밀도(Pixels Per Unit 100) → 한 칸 0.64유닛, 맵 25.6유닛 정사각형, 중심이 원점.
+        /// - MapBounds: 원귀 스폰 범위(담 안쪽)와 시작 위치(남쪽 입구)를 같이 채운다.
+        /// EnemySpawner가 있는 Gameplay 씬마다 만든다(안 열려 있으면 잠깐 열어서 저장).
+        /// </summary>
+        [MenuItem("CheonMyeong/Setup/Build Map - Dalbam Pyejangteo (Tilemap)")]
+        public static void BuildDalbamMap()
+        {
+            Dictionary<string, Tile> tiles = EnsureDalbamTiles();
+            if (tiles.Count == 0)
+            {
+                Debug.LogError($"[CheonMyeong] '{DalbamTileFolder}'에서 타일 그림을 찾지 못했습니다.");
+                return;
+            }
+
+            string[][] ground = ReadLayoutCsv(DalbamGroundCsvPath);
+            string[][] blocking = ReadLayoutCsv(DalbamBlockingCsvPath);
+            if (ground == null || blocking == null)
+            {
+                return;
+            }
+
+            EnsureLayer(MapLayerName);
+            int mapLayer = LayerMask.NameToLayer(MapLayerName);
+            int enemyLayer = LayerMask.NameToLayer(EnemyLayerName);
+            if (mapLayer != -1 && enemyLayer != -1)
+            {
+                Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, true);
+            }
+
+            int sceneCount = ForEachSceneContaining(SpawnerObjectName, (scene, spawnerGo) =>
+            {
+                GameObject root = FindInScene(scene, DalbamMapRootName);
+                if (root != null)
+                {
+                    Object.DestroyImmediate(root);
+                }
+                root = new GameObject(DalbamMapRootName);
+                SceneManager.MoveGameObjectToScene(root, scene);
+
+                int rows = ground.Length;
+                int cols = ground[0].Length;
+                root.transform.position = new Vector3(-cols * DalbamCellSize * 0.5f, -rows * DalbamCellSize * 0.5f, 0f);
+                var grid = root.AddComponent<Grid>();
+                grid.cellSize = new Vector3(DalbamCellSize, DalbamCellSize, 0f);
+
+                Tilemap groundMap = CreateTilemapLayer(root.transform, "Ground", -100, -1);
+                Tilemap blockingMap = CreateTilemapLayer(root.transform, "Blocking", -90, mapLayer);
+                FillTilemap(groundMap, ground, tiles);
+                FillTilemap(blockingMap, blocking, tiles);
+
+                // 못 지나가는 층 - 타일 모양(투명 제외)대로 충돌, 여러 칸을 하나로 합쳐 비용을 줄인다.
+                var body = blockingMap.gameObject.AddComponent<Rigidbody2D>();
+                body.bodyType = RigidbodyType2D.Static;
+                var tilemapCollider = blockingMap.gameObject.AddComponent<TilemapCollider2D>();
+                tilemapCollider.compositeOperation = Collider2D.CompositeOperation.Merge;
+                blockingMap.gameObject.AddComponent<CompositeCollider2D>();
+
+                // 남쪽 입구 길(대숲 사이 틈)로 맵 밖까지 걸어나가지 않도록 맵 바깥 테두리에 보이지 않는 벽.
+                var edge = blockingMap.gameObject.AddComponent<EdgeCollider2D>();
+                float w = cols * DalbamCellSize;
+                float h = rows * DalbamCellSize;
+                edge.points = new[] { new Vector2(0f, 0f), new Vector2(w, 0f), new Vector2(w, h), new Vector2(0f, h), new Vector2(0f, 0f) };
+
+                // 원귀 스폰 범위 = 담 안쪽(바깥 3칸 제외). 시작 = 남쪽 입구(기획서). 261101 - 카메라가 맵 밖을 안 비추게
+                // 막혀서 다시 남쪽 입구로 되돌림(예섭 요청, 261027의 맵 정중앙 시작은 철회).
+                var bounds = root.AddComponent<MapBounds>();
+                Vector2 origin = root.transform.position;
+                var playable = new Rect(origin.x + 3 * DalbamCellSize, origin.y + 3 * DalbamCellSize,
+                    (cols - 6) * DalbamCellSize, (rows - 6) * DalbamCellSize);
+                Vector2 start = origin + new Vector2((DalbamEntranceColumn + 0.5f) * DalbamCellSize, (rows - 1 - DalbamStartRow + 0.5f) * DalbamCellSize);
+                SetSerializedRect(bounds, "playableArea", playable);
+                SetSerializedVector2(bounds, "startPoint", start);
+                // 261101 - 카메라 제한 범위 = 바닥 타일맵 전체(대숲 포함). 실행 중엔 MapBounds가 타일맵에서 다시 계산한다.
+                SetSerializedRect(bounds, "cameraArea", new Rect(origin.x, origin.y, w, h));
+                var boundsSo = new SerializedObject(bounds);
+                boundsSo.FindProperty("cameraAreaSource").objectReferenceValue = groundMap;
+                boundsSo.ApplyModifiedPropertiesWithoutUndo();
+            });
+
+            if (sceneCount == 0)
+            {
+                Debug.LogError($"[CheonMyeong] '{SpawnerObjectName}'가 있는 Gameplay 씬을 찾지 못했습니다.");
+                return;
+            }
+
+            Debug.Log($"[CheonMyeong] 달밤의 폐장터 타일맵 생성 완료({ground.Length}×{ground[0].Length}칸, 씬 {sceneCount}개 저장됨). " +
+                      "대숲·흙돌담·싸리 울타리는 못 지나가고, 원귀는 담 안쪽에서만 나오며, 판은 남쪽 입구에서 시작합니다.");
+        }
+
+        private static Dictionary<string, Tile> EnsureDalbamTiles()
+        {
+            var tiles = new Dictionary<string, Tile>();
+            EnsureFolderRecursive(DalbamTileAssetFolder);
+
+            foreach (string guid in AssetDatabase.FindAssets("t:Texture2D", new[] { DalbamTileFolder }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                string fileName = Path.GetFileNameWithoutExtension(path);
+                if (!fileName.StartsWith("tile_"))
+                {
+                    continue;
+                }
+
+                // 픽셀 아트 규격(기획서: 64×64px, PPU 64, Point, 압축 없음).
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (importer != null)
+                {
+                    bool changed = importer.textureType != TextureImporterType.Sprite
+                                   || importer.spriteImportMode != SpriteImportMode.Single
+                                   || !Mathf.Approximately(importer.spritePixelsPerUnit, DalbamTilePixelsPerUnit)
+                                   || importer.filterMode != FilterMode.Point
+                                   || importer.textureCompression != TextureImporterCompression.Uncompressed
+                                   || importer.mipmapEnabled;
+                    if (changed)
+                    {
+                        importer.textureType = TextureImporterType.Sprite;
+                        importer.spriteImportMode = SpriteImportMode.Single;
+                        importer.spritePixelsPerUnit = DalbamTilePixelsPerUnit;
+                        importer.filterMode = FilterMode.Point;
+                        importer.textureCompression = TextureImporterCompression.Uncompressed;
+                        importer.mipmapEnabled = false;
+                        importer.wrapMode = TextureWrapMode.Clamp;
+                        importer.SaveAndReimport();
+                    }
+                }
+
+                Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                if (sprite == null)
+                {
+                    continue;
+                }
+
+                string tileName = fileName.Substring("tile_".Length);
+                string tilePath = $"{DalbamTileAssetFolder}/{tileName}.asset";
+                var tile = AssetDatabase.LoadAssetAtPath<Tile>(tilePath);
+                if (tile == null)
+                {
+                    tile = ScriptableObject.CreateInstance<Tile>();
+                    AssetDatabase.CreateAsset(tile, tilePath);
+                }
+                tile.sprite = sprite;
+                tile.colliderType = Tile.ColliderType.Sprite;
+                tile.flags = TileFlags.None;
+                EditorUtility.SetDirty(tile);
+                tiles[tileName] = tile;
+            }
+
+            AssetDatabase.SaveAssets();
+            return tiles;
+        }
+
+        private static string[][] ReadLayoutCsv(string path)
+        {
+            if (!File.Exists(path))
+            {
+                Debug.LogError($"[CheonMyeong] 맵 배치 파일 '{path}'가 없습니다.");
+                return null;
+            }
+
+            var rows = new List<string[]>();
+            foreach (string line in File.ReadAllLines(path))
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    rows.Add(line.Trim().Split(','));
+                }
+            }
+            return rows.Count > 0 ? rows.ToArray() : null;
+        }
+
+        private static Tilemap CreateTilemapLayer(Transform parent, string name, int sortingOrder, int layer)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            if (layer >= 0)
+            {
+                go.layer = layer;
+            }
+            var tilemap = go.AddComponent<Tilemap>();
+            var renderer = go.AddComponent<TilemapRenderer>();
+            renderer.sortingOrder = sortingOrder; // 캐릭터/원귀/드랍(0 근처)보다 항상 아래
+            return tilemap;
+        }
+
+        /// <summary>CSV 첫 줄이 맵 맨 위(북쪽). 칸 값 "이름|r90|fx" - 회전(반시계)/좌우·상하 뒤집기.</summary>
+        private static void FillTilemap(Tilemap tilemap, string[][] layout, Dictionary<string, Tile> tiles)
+        {
+            int rows = layout.Length;
+            for (int r = 0; r < rows; r++)
+            {
+                for (int c = 0; c < layout[r].Length; c++)
+                {
+                    string token = layout[r][c].Trim();
+                    if (token.Length == 0 || token == ".")
+                    {
+                        continue;
+                    }
+
+                    string[] parts = token.Split('|');
+                    if (!tiles.TryGetValue(parts[0], out Tile tile))
+                    {
+                        Debug.LogWarning($"[CheonMyeong] 맵 배치에 없는 타일 이름 '{parts[0]}' ({r}행 {c}열)");
+                        continue;
+                    }
+
+                    float rotation = 0f;
+                    var scale = Vector3.one;
+                    for (int i = 1; i < parts.Length; i++)
+                    {
+                        string op = parts[i];
+                        if (op == "fx") scale.x = -1f;
+                        else if (op == "fy") scale.y = -1f;
+                        else if (op.StartsWith("r") && float.TryParse(op.Substring(1), out float deg)) rotation = deg;
+                    }
+
+                    var cell = new Vector3Int(c, rows - 1 - r, 0);
+                    tilemap.SetTile(cell, tile);
+                    if (rotation != 0f || scale != Vector3.one)
+                    {
+                        tilemap.SetTileFlags(cell, TileFlags.None);
+                        tilemap.SetTransformMatrix(cell, Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, rotation), scale));
+                    }
+                }
+            }
+            tilemap.CompressBounds();
+        }
+
+        private static void SetSerializedRect(Object target, string field, Rect value)
+        {
+            var so = new SerializedObject(target);
+            SerializedProperty prop = so.FindProperty(field);
+            if (prop != null)
+            {
+                prop.rectValue = value;
+                so.ApplyModifiedProperties();
+            }
+        }
+
+        private static void SetSerializedVector2(Object target, string field, Vector2 value)
+        {
+            var so = new SerializedObject(target);
+            SerializedProperty prop = so.FindProperty(field);
+            if (prop != null)
+            {
+                prop.vector2Value = value;
+                so.ApplyModifiedProperties();
+            }
+        }
+
+        /// <summary>
+        /// 261027 추가 - 하영 베기 이펙트 연결("공격 이펙트를 맞춰서 적용해줘" - 예섭). HaYoung-Sheet 맨 아랫줄
+        /// (초승달 참격 9프레임 - 공격 모션 줄과 같은 9프레임)을 PlayerAttackEffect에 넣어 Hayoung_Player
+        /// 프리팹에 붙인다. 행은 스프라이트 위치(rect.y)로 찾아서 이름 번호가 바뀌어도 동작한다.
+        /// 재실행해도 안전(이미 붙어 있으면 프레임/참조만 다시 연결).
+        /// </summary>
+        [MenuItem("CheonMyeong/Setup/Setup Hayoung Attack Effect")]
+        public static void SetupHayoungAttackEffect()
+        {
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath) == null)
+            {
+                Debug.LogError($"[CheonMyeong] '{PlayerPrefabPath}'를 찾을 수 없습니다.");
+                return;
+            }
+
+            List<Sprite[]> rows = LoadSheetRows(HayoungSpriteSheetPath);
+            if (rows.Count == 0 || rows[rows.Count - 1].Length == 0)
+            {
+                Debug.LogError($"[CheonMyeong] '{HayoungSpriteSheetPath}'에서 이펙트 줄(맨 아랫줄)을 찾지 못했습니다.");
+                return;
+            }
+            Sprite[] effectFrames = rows[rows.Count - 1];
+            CharacterStatsSO stats = AssetDatabase.LoadAssetAtPath<CharacterStatsSO>(HayoungStatsPath);
+
+            GameObject contents = PrefabUtility.LoadPrefabContents(PlayerPrefabPath);
+            var autoAttack = contents.GetComponent<PlayerAutoAttack>();
+            var effect = contents.GetComponent<PlayerAttackEffect>();
+            if (effect == null) effect = contents.AddComponent<PlayerAttackEffect>();
+            AssignPrivateField(effect, "autoAttack", autoAttack);
+            AssignPrivateField(effect, "stats", stats);
+            AssignPrivateObjectArrayField(effect, "frames", effectFrames);
+            PrefabUtility.SaveAsPrefabAsset(contents, PlayerPrefabPath);
+            PrefabUtility.UnloadPrefabContents(contents);
+
+            Debug.Log($"[CheonMyeong] 하영 베기 이펙트 연결 완료 - 프레임 {effectFrames.Length}개, 실제 피해 판정 순간에 조준 방향으로 재생됩니다. " +
+                      "빨간 사거리 표시(AttackRangeDebugVisual)는 코드에서 주석처리돼 더 이상 안 뜹니다.");
         }
 
         /// <summary>
@@ -660,11 +1656,10 @@ namespace CheonMyeong.EditorTools
 
             EnsureFolderRecursive(HayoungAnimFolder);
 
-            Dictionary<string, Sprite> sprites = LoadNamedSprites(HayoungSpriteSheetPath);
-
-            Sprite[] idleFrames = GetSpriteRange(sprites, HayoungSpriteBaseName, IdleFrameStart, IdleFrameEnd);
-            Sprite[] walkFrames = GetSpriteRange(sprites, HayoungSpriteBaseName, WalkFrameStart, WalkFrameEnd);
-            Sprite[] attackFrames = GetSpriteRange(sprites, HayoungSpriteBaseName, AttackFrameStart, AttackFrameEnd);
+            List<Sprite[]> sheetRows = LoadSheetRows(HayoungSpriteSheetPath);
+            Sprite[] idleFrames = sheetRows.Count > HayoungIdleRow ? sheetRows[HayoungIdleRow] : new Sprite[0];
+            Sprite[] walkFrames = sheetRows.Count > HayoungWalkRow ? sheetRows[HayoungWalkRow] : new Sprite[0];
+            Sprite[] attackFrames = sheetRows.Count > HayoungAttackRow ? sheetRows[HayoungAttackRow] : new Sprite[0];
 
             if (idleFrames.Length == 0 || walkFrames.Length == 0 || attackFrames.Length == 0)
             {
@@ -672,9 +1667,9 @@ namespace CheonMyeong.EditorTools
                 return;
             }
 
-            AnimationClip idleClip = CreateSpriteAnimationClip(HayoungIdleClipPath, idleFrames, 8f, true);
-            AnimationClip walkClip = CreateSpriteAnimationClip(HayoungWalkClipPath, walkFrames, 10f, true);
-            AnimationClip attackClip = CreateSpriteAnimationClip(HayoungAttackClipPath, attackFrames, 12f, false);
+            AnimationClip idleClip = CreateSpriteAnimationClip(HayoungIdleClipPath, idleFrames, HayoungFramesPerSecond, true);
+            AnimationClip walkClip = CreateSpriteAnimationClip(HayoungWalkClipPath, walkFrames, HayoungFramesPerSecond, true);
+            AnimationClip attackClip = CreateSpriteAnimationClip(HayoungAttackClipPath, attackFrames, HayoungFramesPerSecond, false);
 
             AnimatorController controller = CreateHayoungAnimatorController(idleClip, walkClip, attackClip);
             AssetDatabase.SaveAssets();
@@ -683,8 +1678,7 @@ namespace CheonMyeong.EditorTools
 
             Debug.Log("[CheonMyeong] 하영 애니메이션 클립 3개(Idle/Walk/Attack) + Animator Controller 생성하고 " +
                       $"'{PlayerPrefabPath}'에 SpriteRenderer/Animator/PlayerAnimator까지 연결 완료. " +
-                      "프레임 속도(Idle 8fps / Walk 10fps / Attack 12fps)는 값은 미정 - 느낌 보고 클립에서 " +
-                      "직접 조정하면 됩니다. Attack 애니메이션은 이제 attackInterval에 맞춰 재생 속도가 " +
+                      "프레임 속도는 기획서대로 각 100ms(10fps) - 느낌 보고 클립에서 직접 조정하면 됩니다. Attack 애니메이션은 이제 attackInterval에 맞춰 재생 속도가 " +
                       "자동으로 스케일됩니다(PlayerAnimator의 AttackSpeed 파라미터, 클립 길이는 고정) - " +
                       "길이 자체를 바꾸는 게 아니라 재생 속도만 바뀌는 방식입니다. " +
                       "방향 표현은 회전 대신 SpriteRenderer.flipX(좌우반전)로 바꿨습니다 - " +
@@ -981,6 +1975,101 @@ namespace CheonMyeong.EditorTools
                       "정해뒀는데, 실제 드래그해보고 '왼쪽/오른쪽 대각선'이 반대로 느껴지면 그 메서드의 " +
                       "반환값 두 개만 서로 바꾸면 됩니다(확인 못 함 - 플레이 테스트 필요). " +
                       "Active Input Handling이 Input System(또는 Both)으로 설정돼 있어야 드래그가 인식됩니다.");
+        }
+
+        private const string TitleTalismanArtPath = "Assets/Art/Title/bujeok-Sheet.png";
+        private static readonly Color TitleLabelOnArtColor = new Color(0.22f, 0.04f, 0.04f, 1f); // 노란 부적 위 먹 글씨
+
+        /// <summary>
+        /// 261101 추가 - 타이틀 부적을 아트 팀 그림(bujeok-Sheet.png)으로 바꾼다(예섭). 이미 씬에 있는 부적 3개의 위치/각도는
+        /// 건드리지 않고(손으로 옮겨둔 배치 보호) 그림·클릭 영역·글자색만 바꾼다. 크기는 예전 placeholder(512x768)와 같은 세로 길이로
+        /// 맞춘다. 픽셀 아트라 Point 필터로 임포트한다. 부적이 아직 없으면 먼저 Create Title Talisman Prototype을 실행할 것.
+        /// </summary>
+        [MenuItem("CheonMyeong/Setup/Apply Title Talisman Art (bujeok)")]
+        public static void ApplyTitleTalismanArt()
+        {
+            Sprite art = LoadTitleTalismanArt();
+            if (art == null)
+            {
+                Debug.LogError($"[CheonMyeong] '{TitleTalismanArtPath}'에서 부적 그림을 찾지 못했습니다.");
+                return;
+            }
+
+            TitleTalisman[] talismans = Object.FindObjectsByType<TitleTalisman>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            if (talismans.Length == 0)
+            {
+                Debug.LogError("[CheonMyeong] 열린 씬에 타이틀 부적이 없습니다 - 타이틀이 있는 씬(SampleScene)을 열거나 " +
+                               "Create Title Talisman Prototype을 먼저 실행하세요.");
+                return;
+            }
+
+            int applied = 0;
+            foreach (TitleTalisman talisman in talismans)
+            {
+                if (ApplyArtToTalisman(talisman.transform, art))
+                {
+                    applied++;
+                    EditorSceneManager.MarkSceneDirty(talisman.gameObject.scene);
+                }
+            }
+
+            Debug.Log($"[CheonMyeong] 타이틀 부적 {applied}개를 아트 그림으로 교체했습니다(위치/각도 유지). 씬을 저장하세요.");
+        }
+
+        private static Sprite LoadTitleTalismanArt()
+        {
+            var importer = AssetImporter.GetAtPath(TitleTalismanArtPath) as TextureImporter;
+            if (importer != null && (importer.filterMode != FilterMode.Point || importer.textureCompression != TextureImporterCompression.Uncompressed))
+            {
+                importer.filterMode = FilterMode.Point;
+                importer.textureCompression = TextureImporterCompression.Uncompressed;
+                importer.SaveAndReimport();
+            }
+
+            Sprite best = null;
+            foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(TitleTalismanArtPath))
+            {
+                if (asset is Sprite sprite && (best == null || sprite.rect.width * sprite.rect.height > best.rect.width * best.rect.height))
+                {
+                    best = sprite; // 잘린 조각이 여러 개면 가장 큰 것(부적 본체)
+                }
+            }
+            return best;
+        }
+
+        private static bool ApplyArtToTalisman(Transform root, Sprite art)
+        {
+            Transform wholeTransform = root.Find("Whole");
+            var talisman = root.GetComponent<TitleTalisman>();
+            if (wholeTransform == null || talisman == null || !wholeTransform.TryGetComponent(out SpriteRenderer wholeRenderer))
+            {
+                return false;
+            }
+
+            wholeRenderer.sprite = art;
+            wholeRenderer.color = Color.white;
+            float targetHeight = TitlePieceHeight / TitlePixelsPerUnit;
+            float scale = art.bounds.size.y > 0.0001f ? targetHeight / art.bounds.size.y : 1f;
+            wholeTransform.localScale = new Vector3(scale, scale, 1f);
+            EditorUtility.SetDirty(wholeRenderer);
+            EditorUtility.SetDirty(wholeTransform);
+
+            if (root.TryGetComponent(out BoxCollider2D hitArea))
+            {
+                hitArea.offset = (Vector2)art.bounds.center * scale;
+                hitArea.size = art.bounds.size * scale;
+                EditorUtility.SetDirty(hitArea);
+            }
+
+            Transform labelTransform = root.Find("Label");
+            if (labelTransform != null && labelTransform.TryGetComponent(out TextMesh label))
+            {
+                label.color = TitleLabelOnArtColor;
+                EditorUtility.SetDirty(label);
+            }
+
+            EditorUtility.SetDirty(talisman);
+            return true;
         }
 
         private static void CreateTalisman(Transform parent, string talismanName, Color baseColor,
@@ -1568,6 +2657,46 @@ namespace CheonMyeong.EditorTools
                 return;
             }
             prop.objectReferenceValue = value;
+            so.ApplyModifiedProperties();
+        }
+
+        /// <summary>
+        /// 261027 추가 - AssignPrivateField의 배열 버전(Object[] 필드, 예: EnemyPool[]/
+        /// Image[]). SerializedProperty.arraySize를 맞춘 뒤 요소별로 objectReferenceValue를
+        /// 채운다 - Unity SerializedObject의 공식 배열 편집 방식.
+        /// </summary>
+        private static void AssignPrivateObjectArrayField(Object target, string fieldName, Object[] values)
+        {
+            var so = new SerializedObject(target);
+            var prop = so.FindProperty(fieldName);
+            if (prop == null)
+            {
+                Debug.LogError($"[CheonMyeong] {target.GetType().Name}에서 배열 필드 '{fieldName}'를 찾지 못했습니다.");
+                return;
+            }
+            prop.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++)
+            {
+                prop.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+            }
+            so.ApplyModifiedProperties();
+        }
+
+        /// <summary>AssignPrivateObjectArrayField와 같은데 int[] 필드(예: EnemySpawner.poolWeights)용.</summary>
+        private static void AssignPrivateIntArrayField(Object target, string fieldName, int[] values)
+        {
+            var so = new SerializedObject(target);
+            var prop = so.FindProperty(fieldName);
+            if (prop == null)
+            {
+                Debug.LogError($"[CheonMyeong] {target.GetType().Name}에서 배열 필드 '{fieldName}'를 찾지 못했습니다.");
+                return;
+            }
+            prop.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++)
+            {
+                prop.GetArrayElementAtIndex(i).intValue = values[i];
+            }
             so.ApplyModifiedProperties();
         }
 

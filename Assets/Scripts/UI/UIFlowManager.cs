@@ -110,6 +110,14 @@ namespace CheonMyeong.UI
             overlayStack.Add(screenId);
             overlayMembershipCounts.TryGetValue(screenId, out int count);
             overlayMembershipCounts[screenId] = count + 1;
+
+            // 261027 추가 - 오버레이는 항상 맨 위에 그린다. 화면 패널들은 Screens의 형제 순서대로
+            // 그려지고 레이캐스트도 위쪽 패널이 먼저 받는데, 화면 하나만 재생성(Build Single Screen)하면
+            // 그 패널이 맨 뒤 형제로 붙어서 HUD(전체 화면 Image)가 증강 카드 위를 덮고 클릭을 막았다.
+            if (screensById.TryGetValue(screenId, out GameObject overlay) && overlay != null)
+            {
+                overlay.transform.SetAsLastSibling();
+            }
             ApplyVisibility();
         }
 
@@ -151,6 +159,9 @@ namespace CheonMyeong.UI
         {
             return overlayStack.Count > 0 && overlayStack[overlayStack.Count - 1] == screenId;
         }
+
+        /// <summary>261027 추가 - 오버레이(설정 등)가 하나라도 떠 있는지. 로비 캐릭터가 이때는 입력을 무시한다.</summary>
+        public bool HasOverlay => overlayStack.Count > 0;
 
         private void ApplyVisibility()
         {

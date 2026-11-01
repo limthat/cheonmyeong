@@ -82,17 +82,17 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 0}
-  m_Color: {r: 0.45, g: 0.75, b: 0.95, a: 1}
+  m_Sprite: {fileID: 5624999120300271497, guid: 6808df36642d23a4c81413ca109fabc3, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.32, y: 0.32}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
 --- !u!114 &4141122644748238913
 MonoBehaviour:
@@ -136,6 +136,13 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   pullSpeed: 8
   collectDistance: 0.25
+  touchPickupRadius: 0.55
+  spriteRenderer: {fileID: 4990858044747990574}
+  tierSprites:
+  - {fileID: 5624999120300271497, guid: 6808df36642d23a4c81413ca109fabc3, type: 3}
+  - {fileID: 830328758, guid: 6808df36642d23a4c81413ca109fabc3, type: 3}
+  - {fileID: 182160274, guid: 6808df36642d23a4c81413ca109fabc3, type: 3}
+  tierMinAmounts: 010000000200000005000000
 --- !u!114 &5865561237716251451
 MonoBehaviour:
   m_ObjectHideFlags: 0

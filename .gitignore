@@ -71,3 +71,11 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# 팀 내부 전용 에디터 셋업 스크립트 - 공유 저장소에 올리지 않음
+/Assets/Scripts/Editor/GameplaySceneSplitSetup.cs
+/Assets/Scripts/Editor/GameplaySceneSplitSetup.cs.meta
+/Assets/Scripts/Editor/UICanvasBuilder.cs
+/Assets/Scripts/Editor/UICanvasBuilder.cs.meta
+/Assets/Scripts/Editor/CheonMyeongPrototypeSetup.cs
+/Assets/Scripts/Editor/CheonMyeongPrototypeSetup.cs.meta

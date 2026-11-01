@@ -90,6 +90,66 @@ namespace CheonMyeong.EditorTools
                       "스킬트리 노드 밸런스/원한 게이지/증강 희귀도는 팀 확정 전까지 레이아웃만 있음.");
         }
 
+        // ----- 화면 1개만 재생성 (261027 추가) -----
+        // "매번 불필요한 것까지 바뀐다"(예섭 지적) 대응 - BuildFullUi()는 12개 화면을
+        // 전부 지우고 새로 만들어서, 화면 하나만 고쳐도 나머지 11개의 인스펙터 수동
+        // 수정분까지 전부 초기화됐다. 아래 메뉴들은 공통 인프라(Canvas/EventSystem/
+        // ScreensRoot/UIFlowManager/SessionManager - 전부 Ensure* 기반이라 이미 있으면
+        // 그대로 재사용, 새로 안 만듦)만 보장한 뒤 지정한 화면 "하나"의 BuildXScreen만
+        // 호출한다. 다른 11개 화면 GameObject는 전혀 건드리지 않는다.
+        private static void RunSingleScreenBuild(string screenNameKor, System.Action<Transform, SessionManager> buildAction)
+        {
+            EnsureEventSystem();
+            Canvas canvas = EnsureCanvas();
+            Transform screensRoot = EnsureScreensRoot(canvas.transform);
+            EnsureFlowManager(canvas.gameObject, screensRoot);
+            SessionManager sessionManager = EnsureSessionManager();
+
+            buildAction(screensRoot, sessionManager);
+
+            EditorUtility.SetDirty(canvas.gameObject);
+            EditorSceneManager.MarkSceneDirty(canvas.gameObject.scene);
+            Selection.activeGameObject = canvas.gameObject;
+
+            Debug.Log($"[CheonMyeong] {screenNameKor} 화면만 재생성 완료 - 나머지 화면들은 건드리지 않았습니다.");
+        }
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/Lobby")]
+        public static void BuildLobbyScreenOnly() => RunSingleScreenBuild("Lobby", (root, sm) => BuildLobbyScreen(root));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/CharSkillTree")]
+        public static void BuildCharSkillTreeScreenOnly() => RunSingleScreenBuild("CharSkillTree", (root, sm) => BuildCharSkillTreeScreen(root));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/StoryStorage")]
+        public static void BuildStoryStorageScreenOnly() => RunSingleScreenBuild("StoryStorage", (root, sm) => BuildStoryStorageScreen(root));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/ChoiceMap")]
+        public static void BuildChoiceMapScreenOnly() => RunSingleScreenBuild("ChoiceMap", (root, sm) => BuildChoiceMapScreen(root, sm));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/WaitRoom")]
+        public static void BuildWaitRoomScreenOnly() => RunSingleScreenBuild("WaitRoom", (root, sm) => BuildWaitRoomScreen(root, sm));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/Loading")]
+        public static void BuildLoadingScreenOnly() => RunSingleScreenBuild("Loading", (root, sm) => BuildLoadingScreen(root));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/MapStory")]
+        public static void BuildMapStoryScreenOnly() => RunSingleScreenBuild("MapStory", (root, sm) => BuildMapStoryScreen(root));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/InGameHud")]
+        public static void BuildInGameHudScreenOnly() => RunSingleScreenBuild("InGameHud", (root, sm) => BuildInGameHudScreen(root));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/Upgrade")]
+        public static void BuildUpgradeScreenOnly() => RunSingleScreenBuild("Upgrade", (root, sm) => BuildUpgradeScreen(root));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/Reward")]
+        public static void BuildRewardScreenOnly() => RunSingleScreenBuild("Reward", (root, sm) => BuildRewardScreen(root));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/Settings")]
+        public static void BuildSettingsScreenOnly() => RunSingleScreenBuild("Settings", (root, sm) => BuildSettingsScreen(root));
+
+        [MenuItem("CheonMyeong/Setup/Build Single Screen/EscMenu")]
+        public static void BuildEscMenuScreenOnly() => RunSingleScreenBuild("EscMenu", (root, sm) => BuildEscMenuScreen(root));
+
         // ----- 공통 인프라 (EventSystem / Canvas / Screens / UIFlowManager / SessionManager) -----
 
         private static void EnsureEventSystem()
@@ -220,42 +280,477 @@ namespace CheonMyeong.EditorTools
 
         // ----- 화면별 빌드 -----
 
+        // 261101 - 건물 로비(기획서 v0.9.3 "로비: 캐릭터가 걸어 다니고 건물이 곧 메뉴. 큰 전각 = 게임 시작, 상점 = 스킬 · 캐릭터,
+        // 게시판 = 스토리 저장소" / 소개 PPT 13장). 배경 = CheonMyeong_Resources/Art_Background/background-Sheet.png를
+        // Assets/Art/Lobby로 옮긴 것, 건물 = Assets/Art/Lobby/Lobby-Sheet.png(아트 팀이 잘라둔 13장).
+        // 상단 이름/엽전/설정 칸은 이전 그대로(예섭 확인).
+        private const string LobbyArtFolder = "Assets/Art/ui/lobby";
+        private const string LobbySheetPath = "Assets/Art/Lobby/Lobby-Sheet.png";
+        private const string LobbyBackgroundPath = "Assets/Art/Lobby/background-Sheet.png";
+        private const float LobbySheetCellSize = 512f;
+        private static readonly Color LobbyBoxColor = new Color(0.22f, 0.22f, 0.28f, 0.95f); // CreateButton 배경과 같은 색
+
+        // 배치값(1920x1080 기준, 화면 가운데가 0,0). PPT 13장 로비 목업의 위치를 옮긴 것 - 마음에 안 들면 여기 숫자만 고치고
+        // Build Single Screen/Lobby를 다시 실행하면 된다.
+        private static readonly Vector2 LobbySortieEntrance = new Vector2(0f, -108f);
+        private static readonly Vector2 LobbySkillEntrance = new Vector2(-672f, -313f);
+        private static readonly Vector2 LobbyStoryEntrance = new Vector2(595f, -292f);
+        private const float LobbySortieScale = 0.6f;
+        private const float LobbySideBuildingScale = 0.75f;
+        private static readonly Vector2 LobbyWalkCenter = new Vector2(0f, -280f);
+        private static readonly Vector2 LobbyWalkSize = new Vector2(1800f, 500f);
+        private static readonly Vector2 LobbyAvatarStart = new Vector2(0f, -420f);
+        private const float LobbyTopPlaqueScale = 0.75f;      // 현판 394x157 → 약 296x118 (이름 · 엽전)
+        private const float LobbySettingsPlaqueScale = 0.45f; // 설정 버튼용 작은 현판 → 약 177x71
+        // 현판 그림 안 진홍색 판 범위(394x157 그림에서 픽셀로 잰 값: x 64~330, y 위에서 68~133).
+        private static readonly Vector2 PlaqueInnerMin = new Vector2(64f / 394f, (157f - 133f) / 157f);
+        private static readonly Vector2 PlaqueInnerMax = new Vector2(330f / 394f, (157f - 68f) / 157f);
+        private const string GoodsSheetAssetPath = "Assets/Art/Goods/coin_xp-Sheet.png";
+        private const float LobbyAvatarUnitsPerWorld = 70f; // 하영(128px, PPU 100) 키 약 90 - 건물과 비율 맞춤
+
         private static void BuildLobbyScreen(Transform screensRoot)
         {
             RectTransform panel = CreateScreenRoot(screensRoot, UIFlowManager.Lobby, PanelColorLobby);
+            Sprite background = LoadSpriteAtPath(LobbyBackgroundPath, true, false);
+            if (background != null)
+            {
+                Image bg = panel.GetComponent<Image>();
+                bg.sprite = background;
+                bg.color = Color.white;
+            }
 
-            Text playerInfoText = CreateLabel(panel, "PlayerInfoText", "Lv.-- · 하영",
-                18, TextAnchor.MiddleLeft, new Vector2(0f, 1f), new Vector2(0.4f, 1f), new Vector2(24f, -70f), new Vector2(-16f, -24f));
-            Text goldText = CreateLabel(panel, "GoldText", "엽전 --",
-                18, TextAnchor.MiddleRight, new Vector2(0.6f, 1f), new Vector2(1f, 1f), new Vector2(16f, -70f), new Vector2(-120f, -24f));
-            Button settingsButton = CreateButton(panel, "SettingsButton", "설정",
-                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-116f, -70f), new Vector2(-16f, -24f));
+            CharacterCatalogSO lobbyCatalog = EnsureCharacterCatalog();
+            EnsureLobbyCharacterData(lobbyCatalog);
 
-            CreateLabel(panel, "CenterLabel", "로비 마당 (캐릭터 placeholder)",
-                20, TextAnchor.MiddleCenter, new Vector2(0.3f, 0.35f), new Vector2(0.7f, 0.75f), Vector2.zero, Vector2.zero);
+            // ----- 장면(건물 + 캐릭터). 형제 순서 = 그리는 순서: 바닥 범위 → 먼 건물 → 가까운 건물 → 캐릭터 -----
+            RectTransform scene = NewRect(panel, "LobbyScene", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            RectTransform walkArea = NewRect(scene, "WalkArea", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            walkArea.sizeDelta = LobbyWalkSize;
+            walkArea.anchoredPosition = LobbyWalkCenter;
 
-            RectTransform skillTreePanel = NewRect(panel, "SkillTreePanel", new Vector2(0f, 0.2f), new Vector2(0.22f, 0.8f), new Vector2(24f, 0f), new Vector2(0f, 0f));
-            AddImage(skillTreePanel, new Color(0.14f, 0.12f, 0.2f, 0.9f));
-            CreateLabel(skillTreePanel, "Title", "스킬트리", 20, TextAnchor.UpperCenter, Vector2.zero, Vector2.one, new Vector2(0f, -40f), new Vector2(0f, 0f));
-            Button skillTreeButton = CreateButton(skillTreePanel, "OpenButton", "열기", new Vector2(0.1f, 0.05f), new Vector2(0.9f, 0.25f), Vector2.zero, Vector2.zero);
+            LobbyBuilding sortieBuilding = null;
+            LobbyBuilding skillBuilding = null;
+            LobbyBuilding storyBuilding = null;
+            Sprite[] sheet = LoadLobbySheetSprites();
+            if (sheet != null)
+            {
+                // Lobby-Sheet 순서(왼쪽부터): 전각, 전각(외곽선), 전각 그림자, 상점, 상점(외곽선), 상점 그림자,
+                // 게시판, 게시판(외곽선), 게시판 그림자, 현판, 현판(외곽선), 출진 일주문, 일주문(외곽선).
+                sortieBuilding = CreateLobbyBuilding(scene, "Building_Sortie", sheet[0], sheet[1], sheet[2], LobbySortieEntrance, LobbySortieScale, "게임 시작");
+                storyBuilding = CreateLobbyBuilding(scene, "Building_StoryStorage", sheet[6], sheet[7], sheet[8], LobbyStoryEntrance, LobbySideBuildingScale, "스토리 저장소");
+                skillBuilding = CreateLobbyBuilding(scene, "Building_SkillCharacter", sheet[3], sheet[4], sheet[5], LobbySkillEntrance, LobbySideBuildingScale, "스킬 · 캐릭터");
+            }
 
-            RectTransform storyPanel = NewRect(panel, "StoryStoragePanel", new Vector2(0.78f, 0.2f), new Vector2(1f, 0.8f), new Vector2(0f, 0f), new Vector2(-24f, 0f));
-            AddImage(storyPanel, new Color(0.2f, 0.16f, 0.1f, 0.9f));
-            CreateLabel(storyPanel, "Title", "스토리 보관함", 20, TextAnchor.UpperCenter, Vector2.zero, Vector2.one, new Vector2(0f, -40f), new Vector2(0f, 0f));
-            Button storyStorageButton = CreateButton(storyPanel, "OpenButton", "열기", new Vector2(0.1f, 0.05f), new Vector2(0.9f, 0.25f), Vector2.zero, Vector2.zero);
+            RectTransform avatarRt = NewRect(scene, "LobbyAvatar", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            RectTransform avatarSpriteRt = NewRect(avatarRt, "Sprite", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            Image avatarImage = AddImage(avatarSpriteRt, Color.white);
+            avatarImage.raycastTarget = false;
+            avatarImage.preserveAspect = true;
+            LobbyAvatar avatar = avatarRt.gameObject.AddComponent<LobbyAvatar>();
+            AssignPrivateField(avatar, "characterCatalog", lobbyCatalog);
+            AssignPrivateField(avatar, "spriteImage", avatarImage);
+            AssignPrivateField(avatar, "walkArea", walkArea);
+            SetPrivateValue(avatar, "startPosition", p => p.vector2Value = LobbyAvatarStart);
+            SetPrivateValue(avatar, "canvasUnitsPerWorldUnit", p => p.floatValue = LobbyAvatarUnitsPerWorld);
 
-            Button sortieButton = CreateButton(panel, "SortieButton", "출격",
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-140f, 24f), new Vector2(140f, 90f));
+            // ----- 상단 칸 -----
+            // 261101 - 소개 PPT 13장 로비 목업처럼 이름·엽전·설정을 전부 현판(Lobby-Sheet 9번: 기와 지붕 + 붉은 판)에 올린다(예섭).
+            // 글자/아이콘은 현판 가운데 진홍색 판(그림 기준 가로 16~84%, 세로 15~57%, 픽셀로 잰 값) 안에만 둔다 -
+            // 그 바깥은 양옆 단청 무늬와 테두리라 글자가 가려진다. 그림이 없으면 예전 단색 칸으로 대체.
+            Sprite plaque = sheet != null ? sheet[9] : null;
+            Sprite artCoin = LoadGoldCoinSprite();
+
+            // 이름 현판(왼쪽 위) - 초상 원 + 이름 + 무기 캡션
+            RectTransform nameContent = CreateLobbyPlaque(panel, "PlayerInfoBox", plaque, new Vector2(0f, 1f), new Vector2(16f, -8f), LobbyTopPlaqueScale,
+                new Vector2(24f, -70f), new Vector2(224f, -24f));
+            Image portraitImage = null;
+            Text captionText = null;
+            Text playerInfoText;
+            if (plaque != null)
+            {
+                RectTransform plaqueRoot = (RectTransform)nameContent.parent;
+                // 비율은 PPT 13장 목업에서 잰 값: 원 지름 = 현판 높이의 74%, 중심 = 가로 23.5% · 아래에서 38%, 글자 시작 = 가로 43%.
+                float circle = plaqueRoot.sizeDelta.y * 0.74f;
+                RectTransform circleRt = NewRect(plaqueRoot, "Portrait", new Vector2(0.235f, 0.38f), new Vector2(0.235f, 0.38f), Vector2.zero, Vector2.zero);
+                circleRt.sizeDelta = new Vector2(circle, circle);
+                Image circleImage = AddImage(circleRt, new Color(0.96f, 0.93f, 0.85f, 1f));
+                circleImage.sprite = LoadLobbySprite("ui_circle_fill", false, false);
+                circleImage.raycastTarget = false;
+                circleRt.gameObject.AddComponent<Mask>().showMaskGraphic = true;
+                // 캐릭터 칸(128px) 위쪽에 얼굴이 있어서, 그림을 키우고 아래로 내려 얼굴이 원 가운데 오게 한다.
+                RectTransform faceRt = NewRect(circleRt, "Image", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+                faceRt.sizeDelta = new Vector2(circle * 2.2f, circle * 2.2f);
+                faceRt.anchoredPosition = new Vector2(0f, -circle * 0.33f);
+                portraitImage = AddImage(faceRt, Color.white);
+                portraitImage.preserveAspect = true;
+                portraitImage.raycastTarget = false;
+
+                // 261101 수정 - 글자가 진홍색 판 안쪽 좁은 칸(가로 43~84%)에 갇혀 캡션이 줄바꿈되고 이름과 겹쳤다. 목업처럼 오른쪽 단청 무늬
+                // 위까지 쓰고(가로 43~96%), 이름/캡션을 위·아래 줄로 따로 둔다(목업: 이름 중심 아래에서 57%, 캡션 23%). 줄바꿈 안 함.
+                playerInfoText = CreateLabel(plaqueRoot, "PlayerInfoText", "하영", 22, TextAnchor.MiddleLeft,
+                    new Vector2(0.43f, 0.46f), new Vector2(0.96f, 0.68f), Vector2.zero, Vector2.zero);
+                playerInfoText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                StylePlaqueText(playerInfoText, true);
+                captionText = CreateLabel(plaqueRoot, "CharacterCaptionText", string.Empty, 13, TextAnchor.MiddleLeft,
+                    new Vector2(0.43f, 0.13f), new Vector2(0.96f, 0.33f), Vector2.zero, Vector2.zero);
+                captionText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                StylePlaqueText(captionText, false);
+                captionText.color = new Color(1f, 0.86f, 0.62f, 1f);
+            }
+            else
+            {
+                playerInfoText = CreateLabel(nameContent, "PlayerInfoText", "하영", 18, TextAnchor.MiddleLeft, Vector2.zero, Vector2.one, new Vector2(16f, 0f), new Vector2(-16f, 0f));
+            }
+
+            // 설정 현판(오른쪽 위 끝) - 작은 현판 버튼
+            RectTransform settingsContent = CreateLobbyPlaque(panel, "SettingsButton", plaque, new Vector2(1f, 1f), new Vector2(-16f, -8f), LobbySettingsPlaqueScale,
+                new Vector2(-116f, -70f), new Vector2(-16f, -24f));
+            RectTransform settingsRoot = plaque != null ? (RectTransform)settingsContent.parent : settingsContent;
+            Button settingsButton = settingsRoot.gameObject.AddComponent<Button>();
+            Image settingsTarget = settingsRoot.GetComponent<Image>();
+            settingsTarget.raycastTarget = true;
+            settingsButton.targetGraphic = settingsTarget;
+            ColorBlock settingsColors = settingsButton.colors;
+            settingsColors.normalColor = new Color(0.88f, 0.88f, 0.88f, 1f);
+            settingsColors.highlightedColor = Color.white;
+            settingsColors.selectedColor = new Color(0.88f, 0.88f, 0.88f, 1f);
+            settingsColors.pressedColor = new Color(0.68f, 0.68f, 0.68f, 1f);
+            settingsColors.fadeDuration = 0.08f;
+            settingsButton.colors = settingsColors;
+            Text settingsLabel = CreateLabel(settingsContent, "Label", "설정", plaque != null ? 22 : 18, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            StylePlaqueText(settingsLabel, true);
+
+            // 엽전 현판(설정 왼쪽) - 금 엽전 + 숫자(목업처럼 흰 글씨, 아이콘 바로 옆)
+            float settingsWidth = plaque != null ? plaque.rect.width * LobbySettingsPlaqueScale : 100f;
+            RectTransform currencyContent = CreateLobbyPlaque(panel, "CurrencyBox", plaque, new Vector2(1f, 1f), new Vector2(-16f - settingsWidth - 10f, -8f), LobbyTopPlaqueScale,
+                new Vector2(-316f, -70f), new Vector2(-128f, -24f));
+            // 목업 비율: 엽전 지름 = 현판 높이의 43%, 숫자 시작 = 가로 42%.
+            float plaqueHeight = plaque != null ? plaque.rect.height * LobbyTopPlaqueScale : 46f;
+            float plaqueWidth = plaque != null ? plaque.rect.width * LobbyTopPlaqueScale : 188f;
+            float iconSize = plaque != null ? plaqueHeight * 0.43f : 28f;
+            float numberStart = plaque != null ? (0.42f - PlaqueInnerMin.x) * plaqueWidth : iconSize + 10f;
+            RectTransform coinRt = NewRect(currencyContent, "Icon", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, -iconSize * 0.5f), new Vector2(iconSize, iconSize * 0.5f));
+            Image coin = AddImage(coinRt, Color.white);
+            coin.sprite = artCoin != null ? artCoin : LoadLobbySprite("icon_yeopjeon", false, false);
+            coin.preserveAspect = true;
+            coin.raycastTarget = false;
+            Text goldText = CreateLabel(currencyContent, "GoldText", "0", plaque != null ? 30 : 18, TextAnchor.MiddleLeft, Vector2.zero, Vector2.one,
+                new Vector2(numberStart, 0f), Vector2.zero);
+            goldText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            StylePlaqueText(goldText, true);
 
             LobbyScreen screen = panel.gameObject.AddComponent<LobbyScreen>();
             AssignPrivateField(screen, "playerInfoText", playerInfoText);
+            AssignPrivateField(screen, "characterCaptionText", captionText);
+            AssignPrivateField(screen, "portraitImage", portraitImage);
             AssignPrivateField(screen, "goldText", goldText);
-            AssignPrivateField(screen, "sortieButton", sortieButton);
-            AssignPrivateField(screen, "skillTreeButton", skillTreeButton);
-            AssignPrivateField(screen, "storyStorageButton", storyStorageButton);
             AssignPrivateField(screen, "settingsButton", settingsButton);
+            AssignPrivateField(screen, "characterCatalog", lobbyCatalog);
+
+            if (sheet != null)
+            {
+                AssignPrivateObjectArrayField(avatar, "obstacles", new Object[] { sortieBuilding, storyBuilding, skillBuilding });
+                LobbyInteraction interaction = scene.gameObject.AddComponent<LobbyInteraction>();
+                AssignPrivateField(interaction, "avatar", avatar);
+                AssignPrivateObjectArrayField(interaction, "buildings", new Object[] { sortieBuilding, storyBuilding, skillBuilding });
+                AssignPrivateField(screen, "sortieBuilding", sortieBuilding);
+                AssignPrivateField(screen, "skillTreeBuilding", skillBuilding);
+                AssignPrivateField(screen, "storyStorageBuilding", storyBuilding);
+            }
+            else
+            {
+                // 건물 그림이 없으면 예전 더미 버튼으로라도 메뉴를 열 수 있게 한다.
+                Button sortieButton = CreateButton(panel, "SortieButton", "출격", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-140f, 24f), new Vector2(140f, 90f));
+                Button skillTreeButton = CreateButton(panel, "SkillTreeButton", "스킬 · 캐릭터", new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 24f), new Vector2(224f, 90f));
+                Button storyStorageButton = CreateButton(panel, "StoryStorageButton", "스토리 저장소", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-224f, 24f), new Vector2(-24f, 90f));
+                AssignPrivateField(screen, "sortieButton", sortieButton);
+                AssignPrivateField(screen, "skillTreeButton", skillTreeButton);
+                AssignPrivateField(screen, "storyStorageButton", storyStorageButton);
+            }
 
             panel.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// 건물 하나. 이 오브젝트의 기준점 = 건물 바닥 가운데(입구). 시트 칸(512) 안에서의 그림 위치를 그대로 살려서
+        /// 그림자/기본/외곽선 그림이 서로 어긋나지 않게 겹친다. 투명 Image 하나가 마우스 판정 영역이다.
+        /// </summary>
+        private static LobbyBuilding CreateLobbyBuilding(Transform parent, string name, Sprite normal, Sprite hover, Sprite shadow,
+            Vector2 entrance, float scale, string label)
+        {
+            RectTransform root = NewRect(parent, name, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            root.pivot = new Vector2(0.5f, 0f);
+            root.sizeDelta = normal.rect.size * scale;
+            root.anchoredPosition = entrance;
+            Image hitArea = AddImage(root, new Color(1f, 1f, 1f, 0f));
+            hitArea.raycastTarget = true;
+
+            Vector2 baseInCell = new Vector2(Mathf.Repeat(normal.rect.x, LobbySheetCellSize) + normal.rect.width * 0.5f, normal.rect.y);
+            CreateSheetPart(root, "Shadow", shadow, baseInCell, scale);
+            Image normalImage = CreateSheetPart(root, "Normal", normal, baseInCell, scale);
+            Image hoverImage = CreateSheetPart(root, "Hover", hover, baseInCell, scale);
+            hoverImage.enabled = false;
+
+            RectTransform promptRt = NewRect(root, "Prompt", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-120f, 12f), new Vector2(120f, 48f));
+            AddImage(promptRt, LobbyBoxColor).raycastTarget = false;
+            CreateLabel(promptRt, "Label", $"[E]  {label}", 18, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            promptRt.gameObject.SetActive(false);
+
+            LobbyBuilding building = root.gameObject.AddComponent<LobbyBuilding>();
+            AssignPrivateField(building, "normalImage", normalImage);
+            AssignPrivateField(building, "hoverImage", hoverImage);
+            AssignPrivateField(building, "prompt", promptRt.gameObject);
+            SetPrivateValue(building, "footprintDepth", p => p.floatValue = 110f * scale);
+            return building;
+        }
+
+        private static Image CreateSheetPart(Transform root, string name, Sprite sprite, Vector2 baseInCell, float scale)
+        {
+            RectTransform rt = NewRect(root, name, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), Vector2.zero, Vector2.zero);
+            rt.pivot = Vector2.zero;
+            rt.sizeDelta = sprite.rect.size * scale;
+            rt.anchoredPosition = (new Vector2(Mathf.Repeat(sprite.rect.x, LobbySheetCellSize), sprite.rect.y) - baseInCell) * scale;
+            Image image = AddImage(rt, Color.white);
+            image.sprite = sprite;
+            image.raycastTarget = false;
+            return image;
+        }
+
+        /// <summary>
+        /// 현판 하나를 만들고, 글자를 올릴 안쪽 진홍색 판 영역(RectTransform)을 돌려준다. 현판 그림이 없으면 예전 단색 칸
+        /// (fallbackMin/Max 오프셋)을 만들고 그 칸 자체를 돌려준다.
+        /// </summary>
+        private static RectTransform CreateLobbyPlaque(Transform parent, string name, Sprite plaque, Vector2 corner, Vector2 offset, float scale,
+            Vector2 fallbackMin, Vector2 fallbackMax)
+        {
+            if (plaque == null)
+            {
+                RectTransform box = NewRect(parent, name, corner, corner, fallbackMin, fallbackMax);
+                AddImage(box, LobbyBoxColor).raycastTarget = false;
+                return box;
+            }
+
+            RectTransform root = NewRect(parent, name, corner, corner, Vector2.zero, Vector2.zero);
+            root.pivot = corner;
+            root.sizeDelta = plaque.rect.size * scale;
+            root.anchoredPosition = offset;
+            Image image = AddImage(root, Color.white);
+            image.sprite = plaque;
+            image.preserveAspect = true; // 현판 그림 비율(394:157)이 늘어나지 않게
+            image.raycastTarget = false;
+            RectTransform inner = NewRect(root, "Content", PlaqueInnerMin, PlaqueInnerMax, Vector2.zero, Vector2.zero);
+            return inner;
+        }
+
+        private static void StylePlaqueText(Text text, bool bold)
+        {
+            text.color = new Color(1f, 0.97f, 0.9f, 1f);
+            text.fontStyle = bold ? FontStyle.Bold : FontStyle.Normal;
+            Outline outline = text.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(0.25f, 0.02f, 0.06f, 0.9f);
+            outline.effectDistance = new Vector2(1.5f, -1.5f);
+        }
+
+        /// <summary>coin_xp-Sheet 아랫줄(엽전 동 · 은 · 금) 중 맨 오른쪽 = 금 엽전. 없으면 null.</summary>
+        private static Sprite LoadGoldCoinSprite()
+        {
+            Sprite best = null;
+            foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(GoodsSheetAssetPath))
+            {
+                if (asset is Sprite sprite
+                    && (best == null || sprite.rect.y < best.rect.y - 0.5f
+                        || (Mathf.Abs(sprite.rect.y - best.rect.y) <= 0.5f && sprite.rect.x > best.rect.x)))
+                {
+                    best = sprite;
+                }
+            }
+            return best;
+        }
+
+        /// <summary>Lobby-Sheet의 잘린 그림들을 시트 왼쪽부터 순서대로 돌려준다. 13장이 아니면 null(더미 버튼으로 대체).</summary>
+        private static Sprite[] LoadLobbySheetSprites()
+        {
+            EnsureFullResolution(LobbySheetPath);
+            var sprites = new System.Collections.Generic.List<Sprite>();
+            foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(LobbySheetPath))
+            {
+                if (asset is Sprite sprite)
+                {
+                    sprites.Add(sprite);
+                }
+            }
+            if (sprites.Count < 13)
+            {
+                Debug.LogError($"[CheonMyeong] {LobbySheetPath}에서 건물 그림 13장을 찾지 못했습니다({sprites.Count}장) - 더미 버튼으로 대체합니다. " +
+                               "Sprite Mode = Multiple로 잘려 있는지 확인하세요.");
+                return null;
+            }
+            sprites.Sort((a, b) => a.rect.x.CompareTo(b.rect.x));
+            return sprites.ToArray();
+        }
+
+        /// <summary>
+        /// 261101 수정 - "건물이 너무 작고, 가까이 가면 위치가 움직인다"(예섭) 원인. Lobby-Sheet는 6656x512인데 임포트 최대 크기가
+        /// 기본 2048이라 Unity가 텍스처를 약 0.31배로 줄여 들여왔다. 그러면 Sprite.rect도 줄어든 좌표로 나와서 (1) 건물이 1/3 크기로
+        /// 그려지고, (2) 시트 칸(512) 기준 위치 계산이 틀어져 외곽선(호버) 그림이 다른 자리에 겹쳐 보였다. 원본 크기 이상으로 올린다.
+        /// </summary>
+        private static void EnsureFullResolution(string path)
+        {
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer == null)
+            {
+                return;
+            }
+            importer.GetSourceTextureWidthAndHeight(out int width, out int height);
+            int needed = Mathf.Min(16384, Mathf.NextPowerOfTwo(Mathf.Max(width, height)));
+            if (importer.maxTextureSize < needed)
+            {
+                importer.maxTextureSize = needed;
+                importer.SaveAndReimport();
+            }
+        }
+
+        private static void SetPrivateValue(Object target, string fieldName, System.Action<SerializedProperty> setter)
+        {
+            var so = new SerializedObject(target);
+            SerializedProperty prop = so.FindProperty(fieldName);
+            if (prop == null)
+            {
+                Debug.LogError($"[CheonMyeong] {target.GetType().Name}에서 필드 '{fieldName}'를 찾지 못했습니다.");
+                return;
+            }
+            setter(prop);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>로비 그림(엽전 아이콘)을 UI 스프라이트로 임포트해서 돌려준다.</summary>
+        private static Sprite LoadLobbySprite(string fileName, bool pointFilter, bool compressed)
+        {
+            return LoadSpriteAtPath($"{LobbyArtFolder}/{fileName}.png", pointFilter, compressed);
+        }
+
+        private static Sprite LoadSpriteAtPath(string path, bool pointFilter, bool compressed)
+        {
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer == null)
+            {
+                Debug.LogWarning($"[CheonMyeong] 그림을 찾을 수 없습니다: {path} - 단색으로 대체합니다.");
+                return null;
+            }
+
+            FilterMode filter = pointFilter ? FilterMode.Point : FilterMode.Bilinear;
+            TextureImporterCompression compression = compressed ? TextureImporterCompression.Compressed : TextureImporterCompression.Uncompressed;
+            bool changed = importer.textureType != TextureImporterType.Sprite
+                           || importer.spriteImportMode != SpriteImportMode.Single
+                           || importer.filterMode != filter
+                           || importer.textureCompression != compression
+                           || importer.mipmapEnabled
+                           || !importer.alphaIsTransparency;
+            if (changed)
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
+                importer.filterMode = filter;
+                importer.textureCompression = compression;
+                importer.mipmapEnabled = false;
+                importer.alphaIsTransparency = true;
+                importer.wrapMode = TextureWrapMode.Clamp;
+                importer.SaveAndReimport();
+            }
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        }
+
+        private const string HayoungStatsAssetPath = "Assets/Data/Characters/Hayoung.asset";
+        private const string HayoungIdleClipAssetPath = "Assets/Animations/Hayoung/Hayoung_Idle.anim";
+        private const string HayoungWalkClipAssetPath = "Assets/Animations/Hayoung/Hayoung_Walk.anim";
+
+        /// <summary>
+        /// 261027 추가 - 로비 마당 캐릭터용 데이터. 하영 항목이 비어 있으면 인게임에서 실제로 쓰는 Idle/Walk 클립의
+        /// 스프라이트 키프레임과 간격을 그대로 읽어 채운다(시트 프레임 번호를 따로 하드코딩하지 않음 - 클립을 고치면
+        /// 이 메뉴를 다시 돌리면 된다). 이미 채워져 있는 프레임은 덮어쓰지 않는다.
+        /// </summary>
+        private static void EnsureLobbyCharacterData(CharacterCatalogSO catalog)
+        {
+            CharacterCatalogSO.CharacterEntry hayoung = catalog != null ? catalog.FindById("hayoung") : null;
+            if (hayoung == null)
+            {
+                Debug.LogWarning("[CheonMyeong] CharacterCatalog에 hayoung 항목이 없어 로비 캐릭터 데이터를 채우지 못했습니다.");
+                return;
+            }
+
+            bool changed = false;
+            if (hayoung.stats == null)
+            {
+                hayoung.stats = AssetDatabase.LoadAssetAtPath<CharacterStatsSO>(HayoungStatsAssetPath);
+                changed |= hayoung.stats != null;
+            }
+            if (hayoung.lobbyIdleFrames == null || hayoung.lobbyIdleFrames.Length == 0)
+            {
+                if (TryReadClipSprites(HayoungIdleClipAssetPath, out Sprite[] frames, out float fps))
+                {
+                    hayoung.lobbyIdleFrames = frames;
+                    hayoung.lobbyIdleFps = fps;
+                    changed = true;
+                }
+            }
+            if (hayoung.lobbyWalkFrames == null || hayoung.lobbyWalkFrames.Length == 0)
+            {
+                if (TryReadClipSprites(HayoungWalkClipAssetPath, out Sprite[] frames, out float fps))
+                {
+                    hayoung.lobbyWalkFrames = frames;
+                    hayoung.lobbyWalkFps = fps;
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                EditorUtility.SetDirty(catalog);
+                AssetDatabase.SaveAssets();
+            }
+            if (hayoung.lobbyIdleFrames == null || hayoung.lobbyIdleFrames.Length == 0)
+            {
+                Debug.LogWarning($"[CheonMyeong] {HayoungIdleClipAssetPath}를 찾지 못해 로비 캐릭터 프레임이 비어 있습니다.");
+            }
+        }
+
+        private static bool TryReadClipSprites(string clipPath, out Sprite[] frames, out float fps)
+        {
+            frames = null;
+            fps = 8f;
+            var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
+            if (clip == null)
+            {
+                return false;
+            }
+
+            foreach (EditorCurveBinding binding in AnimationUtility.GetObjectReferenceCurveBindings(clip))
+            {
+                if (binding.type != typeof(SpriteRenderer) || binding.propertyName != "m_Sprite")
+                {
+                    continue;
+                }
+
+                ObjectReferenceKeyframe[] keys = AnimationUtility.GetObjectReferenceCurve(clip, binding);
+                var list = new System.Collections.Generic.List<Sprite>(keys.Length);
+                foreach (ObjectReferenceKeyframe key in keys)
+                {
+                    if (key.value is Sprite sprite && (list.Count == 0 || list[list.Count - 1] != sprite))
+                    {
+                        list.Add(sprite);
+                    }
+                }
+                if (list.Count == 0)
+                {
+                    return false;
+                }
+
+                frames = list.ToArray();
+                float interval = keys.Length > 1 ? keys[1].time - keys[0].time : 0f;
+                fps = interval > 0.0001f ? 1f / interval : (clip.frameRate > 0f ? clip.frameRate : 8f);
+                return true;
+            }
+            return false;
         }
 
         private static readonly string[] RosterLabels =
@@ -566,8 +1061,18 @@ namespace CheonMyeong.EditorTools
         // 연출과 어울리게 HudPanelRingColor 금색 계열에 가깝게 잡음).
         private static readonly Color HudExpBarColor = new Color(0.70f, 0.82f, 0.35f, 1f);
 
-        private const string UiPanelFillSpritePath = "Assets/img/ui/ui_panel_fill.png";
-        private const string UiPanelRingSpritePath = "Assets/img/ui/ui_panel_ring.png";
+        // 261027 수정 - "왜 다 갈아엎었냐"(예섭) 원인. Assets/img 폴더는 이번 작업 훨씬
+        // 전에 삭제됐고(아트팀 재구성, Assets/Art/하위 폴더 체계로 이전), ui_panel_fill/ring
+        // 두 스프라이트도 그때 Assets/Art/ui/로 같이 옮겨졌는데 이 경로 상수만 옛 Assets/img/ui/를
+        // 계속 가리키고 있었다 - 이번에 카드 정렬/선택 기능을 고치며 Build Full UI Screens를
+        // 다시 돌리기 전까지는 아무도 전체 재생성을 안 해봐서 드러나지 않았던 기존 버그다
+        // (이번 세션의 카드 선택/정렬 수정과는 무관 - 그 두 스프라이트를 못 찾아서 카드/HUD
+        // 패널이 둥근 모서리+금테 대신 단색 사각형으로 대체돼 보인 것뿐, 레이아웃 좌표 자체는
+        // 그대로 유지됨). 실제 파일은 Assets/Art/ui/ui_panel_fill.png, ui_panel_ring.png로
+        // 이미 올바르게 Sprite(2D and UI)로 임포트돼 있어서(spriteMode:1, textureType:8 확인함)
+        // 경로만 바로잡으면 다시 찾는다.
+        private const string UiPanelFillSpritePath = "Assets/Art/ui/ui_panel_fill.png";
+        private const string UiPanelRingSpritePath = "Assets/Art/ui/ui_panel_ring.png";
 
         private static void BuildInGameHudScreen(Transform screensRoot)
         {
@@ -653,10 +1158,10 @@ namespace CheonMyeong.EditorTools
             // 가로 insets를 0.05~0.95에서 0.02~0.98로 줄이고 세로 높이도 20→26px로 키워서
             // "더 늘려도 됨" 피드백대로 눈에 더 잘 띄게 했다.
             RectTransform grudgeGauge = NewRect(centerCard, "GrudgeGauge", new Vector2(0.02f, 0f), new Vector2(0.98f, 0f), new Vector2(0f, 22f), new Vector2(0f, 48f));
-            CreateGaugeSegment(grudgeGauge, "Segment_Clear", 0f, 0.25f, GrudgeColorClear);
-            CreateGaugeSegment(grudgeGauge, "Segment_Deep", 0.25f, 0.5f, GrudgeColorDeep);
-            CreateGaugeSegment(grudgeGauge, "Segment_Han", 0.5f, 0.75f, GrudgeColorHan);
-            CreateGaugeSegment(grudgeGauge, "Segment_Rampage", 0.75f, 1f, GrudgeColorRampage);
+            Image grudgeSegClear = CreateGaugeSegment(grudgeGauge, "Segment_Clear", 0f, 0.25f, GrudgeColorClear);
+            Image grudgeSegDeep = CreateGaugeSegment(grudgeGauge, "Segment_Deep", 0.25f, 0.5f, GrudgeColorDeep);
+            Image grudgeSegHan = CreateGaugeSegment(grudgeGauge, "Segment_Han", 0.5f, 0.75f, GrudgeColorHan);
+            Image grudgeSegRampage = CreateGaugeSegment(grudgeGauge, "Segment_Rampage", 0.75f, 1f, GrudgeColorRampage);
             CreateLabel(centerCard, "GrudgeLabel_Clear", "맑음", 9, TextAnchor.UpperCenter, new Vector2(0.02f, 0f), new Vector2(0.26f, 0f), new Vector2(0f, 6f), new Vector2(0f, 20f));
             CreateLabel(centerCard, "GrudgeLabel_Deep", "짙음", 9, TextAnchor.UpperCenter, new Vector2(0.26f, 0f), new Vector2(0.50f, 0f), new Vector2(0f, 6f), new Vector2(0f, 20f));
             CreateLabel(centerCard, "GrudgeLabel_Han", "한", 9, TextAnchor.UpperCenter, new Vector2(0.50f, 0f), new Vector2(0.74f, 0f), new Vector2(0f, 6f), new Vector2(0f, 20f));
@@ -698,6 +1203,9 @@ namespace CheonMyeong.EditorTools
             AssignPrivateField(screen, "expFillImage", expFillImage);
             AssignPrivateField(screen, "grudgeText", grudgeText);
             AssignPrivateField(screen, "goldText", goldText);
+            // 261027 추가 - 순서가 PartyProgress.GrudgeStage(0=맑음..3=폭주)와 반드시 일치해야 함.
+            AssignPrivateObjectArrayField(screen, "grudgeSegmentImages",
+                new Object[] { grudgeSegClear, grudgeSegDeep, grudgeSegHan, grudgeSegRampage });
 
             panel.gameObject.SetActive(false);
         }
@@ -830,10 +1338,10 @@ namespace CheonMyeong.EditorTools
         }
 
         /// <summary>원한 게이지 한 구간 - 부모(grudgeGauge) 안에서 x축 비율(0~1)로 폭을 나눠 색을 채운다.</summary>
-        private static void CreateGaugeSegment(Transform parent, string name, float xMin, float xMax, Color color)
+        private static Image CreateGaugeSegment(Transform parent, string name, float xMin, float xMax, Color color)
         {
             RectTransform segment = NewRect(parent, name, new Vector2(xMin, 0f), new Vector2(xMax, 1f), new Vector2(2f, 0f), new Vector2(-2f, 0f));
-            AddImage(segment, color);
+            return AddImage(segment, color);
         }
 
         private static void BuildUpgradeScreen(Transform screensRoot)
@@ -845,12 +1353,15 @@ namespace CheonMyeong.EditorTools
             Text timerText = CreateLabel(panel, "TimerText", "제한시간 --", 16, TextAnchor.UpperRight, new Vector2(0.8f, 1f), new Vector2(1f, 1f), new Vector2(0f, -24f), new Vector2(-16f, -48f));
 
             string[] cardLabels = { "[공통] 공격력\n스탯 수치 소폭 상승", "[전용] 넓은 베기\n공격 범위 확장", "[일회용] 기도\n이번 판 한정 효과" };
-            CreateHorizontalList(panel, "CardsContainer", new Vector2(0.1f, 0.25f), new Vector2(0.9f, 0.78f), Vector2.zero, Vector2.zero, cardLabels, 320f);
+            RectTransform cardsContainer = CreateHorizontalList(panel, "CardsContainer", new Vector2(0.1f, 0.25f), new Vector2(0.9f, 0.78f), Vector2.zero, Vector2.zero, cardLabels, 320f);
 
-            Button readyButton = CreateButton(panel, "ReadyButton", "✓ 동료 선택 완료", new Vector2(0.35f, 0.08f), new Vector2(0.65f, 0.2f), Vector2.zero, Vector2.zero);
+            // 261027 수정 - "준비 완료 버튼으로 바꿔줘"(예섭 요청). 양측 다 준비해야
+            // 넘어가는 동작에 맞춰 라벨도 "동료 선택 완료"에서 "준비 완료"로 변경.
+            Button readyButton = CreateButton(panel, "ReadyButton", "✓ 준비 완료", new Vector2(0.35f, 0.08f), new Vector2(0.65f, 0.2f), Vector2.zero, Vector2.zero);
 
             UpgradeScreen screen = panel.gameObject.AddComponent<UpgradeScreen>();
             AssignPrivateField(screen, "timerText", timerText);
+            AssignPrivateField(screen, "cardsContainer", cardsContainer);
             AssignPrivateField(screen, "readyButton", readyButton);
 
             panel.gameObject.SetActive(false);
@@ -933,13 +1444,22 @@ namespace CheonMyeong.EditorTools
 
         private static RectTransform CreateScreenRoot(Transform screensRoot, string screenName, Color backgroundColor)
         {
+            // 261027 수정 - 다시 만들 때 원래 형제 순서(=그리는/클릭 받는 순서)를 유지한다. 예전엔 지운 뒤
+            // 맨 뒤에 붙여서, "Build Single Screen/InGameHud" 후 HUD가 증강 선택 화면 위를 덮고 카드 클릭을
+            // 막았다(UIFlowManager.OpenOverlay도 오버레이를 맨 위로 올리도록 같이 고침).
+            int siblingIndex = -1;
             Transform existing = screensRoot.Find(screenName);
             if (existing != null)
             {
+                siblingIndex = existing.GetSiblingIndex();
                 Object.DestroyImmediate(existing.gameObject);
             }
 
             RectTransform rt = NewRect(screensRoot, screenName, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            if (siblingIndex >= 0)
+            {
+                rt.SetSiblingIndex(siblingIndex);
+            }
             AddImage(rt, backgroundColor);
             return rt;
         }
@@ -1074,6 +1594,14 @@ namespace CheonMyeong.EditorTools
         }
 
         /// <summary>가로로 나열되는 카드 목록(증강 카드 3장 등). HorizontalLayoutGroup 사용.</summary>
+        /// <summary>
+        /// 카드 1장의 기본 배경색(261027 추가) - 이 클래스는 Editor 전용 어셈블리라 런타임
+        /// 스크립트(UpgradeScreen.cs)가 직접 참조할 수 없다. 선택 시 하이라이트 색은
+        /// UpgradeScreen.cs에 같은 값으로 따로 들고 있으니(CardSelectedColor), 이 색을
+        /// 바꾸면 그쪽도 같이 맞춰야 한다.
+        /// </summary>
+        private static readonly Color AugmentCardNormalColor = new Color(0.14f, 0.14f, 0.18f, 0.95f);
+
         private static RectTransform CreateHorizontalList(Transform parent, string name,
             Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax, string[] labels, float itemWidth)
         {
@@ -1084,11 +1612,22 @@ namespace CheonMyeong.EditorTools
             layout.childControlWidth = true;
             layout.childForceExpandHeight = true;
             layout.childForceExpandWidth = false;
+            // 261027 수정 - 카드 폭(preferredWidth) 합이 컨테이너보다 좁으면 기본 UpperLeft
+            // 정렬 탓에 카드들이 왼쪽에 몰려 보였다(예섭 지적 "증강 가운데 정렬 필요할듯").
+            // 가운데 정렬로 바꿔서 남는 여백이 좌우로 똑같이 나뉘게 한다.
+            layout.childAlignment = TextAnchor.MiddleCenter;
 
             for (int i = 0; i < labels.Length; i++)
             {
                 RectTransform card = NewRect(rt, $"Card_{i}", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-                AddImage(card, new Color(0.14f, 0.14f, 0.18f, 0.95f));
+                Image cardBg = AddImage(card, AugmentCardNormalColor);
+                // 261027 추가 - "에초에 선택도 구현 안되어있네"(예섭 지적) 대응. 카드 자체를
+                // 눌러 고를 수 있게 Button을 추가한다(ChoiceMapScreen의 맵/캐릭터 타일과 같은
+                // 관례 - GetChild(i).GetComponent&lt;Button&gt;()로 UpgradeScreen이 가져가 쓴다).
+                // 실제 증강 효과(수치)는 여전히 기획 미정이라 여기서는 "선택 자체"만 가능하게
+                // 하고, 어떤 카드를 골랐는지 기록하는 것까지만 한다.
+                Button cardButton = card.gameObject.AddComponent<Button>();
+                cardButton.targetGraphic = cardBg;
                 // Image와 Text는 둘 다 Graphic이라 같은 GameObject에 공존 불가 - 라벨은 자식으로 분리.
                 RectTransform cardLabelRt = NewRect(card, "Label", Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
                 AddText(cardLabelRt, labels[i], 16, TextAnchor.MiddleCenter, Color.white);
@@ -1134,6 +1673,32 @@ namespace CheonMyeong.EditorTools
                 return;
             }
             prop.objectReferenceValue = value;
+            so.ApplyModifiedProperties();
+        }
+
+        /// <summary>
+        /// 261027 추가 - AssignPrivateField의 배열 버전(Image[] 등). 원한 게이지 4단계
+        /// Segment Image를 InGameHudScreen.grudgeSegmentImages에 순서대로 연결하는 용도.
+        /// </summary>
+        private static void AssignPrivateObjectArrayField(Object target, string fieldName, Object[] values)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            var so = new SerializedObject(target);
+            var prop = so.FindProperty(fieldName);
+            if (prop == null)
+            {
+                Debug.LogError($"[CheonMyeong] {target.GetType().Name}에서 배열 필드 '{fieldName}'를 찾지 못했습니다.");
+                return;
+            }
+            prop.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++)
+            {
+                prop.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+            }
             so.ApplyModifiedProperties();
         }
     }

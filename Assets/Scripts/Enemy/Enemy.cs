@@ -3,6 +3,7 @@ using CheonMyeong.Combat;
 using CheonMyeong.Data;
 using CheonMyeong.Player;
 using CheonMyeong.Progression;
+using CheonMyeong.Waves;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -66,16 +67,47 @@ namespace CheonMyeong.Enemies
         [SerializeField] private EnemyStatsSO stats;
         [SerializeField] private SpriteRenderer spriteRenderer;
 
+        /// <summary>261027 추가 - PartyProgress의 원한(怨恨) 집계가 grudgeWeight를 읽어가는 용도.</summary>
+        public EnemyStatsSO Stats => stats;
+
+        /// <summary>261027 추가 - 사망 경직 중인지(이미 쓰러짐). 처치 수 집계에서 "이번 타격으로 쓰러졌는지" 판단용.</summary>
+        public bool IsDying => isDying.Value;
+
         [Header("분리(Separation) - 뭉치지 않고 퍼져서 쫓아오게. 값은 미정, 밸런스에 맞춰 조정")]
         [Tooltip("이 반경 안의 다른 적들로부터 밀려난다.")]
         [SerializeField] private float separationRadius = 0.8f;
         [Tooltip("추적 방향 대비 분리(밀어내기) 힘의 비중. 높을수록 더 퍼져서 쫓아오지만 추적이 둔해진다.")]
         [SerializeField] private float separationWeight = 1.2f;
 
+        // 261101 추가 - "화면의 원귀 대부분이 덜덜 떤다"(예섭, 1인 호스트) 수정용. 원인은 조향 계산이었다:
+        // (1) 추적+분리 합을 항상 길이 1로 정규화해서, 두 힘이 거의 상쇄되는 무리 안에서도 매 물리 스텝 최고 속도로
+        //     방향이 뒤집혔다(분리가 1/거리²라 겹친 이웃이 좌우만 바뀌어도 값이 크게 튐).
+        // (2) 원귀 콜라이더는 트리거라 플레이어 중심까지 파고드는데, 거리와 상관없이 최고 속도로 쫓아서 중심을 지나칠
+        //     때마다 방향이 반대로 바뀌었다.
+        // 고친 방식: 합을 정규화하지 않고 길이 1까지만 자른다(상쇄되면 느려짐), 분리는 거리에 비례해 부드럽게 줄어드는
+        // 선형 가중, 목표 근처에서 감속(arrive), 속도는 가속도 한도 안에서만 바뀐다(한 스텝에 방향이 뒤집히지 않음).
+        [Header("조향(Steering) - 261101 떨림 수정")]
+        [Tooltip("플레이어 중심에서 이 거리 안이면 추적을 멈춘다. 원귀/플레이어 콜라이더 반지름 합(0.4+0.4)보다 작아야 접촉 피해가 유지된다.")]
+        [SerializeField] private float arriveStopDistance = 0.3f;
+        [Tooltip("이 거리부터 감속을 시작해 arriveStopDistance에서 0이 된다.")]
+        [SerializeField] private float arriveSlowDistance = 0.7f;
+        [Tooltip("속도가 바뀔 수 있는 최대 가속도(유닛/초²). 클수록 반응이 빠르고, 작을수록 부드럽다.")]
+        [SerializeField] private float steeringAcceleration = 20f;
+
         private Rigidbody2D rb;
         private float currentHealth;
         private float contactTimer;
         private float deathTimer;
+
+        [Tooltip("261027 추가 - 이동 루프 + 소멸(Die 트리거) 애니메이터. Create Enemy Variants 메뉴가 연결한다.\n" +
+                 "비어 있으면 애니메이션 없이 동작(점멸/경직만).")]
+        [SerializeField] private Animator animator;
+
+        private static readonly int DieTriggerHash = Animator.StringToHash("Die");
+        private static readonly int MoveStateHash = Animator.StringToHash("Move");
+
+        // 웨이브 종료 흡수(ServerAbsorbAllIntoGrudge)에서 목록을 복사해 돌기 위한 재사용 버퍼(할당 방지).
+        private static readonly List<Enemy> AbsorbBuffer = new List<Enemy>();
 
         // 클라이언트 로컬 점멸 진행 상태 - 네트워크로 동기화할 필요 없음(순수 연출이라
         // 클라이언트마다 몇 프레임 어긋나도 문제 없음).
@@ -107,6 +139,13 @@ namespace CheonMyeong.Enemies
 
             isDying.OnValueChanged += HandleDyingChanged;
             dyingSubscribed = true;
+
+            // 풀에서 재사용될 때 이전 생애의 소멸 애니메이션이 남지 않도록 이동 루프로 되돌린다.
+            if (animator != null && animator.runtimeAnimatorController != null)
+            {
+                animator.ResetTrigger(DieTriggerHash);
+                animator.Play(MoveStateHash, 0, 0f);
+            }
         }
 
         public override void OnNetworkDespawn()
@@ -134,10 +173,55 @@ namespace CheonMyeong.Enemies
         /// </summary>
         public void ServerInitialize()
         {
-            currentHealth = stats != null ? stats.maxHealth : 1f;
+            // 261027 수정 - 기획서 5-10 "원귀 체력은 웨이브마다 +8%". 배율은 WaveConfigSO에서 온다.
+            float healthMultiplier = WaveManager.Instance != null ? WaveManager.Instance.CurrentHealthMultiplier : 1f;
+            currentHealth = (stats != null ? stats.maxHealth : 1f) * healthMultiplier;
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
             contactTimer = 0f;
             deathTimer = 0f;
             isDying.Value = false;
+        }
+
+        /// <summary>
+        /// 261027 추가 - 서버 전용. 웨이브가 끝날 때(징) 살아남은 원귀를 전부 원한으로 흡수한다
+        /// (기획서 5-2/5-3: "남은 원귀는 원한으로 흡수", "남은 원귀 1마리 = 원한 1"). 흡수된 원귀는
+        /// 드랍 없이 바로 풀로 돌아간다. 이미 죽어가는(경직 중) 원귀는 처치된 것이라 원한에서 뺀다.
+        /// 돌려주는 값 = 이번에 쌓일 원한 양(grudgeWeight 합).
+        /// </summary>
+        /// <summary>
+        /// 261027 추가 - 서버 전용. 판이 끝나거나 새 판이 시작될 때 남은 원귀를 원한 집계 없이 전부 치운다.
+        /// NetworkObject는 기본적으로 씬이 언로드돼도 파괴되지 않고 활성 씬으로 옮겨져 살아남기 때문에
+        /// (DestroyWithScene 기본값 false), 이걸 안 하면 "다시 하기" 때 이전 판의 원귀가 그대로 남아서
+        /// 새 판 시작과 동시에 플레이어를 때려 바로 게임오버가 됐다.
+        /// </summary>
+        public static void ServerDespawnAll()
+        {
+            ServerAbsorbAllIntoGrudge();
+        }
+
+        public static int ServerAbsorbAllIntoGrudge()
+        {
+            float total = 0f;
+            AbsorbBuffer.Clear();
+            AbsorbBuffer.AddRange(ActiveEnemies);
+            for (int i = 0; i < AbsorbBuffer.Count; i++)
+            {
+                Enemy enemy = AbsorbBuffer[i];
+                if (enemy == null || !enemy.IsServer || !enemy.IsSpawned)
+                {
+                    continue;
+                }
+                if (!enemy.isDying.Value && enemy.stats != null)
+                {
+                    total += enemy.stats.grudgeWeight;
+                }
+                enemy.NetworkObject.Despawn();
+            }
+            AbsorbBuffer.Clear();
+            return Mathf.RoundToInt(total);
         }
 
         private void Update()
@@ -201,22 +285,22 @@ namespace CheonMyeong.Enemies
             }
 
             Vector2 toTarget = (Vector2)nearestPlayer.position - rb.position;
-            Vector2 chaseDir = toTarget.sqrMagnitude > 0.0001f ? toTarget.normalized : Vector2.zero;
-            Vector2 separation = ComputeSeparation();
-
-            Vector2 moveDir = chaseDir + separation * separationWeight;
-            if (moveDir.sqrMagnitude > 0.0001f)
+            float distance = toTarget.magnitude;
+            Vector2 chase = Vector2.zero;
+            if (distance > arriveStopDistance)
             {
-                moveDir.Normalize();
+                float slowRange = Mathf.Max(0.0001f, arriveSlowDistance - arriveStopDistance);
+                chase = toTarget / distance * Mathf.Clamp01((distance - arriveStopDistance) / slowRange);
             }
 
-            rb.linearVelocity = moveDir * stats.moveSpeed;
+            Vector2 desired = Vector2.ClampMagnitude(chase + ComputeSeparation() * separationWeight, 1f) * stats.moveSpeed;
+            rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, desired, steeringAcceleration * Time.fixedDeltaTime);
         }
 
         /// <summary>
         /// 서버 전용 - separationRadius 안에 있는 다른 적들로부터 밀려나는 방향을
-        /// 계산한다(가까울수록 더 세게 밀림 - 역거리 가중). 주변에 아무도 없으면
-        /// Vector2.zero.
+        /// 계산한다(가까울수록 더 세게 밀림 - 261101부터 선형 가중: 반경 끝 0 ~ 완전히 겹침 1).
+        /// 주변에 아무도 없으면 Vector2.zero.
         /// </summary>
         private Vector2 ComputeSeparation()
         {
@@ -239,7 +323,8 @@ namespace CheonMyeong.Enemies
                     continue;
                 }
 
-                push += diff / sqrDist; // 가까울수록 1/거리^2로 세게 밀어낸다.
+                float dist = Mathf.Sqrt(sqrDist);
+                push += diff / dist * (1f - dist / separationRadius);
                 neighborCount++;
             }
 
@@ -258,7 +343,6 @@ namespace CheonMyeong.Enemies
             }
 
             currentHealth -= amount;
-            Debug.Log($"[CheonMyeong] 적 피격: {amount} 피해 / 남은 체력 {currentHealth}/{stats.maxHealth}");
 
             // 맞았다는 사실 자체는 점멸로 - 죽는 타격이어도 일단 한 번은 번쩍이게 둔다.
             PlayHitFlashRpc();
@@ -296,7 +380,8 @@ namespace CheonMyeong.Enemies
 
             if (other.TryGetComponent(out IDamageable damageable))
             {
-                damageable.TakeDamage(stats.contactDamage);
+                float damageMultiplier = WaveManager.Instance != null ? WaveManager.Instance.CurrentDamageMultiplier : 1f;
+                damageable.TakeDamage(stats.contactDamage * damageMultiplier);
                 contactTimer = stats.contactDamageInterval;
             }
         }
@@ -327,7 +412,11 @@ namespace CheonMyeong.Enemies
                 return;
             }
 
-            LootSpawner.Instance.SpawnGold(rb.position, stats.goldReward);
+            // 261027 수정 - 기획서 5-10: 영혼은 100%, 엽전은 원귀별 확률(goldDropChance)로.
+            if (Random.value < stats.goldDropChance)
+            {
+                LootSpawner.Instance.SpawnGold(rb.position, stats.goldReward);
+            }
             LootSpawner.Instance.SpawnExp(rb.position, stats.expReward);
         }
 
@@ -373,13 +462,18 @@ namespace CheonMyeong.Enemies
         /// </summary>
         private void HandleDyingChanged(bool previousValue, bool currentValue)
         {
-            if (currentValue || spriteRenderer == null)
+            // 261027 수정 - 경직 진입(true) 때는 소멸 애니메이션(기획서 8: "공통 사라짐 이펙트")을
+            // 틀고, 진행 중이던 점멸은 끊어서 스프라이트를 켠 채로 보이게 한다.
+            blinksRemaining = 0;
+            if (spriteRenderer != null)
             {
-                return;
+                spriteRenderer.enabled = true;
             }
 
-            blinksRemaining = 0;
-            spriteRenderer.enabled = true;
+            if (currentValue && animator != null && animator.runtimeAnimatorController != null)
+            {
+                animator.SetTrigger(DieTriggerHash);
+            }
         }
     }
 }

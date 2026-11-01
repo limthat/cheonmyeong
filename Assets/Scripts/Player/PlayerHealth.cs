@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CheonMyeong.Combat;
 using CheonMyeong.Data;
+using CheonMyeong.Waves;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -89,7 +90,10 @@ namespace CheonMyeong.Player
         private void Update()
         {
             // 부활 타이머는 서버만 - 죽은 동안에만 카운트다운하고, 0 이하가 되면 즉시 부활시킨다.
-            if (!IsServer || !isDead.Value)
+            // 261027 수정 - 웨이브 시스템(WaveManager)이 있으면 기획대로 "웨이브가 끝날 때(징) 부활"
+            // (WaveManager → ServerReviveIfDead)만 쓰고 이 고정 시간 타이머는 쓰지 않는다.
+            // WaveManager가 없는 씬(테스트용 등)에서만 예전 임시 동작으로 대체.
+            if (!IsServer || !isDead.Value || WaveManager.Instance != null)
             {
                 return;
             }
@@ -110,6 +114,71 @@ namespace CheonMyeong.Player
         {
             currentHealth.Value = MaxHealth;
             isDead.Value = false;
+        }
+
+        /// <summary>
+        /// 261027 수정 - 서버 전용. WaveManager가 웨이브를 끝낼 때(징) 호출한다. 기획서 5-10:
+        /// "웨이브 끝 부활 시 체력 30%" - 비율은 WaveConfigSO.reviveHealthRatio에서 온다.
+        /// </summary>
+        public void ServerReviveIfDead(float healthRatio)
+        {
+            if (!IsServer || !isDead.Value)
+            {
+                return;
+            }
+            currentHealth.Value = Mathf.Max(1f, MaxHealth * Mathf.Clamp01(healthRatio));
+            isDead.Value = false;
+        }
+
+        /// <summary>
+        /// 261027 추가 - 서버 전용. 새 판(다시 하기 포함)이 시작될 때 WaveManager가 호출 - 플레이어
+        /// 오브젝트는 Gameplay 씬과 별개로 살아남기 때문에, 이걸 안 하면 "봉인 실패" 뒤 다시 하기를
+        /// 눌렀을 때 쓰러진 상태 그대로 시작해서 바로 다시 게임오버가 된다.
+        /// </summary>
+        public void ServerResetForNewRun()
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            respawnTimer = 0f;
+            currentHealth.Value = MaxHealth;
+            isDead.Value = false;
+        }
+
+        /// <summary>
+        /// 261027 추가 - 서버 전용. 징이 울릴 때 살아있는 플레이어 체력 회복(기획서 5-10: 최대 체력의 10%).
+        /// </summary>
+        public void ServerHealByRatio(float ratio)
+        {
+            if (!IsServer || isDead.Value || ratio <= 0f)
+            {
+                return;
+            }
+            currentHealth.Value = Mathf.Min(MaxHealth, currentHealth.Value + MaxHealth * ratio);
+        }
+
+        /// <summary>
+        /// 261027 추가 - 서버 전용. 접속한 플레이어가 1명 이상이고 전원 쓰러졌으면 true
+        /// (기획서 5-2: "둘 다 쓰러지면 끝" - WaveManager가 게임오버 판정에 쓴다).
+        /// </summary>
+        public static bool AreAllPlayersDown()
+        {
+            bool anyPlayer = false;
+            for (int i = 0; i < ActivePlayers.Count; i++)
+            {
+                PlayerHealth player = ActivePlayers[i];
+                if (player == null)
+                {
+                    continue;
+                }
+                anyPlayer = true;
+                if (!player.IsDead)
+                {
+                    return false;
+                }
+            }
+            return anyPlayer;
         }
 
         /// <summary>

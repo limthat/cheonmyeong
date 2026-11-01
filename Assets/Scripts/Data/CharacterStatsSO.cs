@@ -60,10 +60,12 @@ namespace CheonMyeong.Data
                  "거의 180도인데 반으로 줄이자\")에 따라 90도를 기본값으로 새로 설정함.")]
         public float attackArcDegrees = 90f;
 
-        [Header("자동줍기 (Magnet, 261013 추가)")]
+        [Header("자동줍기 (Magnet, 261013 추가 / 261027 기본값 0 - 예섭: \"처음엔 직접 닿아야 습득\")")]
         [Tooltip("드랍 아이템(골드/경험치)이 자동으로 끌려오기 시작하는 반경(유닛) - 공식\n" +
                  "스탯 시트의 Magnet 컬럼에 해당하는 자리. 정확한 수치는 밸런스 미정이라\n" +
-                 "플레이스홀더값(LootPickup.cs가 이 반경으로 끌어당김 여부를 판정한다).")]
-        public float magnetRadius = 2.5f;
+                 "플레이스홀더값(LootPickup.cs가 이 반경으로 끌어당김 여부를 판정한다).\n" +
+                 "0이면 끌어당김 없이 직접 닿아야만(LootPickup.touchPickupRadius) 줍는다 - 획득 범위는\n" +
+                 "나중에 증강으로 늘리는 값.")]
+        public float magnetRadius = 0f;
     }
 }

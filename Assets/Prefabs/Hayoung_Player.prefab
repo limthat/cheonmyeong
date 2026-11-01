@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 8906134324710852114}
   - component: {fileID: 3686651664287292191}
   - component: {fileID: 1185933471179363800}
+  - component: {fileID: 5595697286378998397}
   m_Layer: 0
   m_Name: Hayoung_Player
   m_TagString: Untagged
@@ -291,7 +292,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3350745226183465588, guid: e488de5e0406e4d4b8e2137d529a0d98, type: 3}
+  m_Sprite: {fileID: -6605606690288749096, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -340,6 +341,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 4818334248351204984}
   movement: {fileID: 8196870261003785129}
   attack: {fileID: 3787325987341052456}
+  health: {fileID: 8911152729317663622}
   attackClip: {fileID: 7400000, guid: 09487e9ad55424f498124e60ae94e976, type: 2}
 --- !u!114 &3686651664287292191
 MonoBehaviour:
@@ -371,3 +373,31 @@ MonoBehaviour:
   arcSegments: 20
   visibleDuration: 0.15
   fillColor: {r: 1, g: 0.15, b: 0.15, a: 0.25}
+--- !u!114 &5595697286378998397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6164677979144622706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c442731f8bcdc064b936e297ae1edde6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Player.PlayerAttackEffect
+  autoAttack: {fileID: 3787325987341052456}
+  stats: {fileID: 11400000, guid: 8dcb9b7fc782fb046991136a62bdfb44, type: 2}
+  frames:
+  - {fileID: -2445420096094572361, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+  - {fileID: 4266029267608003835, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+  - {fileID: -8683579157637147703, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+  - {fileID: 6880603214866322451, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+  - {fileID: -9203066760788284703, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+  - {fileID: 3591781132014101358, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+  - {fileID: -7992201239367319672, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+  - {fileID: -1689686421956675724, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+  - {fileID: -3675303022314623121, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+  forwardOffsetRatio: 0.5
+  sizeToRangeRatio: 0.9
+  minDuration: 0.15
+  sortingOrder: 20

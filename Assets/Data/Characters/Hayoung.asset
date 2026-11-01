@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Data.CharacterStatsSO
   characterId: hayoung
   displayName: "\uD558\uC601"
-  maxHealth: 100
-  moveSpeed: 3.2
-  attackPower: 10
+  maxHealth: 150
+  moveSpeed: 5
+  attackPower: 20
   attacksPerSecond: 0.8
   attackRange: 2
   attackAwarenessRangeMultiplier: 1

@@ -1,4 +1,6 @@
 using CheonMyeong.Player;
+using CheonMyeong.Progression;
+using CheonMyeong.Waves;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,9 +23,14 @@ namespace CheonMyeong.UI.Screens
     /// 반영 - "수치는 보통 변수랑 연동하지 하드코딩 텍스트로 안 둔다"). 나중에 웨이브
     /// 매니저나 재화 매니저가 생기면 이 HUD 내부를 직접 건드릴 필요 없이
     /// Instance.SetXxx(...)만 호출하면 된다(PlayerCameraRig/GameplaySceneLoader와
-    /// 같은 씬 전역 싱글턴 관례). 지금은 그 호출자가 없으니 OnEnable이 "시스템
-    /// 미구현" placeholder 텍스트로 기본값만 채워둔다 - 수치를 임의로 지어내는 게
-    /// 아니라 "아직 아무도 호출 안 한 상태의 기본 표시"일 뿐이다.
+    /// 같은 씬 전역 싱글턴 관례).
+    ///
+    /// 261027 수정 - "아직 수치가 없을때도 미구현 말고 0 같은 수치로 표현해줘"(예섭 요청).
+    /// OnEnable 기본값을 "(시스템 미구현)" 같은 안내 문자열 대신, 실제 SetXxx가 쓰는 것과
+    /// 똑같은 포맷의 0 값으로 바꿨다(레벨은 0부터 - 기획서 "0→30레벨" 기준과 일치). 어떤
+    /// 수치를 지어낸 게 아니라 "아직 아무도 안 쌓인 시작값"이라는 점은 그대로이고, 캐시
+    /// (cachedLevel 등)는 여전히 UnsetCacheValue로 두므로 실제 시스템이 처음 SetXxx를
+    /// 호출하는 순간엔(우연히 0이 들어와도) 다시 그려진다.
     /// </summary>
     public class InGameHudScreen : MonoBehaviour
     {
@@ -38,6 +45,19 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private Image expFillImage;
         [SerializeField] private Text grudgeText;
         [SerializeField] private Text goldText;
+
+        /// <summary>
+        /// 261027 추가 - 원한 4단계 게이지 구간 Image들, 반드시 [맑음, 짙음, 한, 폭주] 순서
+        /// (UICanvasBuilder.BuildInGameHudScreen의 Segment_Clear/Deep/Han/Rampage 순서와
+        /// 일치해야 한다 - PartyProgress.GrudgeStage의 0~3 인덱스가 이 배열 인덱스를 그대로
+        /// 가리킨다). 지금 단계만 원래 색 그대로 두고, 나머지는 어둡게 눌러서(알파 낮춤)
+        /// "지금 어디인지" 한눈에 보이게 한다.
+        /// </summary>
+        [SerializeField] private Image[] grudgeSegmentImages;
+
+        private static readonly string[] GrudgeStageNames = { "맑음", "짙음", "한", "폭주" };
+        private const float GrudgeInactiveAlpha = 0.35f;
+        private Color[] grudgeSegmentFullColors;
 
         // 체력은 전투 중 거의 매 프레임 바뀌지만, 안 바뀌는 프레임까지 매번 문자열 보간을
         // 새로 만들면 불필요한 GC 할당이 쌓인다(실무에서 HUD 최적화할 때 흔히 쓰는 방식) -
@@ -75,6 +95,23 @@ namespace CheonMyeong.UI.Screens
                 Debug.LogWarning("[CheonMyeong] InGameHudScreen이 씬에 두 개 이상 있습니다 - 하나만 남기고 제거하세요.");
             }
             Instance = this;
+
+            AutoBindMissingReferences();
+
+            // 261027 추가 - UICanvasBuilder가 칠해둔 4단계 원래 색을 그대로 기억해둔다
+            // (Segment_Clear/Deep/Han/Rampage마다 색이 다 다르므로, 하드코딩하지 않고
+            // 지금 Image.color를 "원래 색"으로 캡처해서 나중에 그 색 그대로 복원한다).
+            if (grudgeSegmentImages != null)
+            {
+                grudgeSegmentFullColors = new Color[grudgeSegmentImages.Length];
+                for (int i = 0; i < grudgeSegmentImages.Length; i++)
+                {
+                    if (grudgeSegmentImages[i] != null)
+                    {
+                        grudgeSegmentFullColors[i] = grudgeSegmentImages[i].color;
+                    }
+                }
+            }
         }
 
         private void OnDestroy()
@@ -100,11 +137,14 @@ namespace CheonMyeong.UI.Screens
 
             if (waveTimerText != null)
             {
-                waveTimerText.text = "WAVE --/-- (웨이브 시스템 미구현)";
+                // SetWaveStatus와 같은 포맷("WAVE 현재/전체 mm:ss") - 아직 웨이브 매니저가
+                // 없으니 0/0 00:00으로 시작.
+                waveTimerText.text = "WAVE 0/0 00:00";
             }
             if (levelText != null)
             {
-                levelText.text = "Lv.-- · 영혼 공유 (경험치 시스템 미구현)";
+                // SetLevel과 같은 포맷 - 레벨은 0부터(기획서 "0→30레벨" 기준).
+                levelText.text = "Lv.0 · 영혼 공유";
             }
             if (expFillImage != null)
             {
@@ -114,11 +154,106 @@ namespace CheonMyeong.UI.Screens
             }
             if (grudgeText != null)
             {
-                grudgeText.text = "원한 -- (시스템 미정 - 보류)";
+                // SetGrudge(0, 0)과 같은 결과 - 시작은 원한 0, 맑음.
+                grudgeText.text = $"원한 0 · {GrudgeStageNames[0]}";
             }
             if (goldText != null)
             {
-                goldText.text = "엽전 -- (재화 시스템 미구현)";
+                // SetGold와 같은 포맷.
+                goldText.text = "엽전 0";
+            }
+            RefreshGrudgeSegments(0);
+
+            PullCurrentState();
+        }
+
+        /// <summary>
+        /// 261027 추가 - "HUD 또 연동 끊킨 듯"(예섭) 원인 대응. 저장된 SampleScene을 열어보니 이 컴포넌트의
+        /// 참조 필드(p1HealthText ~ grudgeSegmentImages)가 전부 비어 있었다(fileID: 0) - 그래서 OnEnable/
+        /// Update/SetXxx가 전부 null 체크에 걸려 아무것도 안 그리고 UICanvasBuilder의 기본 문구
+        /// ("WAVE --/--", "Lv.--", "원한 -- (보류)")가 그대로 남았다. 왜 비었는지(빌드 메뉴는 정상 연결함)
+        /// 저장 파일만으로는 확정하지 못해서, 비어 있는 참조는 UICanvasBuilder가 붙이는 자식 이름으로
+        /// 직접 찾아 채우는 안전장치를 둔다. 이미 연결돼 있으면 아무것도 바꾸지 않는다.
+        /// </summary>
+        private void AutoBindMissingReferences()
+        {
+            if (p1HealthText == null) p1HealthText = FindChildComponent<Text>(transform, "P1HealthText");
+            if (p2HealthText == null) p2HealthText = FindChildComponent<Text>(transform, "P2HealthText");
+            if (p1HealthFillImage == null) p1HealthFillImage = FindFillImage("P1HealthBar");
+            if (p2HealthFillImage == null) p2HealthFillImage = FindFillImage("P2HealthBar");
+            if (waveTimerText == null) waveTimerText = FindChildComponent<Text>(transform, "WaveTimerText");
+            if (levelText == null) levelText = FindChildComponent<Text>(transform, "LevelText");
+            if (expFillImage == null) expFillImage = FindFillImage("ExpBar");
+            if (grudgeText == null) grudgeText = FindChildComponent<Text>(transform, "GrudgeText");
+            if (goldText == null) goldText = FindChildComponent<Text>(transform, "GoldText");
+
+            if (grudgeSegmentImages == null || grudgeSegmentImages.Length == 0)
+            {
+                grudgeSegmentImages = new[]
+                {
+                    FindChildComponent<Image>(transform, "Segment_Clear"),
+                    FindChildComponent<Image>(transform, "Segment_Deep"),
+                    FindChildComponent<Image>(transform, "Segment_Han"),
+                    FindChildComponent<Image>(transform, "Segment_Rampage")
+                };
+            }
+        }
+
+        /// <summary>CreateRoundedFillBar 구조(바 이름/Mask/Fill)에서 실제로 채워지는 Fill Image를 찾는다.</summary>
+        private Image FindFillImage(string barName)
+        {
+            Transform bar = FindChildRecursive(transform, barName);
+            return bar != null ? FindChildComponent<Image>(bar, "Fill") : null;
+        }
+
+        private static T FindChildComponent<T>(Transform root, string childName) where T : Component
+        {
+            Transform child = FindChildRecursive(root, childName);
+            return child != null ? child.GetComponent<T>() : null;
+        }
+
+        private static Transform FindChildRecursive(Transform root, string childName)
+        {
+            for (int i = 0; i < root.childCount; i++)
+            {
+                Transform child = root.GetChild(i);
+                if (child.name == childName)
+                {
+                    return child;
+                }
+                Transform found = FindChildRecursive(child, childName);
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 261027 추가 - HUD 패널은 처음 화면에 뜰 때 Awake/OnEnable이 돈다. 그 전에 레벨/웨이브/원한/엽전
+        /// 값이 이미 정해져 있으면(PartyProgress/WaveManager가 HUD보다 먼저 스폰됨) 그때 보낸 갱신은
+        /// Instance가 없어서 버려졌다 - 켜질 때 현재 값을 직접 당겨온다.
+        /// </summary>
+        private void PullCurrentState()
+        {
+            if (PartyProgress.Instance != null && PartyProgress.Instance.IsSpawned)
+            {
+                PartyProgress.Instance.RefreshHudNow();
+            }
+            if (WaveManager.Instance != null && WaveManager.Instance.IsSpawned)
+            {
+                WaveManager.Instance.RefreshHudNow();
+            }
+
+            for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
+            {
+                PlayerHealth player = PlayerHealth.ActivePlayers[i];
+                if (player != null && player.IsOwner && player.TryGetComponent(out PlayerProgress progress))
+                {
+                    SetGold(progress.Gold);
+                    break;
+                }
             }
         }
 
@@ -186,17 +321,49 @@ namespace CheonMyeong.UI.Screens
             expFillImage.fillAmount = ratio;
         }
 
-        /// <summary>원한 게이지 수치/단계가 확정되면 호출할 자리 - 4단계 게이지 바(UICanvasBuilder가
-        /// 그려둔 정적 색 구간)와 실제로 연동하는 건 그 시스템이 확정된 다음 할 일(지금은 수치
-        /// 텍스트만 갱신, 게이지 하이라이트 로직은 없음 - 임의로 만들지 않는다는 규칙).</summary>
-        public void SetGrudge(int grudgeValue)
+        /// <summary>
+        /// 261027 수정 - 기획서 5-3: 원한은 누적 수치(남은 원귀 1마리 = 1)이고, 수치 구간으로 4단계
+        /// (맑음/짙음/한/폭주)가 정해진다. 수치와 단계를 같이 보여주고, 게이지 바에서는 현재 단계
+        /// 구간만 원래 색으로 남기고 나머지는 어둡게 눌러서 하이라이트한다.
+        /// </summary>
+        public void SetGrudge(int grudgeValue, int stage)
         {
+            RefreshGrudgeSegments(stage);
+
             if (grudgeText == null || cachedGrudge == grudgeValue)
             {
                 return;
             }
             cachedGrudge = grudgeValue;
-            grudgeText.text = $"원한 {grudgeValue}";
+
+            string stageName = stage >= 0 && stage < GrudgeStageNames.Length ? GrudgeStageNames[stage] : "?";
+            grudgeText.text = $"원한 {grudgeValue} · {stageName}";
+        }
+
+        /// <summary>
+        /// grudgeSegmentImages 중 stage번째만 원래 색(Awake에서 캡처한 grudgeSegmentFullColors)
+        /// 그대로 두고, 나머지는 알파를 낮춰서 "지금 단계"를 한눈에 보이게 한다. 배열을 안
+        /// 채워뒀으면(에디터 연결 전) 그냥 조용히 생략 - 다른 Set 계열과 같은 null 안전 관례.
+        /// </summary>
+        private void RefreshGrudgeSegments(int stage)
+        {
+            if (grudgeSegmentImages == null || grudgeSegmentFullColors == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < grudgeSegmentImages.Length; i++)
+            {
+                if (grudgeSegmentImages[i] == null)
+                {
+                    continue;
+                }
+
+                Color fullColor = grudgeSegmentFullColors[i];
+                grudgeSegmentImages[i].color = i == stage
+                    ? fullColor
+                    : new Color(fullColor.r, fullColor.g, fullColor.b, GrudgeInactiveAlpha);
+            }
         }
 
         /// <summary>재화(엽전) 시스템이 생기면 호출할 자리.</summary>

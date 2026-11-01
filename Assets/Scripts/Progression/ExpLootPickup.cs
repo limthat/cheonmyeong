@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace CheonMyeong.Progression
 {
     /// <summary>
@@ -8,7 +10,51 @@ namespace CheonMyeong.Progression
     /// </summary>
     public class ExpLootPickup : LootPickup
     {
+        [Header("영혼 모양 (261027 - 기획서 5-10: 작은 영혼 1 / 중간 영혼 2 / 큰 영혼 5)")]
+        [SerializeField] private SpriteRenderer spriteRenderer;
+
+        [Tooltip("작은 → 큰 순서. Assets/Art/Goods/coin_xp-Sheet 윗줄(청록/보라/붉은 영혼)을\n" +
+                 "'CheonMyeong/Setup/Setup Loot Visuals' 메뉴가 연결한다.")]
+        [SerializeField] private Sprite[] tierSprites;
+
+        [Tooltip("tierSprites와 같은 순서 - 보상 양이 이 값 이상이면 그 모양을 쓴다(오름차순).")]
+        [SerializeField] private int[] tierMinAmounts = { 1, 2, 5 };
+
+        protected override void ApplyVisual(int rewardAmount)
+        {
+            if (spriteRenderer == null || tierSprites == null || tierSprites.Length == 0)
+            {
+                return;
+            }
+
+            int tier = 0;
+            if (tierMinAmounts != null)
+            {
+                int count = Mathf.Min(tierMinAmounts.Length, tierSprites.Length);
+                for (int i = 0; i < count; i++)
+                {
+                    if (rewardAmount >= tierMinAmounts[i])
+                    {
+                        tier = i;
+                    }
+                }
+            }
+
+            if (tierSprites[tier] != null)
+            {
+                spriteRenderer.sprite = tierSprites[tier];
+            }
+        }
+
         protected override void ApplyReward(PlayerProgress progress, int rewardAmount)
+        {
+            if (PartyProgress.Instance != null)
+            {
+                PartyProgress.Instance.AddExp(rewardAmount);
+            }
+        }
+
+        protected override void AbsorbAtWaveEnd(int rewardAmount)
         {
             if (PartyProgress.Instance != null)
             {

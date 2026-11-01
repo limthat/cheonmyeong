@@ -15,5 +15,10 @@ namespace CheonMyeong.Progression
                 progress.AddGold(rewardAmount);
             }
         }
+
+        protected override void AbsorbAtWaveEnd(int rewardAmount)
+        {
+            AddPendingSplitGold(rewardAmount);
+        }
     }
 }

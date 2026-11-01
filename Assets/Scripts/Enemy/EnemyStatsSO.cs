@@ -31,10 +31,19 @@ namespace CheonMyeong.Data
         public float deathStaggerDuration = 0.3f;
 
         [Header("처치 보상 (261013 추가 - 값은 미정, 플레이스홀더)")]
-        [Tooltip("이 적을 처치하면 사망 위치에 드랍되는 엽전(골드) 양.")]
+        [Tooltip("엽전이 떨어질 때의 개수. 기획서 5-10: 몽달귀 1 / 달걀귀신 1 / 손각시 2.")]
         public int goldReward = 1;
 
-        [Tooltip("이 적을 처치하면 사망 위치에 드랍되는 경험치 양.")]
+        [Tooltip("261027 추가 - 처치 시 엽전이 떨어질 확률(0~1). 기획서 5-10: 몽달귀 5% / 달걀귀신 10% /\n" +
+                 "손각시 30%. 영혼(경험치)은 100% 떨어진다.")]
+        [Range(0f, 1f)] public float goldDropChance = 1f;
+
+        [Tooltip("처치 시 떨어지는 영혼(경험치) 가치. 기획서 5-10: 1 / 2 / 5.")]
         public int expReward = 1;
+
+        [Header("원한(怨恨) (261027 추가)")]
+        [Tooltip("웨이브가 끝날 때 이 원귀가 살아남아 있으면 쌓이는 원한 양. 기획서 5-3: \"남은 원귀 1마리 =\n" +
+                 "원한 1\" - 기본 1. 보스처럼 원한 집계에서 빼야 하는 몹은 0.")]
+        public float grudgeWeight = 1f;
     }
 }

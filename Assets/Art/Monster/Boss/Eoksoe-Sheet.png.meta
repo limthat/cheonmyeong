@@ -1,0 +1,2002 @@
+fileFormatVersion: 2
+guid: a98bba770b5890f429772af73fbcd549
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3815737637976792470
+    second: Eoksoe-Sheet_0
+  - first:
+      213: 8908150656309915677
+    second: Eoksoe-Sheet_1
+  - first:
+      213: -7108423556261859597
+    second: Eoksoe-Sheet_2
+  - first:
+      213: -9166443921575437122
+    second: Eoksoe-Sheet_3
+  - first:
+      213: 8849369572309334027
+    second: Eoksoe-Sheet_4
+  - first:
+      213: 9037143034741063761
+    second: Eoksoe-Sheet_5
+  - first:
+      213: -8883381431707219595
+    second: Eoksoe-Sheet_6
+  - first:
+      213: -7791157307329624737
+    second: Eoksoe-Sheet_7
+  - first:
+      213: 8174850634201850399
+    second: Eoksoe-Sheet_8
+  - first:
+      213: 9167240216646697777
+    second: Eoksoe-Sheet_9
+  - first:
+      213: -1841017553185811873
+    second: Eoksoe-Sheet_10
+  - first:
+      213: -3550268255416740127
+    second: Eoksoe-Sheet_11
+  - first:
+      213: -2854140726854121222
+    second: Eoksoe-Sheet_12
+  - first:
+      213: 1498662732140669666
+    second: Eoksoe-Sheet_13
+  - first:
+      213: 803308256324077822
+    second: Eoksoe-Sheet_14
+  - first:
+      213: -3783917444059581091
+    second: Eoksoe-Sheet_15
+  - first:
+      213: -8402563076158694560
+    second: Eoksoe-Sheet_16
+  - first:
+      213: 7317383748278060682
+    second: Eoksoe-Sheet_17
+  - first:
+      213: 7309528993854122107
+    second: Eoksoe-Sheet_18
+  - first:
+      213: -7852057603436514330
+    second: Eoksoe-Sheet_19
+  - first:
+      213: -6027818518405595581
+    second: Eoksoe-Sheet_20
+  - first:
+      213: -630297293651854073
+    second: Eoksoe-Sheet_21
+  - first:
+      213: -3919306172865388517
+    second: Eoksoe-Sheet_22
+  - first:
+      213: -5926665923196916703
+    second: Eoksoe-Sheet_23
+  - first:
+      213: -152466771357882036
+    second: Eoksoe-Sheet_24
+  - first:
+      213: -3070637744313424511
+    second: Eoksoe-Sheet_25
+  - first:
+      213: 7735056277950780796
+    second: Eoksoe-Sheet_26
+  - first:
+      213: 3656833003368591123
+    second: Eoksoe-Sheet_27
+  - first:
+      213: -5244233026935302783
+    second: Eoksoe-Sheet_28
+  - first:
+      213: 6593488917845380949
+    second: Eoksoe-Sheet_29
+  - first:
+      213: 7562956307578866011
+    second: Eoksoe-Sheet_30
+  - first:
+      213: 18247766719529913
+    second: Eoksoe-Sheet_31
+  - first:
+      213: 7120422263181381055
+    second: Eoksoe-Sheet_32
+  - first:
+      213: 366403660574641882
+    second: Eoksoe-Sheet_33
+  - first:
+      213: 9068460527238391857
+    second: Eoksoe-Sheet_34
+  - first:
+      213: 8494557702207199667
+    second: Eoksoe-Sheet_35
+  - first:
+      213: -524749572191415877
+    second: Eoksoe-Sheet_36
+  - first:
+      213: -3800849180662321415
+    second: Eoksoe-Sheet_37
+  - first:
+      213: -500769974375565789
+    second: Eoksoe-Sheet_38
+  - first:
+      213: 6081830626314877189
+    second: Eoksoe-Sheet_39
+  - first:
+      213: -2482579330431607686
+    second: Eoksoe-Sheet_40
+  - first:
+      213: 8361603375148976574
+    second: Eoksoe-Sheet_41
+  - first:
+      213: 7443590448506768234
+    second: Eoksoe-Sheet_42
+  - first:
+      213: -4149994340689344017
+    second: Eoksoe-Sheet_43
+  - first:
+      213: -5529004846037350383
+    second: Eoksoe-Sheet_44
+  - first:
+      213: 7559857463714616745
+    second: Eoksoe-Sheet_45
+  - first:
+      213: 8095615363984106154
+    second: Eoksoe-Sheet_46
+  - first:
+      213: 1713114242586261178
+    second: Eoksoe-Sheet_47
+  - first:
+      213: -2795198450647791656
+    second: Eoksoe-Sheet_48
+  - first:
+      213: -6449283716519612013
+    second: Eoksoe-Sheet_49
+  - first:
+      213: -2036366047634559281
+    second: Eoksoe-Sheet_50
+  - first:
+      213: -5411196102044471522
+    second: Eoksoe-Sheet_51
+  - first:
+      213: 7164038810882287253
+    second: Eoksoe-Sheet_52
+  - first:
+      213: 5451362367304074550
+    second: Eoksoe-Sheet_53
+  - first:
+      213: -786097383183239303
+    second: Eoksoe-Sheet_54
+  - first:
+      213: 1084717201161669824
+    second: Eoksoe-Sheet_55
+  - first:
+      213: 3943264525364867300
+    second: Eoksoe-Sheet_56
+  - first:
+      213: -2279479515249072444
+    second: Eoksoe-Sheet_57
+  - first:
+      213: 3710678458254052301
+    second: Eoksoe-Sheet_58
+  - first:
+      213: -4829451392622958328
+    second: Eoksoe-Sheet_59
+  - first:
+      213: -264915750839353001
+    second: Eoksoe-Sheet_60
+  - first:
+      213: -58471267113245600
+    second: Eoksoe-Sheet_61
+  - first:
+      213: 130301549400972131
+    second: Eoksoe-Sheet_62
+  - first:
+      213: -8861791576111558342
+    second: Eoksoe-Sheet_63
+  - first:
+      213: 2891667409593218085
+    second: Eoksoe-Sheet_64
+  - first:
+      213: 5122472258540450553
+    second: Eoksoe-Sheet_65
+  - first:
+      213: -4081642229956381602
+    second: Eoksoe-Sheet_66
+  - first:
+      213: -1868990267197198025
+    second: Eoksoe-Sheet_67
+  - first:
+      213: 2589650939860878441
+    second: Eoksoe-Sheet_68
+  - first:
+      213: 5487676513444325615
+    second: Eoksoe-Sheet_69
+  - first:
+      213: 4654903425736856603
+    second: Eoksoe-Sheet_70
+  - first:
+      213: 7318604589231665385
+    second: Eoksoe-Sheet_71
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 2310
+        width: 212
+        height: 246
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69dd1b34a2934f430800000000000000
+      internalID: 3815737637976792470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 2310
+        width: 216
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d10f30313db10ab70800000000000000
+      internalID: 8908150656309915677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 529
+        y: 2310
+        width: 214
+        height: 239
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fe2ef7007ec95d90800000000000000
+      internalID: -7108423556261859597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 787
+        y: 2310
+        width: 212
+        height: 240
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebc15f8b1df3ac080800000000000000
+      internalID: -9166443921575437122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 2310
+        width: 214
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b08f5a37db64fca70800000000000000
+      internalID: 8849369572309334027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 1298
+        y: 2310
+        width: 213
+        height: 246
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 150032295b16a6d70800000000000000
+      internalID: 9037143034741063761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 1554
+        y: 2310
+        width: 213
+        height: 249
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5794ace67a3e7b480800000000000000
+      internalID: -8883381431707219595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 2054
+        width: 212
+        height: 245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f55cd6355bf30e390800000000000000
+      internalID: -7791157307329624737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 2054
+        width: 213
+        height: 245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f126a7fe657e27170800000000000000
+      internalID: 8174850634201850399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 2054
+        width: 215
+        height: 239
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 133c6eb2864983f70800000000000000
+      internalID: 9167240216646697777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 2054
+        width: 212
+        height: 240
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f52d91d1a446376e0800000000000000
+      internalID: -1841017553185811873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 2054
+        width: 212
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e61a82f4d9eabec0800000000000000
+      internalID: -3550268255416740127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 1798
+        width: 212
+        height: 246
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af882ec712e0468d0800000000000000
+      internalID: -2854140726854121222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 1798
+        width: 216
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ea6c5b80d15cc410800000000000000
+      internalID: 1498662732140669666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 529
+        y: 1798
+        width: 214
+        height: 239
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef8c55f5a9ce52b00800000000000000
+      internalID: 803308256324077822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 787
+        y: 1798
+        width: 212
+        height: 240
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d55bc67f123dc7bc0800000000000000
+      internalID: -3783917444059581091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 1798
+        width: 214
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06b5fb2a669146b80800000000000000
+      internalID: -8402563076158694560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 1298
+        y: 1798
+        width: 213
+        height: 246
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a868459ffb19c8560800000000000000
+      internalID: 7317383748278060682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 1554
+        y: 1798
+        width: 213
+        height: 249
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b78e71274e9a07560800000000000000
+      internalID: 7309528993854122107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 1542
+        width: 213
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e3f24f2633e70390800000000000000
+      internalID: -7852057603436514330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 1542
+        width: 199
+        height: 242
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34eb9e78ef2e85ca0800000000000000
+      internalID: -6027818518405595581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 545
+        y: 1542
+        width: 160
+        height: 240
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70dbdfc63fbb047f0800000000000000
+      internalID: -630297293651854073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 1542
+        width: 163
+        height: 238
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b10ec581dc3db99c0800000000000000
+      internalID: -3919306172865388517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 1103
+        y: 1542
+        width: 160
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12c6f616eb040cda0800000000000000
+      internalID: -5926665923196916703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 1362
+        y: 1542
+        width: 157
+        height: 245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c49a92d774452edf0800000000000000
+      internalID: -152466771357882036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 1286
+        width: 212
+        height: 246
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 185aa409d37e265d0800000000000000
+      internalID: -3070637744313424511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 269
+        y: 1286
+        width: 218
+        height: 245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7559e4e3b0785b60800000000000000
+      internalID: 7735056277950780796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 1286
+        width: 222
+        height: 242
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31fa5b8ed3eafb230800000000000000
+      internalID: 3656833003368591123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 795
+        y: 1286
+        width: 204
+        height: 239
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 185562ed8ddb837b0800000000000000
+      internalID: -5244233026935302783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 1079
+        y: 1286
+        width: 162
+        height: 235
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55f06aaac37c08b50800000000000000
+      internalID: 6593488917845380949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_30
+      rect:
+        serializedVersion: 2
+        x: 1337
+        y: 1286
+        width: 157
+        height: 237
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b59c90501b405f860800000000000000
+      internalID: 7562956307578866011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_31
+      rect:
+        serializedVersion: 2
+        x: 1593
+        y: 1286
+        width: 156
+        height: 242
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b303454f34d04000800000000000000
+      internalID: 18247766719529913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_32
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 1030
+        width: 157
+        height: 241
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbd85bf9252d0d260800000000000000
+      internalID: 7120422263181381055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_33
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 1030
+        width: 160
+        height: 237
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ade44f0203ab51500800000000000000
+      internalID: 366403660574641882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_34
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 1030
+        width: 163
+        height: 232
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13822b18dc4a9dd70800000000000000
+      internalID: 9068460527238391857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_35
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 1030
+        width: 165
+        height: 232
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b95e1c593bb2e570800000000000000
+      internalID: 8494557702207199667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_36
+      rect:
+        serializedVersion: 2
+        x: 1069
+        y: 1030
+        width: 167
+        height: 237
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb11e795b07b7b8f0800000000000000
+      internalID: -524749572191415877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_37
+      rect:
+        serializedVersion: 2
+        x: 1328
+        y: 1030
+        width: 165
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9fea9c5decba04bc0800000000000000
+      internalID: -3800849180662321415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_38
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 774
+        width: 212
+        height: 245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 326b92b8c58ec09f0800000000000000
+      internalID: -500769974375565789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_39
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 774
+        width: 204
+        height: 245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 509f6915bb0076450800000000000000
+      internalID: 6081830626314877189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_40
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 774
+        width: 191
+        height: 245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7c95e2904b1c8dd0800000000000000
+      internalID: -2482579330431607686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_41
+      rect:
+        serializedVersion: 2
+        x: 795
+        y: 774
+        width: 180
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb94670d7f16a0470800000000000000
+      internalID: 8361603375148976574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_42
+      rect:
+        serializedVersion: 2
+        x: 1052
+        y: 774
+        width: 173
+        height: 240
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6b8cb83312fc4760800000000000000
+      internalID: 7443590448506768234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_43
+      rect:
+        serializedVersion: 2
+        x: 1313
+        y: 774
+        width: 163
+        height: 239
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe9845f72224866c0800000000000000
+      internalID: -4149994340689344017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_44
+      rect:
+        serializedVersion: 2
+        x: 1577
+        y: 774
+        width: 149
+        height: 238
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 118c78ee2670543b0800000000000000
+      internalID: -5529004846037350383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_45
+      rect:
+        serializedVersion: 2
+        x: 1838
+        y: 774
+        width: 144
+        height: 237
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a59b453f420ae860800000000000000
+      internalID: 7559857463714616745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_46
+      rect:
+        serializedVersion: 2
+        x: 2092
+        y: 774
+        width: 149
+        height: 242
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa2a778f747695070800000000000000
+      internalID: 8095615363984106154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_47
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 518
+        width: 148
+        height: 240
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab63401c35436c710800000000000000
+      internalID: 1713114242586261178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_48
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 518
+        width: 148
+        height: 238
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d78a6891d57539d0800000000000000
+      internalID: -2795198450647791656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_49
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 518
+        width: 149
+        height: 238
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 391332d21aa8f76a0800000000000000
+      internalID: -6449283716519612013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_50
+      rect:
+        serializedVersion: 2
+        x: 813
+        y: 518
+        width: 148
+        height: 240
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fce631a6edf5db3e0800000000000000
+      internalID: -2036366047634559281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_51
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 262
+        width: 149
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1f29af90d197e4b0800000000000000
+      internalID: -5411196102044471522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_52
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 262
+        width: 148
+        height: 245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59620cf7757cb6360800000000000000
+      internalID: 7164038810882287253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_53
+      rect:
+        serializedVersion: 2
+        x: 558
+        y: 262
+        width: 143
+        height: 242
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6358715c03127ab40800000000000000
+      internalID: 5451362367304074550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_54
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 262
+        width: 144
+        height: 237
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 977bf7c48983715f0800000000000000
+      internalID: -786097383183239303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_55
+      rect:
+        serializedVersion: 2
+        x: 1070
+        y: 262
+        width: 144
+        height: 235
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cc4ff02c80bd0f00800000000000000
+      internalID: 1084717201161669824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_56
+      rect:
+        serializedVersion: 2
+        x: 1325
+        y: 262
+        width: 152
+        height: 236
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e0b5c9813a49b630800000000000000
+      internalID: 3943264525364867300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_57
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 6
+        width: 212
+        height: 246
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c6acc44579ad50e0800000000000000
+      internalID: -2279479515249072444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_58
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 6
+        width: 212
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcb4de3d56afe7330800000000000000
+      internalID: 3710678458254052301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_59
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 6
+        width: 211
+        height: 241
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80961b2cb875afcb0800000000000000
+      internalID: -4829451392622958328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_60
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 8
+        width: 212
+        height: 237
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75180d73784d25cf0800000000000000
+      internalID: -264915750839353001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_61
+      rect:
+        serializedVersion: 2
+        x: 1044
+        y: 7
+        width: 213
+        height: 241
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 064e52e31b4403ff0800000000000000
+      internalID: -58471267113245600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_62
+      rect:
+        serializedVersion: 2
+        x: 1301
+        y: 7
+        width: 213
+        height: 242
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36b5abd919ceec100800000000000000
+      internalID: 130301549400972131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_63
+      rect:
+        serializedVersion: 2
+        x: 1557
+        y: 41
+        width: 217
+        height: 211
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3152586387940580800000000000000
+      internalID: -8861791576111558342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_64
+      rect:
+        serializedVersion: 2
+        x: 1600
+        y: 40
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 524b0653034412820800000000000000
+      internalID: 2891667409593218085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_65
+      rect:
+        serializedVersion: 2
+        x: 1718
+        y: 40
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f2b81e016da61740800000000000000
+      internalID: 5122472258540450553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_66
+      rect:
+        serializedVersion: 2
+        x: 1814
+        y: 56
+        width: 216
+        height: 196
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e54773f64081b57c0800000000000000
+      internalID: -4081642229956381602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_67
+      rect:
+        serializedVersion: 2
+        x: 1856
+        y: 36
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7317c0b11430016e0800000000000000
+      internalID: -1868990267197198025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_68
+      rect:
+        serializedVersion: 2
+        x: 1978
+        y: 36
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9640aaa2fc940f320800000000000000
+      internalID: 2589650939860878441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_69
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 8
+        width: 12
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe86a1ac6b4282c40800000000000000
+      internalID: 5487676513444325615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_70
+      rect:
+        serializedVersion: 2
+        x: 1598
+        y: 7
+        width: 59
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b145bc2c00a899040800000000000000
+      internalID: 4654903425736856603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_71
+      rect:
+        serializedVersion: 2
+        x: 1679
+        y: 7
+        width: 60
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e072b82918e09560800000000000000
+      internalID: 7318604589231665385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Eoksoe-Sheet_0: 3815737637976792470
+      Eoksoe-Sheet_1: 8908150656309915677
+      Eoksoe-Sheet_10: -1841017553185811873
+      Eoksoe-Sheet_11: -3550268255416740127
+      Eoksoe-Sheet_12: -2854140726854121222
+      Eoksoe-Sheet_13: 1498662732140669666
+      Eoksoe-Sheet_14: 803308256324077822
+      Eoksoe-Sheet_15: -3783917444059581091
+      Eoksoe-Sheet_16: -8402563076158694560
+      Eoksoe-Sheet_17: 7317383748278060682
+      Eoksoe-Sheet_18: 7309528993854122107
+      Eoksoe-Sheet_19: -7852057603436514330
+      Eoksoe-Sheet_2: -7108423556261859597
+      Eoksoe-Sheet_20: -6027818518405595581
+      Eoksoe-Sheet_21: -630297293651854073
+      Eoksoe-Sheet_22: -3919306172865388517
+      Eoksoe-Sheet_23: -5926665923196916703
+      Eoksoe-Sheet_24: -152466771357882036
+      Eoksoe-Sheet_25: -3070637744313424511
+      Eoksoe-Sheet_26: 7735056277950780796
+      Eoksoe-Sheet_27: 3656833003368591123
+      Eoksoe-Sheet_28: -5244233026935302783
+      Eoksoe-Sheet_29: 6593488917845380949
+      Eoksoe-Sheet_3: -9166443921575437122
+      Eoksoe-Sheet_30: 7562956307578866011
+      Eoksoe-Sheet_31: 18247766719529913
+      Eoksoe-Sheet_32: 7120422263181381055
+      Eoksoe-Sheet_33: 366403660574641882
+      Eoksoe-Sheet_34: 9068460527238391857
+      Eoksoe-Sheet_35: 8494557702207199667
+      Eoksoe-Sheet_36: -524749572191415877
+      Eoksoe-Sheet_37: -3800849180662321415
+      Eoksoe-Sheet_38: -500769974375565789
+      Eoksoe-Sheet_39: 6081830626314877189
+      Eoksoe-Sheet_4: 8849369572309334027
+      Eoksoe-Sheet_40: -2482579330431607686
+      Eoksoe-Sheet_41: 8361603375148976574
+      Eoksoe-Sheet_42: 7443590448506768234
+      Eoksoe-Sheet_43: -4149994340689344017
+      Eoksoe-Sheet_44: -5529004846037350383
+      Eoksoe-Sheet_45: 7559857463714616745
+      Eoksoe-Sheet_46: 8095615363984106154
+      Eoksoe-Sheet_47: 1713114242586261178
+      Eoksoe-Sheet_48: -2795198450647791656
+      Eoksoe-Sheet_49: -6449283716519612013
+      Eoksoe-Sheet_5: 9037143034741063761
+      Eoksoe-Sheet_50: -2036366047634559281
+      Eoksoe-Sheet_51: -5411196102044471522
+      Eoksoe-Sheet_52: 7164038810882287253
+      Eoksoe-Sheet_53: 5451362367304074550
+      Eoksoe-Sheet_54: -786097383183239303
+      Eoksoe-Sheet_55: 1084717201161669824
+      Eoksoe-Sheet_56: 3943264525364867300
+      Eoksoe-Sheet_57: -2279479515249072444
+      Eoksoe-Sheet_58: 3710678458254052301
+      Eoksoe-Sheet_59: -4829451392622958328
+      Eoksoe-Sheet_6: -8883381431707219595
+      Eoksoe-Sheet_60: -264915750839353001
+      Eoksoe-Sheet_61: -58471267113245600
+      Eoksoe-Sheet_62: 130301549400972131
+      Eoksoe-Sheet_63: -8861791576111558342
+      Eoksoe-Sheet_64: 2891667409593218085
+      Eoksoe-Sheet_65: 5122472258540450553
+      Eoksoe-Sheet_66: -4081642229956381602
+      Eoksoe-Sheet_67: -1868990267197198025
+      Eoksoe-Sheet_68: 2589650939860878441
+      Eoksoe-Sheet_69: 5487676513444325615
+      Eoksoe-Sheet_7: -7791157307329624737
+      Eoksoe-Sheet_70: 4654903425736856603
+      Eoksoe-Sheet_71: 7318604589231665385
+      Eoksoe-Sheet_8: 8174850634201850399
+      Eoksoe-Sheet_9: 9167240216646697777
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

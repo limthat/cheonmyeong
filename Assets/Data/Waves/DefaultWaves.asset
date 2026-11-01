@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ba9b3c736fef164085ca940254a3d47, type: 3}
+  m_Name: DefaultWaves
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Waves.WaveConfigSO
+  preparationSeconds: 15
+  defaultWaveDurationSeconds: 75
+  healthGrowthPerWave: 0.1
+  endOfWaveHealRatio: 0.1
+  reviveHealthRatio: 0.3
+  waves:
+  - label: "1\uC6E8\uC774\uBE0C"
+    durationOverrideSeconds: 0
+    enemyCount: 125
+    maxAliveEnemies: 300
+    healthMultiplierOverride: 0
+    spawns:
+    - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
+      weight: 60
+    - enemy: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
+      weight: 30
+    - enemy: {fileID: 11400000, guid: 95b22d80d8ce2d74daa1facaac300e14, type: 2}
+      weight: 10
+  - label: "2\uC6E8\uC774\uBE0C"
+    durationOverrideSeconds: 0
+    enemyCount: 175
+    maxAliveEnemies: 300
+    healthMultiplierOverride: 0
+    spawns:
+    - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
+      weight: 60
+    - enemy: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
+      weight: 30
+    - enemy: {fileID: 11400000, guid: 95b22d80d8ce2d74daa1facaac300e14, type: 2}
+      weight: 10
+  - label: "3\uC6E8\uC774\uBE0C"
+    durationOverrideSeconds: 0
+    enemyCount: 225
+    maxAliveEnemies: 300
+    healthMultiplierOverride: 0
+    spawns:
+    - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
+      weight: 60
+    - enemy: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
+      weight: 30
+    - enemy: {fileID: 11400000, guid: 95b22d80d8ce2d74daa1facaac300e14, type: 2}
+      weight: 10
+  - label: "4\uC6E8\uC774\uBE0C"
+    durationOverrideSeconds: 0
+    enemyCount: 275
+    maxAliveEnemies: 300
+    healthMultiplierOverride: 0
+    spawns:
+    - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
+      weight: 60
+    - enemy: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
+      weight: 30
+    - enemy: {fileID: 11400000, guid: 95b22d80d8ce2d74daa1facaac300e14, type: 2}
+      weight: 10
+  - label: "5\uC6E8\uC774\uBE0C"
+    durationOverrideSeconds: 0
+    enemyCount: 150
+    maxAliveEnemies: 300
+    healthMultiplierOverride: 0
+    spawns:
+    - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
+      weight: 60
+    - enemy: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
+      weight: 30
+    - enemy: {fileID: 11400000, guid: 95b22d80d8ce2d74daa1facaac300e14, type: 2}
+      weight: 10
+  - label: "6\uC6E8\uC774\uBE0C"
+    durationOverrideSeconds: 0
+    enemyCount: 350
+    maxAliveEnemies: 300
+    healthMultiplierOverride: 0
+    spawns:
+    - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
+      weight: 60
+    - enemy: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
+      weight: 30
+    - enemy: {fileID: 11400000, guid: 95b22d80d8ce2d74daa1facaac300e14, type: 2}
+      weight: 10
+  - label: "7\uC6E8\uC774\uBE0C"
+    durationOverrideSeconds: 0
+    enemyCount: 410
+    maxAliveEnemies: 300
+    healthMultiplierOverride: 0
+    spawns:
+    - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
+      weight: 60
+    - enemy: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
+      weight: 30
+    - enemy: {fileID: 11400000, guid: 95b22d80d8ce2d74daa1facaac300e14, type: 2}
+      weight: 10
+  - label: "8\uC6E8\uC774\uBE0C"
+    durationOverrideSeconds: 0
+    enemyCount: 475
+    maxAliveEnemies: 300
+    healthMultiplierOverride: 0
+    spawns:
+    - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
+      weight: 60
+    - enemy: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
+      weight: 30
+    - enemy: {fileID: 11400000, guid: 95b22d80d8ce2d74daa1facaac300e14, type: 2}
+      weight: 10
+  - label: "9\uC6E8\uC774\uBE0C"
+    durationOverrideSeconds: 0
+    enemyCount: 540
+    maxAliveEnemies: 300
+    healthMultiplierOverride: 0
+    spawns:
+    - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
+      weight: 60
+    - enemy: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
+      weight: 30
+    - enemy: {fileID: 11400000, guid: 95b22d80d8ce2d74daa1facaac300e14, type: 2}
+      weight: 10
+  - label: "10\uC6E8\uC774\uBE0C"
+    durationOverrideSeconds: 0
+    enemyCount: 625
+    maxAliveEnemies: 300
+    healthMultiplierOverride: 0
+    spawns:
+    - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
+      weight: 60
+    - enemy: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
+      weight: 30
+    - enemy: {fileID: 11400000, guid: 95b22d80d8ce2d74daa1facaac300e14, type: 2}
+      weight: 10

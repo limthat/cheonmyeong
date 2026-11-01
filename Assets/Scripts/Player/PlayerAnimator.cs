@@ -32,6 +32,13 @@ namespace CheonMyeong.Player
     /// CreateHayoungAnimatorController), 에디터에서 나중에 수동으로 바뀌거나 트랜지션
     /// 설정이 달라져도 항상 보장되도록 OnNetworkSpawn에서 명시적으로
     /// animator.Play(Idle)을 한 번 더 강제한다 - 이중 안전장치.
+    ///
+    /// 사망 연출(261026 추가) - PlayerHealth.IsDead를 매 프레임 폴링해서 Animator의
+    /// IsDead bool 파라미터에 반영한다. Hayoung_Animator.controller에 Any State -> Death
+    /// (IsDead == true, 즉시 전환) / Death -> Idle(IsDead == false) 전환을 추가해뒀다 -
+    /// 그래서 Idle/Walk/Attack 중 어느 상태에서 죽어도 즉시 Death로 끼어들고, 부활하면
+    /// Idle로 복귀한다. Death 클립(Hayoung_Death.anim)은 LoopTime이 꺼져 있어 마지막
+    /// 프레임(쓰러진 포즈)에서 멈춘 채 유지된다.
     /// </summary>
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(SpriteRenderer))]
@@ -40,6 +47,7 @@ namespace CheonMyeong.Player
         private static readonly int IsMovingHash = Animator.StringToHash("IsMoving");
         private static readonly int AttackHash = Animator.StringToHash("Attack");
         private static readonly int AttackSpeedHash = Animator.StringToHash("AttackSpeed");
+        private static readonly int IsDeadHash = Animator.StringToHash("IsDead");
 
         /// <summary>Animator Controller의 상태 이름 "Idle"과 반드시 같아야 한다
         /// (CheonMyeongPrototypeSetup.CreateHayoungAnimatorController에서 생성하는 상태명).</summary>
@@ -49,6 +57,7 @@ namespace CheonMyeong.Player
         [SerializeField] private SpriteRenderer spriteRenderer;
         [SerializeField] private PlayerMovement movement;
         [SerializeField] private PlayerAutoAttack attack;
+        [SerializeField] private PlayerHealth health;
 
         [Tooltip("Attack 상태 재생 속도 계산용 - attackClip.length를 attack.AttackInterval로 " +
                  "나눠서 Animator의 AttackSpeed 파라미터에 넣는다. 에디터 셋업 스크립트가 자동으로 " +
@@ -59,6 +68,7 @@ namespace CheonMyeong.Player
         private bool lastFlipX;
         private bool subscribed;
         private float lastAttackSpeed = 1f;
+        private bool lastIsDead;
 
         public override void OnNetworkSpawn()
         {
@@ -91,7 +101,14 @@ namespace CheonMyeong.Player
 
         private void Update()
         {
-            if (animator == null || movement == null)
+            if (animator == null)
+            {
+                return;
+            }
+
+            UpdateDeadState();
+
+            if (movement == null)
             {
                 return;
             }
@@ -105,6 +122,28 @@ namespace CheonMyeong.Player
 
             UpdateFacing();
             UpdateAttackSpeed();
+        }
+
+        /// <summary>
+        /// 261026 추가 - PlayerHealth.IsDead(서버가 쓰고 전원이 읽는 NetworkVariable)를
+        /// 그대로 폴링해서 Animator의 IsDead 파라미터로 반영한다. Any State -> Death
+        /// 전환이 true일 때 즉시 끼어들고, false로 돌아오면 Death -> Idle로 복귀한다
+        /// (Hayoung_Animator.controller 참고). 값이 바뀔 때만 SetBool을 호출해서
+        /// 위 IsMoving/AttackSpeed와 같은 패턴으로 불필요한 Animator 호출을 피한다.
+        /// </summary>
+        private void UpdateDeadState()
+        {
+            if (health == null)
+            {
+                return;
+            }
+
+            bool isDead = health.IsDead;
+            if (isDead != lastIsDead)
+            {
+                animator.SetBool(IsDeadHash, isDead);
+                lastIsDead = isDead;
+            }
         }
 
         /// <summary>
@@ -155,7 +194,10 @@ namespace CheonMyeong.Player
 
         private void HandleAttackTriggered()
         {
-            if (animator != null)
+            // 사망 처리와 공격 RPC가 같은 프레임에 겹치는 드문 경우를 막는 안전장치 -
+            // PlayerAutoAttack은 사망 시 바로 꺼지지만, 꺼지기 직전에 이미 쏜 RPC가
+            // 뒤늦게 도착하면 Death 연출 중에 Attack 트리거가 끼어들 수 있다.
+            if (animator != null && (health == null || !health.IsDead))
             {
                 animator.SetTrigger(AttackHash);
             }

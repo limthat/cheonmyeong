@@ -17,6 +17,8 @@ namespace CheonMyeong.UI.Title
     /// 모호하지 않은 이름을 쓴다 - 반대로 느껴지면 TitleDragCutController.ClassifyDirection()
     /// 한 곳만 뒤집으면 된다.
     ///
+    /// 261101 - 지금은 클릭(Activate)으로만 발동한다. 아래 Cut(조각 연출)은 나중에 조각 아트가 생기면 다시 쓸 수 있게 남겨둔다.
+    ///
     /// 조각 스프라이트는 전부 placeholder(단색 사각형)다. 최종 아트는 "온전한 상태" 기준과
     /// 같은 픽셀 크기의 캔버스에, 실제로 보여야 할 조각 모양만 그리고 나머지는 투명으로
     /// 둔 PNG로 교체하면 된다 - 그래야 이 스크립트/에디터 셋업이 잡아둔 위치·피벗을
@@ -97,6 +99,26 @@ namespace CheonMyeong.UI.Title
         /// 판정했을 때만 호출한다. dragDirection은 정규화된 드래그 방향(조각이 갈라지는
         /// 축을 계산하는 데 씀).
         /// </summary>
+        /// <summary>
+        /// 261101 추가 - 클릭으로 발동(TitleDragCutController). 조각 연출 없이 부적은 그대로 두고 버튼 로직만 실행한다.
+        /// 중복 발동을 막으려고 IsCut을 켜두며, 설정처럼 다시 쓸 부적은 Reset()으로 되돌린다(TitleToLobbyBridge).
+        /// </summary>
+        public void Activate()
+        {
+            if (IsCut)
+            {
+                return;
+            }
+
+            IsCut = true;
+            isHovered = false;
+            if (wholeRenderer != null)
+            {
+                wholeRenderer.color = baseColor;
+            }
+            OnCutCompleted?.Invoke();
+        }
+
         public void Cut(CutDirection direction, Vector2 dragDirection)
         {
             if (IsCut)

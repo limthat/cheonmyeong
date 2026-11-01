@@ -37,11 +37,18 @@ namespace CheonMyeong.Input
 
         private void ReadMove()
         {
+            MoveInput = ReadKeyboardMove();
+        }
+
+        /// <summary>
+        /// 261027 추가 - 로비 캐릭터(LobbyAvatar)도 인게임과 같은 키 배치를 쓰도록 키 읽기만 공용으로 뺐다.
+        /// </summary>
+        public static Vector2 ReadKeyboardMove()
+        {
             var keyboard = Keyboard.current;
             if (keyboard == null)
             {
-                MoveInput = Vector2.zero;
-                return;
+                return Vector2.zero;
             }
 
             float x = 0f;
@@ -52,7 +59,7 @@ namespace CheonMyeong.Input
             if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed) y -= 1f;
             if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed) y += 1f;
 
-            MoveInput = new Vector2(x, y);
+            return new Vector2(x, y);
         }
 
         private void ReadAim()

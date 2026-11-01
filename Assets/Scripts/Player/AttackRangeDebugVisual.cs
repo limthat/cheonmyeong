@@ -95,7 +95,9 @@ namespace CheonMyeong.Player
                 // 판정 시점 그대로)에서 OnAttackResolved(PlayerAutoAttack.ApplyHit() 실행
                 // 시점 = pendingHitDelay 적용 후 실제 피해가 들어가는 순간)로 변경. 이제
                 // 이 디버그 도형이 뜨는 순간과 실제 TakeDamage가 호출되는 순간이 정확히 일치한다.
-                autoAttack.OnAttackResolved += HandleAttackResolved;
+                // 261027 주석처리 - 예섭: "하영이 사거리 표시를 주석처리". 실제 베기 이펙트(PlayerAttackEffect)로
+                // 대체. 다시 범위를 확인하고 싶으면 아래 한 줄의 주석만 풀면 된다(OnDisable의 해제 쪽은 그대로 둬도 안전).
+                // autoAttack.OnAttackResolved += HandleAttackResolved;
             }
         }
 

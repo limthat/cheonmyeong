@@ -17,37 +17,91 @@ MonoBehaviour:
     displayName: "\uD558\uC601"
     weaponCaption: "\uC0AC\uC778\uAC80 \xB7 \uADFC\uC811 \xB7 \uB2E4\uC218"
     isUnlocked: 1
+    stats: {fileID: 11400000, guid: 8dcb9b7fc782fb046991136a62bdfb44, type: 2}
+    lobbyIdleFrames:
+    - {fileID: -6605606690288749096, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -5144685695703630598, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 226321254724603995, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -2965228324279595574, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -8771070252863845956, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 7710026285879910484, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 8978153641333118618, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    lobbyIdleFps: 8
+    lobbyWalkFrames:
+    - {fileID: -3647958575022085746, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -5283390665470537459, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -326355324715849850, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -7779049213908541197, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 923173184673212071, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 2887301945769700840, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 3700275050895930902, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    lobbyWalkFps: 10
   - characterId: hanjuwon
     displayName: "\uD55C\uC8FC\uC6D0"
     weaponCaption: "\uBD80\uC801 \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C (\uCD94\uD6C4
       \uAC1C\uBC1C)"
     isUnlocked: 0
+    stats: {fileID: 0}
+    lobbyIdleFrames: []
+    lobbyIdleFps: 8
+    lobbyWalkFrames: []
+    lobbyWalkFps: 10
   - characterId: parkgyuhyeok
     displayName: "\uBC15\uADDC\uD601"
     weaponCaption: "\uC0BC\uC9C0\uCC3D \xB7 \uADFC\uC811 \xB7 \uB2E8\uC77C (\uCD94\uD6C4
       \uAC1C\uBC1C)"
     isUnlocked: 0
+    stats: {fileID: 0}
+    lobbyIdleFrames: []
+    lobbyIdleFps: 8
+    lobbyWalkFrames: []
+    lobbyWalkFps: 10
   - characterId: leeara
     displayName: "\uC774\uC544\uB77C"
     weaponCaption: "\uC2E0\uCE7C \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C (\uCD94\uD6C4
       \uAC1C\uBC1C)"
     isUnlocked: 0
+    stats: {fileID: 0}
+    lobbyIdleFrames: []
+    lobbyIdleFps: 8
+    lobbyWalkFrames: []
+    lobbyWalkFps: 10
   - characterId: choihwanjo
     displayName: "\uCD5C\uD658\uC870"
     weaponCaption: "\uD65C \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C (\uCD94\uD6C4
       \uAC1C\uBC1C)"
     isUnlocked: 0
+    stats: {fileID: 0}
+    lobbyIdleFrames: []
+    lobbyIdleFps: 8
+    lobbyWalkFrames: []
+    lobbyWalkFps: 10
   - characterId: sinjihyeon
     displayName: "\uC2E0\uC9C0\uD604"
     weaponCaption: "\uACE1\uB3C4 \xB7 \uADFC\uC811 \xB7 \uB2E4\uC218 (\uCD94\uD6C4
       \uAC1C\uBC1C)"
     isUnlocked: 0
+    stats: {fileID: 0}
+    lobbyIdleFrames: []
+    lobbyIdleFps: 8
+    lobbyWalkFrames: []
+    lobbyWalkFps: 10
   - characterId: imhun
     displayName: "\uC784\uD6C8"
     weaponCaption: "\uCC3D \xB7 \uADFC\uC811 \xB7 \uB2E8\uC77C (\uCD94\uD6C4 \uAC1C\uBC1C)"
     isUnlocked: 0
+    stats: {fileID: 0}
+    lobbyIdleFrames: []
+    lobbyIdleFps: 8
+    lobbyWalkFrames: []
+    lobbyWalkFps: 10
   - characterId: simyeore
     displayName: "\uC2EC\uC5EC\uB808"
     weaponCaption: "\uBD80\uCC44 \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E4\uC218 \xB7 \uB109\uBC31
       (\uCD94\uD6C4 \uAC1C\uBC1C)"
     isUnlocked: 0
+    stats: {fileID: 0}
+    lobbyIdleFrames: []
+    lobbyIdleFps: 8
+    lobbyWalkFrames: []
+    lobbyWalkFps: 10

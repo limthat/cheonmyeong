@@ -72,6 +72,15 @@ namespace CheonMyeong.Networking
 
             NetworkManager.Singleton.OnServerStarted += RegisterHandler;
             NetworkManager.Singleton.OnClientStarted += RegisterHandler;
+
+            // 261027 수정 - Gameplay 씬은 대기실 START 때(=이미 호스트/클라이언트가 시작된 뒤) Additive로
+            // 로드된다. 그래서 위 두 이벤트는 이미 지나가서 다시 오지 않고, 핸들러가 영영 등록되지 않았다
+            // → 디스폰 때 풀 반환 대신 실제 Destroy가 일어나고 pool.CountActive(=ActiveCount)가 계속 쌓여서
+            // 동시 최대 수 제한에 걸리면 스폰이 멈추는 버그. 이미 리스닝 중이면 바로 등록한다.
+            if (NetworkManager.Singleton.IsListening)
+            {
+                RegisterHandler();
+            }
         }
 
         private void OnDisable()

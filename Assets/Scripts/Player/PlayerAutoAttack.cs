@@ -1,5 +1,6 @@
 using CheonMyeong.Combat;
 using CheonMyeong.Data;
+using CheonMyeong.Enemies;
 using CheonMyeong.Input;
 using CheonMyeong.Progression;
 using Unity.Netcode;
@@ -31,6 +32,19 @@ namespace CheonMyeong.Player
         private ContactFilter2D contactFilter;
 
         private float attackTimer;
+
+        /// <summary>
+        /// 261027 추가 - "증강 선택 후 공격/애니메이션에 딜레이가 생긴다"(예섭 지적) 원인
+        /// 수정용. attackTimer/pendingHitDelay는 일시정지(IsPaused) 중엔 그대로 멈춰있다가
+        /// 재개 시 멈췄던 그 자리에서부터 다시 카운트된다 - 그 자체는 의도대로지만, 레벨업
+        /// 순간 공격 애니메이션이 막 트리거된 직후(pendingHitDelay가 채워진 채) 바로 일시정지가
+        /// 걸리면, 화면엔 이미 스윙 모션이 재생돼버린 지 한참 지난 뒤(증강 고르는 동안 애니메이터는
+        /// 멈추지 않으므로) 실제 판정(ApplyHit)이 뒤늦게 들어가거나, attackTimer도 멈췄던
+        /// 어중간한 값부터 다시 줄어들어 다음 공격 타이밍이 눈에 띄게 어긋나 보였다. 일시정지가
+        /// "막 풀린" 바로 그 프레임을 감지해서 둘 다 리셋한다 - 공격 한 주기 쉬고 새로 시작하는
+        /// 셈이라 더 자연스럽다.
+        /// </summary>
+        private bool wasPausedLastFrame;
 
         /// <summary>
         /// 261014 추가 - "공격 판정이 모션보다 먼저 온다"(예섭 표현: "번개처럼 빛(판정)이 먼저
@@ -91,6 +105,9 @@ namespace CheonMyeong.Player
 
         public Vector3 AimPosition => networkAimPosition.Value;
 
+        /// <summary>261027 추가 - 공격 주기 중 실제 판정이 들어가는 지점 비율(PlayerAttackEffect가 이펙트 길이 계산에 씀).</summary>
+        public float HitDelayRatio => attackHitDelayRatio;
+
         /// <summary>
         /// PlayerAnimator가 읽는 용도 - 공속(attacksPerSecond)이 바뀌어도 Attack
         /// 애니메이션 클립 길이는 그대로 두고 재생 속도만 맞추기 위해 "초 단위 간격"으로
@@ -137,9 +154,21 @@ namespace CheonMyeong.Player
             // 261014 추가 - 일시정지 중엔 공격 타이머도 함께 멈춘다. 여기서 멈추지 않으면
             // 증강 선택 화면이 떠 있는 동안에도 attackTimer가 계속 줄어들다가, 재개되는
             // 순간 밀린 공격이 한꺼번에 나가버린다.
-            if (PartyProgress.Instance != null && PartyProgress.Instance.IsPaused)
+            bool isPaused = PartyProgress.Instance != null && PartyProgress.Instance.IsPaused;
+            if (isPaused)
             {
+                wasPausedLastFrame = true;
                 return;
+            }
+
+            if (wasPausedLastFrame)
+            {
+                // 261027 추가 - 방금 일시정지가 풀린 첫 프레임. 멈춰있던 동안 어중간하게
+                // 남아있던 타이머를 전부 리셋해서, 레벨업 직전에 쌓여있던 공격 타이밍이
+                // 재개 직후 어긋나 보이지 않게 한다(위 wasPausedLastFrame 필드 설명 참고).
+                wasPausedLastFrame = false;
+                attackTimer = AttackInterval;
+                pendingHitDelay = -1f;
             }
 
             // 261014 추가 - 대기 중인 타격 판정(Attack()이 예약해둔 것)을 먼저 처리한다.
@@ -249,10 +278,16 @@ namespace CheonMyeong.Player
 
                 if (hitBuffer[i].TryGetComponent(out IDamageable damageable))
                 {
+                    // 261027 추가 - 결과 화면 처치 수. 이 타격 전엔 살아있었는데 타격 후 쓰러졌으면 내 처치.
+                    Enemy enemy = damageable as Enemy;
+                    bool wasAlive = enemy != null && !enemy.IsDying;
+
                     damageable.TakeDamage(stats.attackPower);
-                    // 공격 모션/이펙트가 아직 없어서(미정) 맞았는지 눈으로 확인이 안 되는 동안
-                    // 디버그 확인용 - 연출 붙으면 지워도 됨.
-                    Debug.Log($"[CheonMyeong] 하영 공격 적중: {hitBuffer[i].name}에 {stats.attackPower} 피해");
+
+                    if (wasAlive && enemy.IsDying && TryGetComponent(out PlayerProgress progress))
+                    {
+                        progress.ServerAddKill();
+                    }
                 }
             }
         }

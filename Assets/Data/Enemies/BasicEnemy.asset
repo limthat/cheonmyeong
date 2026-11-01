@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2ec8c72a2955cd40bbd510f919a70c8, type: 3}
   m_Name: BasicEnemy
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Data.EnemyStatsSO
-  enemyId: basic
-  displayName: "\uAE30\uBCF8 \uC801(\uC774\uB984 \uBBF8\uC815)"
-  maxHealth: 20
-  moveSpeed: 1.2
+  enemyId: mongdalgwi
+  displayName: "\uBABD\uB2EC\uADC0"
+  maxHealth: 18
+  moveSpeed: 2.5
   contactDamage: 5
   contactDamageInterval: 1
+  hitFlashBlinkCount: 2
+  hitFlashBlinkInterval: 0.08
+  deathStaggerDuration: 0.8333333
+  goldReward: 1
+  goldDropChance: 0.02
+  expReward: 1
+  grudgeWeight: 1

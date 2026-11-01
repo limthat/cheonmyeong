@@ -27,6 +27,15 @@ namespace CheonMyeong.Data
             public string weaponCaption;
 
             public bool isUnlocked;
+
+            [Header("로비 마당 (261027 추가)")]
+            [Tooltip("이동 속도 등 - 로비 캐릭터가 인게임과 같은 속도로 걷도록.")]
+            public CharacterStatsSO stats;
+
+            public Sprite[] lobbyIdleFrames = Array.Empty<Sprite>();
+            [Min(0.1f)] public float lobbyIdleFps = 8f;
+            public Sprite[] lobbyWalkFrames = Array.Empty<Sprite>();
+            [Min(0.1f)] public float lobbyWalkFps = 10f;
         }
 
         public CharacterEntry[] characters = Array.Empty<CharacterEntry>();
