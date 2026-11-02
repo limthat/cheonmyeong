@@ -1,3 +1,4 @@
+using CheonMyeong.Combat;
 using CheonMyeong.Data;
 using UnityEngine;
 
@@ -45,6 +46,8 @@ namespace CheonMyeong.Player
         private float elapsed;
         private float duration;
         private bool playing;
+        private Rect visibleBounds;
+        private bool visibleBoundsReady;
 
         private void Awake()
         {
@@ -114,14 +117,34 @@ namespace CheonMyeong.Player
             // PlayerAutoAttack.ApplyHit과 같은 반경 - 따로 계산하면 보이는 범위와 맞는 범위가 어긋난다.
             float hitRadius = stats.attackRange * stats.attackAwarenessRangeMultiplier;
 
-            float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg - 180f; // 원본 "앞" = 왼쪽(-X)
-            effectTransform.localPosition = aimDir * (hitRadius * forwardOffsetRatio);
-            effectTransform.localRotation = Quaternion.Euler(0f, 0f, angle);
-            effectRenderer.flipY = aimDir.x > 0f;
+            bool flip = aimDir.x > 0f;
+            effectRenderer.flipY = flip;
+            if (!visibleBoundsReady)
+            {
+                visibleBoundsReady = true;
+                visibleBounds = SpriteVisibleBounds.Of(frames);
+            }
 
-            float spriteHeight = frames[0].bounds.size.y;
-            float scale = spriteHeight > 0.0001f ? hitRadius * 2f * sizeToRangeRatio / spriteHeight : 1f;
-            effectTransform.localScale = new Vector3(scale, scale, 1f);
+            if (visibleBounds.width > 0.0001f && visibleBounds.height > 0.0001f)
+            {
+                // 261102 - 실제 판정 부채꼴에 맞춤(예섭): 앞뒤(가로) = 캐릭터 위치 ~ 판정 반경, 옆(세로) = 부채꼴 현(attackArcDegrees).
+                SpriteVisibleBounds.FitSlash(visibleBounds, Vector2.zero, aimDir, hitRadius, stats.attackArcDegrees, flip,
+                                             out Vector2 center, out float fitAngle, out Vector2 fitScale);
+                Vector3 parentScale = transform.lossyScale;
+                float parentScaleX = Mathf.Abs(parentScale.x) > 0.0001f ? Mathf.Abs(parentScale.x) : 1f;
+                effectTransform.localPosition = center / parentScaleX;
+                effectTransform.localRotation = Quaternion.Euler(0f, 0f, fitAngle);
+                effectTransform.localScale = new Vector3(fitScale.x / parentScaleX, fitScale.y / parentScaleX, 1f);
+            }
+            else
+            {
+                float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg - 180f; // 원본 "앞" = 왼쪽(-X)
+                effectTransform.localPosition = aimDir * (hitRadius * forwardOffsetRatio);
+                effectTransform.localRotation = Quaternion.Euler(0f, 0f, angle);
+                float spriteHeight = frames[0].bounds.size.y;
+                float scale = spriteHeight > 0.0001f ? hitRadius * 2f * sizeToRangeRatio / spriteHeight : 1f;
+                effectTransform.localScale = new Vector3(scale, scale, 1f);
+            }
 
             duration = Mathf.Max(minDuration, autoAttack.AttackInterval * (1f - autoAttack.HitDelayRatio));
             elapsed = 0f;

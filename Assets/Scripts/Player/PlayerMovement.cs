@@ -43,6 +43,10 @@ namespace CheonMyeong.Player
         private bool serverHeld;
         // 금 나와라 뚝딱: 보스전 동안 누적되는 이동 속도 감소(0~cap).
         private float serverBossSlow;
+        // 261102 - 보스 타격 밀려남(서버). 시간이 지날수록 줄어드는 속도로 밀린다.
+        private Vector2 serverKnockbackVelocity;
+        private float serverKnockbackTime;
+        private float serverKnockbackDuration;
 
         /// <summary>제압 중인지(이동 · 스킬 금지) - 모든 클라이언트에서 읽을 수 있다.</summary>
         public bool IsSuppressed => networkSuppressed.Value;
@@ -68,6 +72,18 @@ namespace CheonMyeong.Player
             serverSuppressUntil = Mathf.Max(serverSuppressUntil, Time.time + seconds);
             networkSuppressed.Value = true;
             rb.linearVelocity = Vector2.zero;
+        }
+
+        /// <summary>서버 전용 - velocity로 seconds 동안 밀려난다(점점 줄어듦). 잡혀 있으면 무시.</summary>
+        public void ServerKnockback(Vector2 velocity, float seconds)
+        {
+            if (!IsServer || serverHeld || seconds <= 0f)
+            {
+                return;
+            }
+            serverKnockbackVelocity = velocity;
+            serverKnockbackDuration = seconds;
+            serverKnockbackTime = seconds;
         }
 
         /// <summary>서버 전용 - 이동 속도 감소를 더한다(최대 cap).</summary>
@@ -98,6 +114,7 @@ namespace CheonMyeong.Player
             serverHeld = false;
             serverBossSlow = 0f;
             serverSuppressUntil = 0f;
+            serverKnockbackTime = 0f;
             base.OnNetworkDespawn();
         }
 
@@ -155,7 +172,15 @@ namespace CheonMyeong.Player
             }
             if (serverHeld)
             {
+                serverKnockbackTime = 0f;
                 return; // 위치는 억쇠가 직접 옮긴다(EoksoeBoss.SetHeldPosition)
+            }
+            if (serverKnockbackTime > 0f)
+            {
+                serverKnockbackTime -= Time.fixedDeltaTime;
+                float remain = Mathf.Clamp01(serverKnockbackTime / serverKnockbackDuration);
+                rb.linearVelocity = serverKnockbackVelocity * remain * remain;
+                return;
             }
             if (networkSuppressed.Value)
             {

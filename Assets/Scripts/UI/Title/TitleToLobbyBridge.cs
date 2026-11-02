@@ -54,7 +54,8 @@ namespace CheonMyeong.UI.Title
         {
             if (gate != null && gate.isActiveAndEnabled)
             {
-                SetTalismansVisible(false); // 열리는 문(그림 속 부적이 같이 움직임) 위에 덮개 부적이 남지 않게
+                // 부적은 문짝을 따라 움직이며 계속 보인다(TitleGate 트랙). 열리는 동안엔 못 누르게만 막는다.
+                SetTalismansInteractable(false);
                 gate.PlayOpen(FinishStart);
                 return;
             }
@@ -67,8 +68,8 @@ namespace CheonMyeong.UI.Title
             {
                 titleRoot.SetActive(false);
             }
-            // 다음에 타이틀이 다시 켜질 때를 위해 부적을 원래대로 돌려둔다(titleRoot가 꺼져 있어 화면엔 안 보임).
-            SetTalismansVisible(true);
+            // 다음에 타이틀이 다시 켜질 때를 위해 부적을 원래대로 돌려둔다(titleRoot가 꺼져 있어 화면엔 안 보임, 위치는 TitleGate가 0프레임으로).
+            SetTalismansInteractable(true);
             if (startTalisman != null)
             {
                 startTalisman.Reset();
@@ -76,11 +77,11 @@ namespace CheonMyeong.UI.Title
             UIFlowManager.Instance.ShowScreen(UIFlowManager.Lobby);
         }
 
-        private void SetTalismansVisible(bool visible)
+        private void SetTalismansInteractable(bool interactable)
         {
-            if (startTalisman != null) startTalisman.gameObject.SetActive(visible);
-            if (settingsTalisman != null) settingsTalisman.gameObject.SetActive(visible);
-            if (exitTalisman != null) exitTalisman.gameObject.SetActive(visible);
+            if (startTalisman != null) startTalisman.SetInteractable(interactable);
+            if (settingsTalisman != null) settingsTalisman.SetInteractable(interactable);
+            if (exitTalisman != null) exitTalisman.SetInteractable(interactable);
         }
 
         private void HandleSettingsCut()

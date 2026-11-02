@@ -13,7 +13,20 @@ namespace CheonMyeong.UI.Title
     [RequireComponent(typeof(SpriteRenderer))]
     public class TitleGate : MonoBehaviour
     {
+        /// <summary>
+        /// 261102 - 문 그림의 열림 프레임에 그려진 부적은 해상도가 낮아(큰 픽셀로 깨져 보임) 그 위에 선명한 부적을 계속 덮어 둔다.
+        /// 프레임마다 그림 속 부적의 위치(x, y) · 기울기(z, 도)와 가로 · 세로 배율을 재서 넣는다(빌더가 채움).
+        /// </summary>
+        [Serializable]
+        public class TalismanTrack
+        {
+            public Transform talisman;
+            public Vector3[] poses;
+            public Vector2[] scales;
+        }
+
         [SerializeField] private Sprite[] frames;
+        [SerializeField] private TalismanTrack[] talismanTracks;
         [Tooltip("문 열림 재생 속도 - 프로젝트 공통 100ms(10fps).")]
         [SerializeField, Min(1f)] private float framesPerSecond = 10f;
         [Tooltip("다 열린 뒤 로비로 넘어가기 전 잠깐 멈추는 시간(초).")]
@@ -88,6 +101,23 @@ namespace CheonMyeong.UI.Title
             if (spriteRenderer != null && frames != null && index >= 0 && index < frames.Length && frames[index] != null)
             {
                 spriteRenderer.sprite = frames[index];
+            }
+            if (talismanTracks == null)
+            {
+                return;
+            }
+            for (int i = 0; i < talismanTracks.Length; i++)
+            {
+                TalismanTrack track = talismanTracks[i];
+                if (track == null || track.talisman == null || track.poses == null || index >= track.poses.Length)
+                {
+                    continue;
+                }
+                Vector3 pose = track.poses[index];
+                track.talisman.localPosition = new Vector3(pose.x, pose.y, 0f);
+                track.talisman.localRotation = Quaternion.Euler(0f, 0f, pose.z);
+                Vector2 scale = track.scales != null && index < track.scales.Length ? track.scales[index] : Vector2.one;
+                track.talisman.localScale = new Vector3(scale.x, scale.y, 1f);
             }
         }
 

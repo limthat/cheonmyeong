@@ -133,6 +133,20 @@ namespace CheonMyeong.UI.Title
             OnCutCompleted?.Invoke();
         }
 
+        /// <summary>261102 - 문이 열리는 동안 누르거나 호버되지 않게 막는다(부적은 계속 보임).</summary>
+        public void SetInteractable(bool interactable)
+        {
+            if (hitArea != null)
+            {
+                hitArea.enabled = interactable;
+            }
+            if (!interactable && wholeRenderer != null)
+            {
+                isHovered = false;
+                wholeRenderer.color = baseColor;
+            }
+        }
+
         public void Cut(CutDirection direction, Vector2 dragDirection)
         {
             if (IsCut)

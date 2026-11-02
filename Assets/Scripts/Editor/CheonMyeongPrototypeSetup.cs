@@ -991,6 +991,12 @@ namespace CheonMyeong.EditorTools
             Sprite[] coinSprites = LoadBossCoinSprites();
             var telegraphMaterial = AssetDatabase.GetBuiltinExtraResource<Material>("Sprites-Default.mat");
             Vector2 visualOffset = ComputeFeetOffset(EoksoeSheetPath, rows[0][0]);
+            // 261102 - 타격 이펙트: FX 시트 윗줄 = 초승달 베기, 아랫줄 = 땅 터짐.
+            List<Sprite[]> fxRows = AssetDatabase.LoadAssetAtPath<Texture2D>(EoksoeFxSheetPath) != null
+                ? LoadSheetRows(EoksoeFxSheetPath)
+                : new List<Sprite[]>();
+            Sprite[] slashFx = fxRows.Count > 0 ? fxRows[0] : new Sprite[0];
+            Sprite[] burstFx = fxRows.Count > 1 ? fxRows[1] : new Sprite[0];
 
             EnsureLayer(EnemyLayerName);
             int enemyLayer = LayerMask.NameToLayer(EnemyLayerName);
@@ -1051,6 +1057,8 @@ namespace CheonMyeong.EditorTools
                 AssignPrivateField(boss, "shadowRenderer", shadowRenderer);
                 AssignPrivateField(boss, "telegraphMaterial", telegraphMaterial);
                 AssignPrivateObjectArrayField(boss, "coinSprites", coinSprites);
+                AssignPrivateObjectArrayField(boss, "slashFxFrames", slashFx);
+                AssignPrivateObjectArrayField(boss, "burstFxFrames", burstFx);
                 SetSerializedVector2(boss, "visualBaseOffset", visualOffset);
                 EditorUtility.SetDirty(boss);
                 EditorUtility.SetDirty(root);
@@ -2307,6 +2315,31 @@ namespace CheonMyeong.EditorTools
             ("Exit", "종료", new Vector2(666.6f, 852.1f), -23.4f),
         };
 
+        // 261102 - 문이 열리는 1~8프레임의 그림 속 부적(낮은 해상도로 깨져 보임)을 덮으려고 프레임마다 잰 값.
+        // (x, y 픽셀, 기울기 도, 세로 길이 px, 가로 폭 px) - 순서는 위 TitleGateTalismans와 같다. 0프레임 길이/폭이 배율 1.
+        private static readonly float[][,] TitleGateTalismanTracks =
+        {
+            new float[,] // Start
+            {
+                { 682.7f, 375.1f, -26.4f, 419, 209 }, { 692, 383, -24.0f, 416, 209 }, { 693, 378, -23.7f, 400, 194 },
+                { 666, 388, -22.1f, 397, 187 }, { 640, 386, -18.5f, 403, 188 }, { 601, 390, -19.6f, 401, 169 },
+                { 556, 391, -16.2f, 408, 156 }, { 514, 391, -12.1f, 402, 142 }, { 460, 398, -11.3f, 387, 124 },
+            },
+            new float[,] // Settings
+            {
+                { 1261.5f, 676.1f, 15.6f, 418, 214 }, { 1245, 669, 15.7f, 416, 211 }, { 1239, 678, 15.9f, 399, 197 },
+                { 1265, 672, 14.7f, 402, 191 }, { 1298, 671, 11.6f, 402, 182 }, { 1336, 672, 10.2f, 396, 160 },
+                { 1387, 666, 6.3f, 405, 155 }, { 1435, 668, 7.1f, 397, 124 }, { 1489, 685, 6.2f, 377, 104 },
+            },
+            new float[,] // Exit
+            {
+                { 666.6f, 852.1f, -23.4f, 418, 213 }, { 682, 846, -17.3f, 422, 227 }, { 680, 837, -19.1f, 412, 202 },
+                { 659, 840, -18.5f, 413, 195 }, { 628, 836, -18.5f, 407, 179 }, { 594, 841, -14.9f, 410, 174 },
+                { 547, 834, -14.4f, 406, 152 }, { 506, 839, -10.1f, 414, 133 }, { 455, 837, -9.4f, 415, 118 },
+            },
+        };
+        private const float TitleGateTrackCoverScale = 1.05f; // 깨진 가장자리가 삐져나오지 않게 열림 프레임에선 살짝 크게
+
         /// <summary>
         /// 타이틀을 대문 그림으로 구성한다(SampleScene을 열고 실행). 문은 화면을 꽉 채우고(TitleGate가 실행 중 카메라에 맞춤),
         /// 시작/설정/종료 부적(bujeok 그림 + 궁서체 글자)을 문에 그려진 부적 자리에 같은 크기 · 각도로 덮어 붙인다.
@@ -2333,7 +2366,7 @@ namespace CheonMyeong.EditorTools
                 Debug.LogError("[CheonMyeong] 대문 프레임을 찾지 못했습니다.");
                 return;
             }
-            Sprite talismanArt = LoadTitleTalismanArt();
+            Sprite talismanArt = LoadTitleTalismanArt(true);
             if (talismanArt == null)
             {
                 Debug.LogError($"[CheonMyeong] '{TitleTalismanArtPath}'에서 부적 그림을 찾지 못했습니다.");
@@ -2422,6 +2455,8 @@ namespace CheonMyeong.EditorTools
                 talismans[spec.name] = talisman;
             }
 
+            AssignTitleGateTracks(gate, talismans, frames.Length);
+
             TitleToLobbyBridge bridge = Object.FindFirstObjectByType<TitleToLobbyBridge>(FindObjectsInactive.Include);
             if (bridge != null)
             {
@@ -2441,6 +2476,39 @@ namespace CheonMyeong.EditorTools
             EditorSceneManager.SaveScene(parentGo.scene);
             Selection.activeGameObject = gateGo;
             Debug.Log("[CheonMyeong] 타이틀 대문 구성 완료(씬 저장됨) - 문 9프레임, 부적 3개를 그림 속 부적 위치에 배치했습니다.");
+        }
+
+        private static void AssignTitleGateTracks(TitleGate gate, Dictionary<string, TitleTalisman> talismans, int frameCount)
+        {
+            var so = new SerializedObject(gate);
+            SerializedProperty tracks = so.FindProperty("talismanTracks");
+            if (tracks == null)
+            {
+                Debug.LogError("[CheonMyeong] TitleGate.talismanTracks를 찾지 못했습니다.");
+                return;
+            }
+            tracks.arraySize = TitleGateTalismans.Length;
+            for (int t = 0; t < TitleGateTalismans.Length; t++)
+            {
+                float[,] data = TitleGateTalismanTracks[t];
+                int count = Mathf.Min(frameCount, data.GetLength(0));
+                SerializedProperty track = tracks.GetArrayElementAtIndex(t);
+                track.FindPropertyRelative("talisman").objectReferenceValue = talismans[TitleGateTalismans[t].name].transform;
+                SerializedProperty poses = track.FindPropertyRelative("poses");
+                SerializedProperty scales = track.FindPropertyRelative("scales");
+                poses.arraySize = count;
+                scales.arraySize = count;
+                for (int f = 0; f < count; f++)
+                {
+                    float x = (data[f, 0] - TitleGateFrameWidth * 0.5f) / TitleGatePixelsPerUnit;
+                    float y = (TitleGateFrameHeight * 0.5f - data[f, 1]) / TitleGatePixelsPerUnit;
+                    poses.GetArrayElementAtIndex(f).vector3Value = new Vector3(x, y, data[f, 2]);
+                    float cover = f == 0 ? 1f : TitleGateTrackCoverScale;
+                    scales.GetArrayElementAtIndex(f).vector2Value = new Vector2(data[f, 4] / data[0, 4] * cover, data[f, 3] / data[0, 3] * cover);
+                }
+            }
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(gate);
         }
 
         /// <summary>대문 시트 임포트(원본 해상도 · Point · BC7 고품질 압축) + 1920x1080 칸으로 자르기. 프레임 순서 = 왼쪽 위부터 읽는 순서.</summary>
@@ -2520,12 +2588,19 @@ namespace CheonMyeong.EditorTools
             Debug.Log($"[CheonMyeong] 타이틀 부적 {applied}개를 아트 그림으로 교체했습니다(위치/각도 유지). 씬을 저장하세요.");
         }
 
-        private static Sprite LoadTitleTalismanArt()
+        /// <param name="smooth">
+        /// 261102 - 대문 위 부적은 문이 열릴 때 가로로 좁아진다(원근 흉내). Point 필터로 1픽셀 그림을 줄이면 픽셀이 듬성듬성 빠져서
+        /// 깨져 보이므로, 이때는 Bilinear + 밉맵으로 부드럽게 줄인다.
+        /// </param>
+        private static Sprite LoadTitleTalismanArt(bool smooth = false)
         {
             var importer = AssetImporter.GetAtPath(TitleTalismanArtPath) as TextureImporter;
-            if (importer != null && (importer.filterMode != FilterMode.Point || importer.textureCompression != TextureImporterCompression.Uncompressed))
+            FilterMode wantedFilter = smooth ? FilterMode.Bilinear : FilterMode.Point;
+            if (importer != null && (importer.filterMode != wantedFilter || importer.mipmapEnabled != smooth
+                                     || importer.textureCompression != TextureImporterCompression.Uncompressed))
             {
-                importer.filterMode = FilterMode.Point;
+                importer.filterMode = wantedFilter;
+                importer.mipmapEnabled = smooth;
                 importer.textureCompression = TextureImporterCompression.Uncompressed;
                 importer.SaveAndReimport();
             }

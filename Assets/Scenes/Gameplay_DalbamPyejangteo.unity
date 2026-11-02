@@ -673,6 +673,17 @@ MonoBehaviour:
   - {fileID: -1521407495, guid: 6808df36642d23a4c81413ca109fabc3, type: 3}
   - {fileID: 1558044085, guid: 6808df36642d23a4c81413ca109fabc3, type: 3}
   telegraphMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  slashFxFrames:
+  - {fileID: -3069759783653852767, guid: 2694db4f24a9dd1449971d13e2032d48, type: 3}
+  - {fileID: 5809625361503360337, guid: 2694db4f24a9dd1449971d13e2032d48, type: 3}
+  - {fileID: 708412886543831720, guid: 2694db4f24a9dd1449971d13e2032d48, type: 3}
+  - {fileID: 2524082378049566794, guid: 2694db4f24a9dd1449971d13e2032d48, type: 3}
+  - {fileID: 1927376849508050841, guid: 2694db4f24a9dd1449971d13e2032d48, type: 3}
+  burstFxFrames:
+  - {fileID: -7028415845970589979, guid: 2694db4f24a9dd1449971d13e2032d48, type: 3}
+  - {fileID: 1550380404163436155, guid: 2694db4f24a9dd1449971d13e2032d48, type: 3}
+  - {fileID: -369121324492214071, guid: 2694db4f24a9dd1449971d13e2032d48, type: 3}
+  - {fileID: -5727141899253217639, guid: 2694db4f24a9dd1449971d13e2032d48, type: 3}
   visualBaseOffset: {x: 0, y: 1.21}
 --- !u!114 &652758042
 MonoBehaviour:

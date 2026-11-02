@@ -107,6 +107,11 @@ namespace CheonMyeong.Boss
         [Tooltip("바닥 예고 머티리얼(Sprites-Default).")]
         [SerializeField] private Material telegraphMaterial;
 
+        [Tooltip("261102 - Eoksoe_FX-Sheet 윗줄(초승달 베기, 왼쪽을 향해 그려짐).")]
+        [SerializeField] private Sprite[] slashFxFrames;
+        [Tooltip("261102 - Eoksoe_FX-Sheet 아랫줄(땅 터짐).")]
+        [SerializeField] private Sprite[] burstFxFrames;
+
         [Tooltip("Visual(그림)의 기본 위치 - 발이 이 오브젝트 위치(바닥)에 오도록 빌더가 계산해 넣는다.")]
         [SerializeField] private Vector2 visualBaseOffset;
 
@@ -140,6 +145,15 @@ namespace CheonMyeong.Boss
         public BossStatsSO Stats => stats;
 
         // ---------- 서버 상태 ----------
+        private enum ImpactKind : byte
+        {
+            Swing,
+            CloneSwing,
+            Slam,
+            Land,
+            Appear,
+        }
+
         private enum ServerState
         {
             Absent,
@@ -152,6 +166,7 @@ namespace CheonMyeong.Boss
             Grabbing,
             Holding,
             Slamming,
+            Leaping,
             Dying,
         }
 
@@ -172,6 +187,10 @@ namespace CheonMyeong.Boss
         private float goldCooldownLeft;
         private float grabCooldownLeft;
         private float mentalCooldownLeft;
+        private float leapCooldownLeft;
+        private float hopClock;
+        private Vector2 leapFrom;
+        private Vector2 leapTo;
         private bool defeated;
 
         private PlayerHealth mentalTarget;
@@ -196,6 +215,21 @@ namespace CheonMyeong.Boss
         private int playedAnimSerial = -1;
         private float hopPhase;
         private float squashTimer;
+        private float leapVisualStart = -1f;
+        private Vector2 lastVisualPosition;
+        private bool hasLastVisualPosition;
+        private float hitStopTimer;
+        private float currentAnimSpeed = 1f;
+        private float hitPunchTimer;
+        private float warnTimeLeft;
+        private float warnDuration = 1f;
+        private Transform warnIcon;
+        private ulong markTargetId;
+        private float markTimeLeft;
+        private float markDuration = 1f;
+        private LineRenderer markRing;
+        private float leapVisualWindup;
+        private float leapVisualAir;
         private float flashTimer;
         private float fadeAlpha;
         private BossHealthBarView healthBar;
@@ -289,6 +323,10 @@ namespace CheonMyeong.Boss
             {
                 Destroy(healthBar.gameObject);
             }
+            if (markRing != null)
+            {
+                Destroy(markRing.gameObject);
+            }
             base.OnDestroy();
         }
 
@@ -325,11 +363,12 @@ namespace CheonMyeong.Boss
 
             basicCooldownLeft = 0.5f;
             goldCooldownLeft = stats.goldFirstCooldown;
+            leapCooldownLeft = 1f;
             grabCooldownLeft = stats.grabFirstCooldown;
             mentalCooldownLeft = stats.mentalFirstCooldown;
             visible.Value = true;
             SetState(ServerState.Appearing, BossAnim.Idle);
-            ShakeRpc(0.25f * scale, 0.5f);
+            ImpactRpc(spawn, Vector2.down, (byte)ImpactKind.Appear, 2.5f * scale, 360f);
         }
 
         /// <summary>서버 전용 - 보스를 잡지 못한 채 시간이 끝났을 때(5웨이브 끝 / 최종전 시간 초과). 사라지며 결과를 알린다.</summary>
@@ -461,6 +500,9 @@ namespace CheonMyeong.Boss
                 case ServerState.Slamming:
                     UpdateSlamming();
                     break;
+                case ServerState.Leaping:
+                    UpdateLeaping();
+                    break;
                 case ServerState.Dying:
                     rb.linearVelocity = Vector2.zero;
                     if (stateTime >= DieSeconds)
@@ -476,6 +518,7 @@ namespace CheonMyeong.Boss
             basicCooldownLeft -= dt;
             goldCooldownLeft -= dt;
             grabCooldownLeft -= dt;
+            leapCooldownLeft -= dt;
             if (!realmActive.Value && state != ServerState.MentalCast && state != ServerState.MentalHold)
             {
                 mentalCooldownLeft -= dt; // 지속시간이 끝난 뒤부터 돈다(예섭)
@@ -504,6 +547,8 @@ namespace CheonMyeong.Boss
                 {
                     mentalTarget = mental;
                     SetState(ServerState.MentalCast, BossAnim.Mental);
+                    WarnRpc(stats.mentalWindupSeconds);
+                    MarkTargetRpc(mental.NetworkObjectId, stats.mentalWindupSeconds);
                     return;
                 }
             }
@@ -515,7 +560,8 @@ namespace CheonMyeong.Boss
             if (grabCooldownLeft <= 0f && distance <= GrabReach())
             {
                 SetState(ServerState.Grabbing, BossAnim.Grab);
-                TelegraphRpc(rb.position, Vector2.right, GrabReach(), 360f, GrabCheckSeconds);
+                TelegraphRpc(rb.position, Vector2.right, GrabReach(), 360f, stats.grabWindupSeconds);
+                WarnRpc(stats.grabWindupSeconds);
                 return;
             }
             if (basicCooldownLeft <= 0f && distance <= BasicReach())
@@ -526,8 +572,93 @@ namespace CheonMyeong.Boss
                 return;
             }
 
-            rb.linearVelocity = distance > 0.0001f ? toTarget / distance * stats.moveSpeed : Vector2.zero;
+            if (leapCooldownLeft <= 0f && distance >= stats.leapTriggerDistance && TryStartLeap(toTarget, distance))
+            {
+                return;
+            }
+
+            // 무게감: 공중에 뜬 동안만 앞으로 가고(가속 → 감속), 땅을 딛는 동안은 멈춘다. 한 주기 평균 속도 = 이동 속도.
+            if ((BossAnim)animState.Value != BossAnim.Walk)
+            {
+                hopClock = 0f;
+            }
+            hopClock += Time.fixedDeltaTime * HopRate();
+            float cycle = hopClock - Mathf.Floor(hopClock);
+            float air = Mathf.Clamp(stats.hopAirFraction, 0.3f, 1f);
+            float speedFactor = cycle < air ? Mathf.PI * 0.5f / air * Mathf.Sin(Mathf.PI * cycle / air) : 0f;
+            rb.linearVelocity = distance > 0.0001f ? toTarget / distance * (MoveSpeed() * speedFactor) : Vector2.zero;
             SetAnim(BossAnim.Walk);
+        }
+
+        private bool IsFinal => encounter.Value == (byte)BossEncounter.Final;
+        private float MoveSpeed() => stats.moveSpeed * (IsFinal ? stats.finalMoveSpeedMultiplier : 1f);
+        private float HopRate() => stats.hopsPerSecond * (IsFinal ? stats.finalHopRateMultiplier : 1f);
+        private float DamageScale() => IsFinal ? stats.finalDamageMultiplier : 1f;
+        private float ImpactScale() => IsFinal ? stats.finalImpactMultiplier : 1f;
+        // 클라이언트에선 서버 전용 scale 필드가 없으므로 NetworkTransform으로 동기화된 실제 크기를 쓴다.
+        private float VisualSize() => Mathf.Max(1f, transform.localScale.x);
+
+        /// <summary>
+        /// 도약(예섭: 멀어지면 이동 칸을 늘려 한 번에 좁히기). 웅크림(예고) → 포물선 점프 → 착지 흔들림.
+        /// 착지 지점은 대상 앞(기본 공격 사거리 안쪽)이고 최대 거리 · 맵 경계로 자른다. 예고 원이 착지 지점을 미리 보여준다.
+        /// </summary>
+        private bool TryStartLeap(Vector2 toTarget, float distance)
+        {
+            Vector2 direction = toTarget / distance;
+            float travel = Mathf.Min(stats.leapMaxDistance, distance - BasicReach() * 0.6f);
+            if (travel < 1f)
+            {
+                return false;
+            }
+
+            leapFrom = rb.position;
+            leapTo = leapFrom + direction * travel;
+            MapBounds bounds = MapBounds.Instance;
+            if (bounds != null)
+            {
+                leapTo = bounds.ClampInside(leapTo);
+            }
+
+            rb.linearVelocity = Vector2.zero;
+            Face(direction.x);
+            SetState(ServerState.Leaping, BossAnim.Idle);
+            float totalSeconds = stats.leapWindupSeconds + stats.leapAirSeconds;
+            TelegraphRpc(leapTo, direction, stats.landingPushRadius * scale, 360f, totalSeconds); // = 착지 충격파 범위
+            LeapRpc(stats.leapWindupSeconds, stats.leapAirSeconds);
+            return true;
+        }
+
+        private void UpdateLeaping()
+        {
+            float airTime = stateTime - stats.leapWindupSeconds;
+            if (airTime < 0f)
+            {
+                rb.linearVelocity = Vector2.zero; // 웅크림
+                return;
+            }
+            if (airTime < stats.leapAirSeconds)
+            {
+                // 다음 물리 스텝에 있어야 할 위치로 가는 속도 - 스텝 간격과 무관하게 정확히 착지 지점에서 끝난다.
+                SetAnim(BossAnim.Walk);
+                float next = Mathf.Clamp01((airTime + Time.fixedDeltaTime) / stats.leapAirSeconds);
+                Vector2 nextPosition = Vector2.Lerp(leapFrom, leapTo, next);
+                rb.linearVelocity = (nextPosition - rb.position) / Time.fixedDeltaTime;
+                return;
+            }
+
+            rb.linearVelocity = Vector2.zero;
+            if (!hitApplied)
+            {
+                hitApplied = true;
+                SetAnim(BossAnim.Idle);
+                ImpactRpc(rb.position, Vector2.down, (byte)ImpactKind.Land, stats.landingPushRadius * scale, 360f);
+                PushPlayersAround(rb.position, stats.landingPushRadius * scale, false);
+            }
+            if (airTime >= stats.leapAirSeconds + stats.leapRecoverySeconds)
+            {
+                leapCooldownLeft = stats.leapCooldown;
+                SetState(ServerState.Chasing, BossAnim.Idle);
+            }
         }
 
         private void UpdateAttacking()
@@ -536,8 +667,9 @@ namespace CheonMyeong.Boss
             if (!hitApplied && stateTime >= stats.basicWindup)
             {
                 hitApplied = true;
-                float damage = BossStatsSO.Pick(stats.basicDamage, stage);
+                float damage = BossStatsSO.Pick(stats.basicDamage, stage) * DamageScale();
                 DamagePlayersInSector(rb.position, actionDirection, BasicReach(), stats.basicArcDegrees, damage, false);
+                ImpactRpc(rb.position, actionDirection, (byte)ImpactKind.Swing, BasicReach(), stats.basicArcDegrees);
             }
             if (stateTime >= stats.basicWindup + stats.basicRecovery)
             {
@@ -564,7 +696,7 @@ namespace CheonMyeong.Boss
         private void UpdateMentalCast()
         {
             rb.linearVelocity = Vector2.zero;
-            if (stateTime < MentalCastSeconds)
+            if (stateTime < stats.mentalWindupSeconds)
             {
                 return;
             }
@@ -588,7 +720,7 @@ namespace CheonMyeong.Boss
         private void UpdateGrabbing()
         {
             rb.linearVelocity = Vector2.zero;
-            if (!hitApplied && stateTime >= GrabCheckSeconds)
+            if (!hitApplied && stateTime >= stats.grabWindupSeconds)
             {
                 hitApplied = true;
                 PlayerHealth target = FindGrabTarget();
@@ -598,7 +730,7 @@ namespace CheonMyeong.Boss
                     return;
                 }
             }
-            if (stateTime >= GrabSeconds)
+            if (stateTime >= GrabSeconds * (stats.grabWindupSeconds / GrabCheckSeconds))
             {
                 grabCooldownLeft = stats.grabCooldown * 0.5f; // 헛잡으면 절반만 기다린다(미정)
                 SetState(ServerState.Chasing, BossAnim.Idle);
@@ -647,7 +779,7 @@ namespace CheonMyeong.Boss
                 Vector2 landing = rb.position + dir * stats.grabRange * stats.grabThrowMultiplier;
                 MapBounds bounds = MapBounds.Instance;
                 throwTo = bounds != null ? bounds.ClampInside(landing) : landing;
-                TelegraphRpc(throwTo, Vector2.right, 1f * Mathf.Max(1f, scale * 0.6f), 360f, SlamHitSeconds);
+                TelegraphRpc(throwTo, Vector2.right, SlamRadius(), 360f, SlamHitSeconds);
                 SetState(ServerState.Slamming, BossAnim.Slam);
             }
         }
@@ -669,10 +801,10 @@ namespace CheonMyeong.Boss
                     if (IsValidHeld())
                     {
                         PlaceHeld(throwTo);
-                        heldPlayer.TakeDamage(BossStatsSO.Pick(stats.grabSlamDamage, stage));
+                        heldPlayer.TakeDamage(BossStatsSO.Pick(stats.grabSlamDamage, stage) * DamageScale());
                     }
                     ReleaseHeldPlayer();
-                    ShakeRpc(0.35f, 0.35f);
+                    ImpactRpc(throwTo, Vector2.down, (byte)ImpactKind.Slam, SlamRadius(), 360f);
                 }
             }
             if (stateTime >= SlamSeconds)
@@ -755,6 +887,8 @@ namespace CheonMyeong.Boss
             return PartyProgress.Instance != null ? Mathf.Clamp(PartyProgress.Instance.GrudgeStage, 0, BossStatsSO.StageCount - 1) : 0;
         }
 
+        private float SlamRadius() => Mathf.Max(1f, scale * 0.6f);
+
         private float BasicReach()
         {
             return stats.basicRange + stats.bodyRadius * scale;
@@ -791,7 +925,37 @@ namespace CheonMyeong.Boss
                     continue;
                 }
                 player.TakeDamage(damage);
+                Knockback(player, to.sqrMagnitude > 0.0001f ? to.normalized : direction, 1f);
             }
+        }
+
+        /// <summary>도약 착지 충격파 - 반경 안 플레이어를 바깥으로 밀어낸다(피해 없음).</summary>
+        private void PushPlayersAround(Vector2 center, float radius, bool realmOnly)
+        {
+            for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
+            {
+                PlayerHealth player = PlayerHealth.ActivePlayers[i];
+                if (player == null || player.IsDead || IsRealmPlayer(player.gameObject) != realmOnly)
+                {
+                    continue;
+                }
+                Vector2 to = (Vector2)player.transform.position - center;
+                if (to.sqrMagnitude > radius * radius)
+                {
+                    continue;
+                }
+                Knockback(player, to.sqrMagnitude > 0.0001f ? to.normalized : Vector2.up, 0.8f);
+            }
+        }
+
+        private void Knockback(PlayerHealth player, Vector2 direction, float strength)
+        {
+            if (player.IsDead || player == heldPlayer || !player.TryGetComponent(out PlayerMovement movement))
+            {
+                return;
+            }
+            float impact = Mathf.Sqrt(ImpactScale()); // 최종전은 더 멀리(연출 배율의 제곱근 - 너무 날아가지 않게)
+            movement.ServerKnockback(direction * stats.knockbackSpeed * impact * strength, stats.knockbackSeconds);
         }
 
         private PlayerHealth FindGrabTarget()
@@ -1054,7 +1218,7 @@ namespace CheonMyeong.Boss
             float maxClone = maxHealth.Value * BossStatsSO.Pick(stats.mentalCloneHealthRatio, stage);
             cloneMaxHealth.Value = Mathf.Max(1f, maxClone);
             cloneHealth.Value = cloneMaxHealth.Value;
-            cloneDamage = BossStatsSO.Pick(stats.basicDamage, stage) * BossStatsSO.Pick(stats.mentalCloneDamageRatio, stage);
+            cloneDamage = BossStatsSO.Pick(stats.basicDamage, stage) * BossStatsSO.Pick(stats.mentalCloneDamageRatio, stage) * DamageScale();
 
             Vector2 away = center - rb.position;
             Vector2 offsetDir = away.sqrMagnitude > 0.0001f ? -away.normalized : Vector2.left;
@@ -1137,6 +1301,7 @@ namespace CheonMyeong.Boss
                 {
                     cloneHitApplied = true;
                     DamagePlayersInSector(cloneServerPosition, cloneAttackDirection, reach, stats.basicArcDegrees, cloneDamage, true);
+                    ImpactRpc(cloneServerPosition, cloneAttackDirection, (byte)ImpactKind.CloneSwing, reach, stats.basicArcDegrees);
                 }
                 if (cloneStateTime >= stats.basicWindup + stats.basicRecovery)
                 {
@@ -1218,16 +1383,127 @@ namespace CheonMyeong.Boss
             BossTelegraph.Show(telegraphMaterial, center, direction, radius, arcDegrees, seconds);
         }
 
+        /// <summary>전조 시간에 맞춰 늘린 모션의 재생 속도(판정 프레임이 전조가 끝나는 순간에 오도록).</summary>
+        private float AnimSpeedFor(BossAnim anim)
+        {
+            if (stats == null)
+            {
+                return 1f;
+            }
+            switch (anim)
+            {
+                case BossAnim.Atk:
+                    return AtkHitFrameTime / Mathf.Max(0.05f, stats.basicWindup);
+                case BossAnim.Grab:
+                    return GrabCheckSeconds / Mathf.Max(0.05f, stats.grabWindupSeconds);
+                case BossAnim.Mental:
+                    return MentalCastSeconds / Mathf.Max(0.05f, stats.mentalWindupSeconds);
+                default:
+                    return 1f;
+            }
+        }
+
+        /// <summary>큰 기술 전조 - 보스 머리 위 '!'(튀어나왔다가 끝날 즈음 깜빡임).</summary>
+        [Rpc(SendTo.ClientsAndHost)]
+        private void WarnRpc(float seconds)
+        {
+            warnTimeLeft = seconds;
+            warnDuration = Mathf.Max(0.05f, seconds);
+        }
+
+        /// <summary>정신병 대상 전조 - 그 플레이어 발밑에 따라다니는 표식.</summary>
+        [Rpc(SendTo.ClientsAndHost)]
+        private void MarkTargetRpc(ulong targetObjectId, float seconds)
+        {
+            markTargetId = targetObjectId;
+            markTimeLeft = seconds;
+            markDuration = Mathf.Max(0.05f, seconds);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void LeapRpc(float windupSeconds, float airSeconds)
+        {
+            leapVisualStart = Time.time;
+            leapVisualWindup = windupSeconds;
+            leapVisualAir = airSeconds;
+        }
+
         [Rpc(SendTo.ClientsAndHost)]
         private void FlashRpc()
         {
             flashTimer = 0.1f;
+            hitPunchTimer = 0.08f; // 맞을 때 몸이 움찔(짧은 찌그러짐)
         }
 
+        /// <summary>
+        /// 타격 연출(로컬): 이펙트 + 화면 흔들림 + 히트스톱(보스 모션 멈칫). 최종전은 ImpactScale만큼 전부 크게.
+        /// </summary>
         [Rpc(SendTo.ClientsAndHost)]
-        private void ShakeRpc(float amplitude, float seconds)
+        private void ImpactRpc(Vector2 origin, Vector2 direction, byte kind, float radius, float arcDegrees)
         {
-            PlayerCameraRig.Shake(amplitude, seconds);
+            if (stats == null)
+            {
+                return;
+            }
+            EnsureFxBounds();
+            float impact = ImpactScale();
+            switch ((ImpactKind)kind)
+            {
+                case ImpactKind.Swing:
+                case ImpactKind.CloneSwing:
+                {
+                    // 실제 판정 부채꼴(원점 · 방향 · 반경 · 각도) 그대로: 초승달 앞 끝 = 사거리, 세로 폭 = 부채꼴 현.
+                    bool clone = kind == (byte)ImpactKind.CloneSwing;
+                    Color tint = clone ? new Color(0.75f, 0.5f, 1f, 1f) : Color.white;
+                    bool flip = direction.x > 0f;
+                    SpriteVisibleBounds.FitSlash(slashFxBounds, origin, direction, radius, arcDegrees, flip,
+                                                 out Vector2 center, out float angle, out Vector2 slashScale);
+                    BossFx.Play(slashFxFrames, center, angle, slashScale, 20f, 30, tint, flip);
+                    PlayGroundBurst(origin + direction * radius * 0.7f, radius * 0.35f, 16f, 29, tint);
+                    PlayerCameraRig.Shake(stats.impactShake * impact * (clone ? 0.6f : 1f), 0.16f + 0.05f * impact);
+                    if (!clone)
+                    {
+                        hitStopTimer = stats.hitStopSeconds * impact;
+                    }
+                    break;
+                }
+                case ImpactKind.Slam:
+                    PlayGroundBurst(origin, radius, 12f, 29, Color.white);
+                    PlayerCameraRig.Shake(0.3f * impact, 0.3f + 0.1f * impact);
+                    hitStopTimer = stats.hitStopSeconds * 1.5f * impact;
+                    break;
+                case ImpactKind.Land:
+                    PlayGroundBurst(origin, radius, 14f, -30, Color.white);
+                    PlayerCameraRig.Shake(0.16f * impact, 0.22f + 0.08f * impact);
+                    break;
+                case ImpactKind.Appear:
+                    PlayGroundBurst(origin, radius, 10f, -30, Color.white);
+                    PlayerCameraRig.Shake(0.25f * impact, 0.5f + 0.2f * impact);
+                    break;
+            }
+        }
+
+        private Rect slashFxBounds;
+        private Rect burstFxBounds;
+        private bool fxBoundsReady;
+
+        private void EnsureFxBounds()
+        {
+            if (fxBoundsReady)
+            {
+                return;
+            }
+            fxBoundsReady = true;
+            slashFxBounds = SpriteVisibleBounds.Of(slashFxFrames);
+            burstFxBounds = SpriteVisibleBounds.Of(burstFxFrames);
+        }
+
+        /// <summary>땅 터짐을 반경 radius 원에 맞춰(가로 폭 = 지름) 그린다.</summary>
+        private void PlayGroundBurst(Vector2 center, float radius, float fps, int sortingOrder, Color color)
+        {
+            EnsureFxBounds();
+            SpriteVisibleBounds.FitGroundBurst(burstFxBounds, center, radius, out Vector2 position, out float burstScale);
+            BossFx.Play(burstFxFrames, position, 0f, burstScale, fps, sortingOrder, color, false);
         }
 
         // =====================================================================
@@ -1255,6 +1531,11 @@ namespace CheonMyeong.Boss
             }
             fadeAlpha = 0f;
             playedAnimSerial = -1;
+            leapVisualStart = -1f;
+            hasLastVisualPosition = false;
+            hitStopTimer = 0f;
+            warnTimeLeft = 0f;
+            markTimeLeft = 0f;
             if (!on)
             {
                 BossTelegraph.HideAll();
@@ -1267,6 +1548,8 @@ namespace CheonMyeong.Boss
             UpdateCoinViews();
             UpdateCloneView();
             UpdateRealmFades();
+            UpdateWarnIcon();
+            UpdateTargetMark();
 
             if (!visible.Value || animator == null || bodyRenderer == null)
             {
@@ -1279,8 +1562,11 @@ namespace CheonMyeong.Boss
                 BossAnim anim = (BossAnim)animState.Value;
                 animator.Play(AnimStateHashes[(int)anim], 0, 0f);
                 // 공격 예고 시간에 맞춰 ATK 앞부분을 늘린다(타격 프레임이 예고가 끝나는 순간에 오도록).
-                animator.speed = anim == BossAnim.Atk && stats != null ? AtkHitFrameTime / Mathf.Max(0.05f, stats.basicWindup) : 1f;
+                currentAnimSpeed = AnimSpeedFor(anim);
             }
+            // 히트스톱: 타격 순간 보스 모션만 잠깐 멈춘다(게임 시간은 그대로 - 2인 온라인이라 전체 정지는 안 씀).
+            hitStopTimer -= Time.deltaTime;
+            animator.speed = hitStopTimer > 0f ? 0f : currentAnimSpeed;
 
             bodyRenderer.flipX = faceRight.Value;
             UpdateHopAndTint();
@@ -1296,18 +1582,60 @@ namespace CheonMyeong.Boss
             bool walking = (BossAnim)animState.Value == BossAnim.Walk;
             float height = 0f;
             float stretch = 0f;
+            float crouch = 0f;
+
+            float leapElapsed = leapVisualStart >= 0f ? Time.time - leapVisualStart : -1f;
+            if (leapElapsed >= 0f && stats != null && leapElapsed < leapVisualWindup + leapVisualAir
+                && (BossAnim)animState.Value != BossAnim.Die)
+            {
+                // 도약: 웅크렸다가(anticipation) 높게 포물선, 공중에선 세로로 늘어남.
+                hopPhase = 0f;
+                if (leapElapsed < leapVisualWindup)
+                {
+                    crouch = Mathf.Clamp01(leapElapsed / Mathf.Max(0.01f, leapVisualWindup)) * 0.22f;
+                }
+                else
+                {
+                    float p = Mathf.Clamp01((leapElapsed - leapVisualWindup) / Mathf.Max(0.01f, leapVisualAir));
+                    float arc = Mathf.Sin(p * Mathf.PI);
+                    height = arc * stats.leapHeight;
+                    stretch = arc * 0.14f;
+                }
+                walking = false;
+            }
+            else if (leapVisualStart >= 0f)
+            {
+                leapVisualStart = -1f;
+                squashTimer = 0.14f; // 큰 착지
+                hopPhase = 0f;
+            }
+
+            // 실제로 움직인 거리로 뛰는 높이를 정한다 - 서버가 "공중에서만 전진"하므로 그림의 점프와 실제 이동이 정확히 맞는다.
+            Vector2 currentPosition = transform.position;
+            float moved = hasLastVisualPosition ? Vector2.Distance(currentPosition, lastVisualPosition) : 0f;
+            lastVisualPosition = currentPosition;
+            hasLastVisualPosition = true;
 
             if (walking && stats != null)
             {
+                float stride = Mathf.Max(0.05f, MoveSpeed() / Mathf.Max(0.05f, HopRate()));
                 float previous = hopPhase;
-                hopPhase += dt * stats.hopsPerSecond;
-                if (Mathf.Floor(hopPhase) > Mathf.Floor(previous))
+                hopPhase += Mathf.Min(moved, stride * 0.5f) / stride;
+                float fraction = hopPhase - Mathf.Floor(hopPhase);
+                bool landed = Mathf.Floor(hopPhase) > Mathf.Floor(previous);
+                if (!landed && moved < 0.0005f && fraction > 0.8f)
                 {
-                    squashTimer = 0.09f; // 착지
+                    hopPhase = Mathf.Ceil(hopPhase); // 멈춘 순간 = 착지(위치 보간 오차로 1.0에 못 닿아도)
+                    landed = true;
+                }
+                if (landed)
+                {
+                    OnHopLanded();
                 }
                 float p = hopPhase - Mathf.Floor(hopPhase);
-                height = Mathf.Sin(p * Mathf.PI) * stats.hopHeight;
-                stretch = Mathf.Sin(p * Mathf.PI) * 0.06f;
+                float heightScale = IsFinal ? 1.25f : 1f;
+                height = Mathf.Sin(p * Mathf.PI) * stats.hopHeight * heightScale;
+                stretch = Mathf.Sin(p * Mathf.PI) * 0.07f;
             }
             else
             {
@@ -1322,7 +1650,13 @@ namespace CheonMyeong.Boss
             if (squashTimer > 0f && stats != null)
             {
                 squashTimer -= dt;
-                squash = Mathf.Clamp01(squashTimer / 0.09f) * stats.landingSquash;
+                squash = Mathf.Clamp01(squashTimer / 0.09f) * stats.landingSquash * (IsFinal ? 1.35f : 1f);
+            }
+            squash = Mathf.Max(squash, crouch);
+            if (hitPunchTimer > 0f)
+            {
+                hitPunchTimer -= dt;
+                squash = Mathf.Max(squash, 0.06f);
             }
 
             if (visualRoot != null)
@@ -1342,13 +1676,29 @@ namespace CheonMyeong.Boss
 
             if (shadowRenderer != null)
             {
-                float shrink = stats != null && stats.hopHeight > 0f ? 1f - 0.35f * height / stats.hopHeight : 1f;
+                float maxHeight = stats != null ? Mathf.Max(0.01f, stats.hopHeight, stats.leapHeight) : 1f;
+                float shrink = 1f - 0.45f * Mathf.Clamp01(height / maxHeight);
                 shadowRenderer.transform.localScale = new Vector3(1.3f * shrink, 0.45f * shrink, 1f);
                 Color shadowColor = encounter.Value == (byte)BossEncounter.Final
                     ? new Color(0.45f, 0.02f, 0.05f, 0.45f + 0.15f * Mathf.Sin(Time.time * 3f)) // 원한 오라
                     : new Color(0f, 0f, 0f, 0.4f);
                 shadowColor.a *= fadeAlpha;
                 shadowRenderer.color = shadowColor;
+            }
+        }
+
+        /// <summary>한 걸음 착지 - 최종전은 쿵 소리 대신 화면이 울리고 먼지가 크게 인다(카메라에서 멀수록 약하게).</summary>
+        private void OnHopLanded()
+        {
+            squashTimer = IsFinal ? 0.14f : 0.1f;
+            float size = VisualSize();
+            Vector2 feet = transform.position;
+            PlayGroundBurst(feet, (IsFinal ? 0.9f : 0.45f) * size, 14f, -30, new Color(1f, 1f, 1f, IsFinal ? 0.8f : 0.5f));
+            if (IsFinal && stats.finalStepShake > 0f && PlayerCameraRig.Instance != null)
+            {
+                float distance = Vector2.Distance(PlayerCameraRig.Instance.transform.position, feet);
+                float falloff = Mathf.Clamp01(1f - distance / 14f);
+                PlayerCameraRig.Shake(stats.finalStepShake * falloff, 0.12f);
             }
         }
 
@@ -1640,6 +1990,120 @@ namespace CheonMyeong.Boss
         }
 
         private static Sprite solidSprite;
+
+        // ---------- 전조 표시(클라이언트) ----------
+
+        private void UpdateWarnIcon()
+        {
+            bool show = warnTimeLeft > 0f && visible.Value;
+            if (!show)
+            {
+                if (warnIcon != null && warnIcon.gameObject.activeSelf)
+                {
+                    warnIcon.gameObject.SetActive(false);
+                }
+                warnTimeLeft = Mathf.Max(0f, warnTimeLeft - Time.deltaTime);
+                return;
+            }
+            if (warnIcon == null)
+            {
+                warnIcon = CreateWarnIcon();
+            }
+            warnTimeLeft -= Time.deltaTime;
+            float elapsed = warnDuration - warnTimeLeft;
+            // 튀어나오기(0.15초 오버슈트) → 유지 → 마지막 30%는 빠르게 깜빡임(곧 온다).
+            float pop = elapsed < 0.15f ? Mathf.Lerp(0f, 1.35f, elapsed / 0.15f) : Mathf.Lerp(1.35f, 1f, Mathf.Clamp01((elapsed - 0.15f) / 0.1f));
+            bool blinkOff = warnTimeLeft < warnDuration * 0.3f && Mathf.Repeat(Time.time * 12f, 1f) < 0.35f;
+            warnIcon.gameObject.SetActive(!blinkOff);
+            warnIcon.localScale = new Vector3(pop, pop, 1f);
+            float headHeight = visualBaseOffset.y + 1.45f;
+            warnIcon.localPosition = new Vector3(0f, headHeight, 0f);
+        }
+
+        private Transform CreateWarnIcon()
+        {
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var root = new GameObject("BossWarnIcon").transform;
+            root.SetParent(transform, false);
+            CreateWarnText(root, font, new Color(0.1f, 0f, 0f, 1f), new Vector3(0.04f, -0.04f, 0f), 1100);
+            CreateWarnText(root, font, new Color(1f, 0.15f, 0.1f, 1f), Vector3.zero, 1101);
+            return root;
+        }
+
+        private static void CreateWarnText(Transform parent, Font font, Color color, Vector3 offset, int sortingOrder)
+        {
+            var go = new GameObject("Text");
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = offset;
+            var text = go.AddComponent<TextMesh>();
+            text.font = font;
+            text.text = "!";
+            text.fontSize = 64;
+            text.characterSize = 0.1f;
+            text.fontStyle = FontStyle.Bold;
+            text.anchor = TextAnchor.LowerCenter;
+            text.alignment = TextAlignment.Center;
+            text.color = color;
+            var meshRenderer = go.GetComponent<MeshRenderer>();
+            meshRenderer.sharedMaterial = font.material;
+            meshRenderer.sortingOrder = sortingOrder;
+        }
+
+        private void UpdateTargetMark()
+        {
+            Transform target = null;
+            if (markTimeLeft > 0f && visible.Value && NetworkManager != null
+                && NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(markTargetId, out NetworkObject networkObject) && networkObject != null)
+            {
+                target = networkObject.transform;
+            }
+            markTimeLeft = Mathf.Max(0f, markTimeLeft - Time.deltaTime);
+
+            if (target == null)
+            {
+                if (markRing != null && markRing.enabled)
+                {
+                    markRing.enabled = false;
+                }
+                return;
+            }
+            if (markRing == null)
+            {
+                markRing = CreateMarkRing();
+            }
+            markRing.enabled = true;
+
+            // 줄어드는 고리: 크게 시작해 차원이 열리는 순간 발밑에 딱 붙는다(언제 끌려가는지 보이게).
+            float progress = 1f - markTimeLeft / markDuration;
+            float radius = Mathf.Lerp(1.6f, 0.55f, progress * progress);
+            float pulse = 0.5f + 0.5f * Mathf.Sin(Time.time * 18f);
+            Color color = Color.Lerp(new Color(0.65f, 0.2f, 0.95f, 0.8f), new Color(1f, 0.15f, 0.2f, 1f), progress);
+            color.a *= 0.65f + 0.35f * pulse;
+            markRing.startColor = color;
+            markRing.endColor = color;
+            markRing.widthMultiplier = 0.09f + 0.04f * pulse;
+            Vector3 center = target.position;
+            int count = markRing.positionCount;
+            for (int i = 0; i < count; i++)
+            {
+                float a = i * Mathf.PI * 2f / count;
+                markRing.SetPosition(i, new Vector3(center.x + Mathf.Cos(a) * radius, center.y + Mathf.Sin(a) * radius * 0.6f, 0f));
+            }
+        }
+
+        private LineRenderer CreateMarkRing()
+        {
+            var go = new GameObject("BossTargetMark");
+            var line = go.AddComponent<LineRenderer>();
+            line.useWorldSpace = true;
+            line.loop = true;
+            line.positionCount = 40;
+            line.sharedMaterial = telegraphMaterial;
+            line.sortingOrder = -45;
+            line.numCapVertices = 0;
+            line.textureMode = LineTextureMode.Stretch;
+            return line;
+        }
 
         private static Sprite GetSolidSprite()
         {
