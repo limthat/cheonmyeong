@@ -204,7 +204,8 @@ namespace CheonMyeong.Player
 
             foreach (PlayerHealth player in ActivePlayers)
             {
-                if (player == null || player.IsDead)
+                // 261101 - 억쇠 '정신병' 차원에 끌려간 플레이어는 밖의 원귀 · 드랍 · 보스 본체가 노리지 않는다.
+                if (player == null || player.IsDead || Boss.DeathRealm.IsInRealm(player.gameObject))
                 {
                     continue;
                 }
@@ -239,9 +240,21 @@ namespace CheonMyeong.Player
             AliveScratchBuffer.Clear();
             foreach (PlayerHealth player in ActivePlayers)
             {
-                if (player != null && !player.IsDead)
+                // 261101 - 차원에 끌려간 플레이어는 되도록 제외(스폰 기준점이 차원 안으로 쏠리지 않게).
+                if (player != null && !player.IsDead && !Boss.DeathRealm.IsInRealm(player.gameObject))
                 {
                     AliveScratchBuffer.Add(player.transform);
+                }
+            }
+            if (AliveScratchBuffer.Count == 0)
+            {
+                // 살아있는 사람이 차원 안에만 있으면 그 사람이라도 돌려준다(카메라 관전 전환 등).
+                foreach (PlayerHealth player in ActivePlayers)
+                {
+                    if (player != null && !player.IsDead)
+                    {
+                        AliveScratchBuffer.Add(player.transform);
+                    }
                 }
             }
 

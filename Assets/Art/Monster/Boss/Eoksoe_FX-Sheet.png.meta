@@ -73,7 +73,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -111,7 +111,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -152,19 +152,19 @@ TextureImporter:
       name: Eoksoe_FX-Sheet_0
       rect:
         serializedVersion: 2
-        x: 152
-        y: 189
-        width: 52
-        height: 53
+        x: 128
+        y: 128
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1a93885bdb50665d0800000000000000
+      spriteID: 0ec406aa64f65414bb6b1bb6552e5946
       internalID: -3069759783653852767
       vertices: []
       indices: 
@@ -174,19 +174,19 @@ TextureImporter:
       name: Eoksoe_FX-Sheet_1
       rect:
         serializedVersion: 2
-        x: 275
-        y: 151
-        width: 56
-        height: 91
+        x: 256
+        y: 128
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 155128e4c7fef9050800000000000000
+      spriteID: 83c542b72e790214da4af1d1c331a522
       internalID: 5809625361503360337
       vertices: []
       indices: 
@@ -196,19 +196,19 @@ TextureImporter:
       name: Eoksoe_FX-Sheet_2
       rect:
         serializedVersion: 2
-        x: 400
-        y: 142
-        width: 93
-        height: 100
+        x: 384
+        y: 128
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8a211c854c9c4d900800000000000000
+      spriteID: 22d5bba5c58ceb54cb34a9a10f976602
       internalID: 708412886543831720
       vertices: []
       indices: 
@@ -218,19 +218,19 @@ TextureImporter:
       name: Eoksoe_FX-Sheet_3
       rect:
         serializedVersion: 2
-        x: 524
-        y: 194
-        width: 6
-        height: 11
+        x: 512
+        y: 128
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a48b777bc87570320800000000000000
+      spriteID: 7ccd8651e402f3d4dba6843db4505314
       internalID: 2524082378049566794
       vertices: []
       indices: 
@@ -240,19 +240,19 @@ TextureImporter:
       name: Eoksoe_FX-Sheet_4
       rect:
         serializedVersion: 2
-        x: 527
-        y: 142
-        width: 99
-        height: 100
+        x: 640
+        y: 128
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9972d3f680b6fba10800000000000000
+      spriteID: 1ccdd7db01ccbea4494648ab0f956d51
       internalID: 1927376849508050841
       vertices: []
       indices: 
@@ -262,19 +262,19 @@ TextureImporter:
       name: Eoksoe_FX-Sheet_5
       rect:
         serializedVersion: 2
-        x: 652
-        y: 187
-        width: 8
-        height: 11
+        x: 0
+        y: 0
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5e64237b60d067e90800000000000000
+      spriteID: e8416dd16f59ad44bbb4df855c2b7719
       internalID: -7028415845970589979
       vertices: []
       indices: 
@@ -284,19 +284,19 @@ TextureImporter:
       name: Eoksoe_FX-Sheet_6
       rect:
         serializedVersion: 2
-        x: 655
-        y: 142
-        width: 99
-        height: 99
+        x: 128
+        y: 0
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b7e53e863ce048510800000000000000
+      spriteID: f959fb9131c278e48a76b35eafd3c3d8
       internalID: 1550380404163436155
       vertices: []
       indices: 
@@ -306,19 +306,19 @@ TextureImporter:
       name: Eoksoe_FX-Sheet_7
       rect:
         serializedVersion: 2
-        x: 20
-        y: 18
-        width: 88
-        height: 69
+        x: 256
+        y: 0
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9c0be9e6c1e90eaf0800000000000000
+      spriteID: b3df5a3851f74b9478ba12993cce08d3
       internalID: -369121324492214071
       vertices: []
       indices: 
@@ -328,108 +328,20 @@ TextureImporter:
       name: Eoksoe_FX-Sheet_8
       rect:
         serializedVersion: 2
-        x: 59
-        y: 82
-        width: 6
-        height: 7
+        x: 384
+        y: 0
+        width: 128
+        height: 128
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 99681cc49ca1580b0800000000000000
+      spriteID: f0716104ddd7bbb4999e068f2e03f6eb
       internalID: -5727141899253217639
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Eoksoe_FX-Sheet_9
-      rect:
-        serializedVersion: 2
-        x: 144
-        y: 17
-        width: 97
-        height: 77
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0bc153c1356f4b140800000000000000
-      internalID: 4734679945089195184
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Eoksoe_FX-Sheet_10
-      rect:
-        serializedVersion: 2
-        x: 267
-        y: 17
-        width: 107
-        height: 82
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1bb950cff19bacc50800000000000000
-      internalID: 6686360143808273329
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Eoksoe_FX-Sheet_11
-      rect:
-        serializedVersion: 2
-        x: 390
-        y: 14
-        width: 116
-        height: 89
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0eeeb1ec720253ab0800000000000000
-      internalID: -5029078053555540256
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Eoksoe_FX-Sheet_12
-      rect:
-        serializedVersion: 2
-        x: 466
-        y: 13
-        width: 10
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 490117494276edc90800000000000000
-      internalID: -7143158552156106604
       vertices: []
       indices: 
       edges: []
@@ -438,7 +350,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 43e3b709578aa204892042a7f69b8d2c
     internalID: 0
     vertices: []
     indices: 
@@ -450,9 +362,6 @@ TextureImporter:
     nameFileIdTable:
       Eoksoe_FX-Sheet_0: -3069759783653852767
       Eoksoe_FX-Sheet_1: 5809625361503360337
-      Eoksoe_FX-Sheet_10: 6686360143808273329
-      Eoksoe_FX-Sheet_11: -5029078053555540256
-      Eoksoe_FX-Sheet_12: -7143158552156106604
       Eoksoe_FX-Sheet_2: 708412886543831720
       Eoksoe_FX-Sheet_3: 2524082378049566794
       Eoksoe_FX-Sheet_4: 1927376849508050841
@@ -460,7 +369,6 @@ TextureImporter:
       Eoksoe_FX-Sheet_6: 1550380404163436155
       Eoksoe_FX-Sheet_7: -369121324492214071
       Eoksoe_FX-Sheet_8: -5727141899253217639
-      Eoksoe_FX-Sheet_9: 4734679945089195184
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

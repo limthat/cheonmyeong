@@ -136,7 +136,10 @@ namespace CheonMyeong.Player
             // 채워서 첫 공격도 다른 공격들과 동일하게 한 주기를 기다리게 함(예섭 확인-
             // "고치기" 선택, 261014).
             attackTimer = AttackInterval;
+            TryGetComponent(out movement); // 261101 - 제압(억쇠 배지기) 확인용
         }
+
+        private PlayerMovement movement;
 
         private void Update()
         {
@@ -169,6 +172,13 @@ namespace CheonMyeong.Player
                 wasPausedLastFrame = false;
                 attackTimer = AttackInterval;
                 pendingHitDelay = -1f;
+            }
+
+            // 261101 추가 - 제압(억쇠 배지기) 중엔 공격 금지. 예약된 판정도 취소한다.
+            if (movement != null && movement.IsSuppressed)
+            {
+                pendingHitDelay = -1f;
+                return;
             }
 
             // 261014 추가 - 대기 중인 타격 판정(Attack()이 예약해둔 것)을 먼저 처리한다.
@@ -213,7 +223,15 @@ namespace CheonMyeong.Player
         {
             Vector2 origin = transform.position;
             int hitCount = Physics2D.OverlapCircle(origin, radius, contactFilter, hitBuffer);
-            return hitCount > 0;
+            for (int i = 0; i < hitCount; i++)
+            {
+                // 261101 - 억쇠 '정신병' 차원 안/밖이 다르면 대상이 아니다.
+                if (Boss.DeathRealm.CanInteract(gameObject, hitBuffer[i].gameObject))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void Attack()
@@ -267,6 +285,11 @@ namespace CheonMyeong.Player
 
             for (int i = 0; i < hitCount; i++)
             {
+                if (!Boss.DeathRealm.CanInteract(gameObject, hitBuffer[i].gameObject))
+                {
+                    continue; // 261101 - 차원 안/밖이 다르면 못 때린다
+                }
+
                 if (hasAimDir)
                 {
                     Vector2 toTarget = (Vector2)hitBuffer[i].transform.position - origin;

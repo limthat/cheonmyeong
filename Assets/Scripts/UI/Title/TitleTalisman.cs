@@ -53,6 +53,11 @@ namespace CheonMyeong.UI.Title
         [Header("호버 연출(261013 추가) - 커서를 올리면 색이 짙어짐. 수치는 미정, 느낌 보고 조정")]
         [SerializeField, Range(0.1f, 1f)] private float hoverDarkenFactor = 0.6f;
 
+        [Header("261101 - 문(Title-Sheet)에 그려진 부적 위에 겹치는 방식")]
+        [Tooltip("켜면 평소엔 그림을 숨기고(문에 그려진 부적과 글자가 그대로 보임) 커서를 올렸을 때만 어둡게 덮는다.")]
+        [SerializeField] private bool overlayOnly;
+        [SerializeField] private Color overlayHoverColor = new Color(0f, 0f, 0f, 0.35f);
+
         /// <summary>버튼 로직(씬 전환 / 설정창 열기 / 종료 등)을 여기 연결한다.</summary>
         public event Action OnCutCompleted;
 
@@ -73,9 +78,18 @@ namespace CheonMyeong.UI.Title
             if (wholeRenderer != null)
             {
                 // 매 프레임 곱하지 않고 Awake에서 한 번만 계산해서 캐싱(호버 전환 시 대입만 함).
-                baseColor = wholeRenderer.color;
-                hoverColor = new Color(baseColor.r * hoverDarkenFactor, baseColor.g * hoverDarkenFactor,
-                                        baseColor.b * hoverDarkenFactor, baseColor.a);
+                if (overlayOnly)
+                {
+                    baseColor = new Color(overlayHoverColor.r, overlayHoverColor.g, overlayHoverColor.b, 0f);
+                    hoverColor = overlayHoverColor;
+                    wholeRenderer.color = baseColor;
+                }
+                else
+                {
+                    baseColor = wholeRenderer.color;
+                    hoverColor = new Color(baseColor.r * hoverDarkenFactor, baseColor.g * hoverDarkenFactor,
+                                            baseColor.b * hoverDarkenFactor, baseColor.a);
+                }
             }
         }
 

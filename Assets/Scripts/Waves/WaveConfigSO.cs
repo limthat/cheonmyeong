@@ -15,8 +15,8 @@ namespace CheonMyeong.Waves
     ///
     /// 기본값의 출처는 전부 [기획서] 천명_261013 5-1/5-2/5-3/5-10(Create Wave System 메뉴가 그대로 채움).
     /// 맵마다 다른 구성이 필요해지면 이 에셋을 맵별로 만들어 각 Gameplay 씬의 WaveManager에 연결.
-    /// 억쇠(5웨이브 예행연습/최종전)는 보스 자체가 아직 없어서 여기에 넣지 않았다 - 보스가 생기면
-    /// WaveDefinition에 필드를 추가하는 식으로 확장.
+    /// 억쇠(261101): WaveDefinition.boss = Mid인 웨이브에 중간 보스가 나오고(기본 5웨이브), 마지막 웨이브가 끝나면
+    /// finalBattleSeconds 동안 최종전을 한다.
     /// </summary>
     [CreateAssetMenu(fileName = "NewWaveConfig", menuName = "CheonMyeong/Wave Config")]
     public class WaveConfigSO : ScriptableObject
@@ -61,6 +61,10 @@ namespace CheonMyeong.Waves
         [Header("판 종료 - 기획서 5-10")]
         [Tooltip("클리어하면 각자 받는 엽전 - 기획서 +200(실패하면 없음, 주운 엽전만 받음).")]
         [Min(0)] public int clearRewardGold = 200;
+
+        [Header("억쇠 최종전 - 기획서 9장 (261101)")]
+        [Tooltip("마지막 웨이브가 끝난 뒤 최종전 제한 시간(초) - 기획서 3분. 0이면 최종전 없이 바로 클리어.")]
+        [Min(0f)] public float finalBattleSeconds = 180f;
 
         [Tooltip("웨이브 목록 - 위에서부터 순서대로 진행한다. 개수 = 전체 웨이브 수.")]
         public List<WaveDefinition> waves = new List<WaveDefinition>();
@@ -122,6 +126,10 @@ namespace CheonMyeong.Waves
 
         [Tooltip("0 이하 = healthGrowthPerWave 공식 사용. 이 웨이브만 체력 배율을 직접 정하고 싶을 때.")]
         public float healthMultiplierOverride;
+
+        [Tooltip("261101 - 이 웨이브에 나오는 보스. Mid = 억쇠 중간 보스(기획서: 5웨이브, 웨이브 시간 안에 쫓아내기).\n" +
+                 "Final은 여기 넣지 않는다(마지막 웨이브 뒤 최종전으로 자동 진행).")]
+        public Boss.BossEncounter boss;
 
         [Tooltip("등장 원귀와 비율(가중치). 기획서 5-3: 몽달귀 60 / 달걀귀신 30 / 손각시 10.\n" +
                  "비어있으면 EnemySpawner에 등록된 풀 전체에서 균등하게 뽑는다.")]

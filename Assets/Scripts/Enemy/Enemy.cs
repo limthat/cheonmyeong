@@ -373,17 +373,17 @@ namespace CheonMyeong.Enemies
             }
 
             // 다른 적은 제외 - IDamageable을 구현하고 있어서 그냥 두면 적끼리도 서로 때린다.
-            if (other.GetComponent<Enemy>() != null)
+            // 261101 - 억쇠 본체/분신(같은 Enemy 레이어, IDamageable)도 맞으면 안 되므로 아예 플레이어만 대상으로 좁혔다.
+            // 억쇠 '정신병' 차원에 끌려간 플레이어도 밖의 원귀와는 상호작용하지 않는다.
+            if (!other.TryGetComponent(out PlayerHealth damageable)
+                || !Boss.DeathRealm.CanInteract(gameObject, other.gameObject))
             {
                 return;
             }
 
-            if (other.TryGetComponent(out IDamageable damageable))
-            {
-                float damageMultiplier = WaveManager.Instance != null ? WaveManager.Instance.CurrentDamageMultiplier : 1f;
-                damageable.TakeDamage(stats.contactDamage * damageMultiplier);
-                contactTimer = stats.contactDamageInterval;
-            }
+            float damageMultiplier = WaveManager.Instance != null ? WaveManager.Instance.CurrentDamageMultiplier : 1f;
+            damageable.TakeDamage(stats.contactDamage * damageMultiplier);
+            contactTimer = stats.contactDamageInterval;
         }
 
         /// <summary>

@@ -35,6 +35,72 @@ namespace CheonMyeong.Player
         /// </summary>
         public Vector2 MoveInput => networkMoveInput.Value;
 
+        // 261101 추가 - 억쇠 보스 연동.
+        // 제압(배지기): 이동 · 스킬 금지. 모든 클라이언트가 애니메이션(Idle 고정)/공격 중지를 판단하도록 복제한다.
+        private readonly NetworkVariable<bool> networkSuppressed = new NetworkVariable<bool>(false);
+        private float serverSuppressUntil;
+        // 잡힘(배지기 회전 중): 보스가 위치를 직접 옮기므로 여기서는 Rigidbody를 건드리지 않는다.
+        private bool serverHeld;
+        // 금 나와라 뚝딱: 보스전 동안 누적되는 이동 속도 감소(0~cap).
+        private float serverBossSlow;
+
+        /// <summary>제압 중인지(이동 · 스킬 금지) - 모든 클라이언트에서 읽을 수 있다.</summary>
+        public bool IsSuppressed => networkSuppressed.Value;
+
+        /// <summary>서버 전용 - 배지기로 잡혔는지. 잡힌 동안 이동 계산을 멈춘다.</summary>
+        public void ServerSetHeld(bool held)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            serverHeld = held;
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        /// <summary>서버 전용 - seconds 동안 제압. 이미 제압 중이면 더 긴 쪽으로.</summary>
+        public void ServerSuppress(float seconds)
+        {
+            if (!IsServer || seconds <= 0f)
+            {
+                return;
+            }
+            serverSuppressUntil = Mathf.Max(serverSuppressUntil, Time.time + seconds);
+            networkSuppressed.Value = true;
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        /// <summary>서버 전용 - 이동 속도 감소를 더한다(최대 cap).</summary>
+        public void ServerAddBossSlow(float amount, float cap)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            serverBossSlow = Mathf.Clamp(serverBossSlow + Mathf.Max(0f, amount), 0f, Mathf.Clamp01(cap));
+        }
+
+        /// <summary>서버 전용 - 보스전이 끝나면 감속 · 제압 · 잡힘을 모두 푼다.</summary>
+        public void ServerClearBossSlow()
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            serverBossSlow = 0f;
+            serverHeld = false;
+            serverSuppressUntil = 0f;
+            networkSuppressed.Value = false;
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            serverHeld = false;
+            serverBossSlow = 0f;
+            serverSuppressUntil = 0f;
+            base.OnNetworkDespawn();
+        }
+
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
@@ -83,13 +149,27 @@ namespace CheonMyeong.Player
                 return;
             }
 
+            if (networkSuppressed.Value && Time.time >= serverSuppressUntil)
+            {
+                networkSuppressed.Value = false;
+            }
+            if (serverHeld)
+            {
+                return; // 위치는 억쇠가 직접 옮긴다(EoksoeBoss.SetHeldPosition)
+            }
+            if (networkSuppressed.Value)
+            {
+                rb.linearVelocity = Vector2.zero;
+                return;
+            }
+
             Vector2 move = networkMoveInput.Value;
             if (move.sqrMagnitude > 1f)
             {
                 move.Normalize(); // 대각선 이동 속도 보정
             }
 
-            rb.linearVelocity = move * stats.moveSpeed;
+            rb.linearVelocity = move * (stats.moveSpeed * (1f - serverBossSlow));
         }
     }
 }

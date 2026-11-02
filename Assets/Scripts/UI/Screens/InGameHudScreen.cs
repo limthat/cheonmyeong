@@ -283,7 +283,10 @@ namespace CheonMyeong.UI.Screens
 
             int minutes = roundedSeconds / 60;
             int seconds = roundedSeconds % 60;
-            waveTimerText.text = $"WAVE {currentWave}/{totalWaves} {minutes:00}:{seconds:00}";
+            // 261101 - 마지막 웨이브 뒤 억쇠 최종전(WaveManager가 currentWave = totalWaves + 1로 보낸다).
+            waveTimerText.text = totalWaves > 0 && currentWave > totalWaves
+                ? $"최종전 {minutes:00}:{seconds:00}"
+                : $"WAVE {currentWave}/{totalWaves} {minutes:00}:{seconds:00}";
         }
 
         /// <summary>경험치/레벨 시스템이 생기면 호출할 자리.</summary>

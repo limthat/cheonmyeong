@@ -23,6 +23,8 @@ namespace CheonMyeong.UI.Title
         [SerializeField] private TitleTalisman settingsTalisman;
         [SerializeField] private TitleTalisman exitTalisman;
         [SerializeField] private GameObject titleRoot;
+        [Tooltip("261101 - 타이틀 대문. 있으면 시작 부적을 눌렀을 때 문이 열린 뒤 로비로 넘어간다.")]
+        [SerializeField] private TitleGate gate;
 
         private void OnEnable()
         {
@@ -50,11 +52,35 @@ namespace CheonMyeong.UI.Title
 
         private void HandleStartCut()
         {
+            if (gate != null && gate.isActiveAndEnabled)
+            {
+                SetTalismansVisible(false); // 열리는 문(그림 속 부적이 같이 움직임) 위에 덮개 부적이 남지 않게
+                gate.PlayOpen(FinishStart);
+                return;
+            }
+            FinishStart();
+        }
+
+        private void FinishStart()
+        {
             if (titleRoot != null)
             {
                 titleRoot.SetActive(false);
             }
+            // 다음에 타이틀이 다시 켜질 때를 위해 부적을 원래대로 돌려둔다(titleRoot가 꺼져 있어 화면엔 안 보임).
+            SetTalismansVisible(true);
+            if (startTalisman != null)
+            {
+                startTalisman.Reset();
+            }
             UIFlowManager.Instance.ShowScreen(UIFlowManager.Lobby);
+        }
+
+        private void SetTalismansVisible(bool visible)
+        {
+            if (startTalisman != null) startTalisman.gameObject.SetActive(visible);
+            if (settingsTalisman != null) settingsTalisman.gameObject.SetActive(visible);
+            if (exitTalisman != null) exitTalisman.gameObject.SetActive(visible);
         }
 
         private void HandleSettingsCut()

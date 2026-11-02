@@ -17,12 +17,14 @@ MonoBehaviour:
   healthGrowthPerWave: 0.1
   endOfWaveHealRatio: 0.1
   reviveHealthRatio: 0.3
+  finalBattleSeconds: 180
   waves:
   - label: "1\uC6E8\uC774\uBE0C"
     durationOverrideSeconds: 0
     enemyCount: 125
     maxAliveEnemies: 300
     healthMultiplierOverride: 0
+    boss: 0
     spawns:
     - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
       weight: 60
@@ -35,6 +37,7 @@ MonoBehaviour:
     enemyCount: 175
     maxAliveEnemies: 300
     healthMultiplierOverride: 0
+    boss: 0
     spawns:
     - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
       weight: 60
@@ -47,6 +50,7 @@ MonoBehaviour:
     enemyCount: 225
     maxAliveEnemies: 300
     healthMultiplierOverride: 0
+    boss: 0
     spawns:
     - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
       weight: 60
@@ -59,6 +63,7 @@ MonoBehaviour:
     enemyCount: 275
     maxAliveEnemies: 300
     healthMultiplierOverride: 0
+    boss: 0
     spawns:
     - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
       weight: 60
@@ -68,9 +73,10 @@ MonoBehaviour:
       weight: 10
   - label: "5\uC6E8\uC774\uBE0C"
     durationOverrideSeconds: 0
-    enemyCount: 150
+    enemyCount: 0
     maxAliveEnemies: 300
     healthMultiplierOverride: 0
+    boss: 1
     spawns:
     - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
       weight: 60
@@ -83,6 +89,7 @@ MonoBehaviour:
     enemyCount: 350
     maxAliveEnemies: 300
     healthMultiplierOverride: 0
+    boss: 0
     spawns:
     - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
       weight: 60
@@ -95,6 +102,7 @@ MonoBehaviour:
     enemyCount: 410
     maxAliveEnemies: 300
     healthMultiplierOverride: 0
+    boss: 0
     spawns:
     - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
       weight: 60
@@ -107,6 +115,7 @@ MonoBehaviour:
     enemyCount: 475
     maxAliveEnemies: 300
     healthMultiplierOverride: 0
+    boss: 0
     spawns:
     - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
       weight: 60
@@ -119,6 +128,7 @@ MonoBehaviour:
     enemyCount: 540
     maxAliveEnemies: 300
     healthMultiplierOverride: 0
+    boss: 0
     spawns:
     - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
       weight: 60
@@ -131,6 +141,7 @@ MonoBehaviour:
     enemyCount: 625
     maxAliveEnemies: 300
     healthMultiplierOverride: 0
+    boss: 0
     spawns:
     - enemy: {fileID: 11400000, guid: e44afcfa86ff6c445ac99247ccd5fb8f, type: 2}
       weight: 60

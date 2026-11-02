@@ -31,6 +31,22 @@ namespace CheonMyeong.Progression
         private int settledRunGold;
         private bool ownedLocally;
 
+        // 261101 추가 - 기획서 9장: 5웨이브 억쇠를 시간 안에 쫓아내면 각자 리롤권 1장. 증강 리롤 기능은 아직 없어서
+        // 지금은 개수만 쌓는다(리롤 UI가 붙으면 이 값을 소비).
+        private readonly NetworkVariable<int> rerollTickets = new NetworkVariable<int>(
+            0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+        public int RerollTickets => rerollTickets.Value;
+
+        /// <summary>서버 전용 - 리롤권 추가.</summary>
+        public void ServerAddRerollTickets(int amount)
+        {
+            if (IsServer && amount > 0)
+            {
+                rerollTickets.Value += amount;
+            }
+        }
+
         public int Gold => gold.Value;
         public int RunGold => runGold.Value;
         public int RunKills => runKills.Value;
@@ -53,6 +69,7 @@ namespace CheonMyeong.Progression
             }
             runGold.Value = 0;
             runKills.Value = 0;
+            rerollTickets.Value = 0;
         }
 
         public override void OnNetworkSpawn()

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using CheonMyeong.Boss;
 using CheonMyeong.Data;
 using CheonMyeong.Enemies;
 using CheonMyeong.Input;
@@ -791,13 +792,18 @@ namespace CheonMyeong.EditorTools
 
         private static bool IsGridSliced(string sheetPath, int cellSize)
         {
+            return IsGridSliced(sheetPath, cellSize, cellSize);
+        }
+
+        private static bool IsGridSliced(string sheetPath, int cellWidth, int cellHeight)
+        {
             bool any = false;
             foreach (Object asset in AssetDatabase.LoadAllAssetsAtPath(sheetPath))
             {
                 if (asset is Sprite sprite)
                 {
                     any = true;
-                    if (Mathf.RoundToInt(sprite.rect.width) != cellSize || Mathf.RoundToInt(sprite.rect.height) != cellSize)
+                    if (Mathf.RoundToInt(sprite.rect.width) != cellWidth || Mathf.RoundToInt(sprite.rect.height) != cellHeight)
                     {
                         return false;
                     }
@@ -813,6 +819,12 @@ namespace CheonMyeong.EditorTools
         /// 켜면 런타임에 텍스처 사본이 메모리에 하나 더 남기 때문.
         /// </summary>
         private static void SliceToGrid(string sheetPath, int cellSize)
+        {
+            SliceToGrid(sheetPath, cellSize, cellSize);
+        }
+
+        /// <summary>261101 - 가로/세로가 다른 칸(예: 타이틀 대문 1920x1080)도 자를 수 있게 일반화.</summary>
+        private static void SliceToGrid(string sheetPath, int cellWidth, int cellHeight)
         {
             var importer = AssetImporter.GetAtPath(sheetPath) as TextureImporter;
             if (importer == null)
@@ -843,16 +855,16 @@ namespace CheonMyeong.EditorTools
             string baseName = Path.GetFileNameWithoutExtension(sheetPath);
             var rects = new List<SpriteRect>();
             var namePairs = new List<SpriteNameFileIdPair>();
-            int rows = height / cellSize;
-            int cols = width / cellSize;
+            int rows = height / cellHeight;
+            int cols = width / cellWidth;
             int index = 0;
             for (int row = 0; row < rows; row++)
             {
-                int y = height - (row + 1) * cellSize; // 스프라이트 rect는 왼쪽 아래가 원점 - 위쪽 행부터
+                int y = height - (row + 1) * cellHeight; // 스프라이트 rect는 왼쪽 아래가 원점 - 위쪽 행부터
                 for (int col = 0; col < cols; col++)
                 {
-                    int x = col * cellSize;
-                    if (IsCellEmpty(pixels, width, x, y, cellSize))
+                    int x = col * cellWidth;
+                    if (IsCellEmpty(pixels, width, x, y, cellWidth, cellHeight))
                     {
                         continue;
                     }
@@ -861,7 +873,7 @@ namespace CheonMyeong.EditorTools
                     {
                         name = $"{baseName}_{index}",
                         spriteID = GUID.Generate(),
-                        rect = new Rect(x, y, cellSize, cellSize),
+                        rect = new Rect(x, y, cellWidth, cellHeight),
                         alignment = SpriteAlignment.Center,
                         pivot = new Vector2(0.5f, 0.5f)
                     };
@@ -876,15 +888,15 @@ namespace CheonMyeong.EditorTools
             dataProvider.Apply();
             importer.SaveAndReimport();
 
-            Debug.Log($"[CheonMyeong] '{sheetPath}' {cellSize}x{cellSize} 슬라이스 완료 - 프레임 {rects.Count}개.");
+            Debug.Log($"[CheonMyeong] '{sheetPath}' {cellWidth}x{cellHeight} 슬라이스 완료 - 프레임 {rects.Count}개.");
         }
 
-        private static bool IsCellEmpty(Color32[] pixels, int width, int x, int y, int cellSize)
+        private static bool IsCellEmpty(Color32[] pixels, int width, int x, int y, int cellWidth, int cellHeight)
         {
-            for (int py = y; py < y + cellSize; py++)
+            for (int py = y; py < y + cellHeight; py++)
             {
                 int rowStart = py * width;
-                for (int px = x; px < x + cellSize; px++)
+                for (int px = x; px < x + cellWidth; px++)
                 {
                     if (pixels[rowStart + px].a > 0)
                     {
@@ -923,6 +935,304 @@ namespace CheonMyeong.EditorTools
                 rows.Insert(0, pair.Value.ToArray()); // y가 큰(위쪽) 행이 앞에 오도록
             }
             return rows;
+        }
+
+        // =====================================================================
+        // 261101 추가 - 억쇠 보스
+        // =====================================================================
+
+        private const string BossArtFolder = MonsterArtFolder + "/Boss";
+        private const string EoksoeSheetPath = BossArtFolder + "/Eoksoe-Sheet.png";
+        private const string EoksoeFxSheetPath = BossArtFolder + "/Eoksoe_FX-Sheet.png";
+        private const string EoksoeAnimFolder = "Assets/Animations/Eoksoe";
+        private const string BossDataFolder = DataFolder + "/Boss";
+        private const string EoksoeStatsPath = BossDataFolder + "/Eoksoe.asset";
+        private const string EoksoeObjectName = "Boss_Eoksoe";
+        private const int EoksoeFrameSize = 256;
+        private const int EoksoeFxFrameSize = 128;
+        private const float EoksoePixelsPerUnit = 100f; // 256px 한 칸 = 2.56유닛(캐릭터 · 원귀와 같은 PPU 100)
+        private const float EoksoeFps = 10f;            // 기획서: 전부 100ms
+
+        // 시트 행 순서(위에서부터) = EoksoeBoss.AnimStateNames. 반복 재생할 상태만 true.
+        private static readonly string[] EoksoeRowNames =
+            { "IDLE", "WALK", "SUMMON", "ATK", "MENTAL", "MENTAL_IDLE", "GRAB", "HOLD", "SLAM", "DIE" };
+        private static readonly bool[] EoksoeRowLoops =
+            { true, true, false, false, false, true, false, true, false, false };
+
+        /// <summary>
+        /// 억쇠 한 번에 만들기: 시트 임포트(원본 해상도 · Point · 압축 없음) → 256칸 슬라이스 → 상태별 클립 10개 + 애니메이터 →
+        /// 수치 에셋(Assets/Data/Boss/Eoksoe.asset, 있으면 유지) → Gameplay 씬(ProgressionSystems가 있는 씬)에 'Boss_Eoksoe'
+        /// in-scene NetworkObject 배치/갱신. 재실행해도 안전하다(오브젝트는 다시 만들지 않고 연결만 갱신).
+        /// </summary>
+        [MenuItem("CheonMyeong/Setup/Create Eoksoe Boss")]
+        public static void CreateEoksoeBoss()
+        {
+            if (AssetDatabase.LoadAssetAtPath<Texture2D>(EoksoeSheetPath) == null)
+            {
+                Debug.LogError($"[CheonMyeong] '{EoksoeSheetPath}'이 없습니다.");
+                return;
+            }
+
+            PrepareBossSheet(EoksoeSheetPath, EoksoeFrameSize);
+            if (AssetDatabase.LoadAssetAtPath<Texture2D>(EoksoeFxSheetPath) != null)
+            {
+                PrepareBossSheet(EoksoeFxSheetPath, EoksoeFxFrameSize); // 이펙트 시트도 미리 잘라 둔다(나중에 연출용)
+            }
+
+            List<Sprite[]> rows = LoadSheetRows(EoksoeSheetPath);
+            if (rows.Count < EoksoeRowNames.Length)
+            {
+                Debug.LogError($"[CheonMyeong] 억쇠 시트 행이 {rows.Count}개뿐입니다(필요 {EoksoeRowNames.Length}개) - 시트를 확인하세요.");
+                return;
+            }
+
+            AnimatorController controller = CreateEoksoeAnimator(rows);
+            BossStatsSO stats = EnsureEoksoeStats();
+            Sprite[] coinSprites = LoadBossCoinSprites();
+            var telegraphMaterial = AssetDatabase.GetBuiltinExtraResource<Material>("Sprites-Default.mat");
+            Vector2 visualOffset = ComputeFeetOffset(EoksoeSheetPath, rows[0][0]);
+
+            EnsureLayer(EnemyLayerName);
+            int enemyLayer = LayerMask.NameToLayer(EnemyLayerName);
+
+            int sceneCount = ForEachSceneContaining(ProgressionRootObjectName, (scene, progressionRoot) =>
+            {
+                GameObject root = FindInScene(scene, EoksoeObjectName);
+                if (root == null)
+                {
+                    root = new GameObject(EoksoeObjectName);
+                    SceneManager.MoveGameObjectToScene(root, scene);
+                }
+                root.layer = enemyLayer;
+                root.transform.position = Vector3.zero;
+
+                var rb = root.GetComponent<Rigidbody2D>();
+                if (rb == null) rb = root.AddComponent<Rigidbody2D>();
+                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.gravityScale = 0f;
+                rb.freezeRotation = true;
+
+                var collider = root.GetComponent<CircleCollider2D>();
+                if (collider == null) collider = root.AddComponent<CircleCollider2D>();
+                collider.isTrigger = true;
+                collider.radius = stats.bodyRadius;
+                collider.offset = new Vector2(0f, stats.bodyRadius); // 발(루트) 위쪽 몸통
+
+                if (root.GetComponent<NetworkObject>() == null) root.AddComponent<NetworkObject>();
+                if (root.GetComponent<NetworkTransform>() == null) root.AddComponent<NetworkTransform>();
+
+                GameObject shadow = EnsureChildObject(root.transform, "Shadow");
+                shadow.layer = enemyLayer;
+                shadow.transform.localPosition = Vector3.zero;
+                var shadowRenderer = shadow.GetComponent<SpriteRenderer>();
+                if (shadowRenderer == null) shadowRenderer = shadow.AddComponent<SpriteRenderer>();
+                shadowRenderer.sortingOrder = -40; // 바닥 예고(-50) 위, 캐릭터 아래
+                shadowRenderer.color = new Color(0f, 0f, 0f, 0.4f);
+
+                GameObject visual = EnsureChildObject(root.transform, "Visual");
+                visual.layer = enemyLayer;
+                visual.transform.localPosition = visualOffset;
+                var bodyRenderer = visual.GetComponent<SpriteRenderer>();
+                if (bodyRenderer == null) bodyRenderer = visual.AddComponent<SpriteRenderer>();
+                bodyRenderer.sprite = rows[0][0];
+                bodyRenderer.sortingOrder = 5;
+                var animator = visual.GetComponent<Animator>();
+                if (animator == null) animator = visual.AddComponent<Animator>();
+                animator.runtimeAnimatorController = controller;
+                visual.SetActive(false); // 등장 전엔 숨김(EoksoeBoss가 켠다)
+
+                var boss = root.GetComponent<EoksoeBoss>();
+                if (boss == null) boss = root.AddComponent<EoksoeBoss>();
+                AssignPrivateField(boss, "stats", stats);
+                AssignPrivateField(boss, "visualRoot", visual.transform);
+                AssignPrivateField(boss, "bodyRenderer", bodyRenderer);
+                AssignPrivateField(boss, "animator", animator);
+                AssignPrivateField(boss, "bodyCollider", collider);
+                AssignPrivateField(boss, "shadowRenderer", shadowRenderer);
+                AssignPrivateField(boss, "telegraphMaterial", telegraphMaterial);
+                AssignPrivateObjectArrayField(boss, "coinSprites", coinSprites);
+                SetSerializedVector2(boss, "visualBaseOffset", visualOffset);
+                EditorUtility.SetDirty(boss);
+                EditorUtility.SetDirty(root);
+            });
+
+            if (sceneCount == 0)
+            {
+                Debug.LogError($"[CheonMyeong] '{ProgressionRootObjectName}'이 있는 씬을 찾지 못했습니다 - " +
+                               "'CheonMyeong/Setup/Create Progression Prototype (Loot + Party Progress)'를 먼저 실행하세요.");
+                return;
+            }
+
+            Selection.activeObject = stats;
+            Debug.Log($"[CheonMyeong] 억쇠 생성/갱신 완료(씬 {sceneCount}개) - 수치: {EoksoeStatsPath}, 애니메이션: {EoksoeAnimFolder}. " +
+                      "5웨이브 중간 보스 / 마지막 웨이브 뒤 최종전은 DefaultWaves 에셋(5웨이브 boss = Mid, finalBattleSeconds)으로 정해진다.");
+        }
+
+        /// <summary>원본 해상도(최대 크기 자동) · Point · 압축 없음 · PPU 100으로 임포트하고, 칸 크기로 안 잘려 있으면 다시 자른다.</summary>
+        private static void PrepareBossSheet(string path, int cellSize)
+        {
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer == null)
+            {
+                return;
+            }
+
+            importer.GetSourceTextureWidthAndHeight(out int width, out int height);
+            int needed = Mathf.Min(16384, Mathf.NextPowerOfTwo(Mathf.Max(width, height)));
+            bool changed = false;
+            if (importer.maxTextureSize < needed) { importer.maxTextureSize = needed; changed = true; }
+            if (importer.filterMode != FilterMode.Point) { importer.filterMode = FilterMode.Point; changed = true; }
+            if (importer.textureCompression != TextureImporterCompression.Uncompressed) { importer.textureCompression = TextureImporterCompression.Uncompressed; changed = true; }
+            if (importer.mipmapEnabled) { importer.mipmapEnabled = false; changed = true; }
+            if (!Mathf.Approximately(importer.spritePixelsPerUnit, EoksoePixelsPerUnit)) { importer.spritePixelsPerUnit = EoksoePixelsPerUnit; changed = true; }
+            if (changed)
+            {
+                importer.SaveAndReimport();
+            }
+
+            if (!IsGridSliced(path, cellSize))
+            {
+                SliceToGrid(path, cellSize);
+            }
+        }
+
+        /// <summary>
+        /// 상태별 클립(10fps) + 상태 이름만 있는 애니메이터(전이 없음 - EoksoeBoss가 이름으로 바로 Play).
+        /// 1회 재생 클립은 마지막 프레임을 한 칸 더 유지하는 키를 넣어 길이 = 프레임 수 × 0.1초가 되게 한다.
+        /// </summary>
+        private static AnimatorController CreateEoksoeAnimator(List<Sprite[]> rows)
+        {
+            EnsureFolderRecursive(EoksoeAnimFolder);
+
+            string controllerPath = EoksoeAnimFolder + "/Eoksoe.controller";
+            if (AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPath) != null)
+            {
+                AssetDatabase.DeleteAsset(controllerPath);
+            }
+            AnimatorController controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
+            AnimatorStateMachine stateMachine = controller.layers[0].stateMachine;
+
+            for (int i = 0; i < EoksoeRowNames.Length; i++)
+            {
+                AnimationClip clip = CreateHeldSpriteClip($"{EoksoeAnimFolder}/{EoksoeRowNames[i]}.anim", rows[i], EoksoeFps, EoksoeRowLoops[i]);
+                AnimatorState state = stateMachine.AddState(EoksoeRowNames[i]);
+                state.motion = clip;
+                if (i == 0)
+                {
+                    stateMachine.defaultState = state;
+                }
+            }
+
+            EditorUtility.SetDirty(controller);
+            return controller;
+        }
+
+        private static AnimationClip CreateHeldSpriteClip(string clipPath, Sprite[] frames, float frameRate, bool loop)
+        {
+            var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
+            bool isNew = clip == null;
+            if (isNew)
+            {
+                clip = new AnimationClip();
+            }
+            clip.frameRate = frameRate;
+
+            var binding = new EditorCurveBinding
+            {
+                type = typeof(SpriteRenderer),
+                path = string.Empty, // Animator와 SpriteRenderer가 같은 'Visual' 오브젝트
+                propertyName = "m_Sprite"
+            };
+
+            var keyframes = new ObjectReferenceKeyframe[frames.Length + 1];
+            for (int i = 0; i < frames.Length; i++)
+            {
+                keyframes[i] = new ObjectReferenceKeyframe { time = i / frameRate, value = frames[i] };
+            }
+            // 마지막 프레임 유지 - 반복 클립은 한 바퀴 길이를, 1회 클립은 마지막 장면 표시 시간을 정확히 맞춘다.
+            keyframes[frames.Length] = new ObjectReferenceKeyframe
+            {
+                time = frames.Length / frameRate,
+                value = frames.Length > 0 ? (loop ? frames[0] : frames[frames.Length - 1]) : null
+            };
+            AnimationUtility.SetObjectReferenceCurve(clip, binding, keyframes);
+
+            AnimationClipSettings settings = AnimationUtility.GetAnimationClipSettings(clip);
+            settings.loopTime = loop;
+            AnimationUtility.SetAnimationClipSettings(clip, settings);
+
+            if (isNew)
+            {
+                AssetDatabase.CreateAsset(clip, clipPath);
+            }
+            else
+            {
+                EditorUtility.SetDirty(clip);
+            }
+            return clip;
+        }
+
+        private static BossStatsSO EnsureEoksoeStats()
+        {
+            EnsureFolderRecursive(BossDataFolder);
+            var stats = AssetDatabase.LoadAssetAtPath<BossStatsSO>(EoksoeStatsPath);
+            if (stats == null)
+            {
+                stats = ScriptableObject.CreateInstance<BossStatsSO>();
+                AssetDatabase.CreateAsset(stats, EoksoeStatsPath);
+                AssetDatabase.SaveAssets();
+            }
+            return stats;
+        }
+
+        /// <summary>coin_xp-Sheet 아랫줄(동 · 은 · 금, 왼쪽부터).</summary>
+        private static Sprite[] LoadBossCoinSprites()
+        {
+            if (!IsGridSliced(GoodsSheetPath, GoodsFrameSize))
+            {
+                SliceToGrid(GoodsSheetPath, GoodsFrameSize);
+            }
+            List<Sprite[]> rows = LoadSheetRows(GoodsSheetPath);
+            if (rows.Count == 0 || rows[rows.Count - 1].Length < 3)
+            {
+                Debug.LogWarning($"[CheonMyeong] '{GoodsSheetPath}' 아랫줄에서 엽전 3종을 찾지 못했습니다 - 보스 엽전은 그림 없이 나옵니다.");
+                return new Sprite[0];
+            }
+            Sprite[] bottom = rows[rows.Count - 1];
+            return new[] { bottom[0], bottom[1], bottom[2] };
+        }
+
+        /// <summary>
+        /// 첫 IDLE 프레임에서 가장 아래 불투명 픽셀(발)을 찾아, 그 발이 루트(바닥) 위치에 오도록 Visual을 올릴 거리(유닛).
+        /// 스프라이트 피벗은 칸 가운데(SliceToGrid).
+        /// </summary>
+        private static Vector2 ComputeFeetOffset(string sheetPath, Sprite frame)
+        {
+            var tex = new Texture2D(2, 2);
+            tex.LoadImage(File.ReadAllBytes(sheetPath));
+            Rect r = frame.rect;
+            int lowest = -1;
+            Color32[] pixels = tex.GetPixels32();
+            int width = tex.width;
+            for (int y = (int)r.y; y < (int)(r.y + r.height) && lowest < 0; y++)
+            {
+                for (int x = (int)r.x; x < (int)(r.x + r.width); x++)
+                {
+                    if (pixels[y * width + x].a > 0)
+                    {
+                        lowest = y;
+                        break;
+                    }
+                }
+            }
+            Object.DestroyImmediate(tex);
+
+            if (lowest < 0)
+            {
+                return Vector2.zero;
+            }
+            float pixelsBelowCenter = r.height * 0.5f - (lowest - r.y);
+            return new Vector2(0f, pixelsBelowCenter / EoksoePixelsPerUnit);
         }
 
         /// <summary>
@@ -1975,6 +2285,200 @@ namespace CheonMyeong.EditorTools
                       "정해뒀는데, 실제 드래그해보고 '왼쪽/오른쪽 대각선'이 반대로 느껴지면 그 메서드의 " +
                       "반환값 두 개만 서로 바꾸면 됩니다(확인 못 함 - 플레이 테스트 필요). " +
                       "Active Input Handling이 Input System(또는 Both)으로 설정돼 있어야 드래그가 인식됩니다.");
+        }
+
+        // =====================================================================
+        // 261101 추가 - 타이틀 대문(Title-Sheet)
+        // =====================================================================
+
+        // 아트 원본 Title-Sheet.png는 1920x1080 × 9프레임 가로 한 줄(17280px)이라 유니티 최대 텍스처 크기(16384)를 넘어
+        // 줄어든 채로 들어온다. 그래서 같은 9프레임을 3×3(5760x3240)으로 다시 배치한 사본을 쓴다(픽셀 그대로, 무손실).
+        private const string TitleGateSheetPath = "Assets/Art/Title/Gate/TitleGate-Sheet.png";
+        private const int TitleGateFrameWidth = 1920;
+        private const int TitleGateFrameHeight = 1080;
+        private const float TitleGatePixelsPerUnit = 100f; // 부적(bujeok-Sheet)과 같은 PPU - 문 그림 속 부적과 1:1 크기
+        private const string TitleGateObjectName = "Gate";
+
+        // 문 0프레임(닫힌 문)에 그려진 부적 위치(픽셀, 왼쪽 위 원점) · 기울기(도, 반시계 +). 그림에서 노란 영역을 재서 구했다.
+        private static readonly (string name, string label, Vector2 pixel, float angle)[] TitleGateTalismans =
+        {
+            ("Start", "시작", new Vector2(682.7f, 375.1f), -26.4f),
+            ("Settings", "설정", new Vector2(1261.5f, 676.1f), 15.6f),
+            ("Exit", "종료", new Vector2(666.6f, 852.1f), -23.4f),
+        };
+
+        /// <summary>
+        /// 타이틀을 대문 그림으로 구성한다(SampleScene을 열고 실행). 문은 화면을 꽉 채우고(TitleGate가 실행 중 카메라에 맞춤),
+        /// 시작/설정/종료 부적(bujeok 그림 + 궁서체 글자)을 문에 그려진 부적 자리에 같은 크기 · 각도로 덮어 붙인다.
+        /// 커서를 올리면 어두워진다. 시작을 누르면 문이 열린 뒤 로비로 간다. 재실행해도 안전.
+        /// </summary>
+        [MenuItem("CheonMyeong/Setup/Build Title Gate (Title-Sheet)")]
+        public static void BuildTitleGate()
+        {
+            GameObject parentGo = FindAcrossLoadedScenes(TitleTalismanParentName);
+            if (parentGo == null)
+            {
+                Debug.LogError($"[CheonMyeong] '{TitleTalismanParentName}'이 열린 씬에 없습니다 - SampleScene을 열고 실행하세요.");
+                return;
+            }
+            if (AssetDatabase.LoadAssetAtPath<Texture2D>(TitleGateSheetPath) == null)
+            {
+                Debug.LogError($"[CheonMyeong] '{TitleGateSheetPath}'이 없습니다.");
+                return;
+            }
+
+            Sprite[] frames = PrepareTitleGateFrames();
+            if (frames.Length == 0)
+            {
+                Debug.LogError("[CheonMyeong] 대문 프레임을 찾지 못했습니다.");
+                return;
+            }
+            Sprite talismanArt = LoadTitleTalismanArt();
+            if (talismanArt == null)
+            {
+                Debug.LogError($"[CheonMyeong] '{TitleTalismanArtPath}'에서 부적 그림을 찾지 못했습니다.");
+                return;
+            }
+
+            GameObject gateGo = EnsureChildObject(parentGo.transform, TitleGateObjectName);
+            gateGo.transform.localPosition = Vector3.zero;
+            gateGo.transform.localRotation = Quaternion.identity;
+            var gateRenderer = gateGo.GetComponent<SpriteRenderer>();
+            if (gateRenderer == null) gateRenderer = gateGo.AddComponent<SpriteRenderer>();
+            gateRenderer.sprite = frames[0];
+            gateRenderer.sortingOrder = -10;
+            gateRenderer.color = Color.white;
+            var gate = gateGo.GetComponent<TitleGate>();
+            if (gate == null) gate = gateGo.AddComponent<TitleGate>();
+            AssignPrivateObjectArrayField(gate, "frames", frames);
+            // 에디터에서도 카메라(세로 10유닛 = orthographicSize 5)에 맞는 크기로 보이게 미리 맞춘다. 실행 중엔 TitleGate가 다시 맞춤.
+            Camera cam = Camera.main;
+            if (cam != null && cam.orthographic)
+            {
+                float viewHeight = cam.orthographicSize * 2f;
+                float scale = Mathf.Max(viewHeight / frames[0].bounds.size.y, viewHeight * cam.aspect / frames[0].bounds.size.x);
+                gateGo.transform.localScale = new Vector3(scale, scale, 1f);
+            }
+            EditorUtility.SetDirty(gate);
+
+            var talismans = new Dictionary<string, TitleTalisman>();
+            foreach (var spec in TitleGateTalismans)
+            {
+                Transform root = parentGo.transform.Find(spec.name + "_Talisman");
+                if (root == null)
+                {
+                    root = gateGo.transform.Find(spec.name + "_Talisman");
+                }
+                if (root == null)
+                {
+                    CreateTalisman(parentGo.transform, spec.name, Color.white, Vector3.zero, 0f, spec.label);
+                    root = parentGo.transform.Find(spec.name + "_Talisman");
+                }
+
+                root.SetParent(gateGo.transform, false);
+                root.localPosition = new Vector3((spec.pixel.x - TitleGateFrameWidth * 0.5f) / TitleGatePixelsPerUnit,
+                                                 (TitleGateFrameHeight * 0.5f - spec.pixel.y) / TitleGatePixelsPerUnit, 0f);
+                root.localRotation = Quaternion.Euler(0f, 0f, spec.angle);
+                root.localScale = Vector3.one;
+                root.gameObject.SetActive(true);
+
+                Transform whole = root.Find("Whole");
+                if (whole != null && whole.TryGetComponent(out SpriteRenderer wholeRenderer))
+                {
+                    whole.localPosition = Vector3.zero;
+                    whole.localRotation = Quaternion.identity;
+                    whole.localScale = Vector3.one;
+                    wholeRenderer.sprite = talismanArt;
+                    wholeRenderer.color = Color.white;
+                    wholeRenderer.sortingOrder = 0;
+                    EditorUtility.SetDirty(wholeRenderer);
+                }
+                if (root.TryGetComponent(out BoxCollider2D hitArea))
+                {
+                    hitArea.isTrigger = true;
+                    hitArea.offset = talismanArt.bounds.center;
+                    hitArea.size = talismanArt.bounds.size;
+                    EditorUtility.SetDirty(hitArea);
+                }
+
+                // 글자는 예전 타이틀과 같은 궁서체 세로쓰기(예섭: "폰트는 이전걸로"). 부적 그림이 문에 그려진 글자를 덮는다.
+                // 크기는 예전 부적 대비 글자 비율(부적 7.68 : characterSize 0.2)을 그대로 유지.
+                TextMesh label = CreateOrUpdateLabel(root, spec.label);
+                label.gameObject.SetActive(true);
+                label.characterSize = TitleLabelCharacterSize * (talismanArt.bounds.size.y / (TitlePieceHeight / TitlePixelsPerUnit));
+                label.color = TitleLabelOnArtColor;
+                EditorUtility.SetDirty(label);
+
+                var talisman = root.GetComponent<TitleTalisman>();
+                AssignPrivateField(talisman, "label", label);
+                var so = new SerializedObject(talisman);
+                SerializedProperty overlayOnly = so.FindProperty("overlayOnly");
+                if (overlayOnly != null)
+                {
+                    overlayOnly.boolValue = false;
+                    so.ApplyModifiedProperties();
+                }
+                EditorUtility.SetDirty(talisman);
+                talismans[spec.name] = talisman;
+            }
+
+            TitleToLobbyBridge bridge = Object.FindFirstObjectByType<TitleToLobbyBridge>(FindObjectsInactive.Include);
+            if (bridge != null)
+            {
+                AssignPrivateField(bridge, "gate", gate);
+                AssignPrivateField(bridge, "startTalisman", talismans["Start"]);
+                AssignPrivateField(bridge, "settingsTalisman", talismans["Settings"]);
+                AssignPrivateField(bridge, "exitTalisman", talismans["Exit"]);
+                AssignPrivateField(bridge, "titleRoot", parentGo);
+                EditorUtility.SetDirty(bridge);
+            }
+            else
+            {
+                Debug.LogWarning("[CheonMyeong] TitleToLobbyBridge를 찾지 못했습니다 - 시작 부적이 로비로 연결되지 않습니다.");
+            }
+
+            EditorSceneManager.MarkSceneDirty(parentGo.scene);
+            EditorSceneManager.SaveScene(parentGo.scene);
+            Selection.activeGameObject = gateGo;
+            Debug.Log("[CheonMyeong] 타이틀 대문 구성 완료(씬 저장됨) - 문 9프레임, 부적 3개를 그림 속 부적 위치에 배치했습니다.");
+        }
+
+        /// <summary>대문 시트 임포트(원본 해상도 · Point · BC7 고품질 압축) + 1920x1080 칸으로 자르기. 프레임 순서 = 왼쪽 위부터 읽는 순서.</summary>
+        private static Sprite[] PrepareTitleGateFrames()
+        {
+            var importer = AssetImporter.GetAtPath(TitleGateSheetPath) as TextureImporter;
+            if (importer == null)
+            {
+                return new Sprite[0];
+            }
+
+            importer.GetSourceTextureWidthAndHeight(out int width, out int height);
+            int needed = Mathf.Min(16384, Mathf.NextPowerOfTwo(Mathf.Max(width, height)));
+            bool changed = false;
+            if (importer.textureType != TextureImporterType.Sprite) { importer.textureType = TextureImporterType.Sprite; changed = true; }
+            if (importer.spriteImportMode != SpriteImportMode.Multiple) { importer.spriteImportMode = SpriteImportMode.Multiple; changed = true; }
+            if (importer.maxTextureSize < needed) { importer.maxTextureSize = needed; changed = true; }
+            if (importer.filterMode != FilterMode.Point) { importer.filterMode = FilterMode.Point; changed = true; }
+            // 1920x1080 9장을 무압축으로 두면 약 75MB라, 화질 손실이 거의 없는 BC7(CompressedHQ, PC)로 1/4로 줄인다.
+            if (importer.textureCompression != TextureImporterCompression.CompressedHQ) { importer.textureCompression = TextureImporterCompression.CompressedHQ; changed = true; }
+            if (importer.mipmapEnabled) { importer.mipmapEnabled = false; changed = true; }
+            if (!Mathf.Approximately(importer.spritePixelsPerUnit, TitleGatePixelsPerUnit)) { importer.spritePixelsPerUnit = TitleGatePixelsPerUnit; changed = true; }
+            if (changed)
+            {
+                importer.SaveAndReimport();
+            }
+
+            if (!IsGridSliced(TitleGateSheetPath, TitleGateFrameWidth, TitleGateFrameHeight))
+            {
+                SliceToGrid(TitleGateSheetPath, TitleGateFrameWidth, TitleGateFrameHeight);
+            }
+
+            var frames = new List<Sprite>();
+            foreach (Sprite[] row in LoadSheetRows(TitleGateSheetPath))
+            {
+                frames.AddRange(row);
+            }
+            return frames.ToArray();
         }
 
         private const string TitleTalismanArtPath = "Assets/Art/Title/bujeok-Sheet.png";

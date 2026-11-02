@@ -113,7 +113,7 @@ namespace CheonMyeong.Player
                 return;
             }
 
-            bool isMoving = movement.MoveInput.sqrMagnitude > 0.01f;
+            bool isMoving = movement.MoveInput.sqrMagnitude > 0.01f && !movement.IsSuppressed; // 261101 제압 중엔 제자리
             if (isMoving != lastIsMoving)
             {
                 animator.SetBool(IsMovingHash, isMoving);

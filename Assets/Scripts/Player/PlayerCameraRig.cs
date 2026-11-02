@@ -53,6 +53,54 @@ namespace CheonMyeong.Player
         private Transform followTarget;
         private Rigidbody2D followTargetBody;
 
+        // 261101 추가 - 화면 흔들림(억쇠 내려치기 등). 따라가기 보간 상태(smoothedPosition)와 흔들림 오프셋을 분리해서
+        // 흔들림이 다음 프레임 보간 시작점에 섞이지 않게 한다. 흔들림은 감쇠하는 Perlin 노이즈(랜덤 점프보다 덜 어지러움).
+        private const float ShakeFrequency = 22f;
+        private Vector3 smoothedPosition;
+        private bool hasSmoothedPosition;
+        private float shakeAmplitude;
+        private float shakeDuration;
+        private float shakeTimeLeft;
+        private float shakeSeed;
+
+        /// <summary>화면 흔들기(로컬 연출). amplitude = 최대 흔들림(유닛), seconds = 지속 시간. 더 센 흔들림이 우선.</summary>
+        public static void Shake(float amplitude, float seconds)
+        {
+            if (Instance == null || amplitude <= 0f || seconds <= 0f)
+            {
+                return;
+            }
+            Instance.StartShake(amplitude, seconds);
+        }
+
+        private void StartShake(float amplitude, float seconds)
+        {
+            float current = shakeTimeLeft > 0f ? shakeAmplitude * (shakeTimeLeft / shakeDuration) : 0f;
+            if (amplitude < current)
+            {
+                return;
+            }
+            shakeAmplitude = amplitude;
+            shakeDuration = seconds;
+            shakeTimeLeft = seconds;
+            shakeSeed = Random.value * 100f;
+        }
+
+        private Vector3 ShakeOffset()
+        {
+            if (shakeTimeLeft <= 0f)
+            {
+                return Vector3.zero;
+            }
+            shakeTimeLeft -= Time.deltaTime;
+            float k = Mathf.Clamp01(shakeTimeLeft / shakeDuration);
+            float strength = shakeAmplitude * k * k; // 끝으로 갈수록 빠르게 잦아든다
+            float time = Time.time * ShakeFrequency;
+            float x = Mathf.PerlinNoise(shakeSeed, time) * 2f - 1f;
+            float y = Mathf.PerlinNoise(shakeSeed + 37.1f, time) * 2f - 1f;
+            return new Vector3(x * strength, y * strength, 0f);
+        }
+
         private void Awake()
         {
             // 씬 재로드 등으로 중복 생성될 경우 기존 인스턴스를 유지하고 새로 들어온
@@ -85,6 +133,7 @@ namespace CheonMyeong.Player
                 return;
             }
             followTarget = target;
+            hasSmoothedPosition = false;
             ApplyGameplayZoom();
             // 타겟이 바뀔 때 한 번만 TryGetComponent - 매 프레임 컴포넌트 조회를 피한다.
             // 못 찾으면 null로 둬서 아래에서 lookahead 없이 안전하게 폴백.
@@ -109,16 +158,26 @@ namespace CheonMyeong.Player
 
             targetPos = ClampToMap(targetPos);
 
-            if (followSpeed <= 0f)
+            if (!hasSmoothedPosition)
             {
-                transform.position = targetPos;
-                return;
+                smoothedPosition = transform.position;
+                hasSmoothedPosition = true;
             }
 
-            // 프레임레이트에 무관한 지수 감쇠 보간 - Lerp(a, b, t)에 고정 t를 매 프레임
-            // 그대로 쓰면 프레임레이트가 달라질 때 체감 속도가 달라지는 흔한 실수를 피한다.
-            float t = 1f - Mathf.Exp(-followSpeed * Time.deltaTime);
-            transform.position = ClampToMap(Vector3.Lerp(transform.position, targetPos, t));
+            if (followSpeed <= 0f)
+            {
+                smoothedPosition = targetPos;
+            }
+            else
+            {
+                // 프레임레이트에 무관한 지수 감쇠 보간 - Lerp(a, b, t)에 고정 t를 매 프레임
+                // 그대로 쓰면 프레임레이트가 달라질 때 체감 속도가 달라지는 흔한 실수를 피한다.
+                float t = 1f - Mathf.Exp(-followSpeed * Time.deltaTime);
+                smoothedPosition = ClampToMap(Vector3.Lerp(smoothedPosition, targetPos, t));
+            }
+
+            // 흔들림은 맵 제한 뒤에 더한다 - 가장자리에서도 흔들림이 보이도록(가장자리 넘어 최대 amplitude만큼).
+            transform.position = smoothedPosition + ShakeOffset();
         }
 
         /// <summary>
