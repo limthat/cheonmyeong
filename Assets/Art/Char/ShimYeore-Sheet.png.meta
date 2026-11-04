@@ -1,0 +1,936 @@
+fileFormatVersion: 2
+guid: 28631268f52670f40b4cc87ea8146849
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7825658654964359434
+    second: ShimYeore-Sheet_0
+  - first:
+      213: 582640442055670395
+    second: ShimYeore-Sheet_1
+  - first:
+      213: 1140147739845618172
+    second: ShimYeore-Sheet_2
+  - first:
+      213: -3417283107330446429
+    second: ShimYeore-Sheet_3
+  - first:
+      213: -8812612843592567668
+    second: ShimYeore-Sheet_4
+  - first:
+      213: 3840352918244396913
+    second: ShimYeore-Sheet_5
+  - first:
+      213: 2531611886078165984
+    second: ShimYeore-Sheet_6
+  - first:
+      213: -5122958037288146749
+    second: ShimYeore-Sheet_7
+  - first:
+      213: 296118632963115629
+    second: ShimYeore-Sheet_8
+  - first:
+      213: 325611231237465869
+    second: ShimYeore-Sheet_9
+  - first:
+      213: -4303995486718780201
+    second: ShimYeore-Sheet_10
+  - first:
+      213: 6390604601321365398
+    second: ShimYeore-Sheet_11
+  - first:
+      213: 7043348826944166453
+    second: ShimYeore-Sheet_12
+  - first:
+      213: 4948055459861079961
+    second: ShimYeore-Sheet_13
+  - first:
+      213: 1555198131331562290
+    second: ShimYeore-Sheet_14
+  - first:
+      213: 3770659699796537540
+    second: ShimYeore-Sheet_15
+  - first:
+      213: 5886879774097454984
+    second: ShimYeore-Sheet_16
+  - first:
+      213: 7982617039847634177
+    second: ShimYeore-Sheet_17
+  - first:
+      213: -4047877502704067512
+    second: ShimYeore-Sheet_18
+  - first:
+      213: 5561313961590917668
+    second: ShimYeore-Sheet_19
+  - first:
+      213: -7390668822552084837
+    second: ShimYeore-Sheet_20
+  - first:
+      213: 8809505640753736843
+    second: ShimYeore-Sheet_21
+  - first:
+      213: -8038492563059848778
+    second: ShimYeore-Sheet_22
+  - first:
+      213: -123644426435053775
+    second: ShimYeore-Sheet_23
+  - first:
+      213: -6842010610734551312
+    second: ShimYeore-Sheet_24
+  - first:
+      213: -4548622768141639899
+    second: ShimYeore-Sheet_25
+  - first:
+      213: 7992654121701871363
+    second: ShimYeore-Sheet_26
+  - first:
+      213: 9103544863510359969
+    second: ShimYeore-Sheet_27
+  - first:
+      213: -5403687317976207896
+    second: ShimYeore-Sheet_28
+  - first:
+      213: 1723779314960270828
+    second: ShimYeore-Sheet_29
+  - first:
+      213: -8725636145543787545
+    second: ShimYeore-Sheet_30
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 511
+        width: 85
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a01ac96a5135a9c60800000000000000
+      internalID: 7825658654964359434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 511
+        width: 85
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7a31842564f51800800000000000000
+      internalID: 582640442055670395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 511
+        width: 84
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf966f0245e92df00800000000000000
+      internalID: 1140147739845618172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 511
+        width: 84
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ab20a29e1f5390d0800000000000000
+      internalID: -3417283107330446429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 511
+        width: 85
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c84be9a5f4f43b580800000000000000
+      internalID: -8812612843592567668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 383
+        width: 85
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17f8710d1acab4530800000000000000
+      internalID: 3840352918244396913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 384
+        width: 86
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e388dae897122320800000000000000
+      internalID: 2531611886078165984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 385
+        width: 86
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c82534cec897e8b0800000000000000
+      internalID: -5122958037288146749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 384
+        width: 88
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6a0429e3560c1400800000000000000
+      internalID: 296118632963115629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 521
+        y: 383
+        width: 88
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0769cc80bdc48400800000000000000
+      internalID: 325611231237465869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 383
+        width: 84
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dc1e3b88e22544c0800000000000000
+      internalID: -4303995486718780201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 776
+        y: 383
+        width: 85
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69f9cb9a60dffa850800000000000000
+      internalID: 6390604601321365398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 904
+        y: 383
+        width: 84
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53adb2bd0700fb160800000000000000
+      internalID: 7043348826944166453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 1031
+        y: 384
+        width: 85
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 997a3fd89360ba440800000000000000
+      internalID: 4948055459861079961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 255
+        width: 85
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23b7e5de57c259510800000000000000
+      internalID: 1555198131331562290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 255
+        width: 80
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c0f047e403145430800000000000000
+      internalID: 3770659699796537540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 255
+        width: 58
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 887b28ae6f562b150800000000000000
+      internalID: 5886879774097454984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 255
+        width: 67
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 105391e67e3f7ce60800000000000000
+      internalID: 7982617039847634177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 547
+        y: 255
+        width: 81
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84c570d9bdc03d7c0800000000000000
+      internalID: -4047877502704067512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 675
+        y: 255
+        width: 78
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42a0c0d3591cd2d40800000000000000
+      internalID: 5561313961590917668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 255
+        width: 89
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9e7a330dd11f6990800000000000000
+      internalID: -7390668822552084837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 899
+        y: 255
+        width: 107
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8c2deb94b6a14a70800000000000000
+      internalID: 8809505640753736843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 1027
+        y: 255
+        width: 102
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b9c2398a99817090800000000000000
+      internalID: -8038492563059848778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 1156
+        y: 255
+        width: 96
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 137b1eb9c0ab84ef0800000000000000
+      internalID: -123644426435053775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 255
+        width: 85
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fea6bd999b4c01a0800000000000000
+      internalID: -6842010610734551312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 128
+        width: 56
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52fd9a721bb00e0c0800000000000000
+      internalID: -4548622768141639899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 127
+        width: 56
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30f0a98a39c9bee60800000000000000
+      internalID: 7992654121701871363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 56
+        width: 14
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1afed5a12d9465e70800000000000000
+      internalID: 9103544863510359969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 10
+        width: 106
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8edaeb6a30f3205b0800000000000000
+      internalID: -5403687317976207896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 38
+        width: 14
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce58f5b67281ce710800000000000000
+      internalID: 1723779314960270828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShimYeore-Sheet_30
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 8
+        width: 11
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ebcd81f72058e680800000000000000
+      internalID: -8725636145543787545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ShimYeore-Sheet_0: 7825658654964359434
+      ShimYeore-Sheet_1: 582640442055670395
+      ShimYeore-Sheet_10: -4303995486718780201
+      ShimYeore-Sheet_11: 6390604601321365398
+      ShimYeore-Sheet_12: 7043348826944166453
+      ShimYeore-Sheet_13: 4948055459861079961
+      ShimYeore-Sheet_14: 1555198131331562290
+      ShimYeore-Sheet_15: 3770659699796537540
+      ShimYeore-Sheet_16: 5886879774097454984
+      ShimYeore-Sheet_17: 7982617039847634177
+      ShimYeore-Sheet_18: -4047877502704067512
+      ShimYeore-Sheet_19: 5561313961590917668
+      ShimYeore-Sheet_2: 1140147739845618172
+      ShimYeore-Sheet_20: -7390668822552084837
+      ShimYeore-Sheet_21: 8809505640753736843
+      ShimYeore-Sheet_22: -8038492563059848778
+      ShimYeore-Sheet_23: -123644426435053775
+      ShimYeore-Sheet_24: -6842010610734551312
+      ShimYeore-Sheet_25: -4548622768141639899
+      ShimYeore-Sheet_26: 7992654121701871363
+      ShimYeore-Sheet_27: 9103544863510359969
+      ShimYeore-Sheet_28: -5403687317976207896
+      ShimYeore-Sheet_29: 1723779314960270828
+      ShimYeore-Sheet_3: -3417283107330446429
+      ShimYeore-Sheet_30: -8725636145543787545
+      ShimYeore-Sheet_4: -8812612843592567668
+      ShimYeore-Sheet_5: 3840352918244396913
+      ShimYeore-Sheet_6: 2531611886078165984
+      ShimYeore-Sheet_7: -5122958037288146749
+      ShimYeore-Sheet_8: 296118632963115629
+      ShimYeore-Sheet_9: 325611231237465869
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

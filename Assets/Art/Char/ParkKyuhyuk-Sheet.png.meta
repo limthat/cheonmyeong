@@ -1,0 +1,1612 @@
+fileFormatVersion: 2
+guid: e501836d17c6cfd4ba486dc050cffc63
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8020566683983563425
+    second: ParkKyuhyuk-Sheet_0
+  - first:
+      213: -7618045046590240959
+    second: ParkKyuhyuk-Sheet_1
+  - first:
+      213: -6739988063675733036
+    second: ParkKyuhyuk-Sheet_2
+  - first:
+      213: -7198710724551287430
+    second: ParkKyuhyuk-Sheet_3
+  - first:
+      213: 5195253440398670456
+    second: ParkKyuhyuk-Sheet_4
+  - first:
+      213: 5658784500440921844
+    second: ParkKyuhyuk-Sheet_5
+  - first:
+      213: 5616747349339056036
+    second: ParkKyuhyuk-Sheet_6
+  - first:
+      213: 6724417561174603072
+    second: ParkKyuhyuk-Sheet_7
+  - first:
+      213: 2616277398702593184
+    second: ParkKyuhyuk-Sheet_8
+  - first:
+      213: 5400687675336659691
+    second: ParkKyuhyuk-Sheet_9
+  - first:
+      213: -305872211713475691
+    second: ParkKyuhyuk-Sheet_10
+  - first:
+      213: -644032217703809665
+    second: ParkKyuhyuk-Sheet_11
+  - first:
+      213: 5836475115268629213
+    second: ParkKyuhyuk-Sheet_12
+  - first:
+      213: -8367116374973300875
+    second: ParkKyuhyuk-Sheet_13
+  - first:
+      213: -7023021732370290516
+    second: ParkKyuhyuk-Sheet_14
+  - first:
+      213: 7825867438809395048
+    second: ParkKyuhyuk-Sheet_15
+  - first:
+      213: 3731990732498247354
+    second: ParkKyuhyuk-Sheet_16
+  - first:
+      213: -1117307339604392086
+    second: ParkKyuhyuk-Sheet_17
+  - first:
+      213: -5748433795852200786
+    second: ParkKyuhyuk-Sheet_18
+  - first:
+      213: 1310541825310296108
+    second: ParkKyuhyuk-Sheet_19
+  - first:
+      213: 4161042577915316412
+    second: ParkKyuhyuk-Sheet_20
+  - first:
+      213: 1932968530053097184
+    second: ParkKyuhyuk-Sheet_21
+  - first:
+      213: 1349384844338970177
+    second: ParkKyuhyuk-Sheet_22
+  - first:
+      213: 217801176749190720
+    second: ParkKyuhyuk-Sheet_23
+  - first:
+      213: -3966300882778292468
+    second: ParkKyuhyuk-Sheet_24
+  - first:
+      213: -3713477709090013668
+    second: ParkKyuhyuk-Sheet_25
+  - first:
+      213: -596753419579256387
+    second: ParkKyuhyuk-Sheet_26
+  - first:
+      213: -1578079883351188263
+    second: ParkKyuhyuk-Sheet_27
+  - first:
+      213: -8748587012650819099
+    second: ParkKyuhyuk-Sheet_28
+  - first:
+      213: 2095837269272106369
+    second: ParkKyuhyuk-Sheet_29
+  - first:
+      213: 5518514985958565815
+    second: ParkKyuhyuk-Sheet_30
+  - first:
+      213: 1538511951267185577
+    second: ParkKyuhyuk-Sheet_31
+  - first:
+      213: 2244200015258888342
+    second: ParkKyuhyuk-Sheet_32
+  - first:
+      213: -1096198144573099544
+    second: ParkKyuhyuk-Sheet_33
+  - first:
+      213: 8673326676218700699
+    second: ParkKyuhyuk-Sheet_34
+  - first:
+      213: 7419532360803370659
+    second: ParkKyuhyuk-Sheet_35
+  - first:
+      213: -1769261739342491673
+    second: ParkKyuhyuk-Sheet_36
+  - first:
+      213: -2916182556578478581
+    second: ParkKyuhyuk-Sheet_37
+  - first:
+      213: -2957712952085457096
+    second: ParkKyuhyuk-Sheet_38
+  - first:
+      213: -3595248963304412538
+    second: ParkKyuhyuk-Sheet_39
+  - first:
+      213: 6083759040099627464
+    second: ParkKyuhyuk-Sheet_40
+  - first:
+      213: 2841278928423857783
+    second: ParkKyuhyuk-Sheet_41
+  - first:
+      213: -6839985956089877714
+    second: ParkKyuhyuk-Sheet_42
+  - first:
+      213: -1527122481210169978
+    second: ParkKyuhyuk-Sheet_43
+  - first:
+      213: -3235053103412927427
+    second: ParkKyuhyuk-Sheet_44
+  - first:
+      213: -5718205508939013638
+    second: ParkKyuhyuk-Sheet_45
+  - first:
+      213: -2158824063362630723
+    second: ParkKyuhyuk-Sheet_46
+  - first:
+      213: -2743976702113778009
+    second: ParkKyuhyuk-Sheet_47
+  - first:
+      213: 1597309890648856736
+    second: ParkKyuhyuk-Sheet_48
+  - first:
+      213: -4936215899768971137
+    second: ParkKyuhyuk-Sheet_49
+  - first:
+      213: -4833365107954813050
+    second: ParkKyuhyuk-Sheet_50
+  - first:
+      213: -2564694787151440484
+    second: ParkKyuhyuk-Sheet_51
+  - first:
+      213: 1146242208036767347
+    second: ParkKyuhyuk-Sheet_52
+  - first:
+      213: -5234455795175686588
+    second: ParkKyuhyuk-Sheet_53
+  - first:
+      213: -6715192746106997593
+    second: ParkKyuhyuk-Sheet_54
+  - first:
+      213: 655557815625825414
+    second: ParkKyuhyuk-Sheet_55
+  - first:
+      213: -5584756052635738933
+    second: ParkKyuhyuk-Sheet_56
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 511
+        width: 76
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1aa4c2087e6ce4f60800000000000000
+      internalID: 8020566683983563425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 511
+        width: 76
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 147801b6464474690800000000000000
+      internalID: -7618045046590240959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 511
+        width: 77
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4db2c3ae090c672a0800000000000000
+      internalID: -6739988063675733036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 511
+        width: 80
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7d53568cba091c90800000000000000
+      internalID: -7198710724551287430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 511
+        width: 81
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87ab6197a7f391840800000000000000
+      internalID: 5195253440398670456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 383
+        width: 76
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f67449858a088e40800000000000000
+      internalID: 5658784500440921844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 383
+        width: 79
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a7a87694f1b2fd40800000000000000
+      internalID: 5616747349339056036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 383
+        width: 82
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 045f537f42ee15d50800000000000000
+      internalID: 6724417561174603072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 404
+        y: 383
+        width: 85
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a41d87be62ee4420800000000000000
+      internalID: 2616277398702593184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 383
+        width: 84
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be2954f93d813fa40800000000000000
+      internalID: 5400687675336659691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 661
+        y: 383
+        width: 84
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59bb72218d251cbf0800000000000000
+      internalID: -305872211713475691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 789
+        y: 383
+        width: 78
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7d7bd73c10ff07f0800000000000000
+      internalID: -644032217703809665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 917
+        y: 383
+        width: 76
+        height: 116
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd26ef1c1335ff050800000000000000
+      internalID: 5836475115268629213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 1045
+        y: 383
+        width: 76
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57fbc53ecf702eb80800000000000000
+      internalID: -8367116374973300875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 255
+        width: 76
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca86838a1f6398e90800000000000000
+      internalID: -7023021732370290516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 255
+        width: 76
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86fa78de8f01b9c60800000000000000
+      internalID: 7825867438809395048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 256
+        width: 76
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: abe9b9b5cc1bac330800000000000000
+      internalID: 3731990732498247354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 255
+        width: 75
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6781f5f4e68e70f0800000000000000
+      internalID: -1117307339604392086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 255
+        width: 110
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea4116f4be57930b0800000000000000
+      internalID: -5748433795852200786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 642
+        y: 255
+        width: 110
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2889e8b8daff2210800000000000000
+      internalID: 1310541825310296108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 255
+        width: 90
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb80befad2efeb930800000000000000
+      internalID: 4161042577915316412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 917
+        y: 255
+        width: 76
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e6e2d303a843da10800000000000000
+      internalID: 1932968530053097184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 127
+        width: 84
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14ebe18dd5af9b210800000000000000
+      internalID: 1349384844338970177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 127
+        width: 90
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04e2ccb2409c50300800000000000000
+      internalID: 217801176749190720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 95
+        width: 20
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0f7ea98c5ed4f8c0800000000000000
+      internalID: -3966300882778292468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 93
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1ebb5cc2b3177cc0800000000000000
+      internalID: -3713477709090013668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 68
+        width: 39
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db19a773de7e7b7f0800000000000000
+      internalID: -596753419579256387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 52
+        width: 77
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dc99a505b8891ae0800000000000000
+      internalID: -1578079883351188263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 79
+        width: 41
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e12a58c676c69680800000000000000
+      internalID: -8748587012650819099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 35
+        width: 35
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1851df564e8e51d10800000000000000
+      internalID: 2095837269272106369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_30
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 78
+        width: 69
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b7eab13424b59c40800000000000000
+      internalID: 5518514985958565815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_31
+      rect:
+        serializedVersion: 2
+        x: 793
+        y: 76
+        width: 89
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a349f1e774e95510800000000000000
+      internalID: 1538511951267185577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_32
+      rect:
+        serializedVersion: 2
+        x: 917
+        y: 81
+        width: 87
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 698ae6a0600052f10800000000000000
+      internalID: 2244200015258888342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_33
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 82
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e1374d689589c0f0800000000000000
+      internalID: -1096198144573099544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_34
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 88
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b936fe4a8a8dd5870800000000000000
+      internalID: 8673326676218700699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_35
+      rect:
+        serializedVersion: 2
+        x: 679
+        y: 80
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a6433d2f5977f660800000000000000
+      internalID: 7419532360803370659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_36
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 62
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ef0dcf62d15277e0800000000000000
+      internalID: -1769261739342491673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_37
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 77
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0603f65a63a787d0800000000000000
+      internalID: -2916182556578478581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_38
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 22
+        width: 40
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 837df5f9db714f6d0800000000000000
+      internalID: -2957712952085457096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_39
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 28
+        width: 58
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68a2627cd1c1b1ec0800000000000000
+      internalID: -3595248963304412538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_40
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 46
+        width: 77
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c1b5342d9add6450800000000000000
+      internalID: 6083759040099627464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_41
+      rect:
+        serializedVersion: 2
+        x: 782
+        y: 47
+        width: 100
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77ea184b1204e6720800000000000000
+      internalID: 2841278928423857783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_42
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 49
+        width: 90
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2b2a92430d7311a0800000000000000
+      internalID: -6839985956089877714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_43
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 47
+        width: 20
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68564f2c1329ecae0800000000000000
+      internalID: -1527122481210169978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_44
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 55
+        width: 10
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d342c8da758ca13d0800000000000000
+      internalID: -3235053103412927427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_45
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 53
+        width: 52
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af1220fc26ad4a0b0800000000000000
+      internalID: -5718205508939013638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_46
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 41
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbb74bac3f05a02e0800000000000000
+      internalID: -2158824063362630723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_47
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 33
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a67f864abf6be9d0800000000000000
+      internalID: -2743976702113778009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_48
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 22
+        width: 41
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a8d754f1e8ca2610800000000000000
+      internalID: 1597309890648856736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_49
+      rect:
+        serializedVersion: 2
+        x: 584
+        y: 26
+        width: 42
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f70a2a7dac90f7bb0800000000000000
+      internalID: -4936215899768971137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_50
+      rect:
+        serializedVersion: 2
+        x: 679
+        y: 39
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 687f596ea007cecb0800000000000000
+      internalID: -4833365107954813050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_51
+      rect:
+        serializedVersion: 2
+        x: 687
+        y: 22
+        width: 67
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c95da8eedaf586cd0800000000000000
+      internalID: -2564694787151440484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_52
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 20
+        width: 82
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3764794173548ef00800000000000000
+      internalID: 1146242208036767347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_53
+      rect:
+        serializedVersion: 2
+        x: 921
+        y: 23
+        width: 85
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44e7118003a7b57b0800000000000000
+      internalID: -5234455795175686588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_54
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 23
+        width: 19
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a4330aa6c7dec2a0800000000000000
+      internalID: -6715192746106997593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_55
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 28
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68cbb1a2c52091900800000000000000
+      internalID: 655557815625825414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ParkKyuhyuk-Sheet_56
+      rect:
+        serializedVersion: 2
+        x: 664
+        y: 20
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcc1f6d95f5fe72b0800000000000000
+      internalID: -5584756052635738933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ParkKyuhyuk-Sheet_0: 8020566683983563425
+      ParkKyuhyuk-Sheet_1: -7618045046590240959
+      ParkKyuhyuk-Sheet_10: -305872211713475691
+      ParkKyuhyuk-Sheet_11: -644032217703809665
+      ParkKyuhyuk-Sheet_12: 5836475115268629213
+      ParkKyuhyuk-Sheet_13: -8367116374973300875
+      ParkKyuhyuk-Sheet_14: -7023021732370290516
+      ParkKyuhyuk-Sheet_15: 7825867438809395048
+      ParkKyuhyuk-Sheet_16: 3731990732498247354
+      ParkKyuhyuk-Sheet_17: -1117307339604392086
+      ParkKyuhyuk-Sheet_18: -5748433795852200786
+      ParkKyuhyuk-Sheet_19: 1310541825310296108
+      ParkKyuhyuk-Sheet_2: -6739988063675733036
+      ParkKyuhyuk-Sheet_20: 4161042577915316412
+      ParkKyuhyuk-Sheet_21: 1932968530053097184
+      ParkKyuhyuk-Sheet_22: 1349384844338970177
+      ParkKyuhyuk-Sheet_23: 217801176749190720
+      ParkKyuhyuk-Sheet_24: -3966300882778292468
+      ParkKyuhyuk-Sheet_25: -3713477709090013668
+      ParkKyuhyuk-Sheet_26: -596753419579256387
+      ParkKyuhyuk-Sheet_27: -1578079883351188263
+      ParkKyuhyuk-Sheet_28: -8748587012650819099
+      ParkKyuhyuk-Sheet_29: 2095837269272106369
+      ParkKyuhyuk-Sheet_3: -7198710724551287430
+      ParkKyuhyuk-Sheet_30: 5518514985958565815
+      ParkKyuhyuk-Sheet_31: 1538511951267185577
+      ParkKyuhyuk-Sheet_32: 2244200015258888342
+      ParkKyuhyuk-Sheet_33: -1096198144573099544
+      ParkKyuhyuk-Sheet_34: 8673326676218700699
+      ParkKyuhyuk-Sheet_35: 7419532360803370659
+      ParkKyuhyuk-Sheet_36: -1769261739342491673
+      ParkKyuhyuk-Sheet_37: -2916182556578478581
+      ParkKyuhyuk-Sheet_38: -2957712952085457096
+      ParkKyuhyuk-Sheet_39: -3595248963304412538
+      ParkKyuhyuk-Sheet_4: 5195253440398670456
+      ParkKyuhyuk-Sheet_40: 6083759040099627464
+      ParkKyuhyuk-Sheet_41: 2841278928423857783
+      ParkKyuhyuk-Sheet_42: -6839985956089877714
+      ParkKyuhyuk-Sheet_43: -1527122481210169978
+      ParkKyuhyuk-Sheet_44: -3235053103412927427
+      ParkKyuhyuk-Sheet_45: -5718205508939013638
+      ParkKyuhyuk-Sheet_46: -2158824063362630723
+      ParkKyuhyuk-Sheet_47: -2743976702113778009
+      ParkKyuhyuk-Sheet_48: 1597309890648856736
+      ParkKyuhyuk-Sheet_49: -4936215899768971137
+      ParkKyuhyuk-Sheet_5: 5658784500440921844
+      ParkKyuhyuk-Sheet_50: -4833365107954813050
+      ParkKyuhyuk-Sheet_51: -2564694787151440484
+      ParkKyuhyuk-Sheet_52: 1146242208036767347
+      ParkKyuhyuk-Sheet_53: -5234455795175686588
+      ParkKyuhyuk-Sheet_54: -6715192746106997593
+      ParkKyuhyuk-Sheet_55: 655557815625825414
+      ParkKyuhyuk-Sheet_56: -5584756052635738933
+      ParkKyuhyuk-Sheet_6: 5616747349339056036
+      ParkKyuhyuk-Sheet_7: 6724417561174603072
+      ParkKyuhyuk-Sheet_8: 2616277398702593184
+      ParkKyuhyuk-Sheet_9: 5400687675336659691
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

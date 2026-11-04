@@ -1,0 +1,1456 @@
+fileFormatVersion: 2
+guid: 816f2825d2228d748b0402b2d674e355
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2423037374173847376
+    second: ShinJihyun-Sheet_0
+  - first:
+      213: -6522584982968391492
+    second: ShinJihyun-Sheet_1
+  - first:
+      213: 3561996418520853631
+    second: ShinJihyun-Sheet_2
+  - first:
+      213: 8572657942284258610
+    second: ShinJihyun-Sheet_3
+  - first:
+      213: 4744898029685664152
+    second: ShinJihyun-Sheet_4
+  - first:
+      213: -1485257930347302964
+    second: ShinJihyun-Sheet_5
+  - first:
+      213: 825582776773365143
+    second: ShinJihyun-Sheet_6
+  - first:
+      213: -475209128734059062
+    second: ShinJihyun-Sheet_7
+  - first:
+      213: -7646170990550894196
+    second: ShinJihyun-Sheet_8
+  - first:
+      213: -7058374187576317708
+    second: ShinJihyun-Sheet_9
+  - first:
+      213: -2079505580036865543
+    second: ShinJihyun-Sheet_10
+  - first:
+      213: 6368064917949141865
+    second: ShinJihyun-Sheet_11
+  - first:
+      213: -3680257324896962363
+    second: ShinJihyun-Sheet_12
+  - first:
+      213: 2134638512952834681
+    second: ShinJihyun-Sheet_13
+  - first:
+      213: -4003967089062821867
+    second: ShinJihyun-Sheet_14
+  - first:
+      213: -6329043053150928827
+    second: ShinJihyun-Sheet_15
+  - first:
+      213: 410921457033762268
+    second: ShinJihyun-Sheet_16
+  - first:
+      213: -1404631582126190996
+    second: ShinJihyun-Sheet_17
+  - first:
+      213: -7852136143834894930
+    second: ShinJihyun-Sheet_18
+  - first:
+      213: -8593441801223198426
+    second: ShinJihyun-Sheet_19
+  - first:
+      213: 4842746735471839941
+    second: ShinJihyun-Sheet_20
+  - first:
+      213: -8161630476800115299
+    second: ShinJihyun-Sheet_21
+  - first:
+      213: 6724817629892620528
+    second: ShinJihyun-Sheet_22
+  - first:
+      213: -1678424320312695706
+    second: ShinJihyun-Sheet_23
+  - first:
+      213: 3631663846868839681
+    second: ShinJihyun-Sheet_24
+  - first:
+      213: -6152045589509794365
+    second: ShinJihyun-Sheet_25
+  - first:
+      213: 485399340010984664
+    second: ShinJihyun-Sheet_26
+  - first:
+      213: -4312260895369919539
+    second: ShinJihyun-Sheet_27
+  - first:
+      213: -9031283687172208551
+    second: ShinJihyun-Sheet_28
+  - first:
+      213: 6639687560937938779
+    second: ShinJihyun-Sheet_29
+  - first:
+      213: 8624714194482596319
+    second: ShinJihyun-Sheet_30
+  - first:
+      213: 3921869886908180612
+    second: ShinJihyun-Sheet_31
+  - first:
+      213: -1900549524221673249
+    second: ShinJihyun-Sheet_32
+  - first:
+      213: -3351254348606379506
+    second: ShinJihyun-Sheet_33
+  - first:
+      213: -9143871825837700534
+    second: ShinJihyun-Sheet_34
+  - first:
+      213: 5940189804650747518
+    second: ShinJihyun-Sheet_35
+  - first:
+      213: 6885581087869841510
+    second: ShinJihyun-Sheet_36
+  - first:
+      213: 957903138296270704
+    second: ShinJihyun-Sheet_37
+  - first:
+      213: -2230665816591022376
+    second: ShinJihyun-Sheet_38
+  - first:
+      213: -3445989235781633859
+    second: ShinJihyun-Sheet_39
+  - first:
+      213: -8331676749936214039
+    second: ShinJihyun-Sheet_40
+  - first:
+      213: 6797657292026700316
+    second: ShinJihyun-Sheet_41
+  - first:
+      213: -4715262451287127334
+    second: ShinJihyun-Sheet_42
+  - first:
+      213: 7467719154205129615
+    second: ShinJihyun-Sheet_43
+  - first:
+      213: -2422134295639776178
+    second: ShinJihyun-Sheet_44
+  - first:
+      213: -6230560056422488308
+    second: ShinJihyun-Sheet_45
+  - first:
+      213: -5680954265627963233
+    second: ShinJihyun-Sheet_46
+  - first:
+      213: 3401755879485930849
+    second: ShinJihyun-Sheet_47
+  - first:
+      213: 2318671216179077990
+    second: ShinJihyun-Sheet_48
+  - first:
+      213: 7207344932253971281
+    second: ShinJihyun-Sheet_49
+  - first:
+      213: -1043375964088188272
+    second: ShinJihyun-Sheet_50
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 512
+        width: 67
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b06fd29854af5ed0800000000000000
+      internalID: -2423037374173847376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 512
+        width: 67
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb82fd0248f1b75a0800000000000000
+      internalID: -6522584982968391492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 512
+        width: 68
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7c2621ded0ce6130800000000000000
+      internalID: 3561996418520853631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 512
+        width: 69
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23dc8c68af238f670800000000000000
+      internalID: 8572657942284258610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 547
+        y: 512
+        width: 70
+        height: 125
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8996dd25e9349d140800000000000000
+      internalID: 4744898029685664152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 512
+        width: 68
+        height: 125
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccf21d518cd436be0800000000000000
+      internalID: -1485257930347302964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 478
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79dc14e492f057b00800000000000000
+      internalID: 825582776773365143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 384
+        width: 67
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac598cfa0d7b769f0800000000000000
+      internalID: -475209128734059062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 384
+        width: 70
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c893158cef753e590800000000000000
+      internalID: -7646170990550894196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 384
+        width: 67
+        height: 125
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f82ab1c21e9b0e90800000000000000
+      internalID: -7058374187576317708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 384
+        width: 68
+        height: 125
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f1c57151bc1423e0800000000000000
+      internalID: -2079505580036865543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 478
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9635cfcad49ef5850800000000000000
+      internalID: 6368064917949141865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 549
+        y: 384
+        width: 69
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c8bc7b36791decc0800000000000000
+      internalID: -3680257324896962363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 384
+        width: 67
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97afb60fa62cf9d10800000000000000
+      internalID: 2134638512952834681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 807
+        y: 384
+        width: 66
+        height: 125
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5104e0c752d0f68c0800000000000000
+      internalID: -4003967089062821867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 933
+        y: 384
+        width: 69
+        height: 125
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54009c830e8ba28a0800000000000000
+      internalID: -6329043053150928827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 804
+        y: 468
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd5551553e2e3b500800000000000000
+      internalID: 410921457033762268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 256
+        width: 66
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6ec213a40fb18ce0800000000000000
+      internalID: -1404631582126190996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 256
+        width: 63
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ead27b297cb970390800000000000000
+      internalID: -7852136143834894930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 256
+        width: 92
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62929183636fdb880800000000000000
+      internalID: -8593441801223198426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 362
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ca4bf87f74e43340800000000000000
+      internalID: 4842746735471839941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 361
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9db352d2501cbe80800000000000000
+      internalID: -8161630476800115299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 1045
+        y: 255
+        width: 94
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f0b809310a535d50800000000000000
+      internalID: 6724817629892620528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 1192
+        y: 256
+        width: 67
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 664a26d29f905b8e0800000000000000
+      internalID: -1678424320312695706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 346
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10dee300703466230800000000000000
+      internalID: 3631663846868839681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 1184
+        y: 350
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c5924b912b8f9aa0800000000000000
+      internalID: -6152045589509794365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 412
+        y: 256
+        width: 97
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d45093c02c7cb600800000000000000
+      internalID: 485399340010984664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 256
+        width: 103
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc30ba02095c724c0800000000000000
+      internalID: -4312260895369919539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 642
+        y: 256
+        width: 106
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9580258165f6aa280800000000000000
+      internalID: -9031283687172208551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 256
+        width: 113
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5f194978a8e42c50800000000000000
+      internalID: 6639687560937938779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_30
+      rect:
+        serializedVersion: 2
+        x: 901
+        y: 256
+        width: 115
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd9876b3dd321b770800000000000000
+      internalID: 8624714194482596319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_31
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 13
+        width: 102
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 488a67812e74d6630800000000000000
+      internalID: 3921869886908180612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_32
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 127
+        width: 101
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd0cabaf644ef95e0800000000000000
+      internalID: -1900549524221673249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_33
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 109
+        width: 11
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0a6557fce3fd71d0800000000000000
+      internalID: -3351254348606379506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_34
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 13
+        width: 98
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4acd3d45017a1180800000000000000
+      internalID: -9143871825837700534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_35
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 112
+        width: 101
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e76da94a72bcf6250800000000000000
+      internalID: 5940189804650747518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_36
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 13
+        width: 96
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66031ae948f7e8f50800000000000000
+      internalID: 6885581087869841510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_37
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 13
+        width: 57
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07f816f34d72b4d00800000000000000
+      internalID: 957903138296270704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_38
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 88
+        width: 46
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d64c7522451b01e0800000000000000
+      internalID: -2230665816591022376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_39
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 13
+        width: 59
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db87a653c036d20d0800000000000000
+      internalID: -3445989235781633859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_40
+      rect:
+        serializedVersion: 2
+        x: 617
+        y: 57
+        width: 64
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9efbba89320ff5c80800000000000000
+      internalID: -8331676749936214039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_41
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 20
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c126814aa41265e50800000000000000
+      internalID: 6797657292026700316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_42
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 23
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ada0b4878c5009eb0800000000000000
+      internalID: -4715262451287127334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_43
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 26
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8bf6cc410ba2a760800000000000000
+      internalID: 7467719154205129615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_44
+      rect:
+        serializedVersion: 2
+        x: 657
+        y: 13
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e44a91ee0b9d26ed0800000000000000
+      internalID: -2422134295639776178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_45
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 28
+        width: 6
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c07233db3aa9889a0800000000000000
+      internalID: -6230560056422488308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_46
+      rect:
+        serializedVersion: 2
+        x: 785
+        y: 13
+        width: 27
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f905104c1323921b0800000000000000
+      internalID: -5680954265627963233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_47
+      rect:
+        serializedVersion: 2
+        x: 803
+        y: 24
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16dfa59f2f6753f20800000000000000
+      internalID: 3401755879485930849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_48
+      rect:
+        serializedVersion: 2
+        x: 914
+        y: 13
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 663e64faf239d2020800000000000000
+      internalID: 2318671216179077990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_49
+      rect:
+        serializedVersion: 2
+        x: 938
+        y: 27
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 153b5bc9702a50460800000000000000
+      internalID: 7207344932253971281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShinJihyun-Sheet_50
+      rect:
+        serializedVersion: 2
+        x: 1043
+        y: 13
+        width: 29
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 092c755b61f2581f0800000000000000
+      internalID: -1043375964088188272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ShinJihyun-Sheet_0: -2423037374173847376
+      ShinJihyun-Sheet_1: -6522584982968391492
+      ShinJihyun-Sheet_10: -2079505580036865543
+      ShinJihyun-Sheet_11: 6368064917949141865
+      ShinJihyun-Sheet_12: -3680257324896962363
+      ShinJihyun-Sheet_13: 2134638512952834681
+      ShinJihyun-Sheet_14: -4003967089062821867
+      ShinJihyun-Sheet_15: -6329043053150928827
+      ShinJihyun-Sheet_16: 410921457033762268
+      ShinJihyun-Sheet_17: -1404631582126190996
+      ShinJihyun-Sheet_18: -7852136143834894930
+      ShinJihyun-Sheet_19: -8593441801223198426
+      ShinJihyun-Sheet_2: 3561996418520853631
+      ShinJihyun-Sheet_20: 4842746735471839941
+      ShinJihyun-Sheet_21: -8161630476800115299
+      ShinJihyun-Sheet_22: 6724817629892620528
+      ShinJihyun-Sheet_23: -1678424320312695706
+      ShinJihyun-Sheet_24: 3631663846868839681
+      ShinJihyun-Sheet_25: -6152045589509794365
+      ShinJihyun-Sheet_26: 485399340010984664
+      ShinJihyun-Sheet_27: -4312260895369919539
+      ShinJihyun-Sheet_28: -9031283687172208551
+      ShinJihyun-Sheet_29: 6639687560937938779
+      ShinJihyun-Sheet_3: 8572657942284258610
+      ShinJihyun-Sheet_30: 8624714194482596319
+      ShinJihyun-Sheet_31: 3921869886908180612
+      ShinJihyun-Sheet_32: -1900549524221673249
+      ShinJihyun-Sheet_33: -3351254348606379506
+      ShinJihyun-Sheet_34: -9143871825837700534
+      ShinJihyun-Sheet_35: 5940189804650747518
+      ShinJihyun-Sheet_36: 6885581087869841510
+      ShinJihyun-Sheet_37: 957903138296270704
+      ShinJihyun-Sheet_38: -2230665816591022376
+      ShinJihyun-Sheet_39: -3445989235781633859
+      ShinJihyun-Sheet_4: 4744898029685664152
+      ShinJihyun-Sheet_40: -8331676749936214039
+      ShinJihyun-Sheet_41: 6797657292026700316
+      ShinJihyun-Sheet_42: -4715262451287127334
+      ShinJihyun-Sheet_43: 7467719154205129615
+      ShinJihyun-Sheet_44: -2422134295639776178
+      ShinJihyun-Sheet_45: -6230560056422488308
+      ShinJihyun-Sheet_46: -5680954265627963233
+      ShinJihyun-Sheet_47: 3401755879485930849
+      ShinJihyun-Sheet_48: 2318671216179077990
+      ShinJihyun-Sheet_49: 7207344932253971281
+      ShinJihyun-Sheet_5: -1485257930347302964
+      ShinJihyun-Sheet_50: -1043375964088188272
+      ShinJihyun-Sheet_6: 825582776773365143
+      ShinJihyun-Sheet_7: -475209128734059062
+      ShinJihyun-Sheet_8: -7646170990550894196
+      ShinJihyun-Sheet_9: -7058374187576317708
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

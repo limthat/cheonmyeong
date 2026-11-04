@@ -1,0 +1,1144 @@
+fileFormatVersion: 2
+guid: 2494a592d879d2145adf50194f5cd803
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8752135711704184932
+    second: LimHoon-Sheet_0
+  - first:
+      213: 8509538754517194732
+    second: LimHoon-Sheet_1
+  - first:
+      213: -4104965549554177562
+    second: LimHoon-Sheet_2
+  - first:
+      213: 6141865930594457709
+    second: LimHoon-Sheet_3
+  - first:
+      213: 5278340506808614238
+    second: LimHoon-Sheet_4
+  - first:
+      213: 2801510690369177113
+    second: LimHoon-Sheet_5
+  - first:
+      213: -2069568337346708289
+    second: LimHoon-Sheet_6
+  - first:
+      213: 162767093511627921
+    second: LimHoon-Sheet_7
+  - first:
+      213: -8404252739552856858
+    second: LimHoon-Sheet_8
+  - first:
+      213: 1403040004994606072
+    second: LimHoon-Sheet_9
+  - first:
+      213: -4306042056573123413
+    second: LimHoon-Sheet_10
+  - first:
+      213: -8314688766914396386
+    second: LimHoon-Sheet_11
+  - first:
+      213: -9143012891578024633
+    second: LimHoon-Sheet_12
+  - first:
+      213: 5762656832344749738
+    second: LimHoon-Sheet_13
+  - first:
+      213: 4971053132155556136
+    second: LimHoon-Sheet_14
+  - first:
+      213: -3630869523386335380
+    second: LimHoon-Sheet_15
+  - first:
+      213: 4351601659671082507
+    second: LimHoon-Sheet_16
+  - first:
+      213: 1249075596910814597
+    second: LimHoon-Sheet_17
+  - first:
+      213: -1017997369231030974
+    second: LimHoon-Sheet_18
+  - first:
+      213: 8280084567198113710
+    second: LimHoon-Sheet_19
+  - first:
+      213: -6980414303515091460
+    second: LimHoon-Sheet_20
+  - first:
+      213: -4161977932742179173
+    second: LimHoon-Sheet_21
+  - first:
+      213: 5311684117474175350
+    second: LimHoon-Sheet_22
+  - first:
+      213: 4994682753299154710
+    second: LimHoon-Sheet_23
+  - first:
+      213: -7039578240200208777
+    second: LimHoon-Sheet_24
+  - first:
+      213: 3093160319026653299
+    second: LimHoon-Sheet_25
+  - first:
+      213: 3071862969615292091
+    second: LimHoon-Sheet_26
+  - first:
+      213: 3935726829279747734
+    second: LimHoon-Sheet_27
+  - first:
+      213: -5250445311475065759
+    second: LimHoon-Sheet_28
+  - first:
+      213: 5946021837828514075
+    second: LimHoon-Sheet_29
+  - first:
+      213: -318045193908612529
+    second: LimHoon-Sheet_30
+  - first:
+      213: -6907039247792073902
+    second: LimHoon-Sheet_31
+  - first:
+      213: -1964740245360907823
+    second: LimHoon-Sheet_32
+  - first:
+      213: 9167336119485690887
+    second: LimHoon-Sheet_33
+  - first:
+      213: -3868831372497133604
+    second: LimHoon-Sheet_34
+  - first:
+      213: -5335676692216816631
+    second: LimHoon-Sheet_35
+  - first:
+      213: 2630632116303472588
+    second: LimHoon-Sheet_36
+  - first:
+      213: 5938684779400881998
+    second: LimHoon-Sheet_37
+  - first:
+      213: -4206908165706370243
+    second: LimHoon-Sheet_38
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: LimHoon-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 511
+        width: 66
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c978cd5e0fa2a8680800000000000000
+      internalID: -8752135711704184932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 512
+        width: 65
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce7da696964f71670800000000000000
+      internalID: 8509538754517194732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 512
+        width: 66
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e96b9be49b3807c0800000000000000
+      internalID: -4104965549554177562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 512
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d68182bd58a4c3550800000000000000
+      internalID: 6141865930594457709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 383
+        width: 66
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5df1ef99be604940800000000000000
+      internalID: 5278340506808614238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 383
+        width: 66
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9160aed3127f0e620800000000000000
+      internalID: 2801510690369177113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 286
+        y: 384
+        width: 66
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbcbd0eef8a6743e0800000000000000
+      internalID: -2069568337346708289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 414
+        y: 384
+        width: 66
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19422e52fc3424200800000000000000
+      internalID: 162767093511627921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 541
+        y: 383
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e4395839a81e5b80800000000000000
+      internalID: -8404252739552856858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 668
+        y: 383
+        width: 66
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f3ad5f6379987310800000000000000
+      internalID: 1403040004994606072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 796
+        y: 383
+        width: 66
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba4011e509ddd34c0800000000000000
+      internalID: -4306042056573123413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 922
+        y: 383
+        width: 68
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1ff22e9e9a4c9c80800000000000000
+      internalID: -8314688766914396386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 1052
+        y: 383
+        width: 66
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74dbca4873e7d1180800000000000000
+      internalID: -9143012891578024633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 256
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa6f26e6bd119ff40800000000000000
+      internalID: 5762656832344749738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 255
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82199b56c7abcf440800000000000000
+      internalID: 4971053132155556136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 255
+        width: 66
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6ff3c8d76f8c9dc0800000000000000
+      internalID: -3630869523386335380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 255
+        width: 66
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b06f1b857aef36c30800000000000000
+      internalID: 4351601659671082507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 255
+        width: 105
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5856a7333ab955110800000000000000
+      internalID: 1249075596910814597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 653
+        y: 255
+        width: 109
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 245c3b849c85fd1f0800000000000000
+      internalID: -1017997369231030974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 775
+        y: 255
+        width: 109
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eaf990a4b05c8e270800000000000000
+      internalID: 8280084567198113710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 897
+        y: 255
+        width: 109
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfd5dedbc26902f90800000000000000
+      internalID: -6980414303515091460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 1029
+        y: 255
+        width: 104
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9643eb0f1fad36c0800000000000000
+      internalID: -4161977932742179173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 1181
+        y: 255
+        width: 66
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 679e125ff84e6b940800000000000000
+      internalID: 5311684117474175350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 1309
+        y: 255
+        width: 66
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6178a2c408da05540800000000000000
+      internalID: 4994682753299154710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 1437
+        y: 255
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77e0c4843e46e4e90800000000000000
+      internalID: -7039578240200208777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 1565
+        y: 256
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 378eae00cec1dea20800000000000000
+      internalID: 3093160319026653299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 127
+        width: 89
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb6989e681371aa20800000000000000
+      internalID: 3071862969615292091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 127
+        width: 87
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69e9138e2b28e9630800000000000000
+      internalID: 3935726829279747734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 45
+        width: 118
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16cd9e8aecba227b0800000000000000
+      internalID: -5250445311475065759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 77
+        width: 17
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b11eb7eab53848250800000000000000
+      internalID: 5946021837828514075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_30
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 78
+        width: 46
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f429e8ac493169bf0800000000000000
+      internalID: -318045193908612529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_31
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 34
+        width: 157
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2531ca136644520a0800000000000000
+      internalID: -6907039247792073902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_32
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 38
+        width: 125
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d9695f0827dbb4e0800000000000000
+      internalID: -1964740245360907823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_33
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 38
+        width: 126
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7047d8a41abe83f70800000000000000
+      internalID: 9167336119485690887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_34
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 68
+        width: 21
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdfdb6a5d562f4ac0800000000000000
+      internalID: -3868831372497133604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_35
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 51
+        width: 89
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90cd51c615ed3f5b0800000000000000
+      internalID: -5335676692216816631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_36
+      rect:
+        serializedVersion: 2
+        x: 653
+        y: 60
+        width: 142
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc7a00bd8f1e18420800000000000000
+      internalID: 2630632116303472588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_37
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 54
+        width: 17
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e476535a7527a6250800000000000000
+      internalID: 5938684779400881998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LimHoon-Sheet_38
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 36
+        width: 28
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d33b16cff4f0e95c0800000000000000
+      internalID: -4206908165706370243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      LimHoon-Sheet_0: -8752135711704184932
+      LimHoon-Sheet_1: 8509538754517194732
+      LimHoon-Sheet_10: -4306042056573123413
+      LimHoon-Sheet_11: -8314688766914396386
+      LimHoon-Sheet_12: -9143012891578024633
+      LimHoon-Sheet_13: 5762656832344749738
+      LimHoon-Sheet_14: 4971053132155556136
+      LimHoon-Sheet_15: -3630869523386335380
+      LimHoon-Sheet_16: 4351601659671082507
+      LimHoon-Sheet_17: 1249075596910814597
+      LimHoon-Sheet_18: -1017997369231030974
+      LimHoon-Sheet_19: 8280084567198113710
+      LimHoon-Sheet_2: -4104965549554177562
+      LimHoon-Sheet_20: -6980414303515091460
+      LimHoon-Sheet_21: -4161977932742179173
+      LimHoon-Sheet_22: 5311684117474175350
+      LimHoon-Sheet_23: 4994682753299154710
+      LimHoon-Sheet_24: -7039578240200208777
+      LimHoon-Sheet_25: 3093160319026653299
+      LimHoon-Sheet_26: 3071862969615292091
+      LimHoon-Sheet_27: 3935726829279747734
+      LimHoon-Sheet_28: -5250445311475065759
+      LimHoon-Sheet_29: 5946021837828514075
+      LimHoon-Sheet_3: 6141865930594457709
+      LimHoon-Sheet_30: -318045193908612529
+      LimHoon-Sheet_31: -6907039247792073902
+      LimHoon-Sheet_32: -1964740245360907823
+      LimHoon-Sheet_33: 9167336119485690887
+      LimHoon-Sheet_34: -3868831372497133604
+      LimHoon-Sheet_35: -5335676692216816631
+      LimHoon-Sheet_36: 2630632116303472588
+      LimHoon-Sheet_37: 5938684779400881998
+      LimHoon-Sheet_38: -4206908165706370243
+      LimHoon-Sheet_4: 5278340506808614238
+      LimHoon-Sheet_5: 2801510690369177113
+      LimHoon-Sheet_6: -2069568337346708289
+      LimHoon-Sheet_7: 162767093511627921
+      LimHoon-Sheet_8: -8404252739552856858
+      LimHoon-Sheet_9: 1403040004994606072
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

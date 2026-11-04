@@ -1,0 +1,1898 @@
+fileFormatVersion: 2
+guid: 80ea7b62a27060d44b947ace914ffbe3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4018152396020924624
+    second: HaYoung-Sheet_0
+  - first:
+      213: -6219733455735413342
+    second: HaYoung-Sheet_1
+  - first:
+      213: 8397554457423728146
+    second: HaYoung-Sheet_2
+  - first:
+      213: -6769273966132898599
+    second: HaYoung-Sheet_3
+  - first:
+      213: -815106989885346003
+    second: HaYoung-Sheet_4
+  - first:
+      213: -1802826145568281767
+    second: HaYoung-Sheet_5
+  - first:
+      213: 5597523010413690452
+    second: HaYoung-Sheet_6
+  - first:
+      213: -6357676976775677525
+    second: HaYoung-Sheet_7
+  - first:
+      213: -9042492629135914980
+    second: HaYoung-Sheet_8
+  - first:
+      213: 8501905433654157592
+    second: HaYoung-Sheet_9
+  - first:
+      213: 3419195246129983674
+    second: HaYoung-Sheet_10
+  - first:
+      213: 8492585852659169117
+    second: HaYoung-Sheet_11
+  - first:
+      213: -5076024938777301285
+    second: HaYoung-Sheet_12
+  - first:
+      213: 1702098308069736350
+    second: HaYoung-Sheet_13
+  - first:
+      213: -124127724135567703
+    second: HaYoung-Sheet_14
+  - first:
+      213: -3611474673892140290
+    second: HaYoung-Sheet_15
+  - first:
+      213: -5943026338135721377
+    second: HaYoung-Sheet_16
+  - first:
+      213: 6647068503710460915
+    second: HaYoung-Sheet_17
+  - first:
+      213: -3207443538333578849
+    second: HaYoung-Sheet_18
+  - first:
+      213: 5763499555392702137
+    second: HaYoung-Sheet_19
+  - first:
+      213: 8173008840580300615
+    second: HaYoung-Sheet_20
+  - first:
+      213: -1845241405348028250
+    second: HaYoung-Sheet_21
+  - first:
+      213: -1733632795940356416
+    second: HaYoung-Sheet_22
+  - first:
+      213: -8219398287020211922
+    second: HaYoung-Sheet_23
+  - first:
+      213: -2129105952032978250
+    second: HaYoung-Sheet_24
+  - first:
+      213: -5894213669012042075
+    second: HaYoung-Sheet_25
+  - first:
+      213: 4231073583256874412
+    second: HaYoung-Sheet_26
+  - first:
+      213: 5503623287088893569
+    second: HaYoung-Sheet_27
+  - first:
+      213: 8657251150663934887
+    second: HaYoung-Sheet_28
+  - first:
+      213: 6326182155855178692
+    second: HaYoung-Sheet_29
+  - first:
+      213: 963619691598204744
+    second: HaYoung-Sheet_30
+  - first:
+      213: -5738945914963777806
+    second: HaYoung-Sheet_31
+  - first:
+      213: -5815660332811363116
+    second: HaYoung-Sheet_32
+  - first:
+      213: -6259095442864899723
+    second: HaYoung-Sheet_33
+  - first:
+      213: 8059144427610356060
+    second: HaYoung-Sheet_34
+  - first:
+      213: 7382160975786410645
+    second: HaYoung-Sheet_35
+  - first:
+      213: 4605427815289721983
+    second: HaYoung-Sheet_36
+  - first:
+      213: -7140904005990735878
+    second: HaYoung-Sheet_37
+  - first:
+      213: 3348415580463325937
+    second: HaYoung-Sheet_38
+  - first:
+      213: -4421670409367523169
+    second: HaYoung-Sheet_39
+  - first:
+      213: -8137586705102157849
+    second: HaYoung-Sheet_40
+  - first:
+      213: 3778265263215059862
+    second: HaYoung-Sheet_41
+  - first:
+      213: -880520075689935752
+    second: HaYoung-Sheet_42
+  - first:
+      213: 7083657325477105011
+    second: HaYoung-Sheet_43
+  - first:
+      213: 1731616272765873854
+    second: HaYoung-Sheet_44
+  - first:
+      213: 4749475063578253555
+    second: HaYoung-Sheet_45
+  - first:
+      213: 4782357238913755489
+    second: HaYoung-Sheet_46
+  - first:
+      213: 2430675111177280238
+    second: HaYoung-Sheet_47
+  - first:
+      213: -870015916028062435
+    second: HaYoung-Sheet_48
+  - first:
+      213: 5039423065512556741
+    second: HaYoung-Sheet_49
+  - first:
+      213: -797980265450266468
+    second: HaYoung-Sheet_50
+  - first:
+      213: 8655960291696902376
+    second: HaYoung-Sheet_51
+  - first:
+      213: -7838263499482251939
+    second: HaYoung-Sheet_52
+  - first:
+      213: -6699641565130914198
+    second: HaYoung-Sheet_53
+  - first:
+      213: -4993059279476458308
+    second: HaYoung-Sheet_54
+  - first:
+      213: 8307383361940533312
+    second: HaYoung-Sheet_55
+  - first:
+      213: 1780423429058493235
+    second: HaYoung-Sheet_56
+  - first:
+      213: 2108301094374359716
+    second: HaYoung-Sheet_57
+  - first:
+      213: -877923384665947795
+    second: HaYoung-Sheet_58
+  - first:
+      213: -6478091613468430829
+    second: HaYoung-Sheet_59
+  - first:
+      213: 257479935940097066
+    second: HaYoung-Sheet_60
+  - first:
+      213: 9218556742441837252
+    second: HaYoung-Sheet_61
+  - first:
+      213: 8153216157800624957
+    second: HaYoung-Sheet_62
+  - first:
+      213: -1823210574427994420
+    second: HaYoung-Sheet_63
+  - first:
+      213: 1926047811623589489
+    second: HaYoung-Sheet_64
+  - first:
+      213: -3507123918752821159
+    second: HaYoung-Sheet_65
+  - first:
+      213: 4995899952273346220
+    second: HaYoung-Sheet_66
+  - first:
+      213: 5387831418058000661
+    second: HaYoung-Sheet_67
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: HaYoung-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 511
+        width: 81
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d0463aa05853c730800000000000000
+      internalID: 4018152396020924624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 511
+        width: 83
+        height: 101
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a5274520611fa9a0800000000000000
+      internalID: -6219733455735413342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 511
+        width: 86
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21e4db0794b1a8470800000000000000
+      internalID: 8397554457423728146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 511
+        width: 91
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d459556135be02a0800000000000000
+      internalID: -6769273966132898599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 511
+        width: 89
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2f22f5e28820b4f0800000000000000
+      internalID: -815106989885346003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 657
+        y: 511
+        width: 87
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95bad912c231bf6e0800000000000000
+      internalID: -1802826145568281767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 786
+        y: 511
+        width: 81
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45e78c165856ead40800000000000000
+      internalID: 5597523010413690452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 383
+        width: 83
+        height: 101
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba93b9a597ef4c7a0800000000000000
+      internalID: -6357676976775677525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 383
+        width: 84
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c18044cecdc928280800000000000000
+      internalID: -9042492629135914980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 383
+        width: 84
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8116be662f5dcf570800000000000000
+      internalID: 8501905433654157592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 383
+        width: 84
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab0384fe5fb637f20800000000000000
+      internalID: 3419195246129983674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 383
+        width: 84
+        height: 101
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d57f14c56d9bbd570800000000000000
+      internalID: 8492585852659169117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 383
+        width: 83
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bdea72d46365e89b0800000000000000
+      internalID: -5076024938777301285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 786
+        y: 383
+        width: 82
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9f3a41a4611f9710800000000000000
+      internalID: 1702098308069736350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 255
+        width: 61
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ae2f181e72074ef0800000000000000
+      internalID: -124127724135567703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 255
+        width: 65
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efad6532be671edc0800000000000000
+      internalID: -3611474673892140290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 255
+        width: 62
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5a31a07801268da0800000000000000
+      internalID: -5943026338135721377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 255
+        width: 65
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fb695126912f3c50800000000000000
+      internalID: 6647068503710460915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 255
+        width: 64
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f99418c781fdc73d0800000000000000
+      internalID: -3207443538333578849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 255
+        width: 84
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b6cd4e2f401cff40800000000000000
+      internalID: 5763499555392702137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 255
+        width: 109
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74f7ae0fc3c5c6170800000000000000
+      internalID: 8173008840580300615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 899
+        y: 255
+        width: 109
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a06365e7b26466e0800000000000000
+      internalID: -1845241405348028250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 1027
+        y: 255
+        width: 107
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cef1034826e0f7e0800000000000000
+      internalID: -1733632795940356416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 127
+        width: 75
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e21c4b26ec4deed80800000000000000
+      internalID: -8219398287020211922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 127
+        width: 75
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ba87e7ca65e372e0800000000000000
+      internalID: -2129105952032978250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 12
+        width: 92
+        height: 106
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ae094c95eb833ea0800000000000000
+      internalID: -5894213669012042075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 14
+        width: 99
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cada09cb10bc7ba30800000000000000
+      internalID: 4231073583256874412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 12
+        width: 80
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18e408c583cc06c40800000000000000
+      internalID: 5503623287088893569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 105
+        width: 23
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a36aaead0cb42870800000000000000
+      internalID: 8657251150663934887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 106
+        width: 18
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cba928372d1bc750800000000000000
+      internalID: 6326182155855178692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_30
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 22
+        width: 35
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84f484801077f5d00800000000000000
+      internalID: 963619691598204744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_31
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 93
+        width: 50
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f6a769b81b2b50b0800000000000000
+      internalID: -5738945914963777806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_32
+      rect:
+        serializedVersion: 2
+        x: 548
+        y: 96
+        width: 25
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dcd2707dbf9a4fa0800000000000000
+      internalID: -5815660332811363116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_33
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 75
+        width: 49
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57975c85bd93329a0800000000000000
+      internalID: -6259095442864899723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_34
+      rect:
+        serializedVersion: 2
+        x: 929
+        y: 92
+        width: 52
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c59b8416825d7df60800000000000000
+      internalID: 8059144427610356060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_35
+      rect:
+        serializedVersion: 2
+        x: 1048
+        y: 48
+        width: 65
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 592008c8b44b27660800000000000000
+      internalID: 7382160975786410645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_36
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 95
+        width: 20
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f741c098234c9ef30800000000000000
+      internalID: 4605427815289721983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_37
+      rect:
+        serializedVersion: 2
+        x: 404
+        y: 12
+        width: 51
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aff12c304a966ec90800000000000000
+      internalID: -7140904005990735878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_38
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 18
+        width: 28
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f266e1da36f77e20800000000000000
+      internalID: 3348415580463325937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_39
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 87
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f90facf803213a2c0800000000000000
+      internalID: -4421670409367523169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_40
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 58
+        width: 37
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e7c179a10c711f80800000000000000
+      internalID: -8137586705102157849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_41
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 88
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 693a1212d381f6430800000000000000
+      internalID: 3778265263215059862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_42
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 31
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87cb6e608a3c7c3f0800000000000000
+      internalID: -880520075689935752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_43
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 30
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37d08a38ec43e4260800000000000000
+      internalID: 7083657325477105011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_44
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 19
+        width: 9
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebeee7953dfe70810800000000000000
+      internalID: 1731616272765873854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_45
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 19
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f85822186689e140800000000000000
+      internalID: 4749475063578253555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_46
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 12
+        width: 79
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 169e87e12985e5240800000000000000
+      internalID: 4782357238913755489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_47
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 17
+        width: 23
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eeada16a22e7bb120800000000000000
+      internalID: 2430675111177280238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_48
+      rect:
+        serializedVersion: 2
+        x: 663
+        y: 17
+        width: 65
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d15163842251de3f0800000000000000
+      internalID: -870015916028062435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_49
+      rect:
+        serializedVersion: 2
+        x: 780
+        y: 43
+        width: 15
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c839ccf390afe540800000000000000
+      internalID: 5039423065512556741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_50
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 66
+        width: 6
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c90a01c2d210de4f0800000000000000
+      internalID: -797980265450266468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_51
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 32
+        width: 17
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e00b782606202870800000000000000
+      internalID: 8655960291696902376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_52
+      rect:
+        serializedVersion: 2
+        x: 914
+        y: 40
+        width: 21
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5d337940e4e83390800000000000000
+      internalID: -7838263499482251939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_53
+      rect:
+        serializedVersion: 2
+        x: 936
+        y: 24
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a660ee32e771603a0800000000000000
+      internalID: -6699641565130914198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_54
+      rect:
+        serializedVersion: 2
+        x: 1054
+        y: 31
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbc76582a0715bab0800000000000000
+      internalID: -4993059279476458308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_55
+      rect:
+        serializedVersion: 2
+        x: 1059
+        y: 50
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 040b47d3721c94370800000000000000
+      internalID: 8307383361940533312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_56
+      rect:
+        serializedVersion: 2
+        x: 806
+        y: 16
+        width: 47
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33b70d6fca555b810800000000000000
+      internalID: 1780423429058493235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_57
+      rect:
+        serializedVersion: 2
+        x: 852
+        y: 24
+        width: 13
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a240c1dca0324d10800000000000000
+      internalID: 2108301094374359716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_58
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 30
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d614af4455df0d3f0800000000000000
+      internalID: -877923384665947795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_59
+      rect:
+        serializedVersion: 2
+        x: 1077
+        y: 25
+        width: 15
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31ee6ccfff13916a0800000000000000
+      internalID: -6478091613468430829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_60
+      rect:
+        serializedVersion: 2
+        x: 1099
+        y: 21
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a24ff7633a0c29300800000000000000
+      internalID: 257479935940097066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_61
+      rect:
+        serializedVersion: 2
+        x: 1110
+        y: 27
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c22707e384eeef70800000000000000
+      internalID: 9218556742441837252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_62
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 14
+        width: 15
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d337eaed5ea062170800000000000000
+      internalID: 8153216157800624957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_63
+      rect:
+        serializedVersion: 2
+        x: 709
+        y: 12
+        width: 21
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc6cb7074a7a2b6e0800000000000000
+      internalID: -1823210574427994420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_64
+      rect:
+        serializedVersion: 2
+        x: 807
+        y: 14
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1761e30b742baba10800000000000000
+      internalID: 1926047811623589489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_65
+      rect:
+        serializedVersion: 2
+        x: 858
+        y: 16
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 950567f9061345fc0800000000000000
+      internalID: -3507123918752821159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_66
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 13
+        width: 43
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: caec4a48980055540800000000000000
+      internalID: 4995899952273346220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HaYoung-Sheet_67
+      rect:
+        serializedVersion: 2
+        x: 1085
+        y: 16
+        width: 37
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5194907f02c65ca40800000000000000
+      internalID: 5387831418058000661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      HaYoung-Sheet_0: 4018152396020924624
+      HaYoung-Sheet_1: -6219733455735413342
+      HaYoung-Sheet_10: 3419195246129983674
+      HaYoung-Sheet_11: 8492585852659169117
+      HaYoung-Sheet_12: -5076024938777301285
+      HaYoung-Sheet_13: 1702098308069736350
+      HaYoung-Sheet_14: -124127724135567703
+      HaYoung-Sheet_15: -3611474673892140290
+      HaYoung-Sheet_16: -5943026338135721377
+      HaYoung-Sheet_17: 6647068503710460915
+      HaYoung-Sheet_18: -3207443538333578849
+      HaYoung-Sheet_19: 5763499555392702137
+      HaYoung-Sheet_2: 8397554457423728146
+      HaYoung-Sheet_20: 8173008840580300615
+      HaYoung-Sheet_21: -1845241405348028250
+      HaYoung-Sheet_22: -1733632795940356416
+      HaYoung-Sheet_23: -8219398287020211922
+      HaYoung-Sheet_24: -2129105952032978250
+      HaYoung-Sheet_25: -5894213669012042075
+      HaYoung-Sheet_26: 4231073583256874412
+      HaYoung-Sheet_27: 5503623287088893569
+      HaYoung-Sheet_28: 8657251150663934887
+      HaYoung-Sheet_29: 6326182155855178692
+      HaYoung-Sheet_3: -6769273966132898599
+      HaYoung-Sheet_30: 963619691598204744
+      HaYoung-Sheet_31: -5738945914963777806
+      HaYoung-Sheet_32: -5815660332811363116
+      HaYoung-Sheet_33: -6259095442864899723
+      HaYoung-Sheet_34: 8059144427610356060
+      HaYoung-Sheet_35: 7382160975786410645
+      HaYoung-Sheet_36: 4605427815289721983
+      HaYoung-Sheet_37: -7140904005990735878
+      HaYoung-Sheet_38: 3348415580463325937
+      HaYoung-Sheet_39: -4421670409367523169
+      HaYoung-Sheet_4: -815106989885346003
+      HaYoung-Sheet_40: -8137586705102157849
+      HaYoung-Sheet_41: 3778265263215059862
+      HaYoung-Sheet_42: -880520075689935752
+      HaYoung-Sheet_43: 7083657325477105011
+      HaYoung-Sheet_44: 1731616272765873854
+      HaYoung-Sheet_45: 4749475063578253555
+      HaYoung-Sheet_46: 4782357238913755489
+      HaYoung-Sheet_47: 2430675111177280238
+      HaYoung-Sheet_48: -870015916028062435
+      HaYoung-Sheet_49: 5039423065512556741
+      HaYoung-Sheet_5: -1802826145568281767
+      HaYoung-Sheet_50: -797980265450266468
+      HaYoung-Sheet_51: 8655960291696902376
+      HaYoung-Sheet_52: -7838263499482251939
+      HaYoung-Sheet_53: -6699641565130914198
+      HaYoung-Sheet_54: -4993059279476458308
+      HaYoung-Sheet_55: 8307383361940533312
+      HaYoung-Sheet_56: 1780423429058493235
+      HaYoung-Sheet_57: 2108301094374359716
+      HaYoung-Sheet_58: -877923384665947795
+      HaYoung-Sheet_59: -6478091613468430829
+      HaYoung-Sheet_6: 5597523010413690452
+      HaYoung-Sheet_60: 257479935940097066
+      HaYoung-Sheet_61: 9218556742441837252
+      HaYoung-Sheet_62: 8153216157800624957
+      HaYoung-Sheet_63: -1823210574427994420
+      HaYoung-Sheet_64: 1926047811623589489
+      HaYoung-Sheet_65: -3507123918752821159
+      HaYoung-Sheet_66: 4995899952273346220
+      HaYoung-Sheet_67: 5387831418058000661
+      HaYoung-Sheet_7: -6357676976775677525
+      HaYoung-Sheet_8: -9042492629135914980
+      HaYoung-Sheet_9: 8501905433654157592
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

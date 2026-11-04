@@ -1,0 +1,962 @@
+fileFormatVersion: 2
+guid: 599d82c902616394aa8b5b7081de192f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6288998461804627442
+    second: HanJuwon-Sheet_0
+  - first:
+      213: -3372068222541135798
+    second: HanJuwon-Sheet_1
+  - first:
+      213: -581054392138001214
+    second: HanJuwon-Sheet_2
+  - first:
+      213: 5234756570516740381
+    second: HanJuwon-Sheet_3
+  - first:
+      213: 6786025114091016135
+    second: HanJuwon-Sheet_4
+  - first:
+      213: 5938291173768799800
+    second: HanJuwon-Sheet_5
+  - first:
+      213: -7377706548263133297
+    second: HanJuwon-Sheet_6
+  - first:
+      213: -1708019408604133413
+    second: HanJuwon-Sheet_7
+  - first:
+      213: 784211601906674362
+    second: HanJuwon-Sheet_8
+  - first:
+      213: 913732052113893808
+    second: HanJuwon-Sheet_9
+  - first:
+      213: 5052156039354357778
+    second: HanJuwon-Sheet_10
+  - first:
+      213: 8400888725552694009
+    second: HanJuwon-Sheet_11
+  - first:
+      213: -5062017982878608645
+    second: HanJuwon-Sheet_12
+  - first:
+      213: 1456703375750058109
+    second: HanJuwon-Sheet_13
+  - first:
+      213: 3069938480019296356
+    second: HanJuwon-Sheet_14
+  - first:
+      213: -3571425859947363876
+    second: HanJuwon-Sheet_15
+  - first:
+      213: 8153552081766365298
+    second: HanJuwon-Sheet_16
+  - first:
+      213: -5551224003508470579
+    second: HanJuwon-Sheet_17
+  - first:
+      213: -8279616268626561735
+    second: HanJuwon-Sheet_18
+  - first:
+      213: 4962872612425778345
+    second: HanJuwon-Sheet_19
+  - first:
+      213: 8492256299628619937
+    second: HanJuwon-Sheet_20
+  - first:
+      213: 3730335361324444092
+    second: HanJuwon-Sheet_21
+  - first:
+      213: 6043599974779594211
+    second: HanJuwon-Sheet_22
+  - first:
+      213: -7371523230742468041
+    second: HanJuwon-Sheet_23
+  - first:
+      213: -5006894932672141878
+    second: HanJuwon-Sheet_24
+  - first:
+      213: -1792399331237058252
+    second: HanJuwon-Sheet_25
+  - first:
+      213: -6743663978149927544
+    second: HanJuwon-Sheet_26
+  - first:
+      213: 7783953908415019975
+    second: HanJuwon-Sheet_27
+  - first:
+      213: 3978014513237202102
+    second: HanJuwon-Sheet_28
+  - first:
+      213: -7688637381372431706
+    second: HanJuwon-Sheet_29
+  - first:
+      213: -1963887635092209503
+    second: HanJuwon-Sheet_30
+  - first:
+      213: 4025714317219387212
+    second: HanJuwon-Sheet_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 565
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f5c7dcc7c2074750800000000000000
+      internalID: 6288998461804627442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 511
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a408d0d41d10431d0800000000000000
+      internalID: -3372068222541135798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 511
+        width: 66
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c41f61eb1eafe7f0800000000000000
+      internalID: -581054392138001214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 286
+        y: 511
+        width: 66
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d19da4fad5795a840800000000000000
+      internalID: 5234756570516740381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 414
+        y: 564
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cf464a23edcc2e50800000000000000
+      internalID: 6786025114091016135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 511
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 836a3513c5c096250800000000000000
+      internalID: 5938291173768799800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 437
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8fd3bdabfe1d9990800000000000000
+      internalID: -7377706548263133297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 383
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd78da8b565eb48e0800000000000000
+      internalID: -1708019408604133413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 436
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aba23680c4412ea00800000000000000
+      internalID: 784211601906674362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 383
+        width: 66
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b92322d57a3eac00800000000000000
+      internalID: 913732052113893808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 383
+        width: 66
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2189f8b762ddc1640800000000000000
+      internalID: 5052156039354357778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 383
+        width: 66
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f2072c39c3f59470800000000000000
+      internalID: 8400888725552694009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 383
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf291ebd67910c9b0800000000000000
+      internalID: -5062017982878608645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 383
+        width: 67
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d70d1b69000473410800000000000000
+      internalID: 1456703375750058109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 799
+        y: 383
+        width: 66
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4605ad748cc9a9a20800000000000000
+      internalID: 3069938480019296356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 926
+        y: 383
+        width: 66
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd181344a1fbf6ec0800000000000000
+      internalID: -3571425859947363876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 1054
+        y: 384
+        width: 65
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 278b4534b6c372170800000000000000
+      internalID: 8153552081766365298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 309
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcc71423e2716f2b0800000000000000
+      internalID: -5551224003508470579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 255
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 935f7f7fed4e81d80800000000000000
+      internalID: -8279616268626561735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 255
+        width: 69
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a44729b85aafd440800000000000000
+      internalID: 4962872612425778345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 255
+        width: 74
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a8efe05c1e8ad570800000000000000
+      internalID: 8492256299628619937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 255
+        width: 69
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb962d83f30d4c330800000000000000
+      internalID: 3730335361324444092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 547
+        y: 255
+        width: 68
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e52c4d182e2fd350800000000000000
+      internalID: 6043599974779594211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 675
+        y: 255
+        width: 71
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73a2e0a7da613b990800000000000000
+      internalID: -7371523230742468041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 791
+        y: 255
+        width: 72
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac5af5e169fe38ab0800000000000000
+      internalID: -5006894932672141878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 923
+        y: 255
+        width: 69
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 439a7f50e4e1027e0800000000000000
+      internalID: -1792399331237058252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 1054
+        y: 255
+        width: 67
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 885a6c16751b962a0800000000000000
+      internalID: -6743663978149927544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 1182
+        y: 309
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cb371ba6d8260c60800000000000000
+      internalID: 7783953908415019975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 1183
+        y: 255
+        width: 66
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b41ad49f1fb43730800000000000000
+      internalID: 3978014513237202102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 127
+        width: 65
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a2b18ca9097c4590800000000000000
+      internalID: -7688637381372431706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_30
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 127
+        width: 64
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a00c8bd99edeb4e0800000000000000
+      internalID: -1963887635092209503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HanJuwon-Sheet_31
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 53
+        width: 12
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c47d015a7d53ed730800000000000000
+      internalID: 4025714317219387212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      HanJuwon-Sheet_0: 6288998461804627442
+      HanJuwon-Sheet_1: -3372068222541135798
+      HanJuwon-Sheet_10: 5052156039354357778
+      HanJuwon-Sheet_11: 8400888725552694009
+      HanJuwon-Sheet_12: -5062017982878608645
+      HanJuwon-Sheet_13: 1456703375750058109
+      HanJuwon-Sheet_14: 3069938480019296356
+      HanJuwon-Sheet_15: -3571425859947363876
+      HanJuwon-Sheet_16: 8153552081766365298
+      HanJuwon-Sheet_17: -5551224003508470579
+      HanJuwon-Sheet_18: -8279616268626561735
+      HanJuwon-Sheet_19: 4962872612425778345
+      HanJuwon-Sheet_2: -581054392138001214
+      HanJuwon-Sheet_20: 8492256299628619937
+      HanJuwon-Sheet_21: 3730335361324444092
+      HanJuwon-Sheet_22: 6043599974779594211
+      HanJuwon-Sheet_23: -7371523230742468041
+      HanJuwon-Sheet_24: -5006894932672141878
+      HanJuwon-Sheet_25: -1792399331237058252
+      HanJuwon-Sheet_26: -6743663978149927544
+      HanJuwon-Sheet_27: 7783953908415019975
+      HanJuwon-Sheet_28: 3978014513237202102
+      HanJuwon-Sheet_29: -7688637381372431706
+      HanJuwon-Sheet_3: 5234756570516740381
+      HanJuwon-Sheet_30: -1963887635092209503
+      HanJuwon-Sheet_31: 4025714317219387212
+      HanJuwon-Sheet_4: 6786025114091016135
+      HanJuwon-Sheet_5: 5938291173768799800
+      HanJuwon-Sheet_6: -7377706548263133297
+      HanJuwon-Sheet_7: -1708019408604133413
+      HanJuwon-Sheet_8: 784211601906674362
+      HanJuwon-Sheet_9: 913732052113893808
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

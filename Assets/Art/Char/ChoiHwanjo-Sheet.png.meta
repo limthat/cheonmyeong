@@ -1,0 +1,806 @@
+fileFormatVersion: 2
+guid: 53e78fc96f5ab0447959e06db5830df3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 966393181985573629
+    second: ChoiHwanjo-Sheet_0
+  - first:
+      213: -2410722979358253708
+    second: ChoiHwanjo-Sheet_1
+  - first:
+      213: -4030773944060996628
+    second: ChoiHwanjo-Sheet_2
+  - first:
+      213: 2449064978774695360
+    second: ChoiHwanjo-Sheet_3
+  - first:
+      213: 1083767341601099778
+    second: ChoiHwanjo-Sheet_4
+  - first:
+      213: 5423656290083840063
+    second: ChoiHwanjo-Sheet_5
+  - first:
+      213: -7334296452152932979
+    second: ChoiHwanjo-Sheet_6
+  - first:
+      213: -1767441456450625148
+    second: ChoiHwanjo-Sheet_7
+  - first:
+      213: 4628156978072455945
+    second: ChoiHwanjo-Sheet_8
+  - first:
+      213: -3099090676922786158
+    second: ChoiHwanjo-Sheet_9
+  - first:
+      213: 6532205382013573342
+    second: ChoiHwanjo-Sheet_10
+  - first:
+      213: 3032900932207611082
+    second: ChoiHwanjo-Sheet_11
+  - first:
+      213: -8996569160976242335
+    second: ChoiHwanjo-Sheet_12
+  - first:
+      213: 7119878242548413907
+    second: ChoiHwanjo-Sheet_13
+  - first:
+      213: 5370926259982138124
+    second: ChoiHwanjo-Sheet_14
+  - first:
+      213: 5551257028402217731
+    second: ChoiHwanjo-Sheet_15
+  - first:
+      213: -6971923890092198668
+    second: ChoiHwanjo-Sheet_16
+  - first:
+      213: 6740432407592768366
+    second: ChoiHwanjo-Sheet_17
+  - first:
+      213: -8620396541722378993
+    second: ChoiHwanjo-Sheet_18
+  - first:
+      213: -1389594447633981455
+    second: ChoiHwanjo-Sheet_19
+  - first:
+      213: 6326252239376142915
+    second: ChoiHwanjo-Sheet_20
+  - first:
+      213: -5278946000807920187
+    second: ChoiHwanjo-Sheet_21
+  - first:
+      213: -6327191628697865820
+    second: ChoiHwanjo-Sheet_22
+  - first:
+      213: -8359761033203231236
+    second: ChoiHwanjo-Sheet_23
+  - first:
+      213: -3784231220158479392
+    second: ChoiHwanjo-Sheet_24
+  - first:
+      213: -6363100368391883577
+    second: ChoiHwanjo-Sheet_25
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 511
+        width: 82
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfa0c959a71596d00800000000000000
+      internalID: 966393181985573629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 511
+        width: 82
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47dda7b09346b8ed0800000000000000
+      internalID: -2410722979358253708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 511
+        width: 82
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce3185e2470df08c0800000000000000
+      internalID: -4030773944060996628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 511
+        width: 82
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cd17bb5f93dcf120800000000000000
+      internalID: 2449064978774695360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 537
+        y: 511
+        width: 82
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2009d47b7a05a0f00800000000000000
+      internalID: 1083767341601099778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 511
+        width: 82
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f30a24af8a2b44b40800000000000000
+      internalID: 5423656290083840063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 384
+        width: 82
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d85440c4c38573a90800000000000000
+      internalID: -7334296452152932979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 383
+        width: 82
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48126f21c59c877e0800000000000000
+      internalID: -1767441456450625148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 383
+        width: 82
+        height: 112
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90b01c220448a3040800000000000000
+      internalID: 4628156978072455945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 383
+        width: 81
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29eda43f271ddf4d0800000000000000
+      internalID: -3099090676922786158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 383
+        width: 80
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed850d29f2e07aa50800000000000000
+      internalID: 6532205382013573342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 383
+        width: 80
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acc8f2f2457071a20800000000000000
+      internalID: 3032900932207611082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 383
+        width: 80
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 169e6c29304c52380800000000000000
+      internalID: -8996569160976242335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 918
+        y: 383
+        width: 81
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d57123f983eec260800000000000000
+      internalID: 7119878242548413907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 255
+        width: 82
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0b7d012afc598a40800000000000000
+      internalID: 5370926259982138124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 255
+        width: 80
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3030ec20bd60a0d40800000000000000
+      internalID: 5551257028402217731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 255
+        width: 77
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f4bef92920ce3f90800000000000000
+      internalID: -6971923890092198668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 255
+        width: 93
+        height: 118
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e631917ff83da8d50800000000000000
+      internalID: 6740432407592768366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 255
+        width: 89
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0db1a3a4033e5880800000000000000
+      internalID: -8620396541722378993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 255
+        width: 87
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ffdbe6563b27bce0800000000000000
+      internalID: -1389594447633981455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 255
+        width: 98
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 342d88fc4ec5bc750800000000000000
+      internalID: 6326252239376142915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 915
+        y: 255
+        width: 85
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cdff51d49a6db6b0800000000000000
+      internalID: -5278946000807920187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 255
+        width: 82
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a173a19cbc4138a0800000000000000
+      internalID: -6327191628697865820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 127
+        width: 84
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf5d4c8d1a92cfb80800000000000000
+      internalID: -8359761033203231236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 127
+        width: 83
+        height: 107
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e3c28641c5bb7bc0800000000000000
+      internalID: -3784231220158479392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChoiHwanjo-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 49
+        width: 82
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c438d79de9b1b7a0800000000000000
+      internalID: -6363100368391883577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ChoiHwanjo-Sheet_0: 966393181985573629
+      ChoiHwanjo-Sheet_1: -2410722979358253708
+      ChoiHwanjo-Sheet_10: 6532205382013573342
+      ChoiHwanjo-Sheet_11: 3032900932207611082
+      ChoiHwanjo-Sheet_12: -8996569160976242335
+      ChoiHwanjo-Sheet_13: 7119878242548413907
+      ChoiHwanjo-Sheet_14: 5370926259982138124
+      ChoiHwanjo-Sheet_15: 5551257028402217731
+      ChoiHwanjo-Sheet_16: -6971923890092198668
+      ChoiHwanjo-Sheet_17: 6740432407592768366
+      ChoiHwanjo-Sheet_18: -8620396541722378993
+      ChoiHwanjo-Sheet_19: -1389594447633981455
+      ChoiHwanjo-Sheet_2: -4030773944060996628
+      ChoiHwanjo-Sheet_20: 6326252239376142915
+      ChoiHwanjo-Sheet_21: -5278946000807920187
+      ChoiHwanjo-Sheet_22: -6327191628697865820
+      ChoiHwanjo-Sheet_23: -8359761033203231236
+      ChoiHwanjo-Sheet_24: -3784231220158479392
+      ChoiHwanjo-Sheet_25: -6363100368391883577
+      ChoiHwanjo-Sheet_3: 2449064978774695360
+      ChoiHwanjo-Sheet_4: 1083767341601099778
+      ChoiHwanjo-Sheet_5: 5423656290083840063
+      ChoiHwanjo-Sheet_6: -7334296452152932979
+      ChoiHwanjo-Sheet_7: -1767441456450625148
+      ChoiHwanjo-Sheet_8: 4628156978072455945
+      ChoiHwanjo-Sheet_9: -3099090676922786158
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

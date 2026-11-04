@@ -1,0 +1,468 @@
+fileFormatVersion: 2
+guid: 2694db4f24a9dd1449971d13e2032d48
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3069759783653852767
+    second: Eoksoe_FX-Sheet_0
+  - first:
+      213: 5809625361503360337
+    second: Eoksoe_FX-Sheet_1
+  - first:
+      213: 708412886543831720
+    second: Eoksoe_FX-Sheet_2
+  - first:
+      213: 2524082378049566794
+    second: Eoksoe_FX-Sheet_3
+  - first:
+      213: 1927376849508050841
+    second: Eoksoe_FX-Sheet_4
+  - first:
+      213: -7028415845970589979
+    second: Eoksoe_FX-Sheet_5
+  - first:
+      213: 1550380404163436155
+    second: Eoksoe_FX-Sheet_6
+  - first:
+      213: -369121324492214071
+    second: Eoksoe_FX-Sheet_7
+  - first:
+      213: -5727141899253217639
+    second: Eoksoe_FX-Sheet_8
+  - first:
+      213: 4734679945089195184
+    second: Eoksoe_FX-Sheet_9
+  - first:
+      213: 6686360143808273329
+    second: Eoksoe_FX-Sheet_10
+  - first:
+      213: -5029078053555540256
+    second: Eoksoe_FX-Sheet_11
+  - first:
+      213: -7143158552156106604
+    second: Eoksoe_FX-Sheet_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 189
+        width: 52
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a93885bdb50665d0800000000000000
+      internalID: -3069759783653852767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 151
+        width: 56
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 155128e4c7fef9050800000000000000
+      internalID: 5809625361503360337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 142
+        width: 93
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a211c854c9c4d900800000000000000
+      internalID: 708412886543831720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 194
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a48b777bc87570320800000000000000
+      internalID: 2524082378049566794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 527
+        y: 142
+        width: 99
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9972d3f680b6fba10800000000000000
+      internalID: 1927376849508050841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 187
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e64237b60d067e90800000000000000
+      internalID: -7028415845970589979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 142
+        width: 99
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7e53e863ce048510800000000000000
+      internalID: 1550380404163436155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 18
+        width: 88
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c0be9e6c1e90eaf0800000000000000
+      internalID: -369121324492214071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 82
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99681cc49ca1580b0800000000000000
+      internalID: -5727141899253217639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 17
+        width: 97
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bc153c1356f4b140800000000000000
+      internalID: 4734679945089195184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 17
+        width: 107
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bb950cff19bacc50800000000000000
+      internalID: 6686360143808273329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 14
+        width: 116
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0eeeb1ec720253ab0800000000000000
+      internalID: -5029078053555540256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 466
+        y: 13
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 490117494276edc90800000000000000
+      internalID: -7143158552156106604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Eoksoe_FX-Sheet_0: -3069759783653852767
+      Eoksoe_FX-Sheet_1: 5809625361503360337
+      Eoksoe_FX-Sheet_10: 6686360143808273329
+      Eoksoe_FX-Sheet_11: -5029078053555540256
+      Eoksoe_FX-Sheet_12: -7143158552156106604
+      Eoksoe_FX-Sheet_2: 708412886543831720
+      Eoksoe_FX-Sheet_3: 2524082378049566794
+      Eoksoe_FX-Sheet_4: 1927376849508050841
+      Eoksoe_FX-Sheet_5: -7028415845970589979
+      Eoksoe_FX-Sheet_6: 1550380404163436155
+      Eoksoe_FX-Sheet_7: -369121324492214071
+      Eoksoe_FX-Sheet_8: -5727141899253217639
+      Eoksoe_FX-Sheet_9: 4734679945089195184
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
