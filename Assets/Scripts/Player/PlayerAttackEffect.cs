@@ -107,7 +107,12 @@ namespace CheonMyeong.Player
                 return;
             }
 
-            Vector2 aimDir = (Vector2)autoAttack.AimPosition - (Vector2)transform.position;
+            // 261104 - 서버가 판정한 방향(연속 공격 · 연속 베기는 처음 방향 그대로). 없으면 현재 조준.
+            Vector2 aimDir = autoAttack.LastResolvedDirection;
+            if (aimDir.sqrMagnitude < 0.0001f)
+            {
+                aimDir = (Vector2)autoAttack.AimPosition - (Vector2)transform.position;
+            }
             if (aimDir.sqrMagnitude < 0.0001f)
             {
                 aimDir = Vector2.left;
@@ -115,7 +120,8 @@ namespace CheonMyeong.Player
             aimDir.Normalize();
 
             // PlayerAutoAttack.ApplyHit과 같은 반경 - 따로 계산하면 보이는 범위와 맞는 범위가 어긋난다.
-            float hitRadius = stats.attackRange * stats.attackAwarenessRangeMultiplier;
+            // 261104 - 신통력(근접 사거리 · 넓은 베기)까지 들어간 실제 값.
+            float hitRadius = autoAttack.HitRadius;
 
             bool flip = aimDir.x > 0f;
             effectRenderer.flipY = flip;
@@ -128,7 +134,7 @@ namespace CheonMyeong.Player
             if (visibleBounds.width > 0.0001f && visibleBounds.height > 0.0001f)
             {
                 // 261102 - 실제 판정 부채꼴에 맞춤(예섭): 앞뒤(가로) = 캐릭터 위치 ~ 판정 반경, 옆(세로) = 부채꼴 현(attackArcDegrees).
-                SpriteVisibleBounds.FitSlash(visibleBounds, Vector2.zero, aimDir, hitRadius, stats.attackArcDegrees, flip,
+                SpriteVisibleBounds.FitSlash(visibleBounds, Vector2.zero, aimDir, hitRadius, autoAttack.ArcDegrees, flip,
                                              out Vector2 center, out float fitAngle, out Vector2 fitScale);
                 Vector3 parentScale = transform.lossyScale;
                 float parentScaleX = Mathf.Abs(parentScale.x) > 0.0001f ? Mathf.Abs(parentScale.x) : 1f;

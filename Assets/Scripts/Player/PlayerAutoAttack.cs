@@ -117,7 +117,56 @@ namespace CheonMyeong.Player
         /// 1초를 기본값으로 둬서 0으로 나누는 사고를 방지.
         /// </summary>
         public float AttackInterval =>
-            stats != null && stats.attacksPerSecond > 0.0001f ? 1f / stats.attacksPerSecond : 1f;
+            stats != null && stats.attacksPerSecond > 0.0001f
+                ? 1f / (stats.attacksPerSecond * (1f + Mathf.Max(-0.9f, Mods.AttackSpeedBonus)))
+                : 1f;
+
+        // =====================================================================
+        // 261104 - 신통력(기획서 v0.9.4 07장). 모든 화면이 같은 칸 목록으로 같은 값을 계산한다
+        // (PlayerProgress.Modifiers) - 그래서 이펙트 크기 · 각도가 서버 판정과 맞는다.
+        // =====================================================================
+
+        private PlayerProgress progress;
+        private AugmentModifiers Mods => progress != null ? progress.Modifiers : default;
+
+        /// <summary>실제 타격 반경 = (attackRange + 근접 사거리 신통력) × 인지 배수.</summary>
+        public float HitRadius
+        {
+            get
+            {
+                if (stats == null)
+                {
+                    return 0f;
+                }
+                float range = stats.attackRange + (stats.isRanged ? 0f : Mods.MeleeRangeBonus);
+                return range * stats.attackAwarenessRangeMultiplier;
+            }
+        }
+
+        /// <summary>실제 타격 부채꼴 각도 = attackArcDegrees × (1 + 넓은 베기), 최대 360.</summary>
+        public float ArcDegrees => stats != null ? Mathf.Min(360f, stats.attackArcDegrees * (1f + Mods.ArcBonus)) : 0f;
+
+        /// <summary>마지막 판정 방향(연속 공격 · 연속 베기는 처음 방향 그대로). 이펙트가 읽는다.</summary>
+        public Vector2 LastResolvedDirection { get; private set; }
+
+        // 서버 전용 - 이번 공격에 이어지는 추가 판정.
+        private int extraSwingsRemaining;
+        private float extraSwingTimer;
+        private float followUpTimer = -1f;
+        private Vector2 lockedAimDir;
+
+        private void ClearExtraHits()
+        {
+            extraSwingsRemaining = 0;
+            extraSwingTimer = 0f;
+            followUpTimer = -1f;
+        }
+
+        private void OnDisable()
+        {
+            // 사망 등으로 꺼질 때 예약된 추가 판정이 부활 뒤에 튀어나오지 않게.
+            ClearExtraHits();
+        }
 
         private void Awake()
         {
@@ -137,6 +186,7 @@ namespace CheonMyeong.Player
             // "고치기" 선택, 261014).
             attackTimer = AttackInterval;
             TryGetComponent(out movement); // 261101 - 제압(억쇠 배지기) 확인용
+            TryGetComponent(out progress); // 261104 - 신통력
         }
 
         private PlayerMovement movement;
@@ -161,6 +211,7 @@ namespace CheonMyeong.Player
             if (isPaused)
             {
                 wasPausedLastFrame = true;
+                ClearExtraHits();
                 return;
             }
 
@@ -178,8 +229,11 @@ namespace CheonMyeong.Player
             if (movement != null && movement.IsSuppressed)
             {
                 pendingHitDelay = -1f;
+                ClearExtraHits();
                 return;
             }
+
+            TickExtraHits();
 
             // 261014 추가 - 대기 중인 타격 판정(Attack()이 예약해둔 것)을 먼저 처리한다.
             // attackTimer와는 완전히 독립적인 별개의 타이머 - 공격 "트리거 여부"를 결정하는
@@ -203,13 +257,13 @@ namespace CheonMyeong.Player
                 // 이때 타이머는 리셋하지 않고 0 이하로 그대로 둔다 - 그래야 적이 범위
                 // 안으로 들어오는 순간 대기 없이 바로 공격이 나간다. 이동 중 Idle/Walk는
                 // PlayerAnimator가 MoveInput만 보고 따로 판단하므로 여기선 신경 쓸 필요 없음.
-                if (HasTargetInRange(stats.attackRange * stats.attackAwarenessRangeMultiplier))
+                if (HasTargetInRange(HitRadius))
                 {
                     Attack();
                     // attacksPerSecond(공식 스탯 시트 단위 - 클수록 빠름)를 타이머가 쓰는
                     // "초 단위 간격"으로 변환. 0 이하 방지 가드는 AttackInterval 프로퍼티와
                     // 동일하게 여기서도 둔다(에디터 셋업 누락 등으로 0이 들어올 가능성 대비).
-                    attackTimer = stats.attacksPerSecond > 0.0001f ? 1f / stats.attacksPerSecond : 1f;
+                    attackTimer = AttackInterval; // 261104 - 공격 속도 신통력 포함
                 }
             }
         }
@@ -258,7 +312,52 @@ namespace CheonMyeong.Player
             // 알린다. OnAttackTriggered(모션 트리거 시점)가 아니라 여기서 울려야 "빨간 원뿔이
             // 뜨는 타이밍 = 실제 대미지가 들어가는 타이밍"이 맞아떨어진다. ApplyHit()은 서버에서만
             // 실행되므로 Rpc로 ClientsAndHost(호스트 자신 포함 모든 접속 클라이언트)에 전파.
-            AttackResolvedVisualRpc();
+            Vector2 origin = transform.position;
+            Vector2 aimDir = (Vector2)networkAimPosition.Value - origin;
+            ResolveHit(aimDir, 1f);
+
+            // 261104 - 신통력: 연속 공격(같은 방향으로 n번 더) · 연속 베기(같은 방향으로 한 번 더, 피해 비율).
+            AugmentModifiers mods = Mods;
+            AugmentCatalogSO catalog = PlayerProgress.Catalog;
+            lockedAimDir = aimDir;
+            extraSwingsRemaining = Mathf.Max(0, mods.ExtraSwings);
+            extraSwingTimer = catalog.multiSwingInterval;
+            followUpTimer = mods.FollowUpSlashRatio > 0f ? catalog.followUpSlashDelay : -1f;
+        }
+
+        /// <summary>261104 - 서버 전용. 연속 공격 · 연속 베기 판정 예약을 처리한다.</summary>
+        private void TickExtraHits()
+        {
+            if (extraSwingsRemaining > 0)
+            {
+                extraSwingTimer -= Time.deltaTime;
+                if (extraSwingTimer <= 0f)
+                {
+                    extraSwingsRemaining--;
+                    extraSwingTimer = PlayerProgress.Catalog.multiSwingInterval;
+                    ResolveHit(lockedAimDir, 1f);
+                }
+            }
+            if (followUpTimer >= 0f)
+            {
+                followUpTimer -= Time.deltaTime;
+                if (followUpTimer < 0f)
+                {
+                    float ratio = Mods.FollowUpSlashRatio;
+                    if (ratio > 0f)
+                    {
+                        ResolveHit(lockedAimDir, ratio);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 261104 - 판정 한 번(기존 ApplyHit 본문). aimDir 방향 부채꼴 안 적에게 공격력 × 신통력 × damageScale(치명타 포함).
+        /// </summary>
+        private void ResolveHit(Vector2 aimDir, float damageScale)
+        {
+            AttackResolvedVisualRpc(aimDir);
 
             Vector2 origin = transform.position;
 
@@ -272,16 +371,20 @@ namespace CheonMyeong.Player
             // attackAwarenessRangeMultiplier 기본값을 attackRange와 동일한 1배로 둬서,
             // 이 반경이 attackRange보다 실질적으로 더 커지지 않도록(=사거리 롤백이
             // 무의미해지지 않도록) 함.
-            float hitRadius = stats.attackRange * stats.attackAwarenessRangeMultiplier;
+            float hitRadius = HitRadius;
             int hitCount = Physics2D.OverlapCircle(origin, hitRadius, contactFilter, hitBuffer);
 
             // 조준 방향을 중심으로 한 부채꼴(attackArcDegrees)만 실제 피해 판정에 포함한다
             // (기획 지시: "공격 폭이 너무 넓다, 지금 거의 180도인데 반으로 줄이자").
             // 조준 정보가 아직 없으면(스폰 직후 한 프레임 등) 판정을 통째로 누락시키지
             // 않기 위해 전방위로 취급한다.
-            Vector2 aimDir = (Vector2)networkAimPosition.Value - origin;
             bool hasAimDir = aimDir.sqrMagnitude > 0.0001f;
-            float halfArcDegrees = stats.attackArcDegrees * 0.5f;
+            float halfArcDegrees = ArcDegrees * 0.5f;
+
+            // 261104 - 공격력 신통력(기준값 대비 %) · 치명타(확률 = 기본 + 신통력, 배율은 캐릭터 기본값).
+            AugmentModifiers mods = Mods;
+            float baseDamage = stats.attackPower * (1f + mods.AttackBonus) * damageScale;
+            float critChance = Mathf.Clamp01(stats.critChance + mods.CritChanceBonus);
 
             for (int i = 0; i < hitCount; i++)
             {
@@ -305,9 +408,11 @@ namespace CheonMyeong.Player
                     Enemy enemy = damageable as Enemy;
                     bool wasAlive = enemy != null && !enemy.IsDying;
 
-                    damageable.TakeDamage(stats.attackPower);
+                    // 치명타는 맞은 대상마다 따로 굴린다.
+                    float damage = Random.value < critChance ? baseDamage * stats.critMultiplier : baseDamage;
+                    damageable.TakeDamage(damage);
 
-                    if (wasAlive && enemy.IsDying && TryGetComponent(out PlayerProgress progress))
+                    if (wasAlive && enemy.IsDying && progress != null)
                     {
                         progress.ServerAddKill();
                     }
@@ -329,8 +434,9 @@ namespace CheonMyeong.Player
         /// 타이밍을 실제 판정 시점과 맞춘다 - PlayAttackAnimRpc와 같은 전파 방식, 목적만 다름
         /// (모션 트리거 vs 실제 판정 알림).</summary>
         [Rpc(SendTo.ClientsAndHost)]
-        private void AttackResolvedVisualRpc()
+        private void AttackResolvedVisualRpc(Vector2 direction)
         {
+            LastResolvedDirection = direction;
             OnAttackResolved?.Invoke();
         }
 
@@ -346,7 +452,7 @@ namespace CheonMyeong.Player
 
             // 주황 - 공격 시작 판정과 실제 타격 판정이 공유하는 반경(attackRange * attackAwarenessRangeMultiplier).
             Gizmos.color = new Color(1f, 0.5f, 0f, 0.6f);
-            Gizmos.DrawWireSphere(transform.position, stats.attackRange * stats.attackAwarenessRangeMultiplier);
+            Gizmos.DrawWireSphere(transform.position, HitRadius);
 
             // 공격 부채꼴(attackArcDegrees) 시각화 - Play 중이고 조준 정보가 있으면 실제 조준
             // 방향 기준, 아니면(에디터에서 선택만 한 상태) 오브젝트의 +X축 기준으로 폭만 표시.
@@ -360,11 +466,11 @@ namespace CheonMyeong.Player
             }
             aimDir.Normalize();
 
-            float halfArc = stats.attackArcDegrees * 0.5f;
+            float halfArc = ArcDegrees * 0.5f;
             Vector2 leftEdge = Quaternion.Euler(0f, 0f, halfArc) * aimDir;
             Vector2 rightEdge = Quaternion.Euler(0f, 0f, -halfArc) * aimDir;
 
-            float arcLineLength = stats.attackRange * stats.attackAwarenessRangeMultiplier; // 실제 타격 판정 반경과 맞춤
+            float arcLineLength = HitRadius; // 실제 타격 판정 반경과 맞춤
             Gizmos.color = Color.yellow;
             Gizmos.DrawLine(origin, origin + leftEdge * arcLineLength);
             Gizmos.DrawLine(origin, origin + rightEdge * arcLineLength);

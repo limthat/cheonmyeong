@@ -163,6 +163,36 @@ namespace CheonMyeong.UI
         /// <summary>261027 추가 - 오버레이(설정 등)가 하나라도 떠 있는지. 로비 캐릭터가 이때는 입력을 무시한다.</summary>
         public bool HasOverlay => overlayStack.Count > 0;
 
+        /// <summary>261104 추가 - 이 화면이 지금 오버레이로 열려 있는지.</summary>
+        public bool IsOverlayOpen(string screenId) => overlayMembershipCounts.ContainsKey(screenId);
+
+        /// <summary>
+        /// 261104 추가 - 맨 위가 아니어도 지정한 오버레이 하나를 닫는다(신통력 선택 중 ESC 메뉴가 위에 열려 있어도
+        /// 신통력 화면이 닫혀야 해서). 열려 있지 않으면 아무 일도 안 한다.
+        /// </summary>
+        public void CloseOverlay(string screenId)
+        {
+            int index = overlayStack.LastIndexOf(screenId);
+            if (index < 0)
+            {
+                return;
+            }
+            overlayStack.RemoveAt(index);
+            if (overlayMembershipCounts.TryGetValue(screenId, out int count))
+            {
+                if (count <= 1)
+                {
+                    overlayMembershipCounts.Remove(screenId);
+                }
+                else
+                {
+                    overlayMembershipCounts[screenId] = count - 1;
+                }
+            }
+            OnOverlayClosed?.Invoke(screenId);
+            ApplyVisibility();
+        }
+
         private void ApplyVisibility()
         {
             foreach (KeyValuePair<string, GameObject> entry in screensById)

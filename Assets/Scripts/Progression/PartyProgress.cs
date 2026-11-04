@@ -20,25 +20,31 @@ namespace CheonMyeong.Progression
     ///
     /// 경험치 곡선: 레벨마다 필요한 경험치를 배열로 미리 못박지 않고 "기준치 + 레벨당 증가분"의
     /// 간단한 1차식으로 계산한다 - 정확한 레벨 디자인(0~30레벨 분배)은 증강 시스템(미정)과 함께
-    /// 설계해야 하는 영역이었으나 261027 기획서 5-10 공식으로 교체(expCurveBase/Linear/Quadratic,
+    /// 설계해야 하는 영역이었으나 261104 기획서 v0.9.4 10장 공식으로 교체(expFormula*,
     /// Inspector에서 바로 조정 가능).
     /// </summary>
-    public class PartyProgress : NetworkBehaviour
+    public partial class PartyProgress : NetworkBehaviour
     {
         public static PartyProgress Instance { get; private set; }
 
-        [Header("경험치 곡선 (261027 - 기획서 5-10: 필요 영혼 = 6 + 5×L + 0.2×L², 반올림, 0→30레벨)")]
-        [Tooltip("상수항 - 기획서 6.")]
-        [SerializeField] private float expCurveBase = 6f;
+        // 261104 수정 - 기획서 v0.9.4 10장: 필요 영혼 = (20 + 11×L + 0.04×L²) × 5/12, 반올림, 레벨 제한 없음
+        // (30레벨에 신통력 전부 최대, 그 뒤는 무한 스탯). 필드 이름을 바꿔서 씬에 저장돼 있던 옛 값(6/5/0.2, 최대 30)이
+        // 이 새 기본값으로 바뀐다.
+        [Header("경험치 곡선 (261104 - 기획서 v0.9.4 10장)")]
+        [Tooltip("상수항 - 기획서 20.")]
+        [SerializeField] private float expFormulaBase = 20f;
 
-        [Tooltip("현재 레벨에 곱하는 값 - 기획서 5.")]
-        [SerializeField] private float expCurveLinear = 5f;
+        [Tooltip("현재 레벨에 곱하는 값 - 기획서 11.")]
+        [SerializeField] private float expFormulaLinear = 11f;
 
-        [Tooltip("현재 레벨의 제곱에 곱하는 값 - 기획서 0.2.")]
-        [SerializeField] private float expCurveQuadratic = 0.2f;
+        [Tooltip("현재 레벨의 제곱에 곱하는 값 - 기획서 0.04.")]
+        [SerializeField] private float expFormulaQuadratic = 0.04f;
 
-        [Tooltip("최대 레벨 - 기획서 30.")]
-        [SerializeField] private int maxLevel = 30;
+        [Tooltip("전체에 곱하는 값 - 기획서 5/12(원귀 수를 줄인 비율).")]
+        [SerializeField] private float expFormulaScale = 5f / 12f;
+
+        [Tooltip("최대 레벨. 0이면 제한 없음 - 기획서 v0.9.4 '레벨 제한 없음'.")]
+        [SerializeField] private int levelCap = 0;
 
         // 261027 수정 - "레벨은 0부터"(예섭 요청, 기획서 "0레벨에서 시작해 최대 30레벨").
         private readonly NetworkVariable<int> level = new NetworkVariable<int>(
@@ -58,16 +64,7 @@ namespace CheonMyeong.Progression
         private readonly NetworkVariable<bool> isPaused = new NetworkVariable<bool>(
             false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-        /// <summary>
-        /// 261027 추가 - "양측 플레이어 다 준비완료면 넘어가는 걸로"(예섭 요청) 대응. 지금까지
-        /// 누가 "동료 선택 완료"를 누르든 즉시 재개되던 걸, 접속한 전원이 각자 준비 완료를
-        /// 누를 때까지 기다리도록 바꾼다. 서버만 쓰고(RequestReadyRpc 안에서) 전원이 읽는
-        /// NetworkVariable 패턴과 달리 이건 "누가" 준비했는지 집합을 들고 있어야 해서
-        /// NetworkList를 쓴다 - clientId는 접속마다 값이 달라지므로 bool 두 개로 못 박아두지
-        /// 않고 가변 목록으로 둔다(최대 인원은 기획상 2명이지만, 굳이 "플레이어 수는 항상
-        /// 2"라고 코드에 못박지 않기 위함).
-        /// </summary>
-        private readonly NetworkList<ulong> readyClientIds = new NetworkList<ulong>();
+        // 261104 - 예전 "준비 완료" 집합(readyClientIds)은 신통력 고르기(PlayerProgress.HasPicked)로 대체돼서 지웠다.
 
         [Header("원한(怨恨) (261027 - 기획서 5-3: 웨이브 끝에 남은 원귀 1마리 = 원한 1, 누적)")]
         [Tooltip("원한 누적값이 각 값 이상이면 한 단계씩 올라간다(오름차순). 기획서 5-3 기본값:\n" +
@@ -83,7 +80,7 @@ namespace CheonMyeong.Progression
         public bool IsPaused => isPaused.Value;
         public int Grudge => grudge.Value;
         public int GrudgeStage => GetGrudgeStage(grudge.Value);
-        public bool IsMaxLevel => level.Value >= maxLevel;
+        public bool IsMaxLevel => levelCap > 0 && level.Value >= levelCap;
 
         private void Awake()
         {
@@ -133,6 +130,7 @@ namespace CheonMyeong.Progression
             // 묶지 않고 별도 콜백으로 구독한다(상태 성격이 다름 - 레벨은 서버 계산 기준값, 원한은
             // 주기적 재계산값).
             grudge.OnValueChanged += HandleGrudgeChanged;
+            AugmentChoiceOnNetworkSpawn();
             RefreshHud();
             RefreshGrudgeHud();
         }
@@ -143,6 +141,7 @@ namespace CheonMyeong.Progression
             currentExp.OnValueChanged -= HandleExpChanged;
             isPaused.OnValueChanged -= HandleIsPausedChanged;
             grudge.OnValueChanged -= HandleGrudgeChanged;
+            AugmentChoiceOnNetworkDespawn();
         }
 
         /// <summary>
@@ -207,17 +206,25 @@ namespace CheonMyeong.Progression
 
             currentExp.Value += amount;
 
-            while (level.Value < maxLevel && currentExp.Value >= ExpRequiredForNextLevel(level.Value))
+            int gained = 0;
+            while (!IsMaxLevel && currentExp.Value >= ExpRequiredForNextLevel(level.Value))
             {
                 currentExp.Value -= ExpRequiredForNextLevel(level.Value);
                 level.Value++;
+                gained++;
+            }
+
+            // 261104 - 한 번에 여러 레벨이 올라도 레벨마다 신통력을 한 번씩 고른다(PartyProgress.Augments).
+            if (gained > 0)
+            {
+                ServerQueueAugmentChoices(gained);
             }
         }
 
         private int ExpRequiredForNextLevel(int fromLevel)
         {
-            return Mathf.Max(1, Mathf.RoundToInt(expCurveBase + expCurveLinear * fromLevel
-                                                 + expCurveQuadratic * fromLevel * fromLevel));
+            float raw = (expFormulaBase + expFormulaLinear * fromLevel + expFormulaQuadratic * fromLevel * fromLevel) * expFormulaScale;
+            return Mathf.Max(1, Mathf.RoundToInt(raw));
         }
 
         private void HandleExpChanged(int previous, int current)
@@ -227,29 +234,8 @@ namespace CheonMyeong.Progression
 
         private void HandleLevelChanged(int previous, int current)
         {
+            // 261104 - 일시정지 · 신통력 화면 열기는 레벨업 라운드(PartyProgress.Augments)가 맡는다. 여기선 HUD만.
             RefreshHud();
-
-            if (current > previous)
-            {
-                // 261014 추가 - 오버레이를 띄우는 것과 함께 게임을 일시정지시킨다. 이 콜백은
-                // level이 Everyone 읽기라 서버/클라이언트 전부에서 실행되지만, isPaused는
-                // Server만 쓸 수 있는 NetworkVariable이라 서버(호스트)에서만 값을 바꾼다 -
-                // 참가자 클라이언트에서 그대로 쓰면 NGO 권한 검사에 막힌다.
-                if (IsServer)
-                {
-                    isPaused.Value = true;
-                    // 261027 추가 - 혹시 모를 이전 생애의 찌꺼기 방지(정상 경로라면 전원 준비
-                    // 완료 시점에 이미 비워져 있어야 하지만, 방어적으로 한 번 더 비운다).
-                    readyClientIds.Clear();
-                }
-
-                // 레벨업 - 두 플레이어 모두의 화면에서 증강 선택 오버레이를 띄운다(협동이라
-                // 둘 다 골라야 함 - UpgradeScreen.cs 참고).
-                if (UIFlowManager.Instance != null)
-                {
-                    UIFlowManager.Instance.OpenOverlay(UIFlowManager.Upgrade);
-                }
-            }
         }
 
         /// <summary>
@@ -263,42 +249,7 @@ namespace CheonMyeong.Progression
         {
             if (previous && !current && UIFlowManager.Instance != null)
             {
-                UIFlowManager.Instance.CloseOverlay();
-            }
-        }
-
-        /// <summary>
-        /// 261027 수정 - "양측 플레이어 다 준비완료면 넘어가는 걸로"(예섭 요청). UpgradeScreen의
-        /// "✓ 준비 완료" 버튼이 호출한다(UpgradeScreen.cs 참고). 이전까지는 RequestUnpauseRpc라는
-        /// 이름으로 "누가 누르든 즉시" 재개시켰는데, 이제는 호출한 클라이언트의 clientId를
-        /// readyClientIds에 기록해두고, 그 시점에 접속해 있는 전원(NetworkManager.
-        /// ConnectedClientsIds.Count)이 다 기록됐을 때만 실제로 재개한다.
-        ///
-        /// 같은 클라이언트가 두 번 눌러도(연타 등) Contains로 걸러서 중복 집계하지 않는다.
-        /// 재개 직후엔 readyClientIds를 비워서 다음 레벨업 때 다시 0명부터 센다.
-        ///
-        /// rpcParams(RpcParams, 기본값 default)로 "누가 호출했는지"(SenderClientId)를 받는다 -
-        /// NGO 2.x Rpc API가 서버에서 받는 요청의 발신자를 알아내는 공식 방법(공식 문서 확인).
-        /// InvokePermission = RpcInvokePermission.Everyone을 쓰는 이유는 기존 RequestUnpauseRpc와
-        /// 동일(참가자도 호출 가능해야 함 - 위 기존 설명 참고, 동작 변화 없음).
-        /// </summary>
-        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-        public void RequestReadyRpc(RpcParams rpcParams = default)
-        {
-            ulong senderId = rpcParams.Receive.SenderClientId;
-            if (!readyClientIds.Contains(senderId))
-            {
-                readyClientIds.Add(senderId);
-            }
-
-            int connectedCount = NetworkManager.Singleton != null
-                ? NetworkManager.Singleton.ConnectedClientsIds.Count
-                : 1;
-
-            if (readyClientIds.Count >= connectedCount)
-            {
-                readyClientIds.Clear();
-                isPaused.Value = false;
+                UIFlowManager.Instance.CloseOverlay(UIFlowManager.Upgrade); // 261104 - ESC 메뉴가 위에 있어도 신통력 화면만 닫는다
             }
         }
 

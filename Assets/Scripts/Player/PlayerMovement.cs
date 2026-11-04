@@ -43,6 +43,7 @@ namespace CheonMyeong.Player
         private bool serverHeld;
         // 금 나와라 뚝딱: 보스전 동안 누적되는 이동 속도 감소(0~cap).
         private float serverBossSlow;
+        private PlayerProgress progress;
         // 261102 - 보스 타격 밀려남(서버). 시간이 지날수록 줄어드는 속도로 밀린다.
         private Vector2 serverKnockbackVelocity;
         private float serverKnockbackTime;
@@ -121,6 +122,7 @@ namespace CheonMyeong.Player
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
+            TryGetComponent(out progress); // 261104 - 신통력 이동 속도
             rb.gravityScale = 0f; // 탑뷰이므로 중력 불필요
             rb.freezeRotation = true;
 
@@ -194,7 +196,9 @@ namespace CheonMyeong.Player
                 move.Normalize(); // 대각선 이동 속도 보정
             }
 
-            rb.linearVelocity = move * (stats.moveSpeed * (1f - serverBossSlow));
+            // 261104 - 신통력 이동 속도(기준값 대비 %, 무한 이동 속도는 최대 20%).
+            float speedBonus = progress != null ? progress.Modifiers.MoveSpeedBonus : 0f;
+            rb.linearVelocity = move * (stats.moveSpeed * (1f + speedBonus) * (1f - serverBossSlow));
         }
     }
 }

@@ -224,6 +224,45 @@ namespace CheonMyeong.Enemies
             return Mathf.RoundToInt(total);
         }
 
+        /// <summary>
+        /// 261104 - 서버 전용. 일회용 신통력 '부정 씻기'(기획서: 주변 원귀 정화, 처치로 계산).
+        /// center에서 radius 안의 살아있는 원귀를 즉시 쓰러뜨린다(영혼 · 엽전도 평소처럼 떨어짐).
+        /// reference와 다른 차원(억쇠 '정신병')에 있는 원귀는 건드리지 않는다. 억쇠는 Enemy가 아니라 대상이 아니다.
+        /// 돌려주는 값 = 쓰러뜨린 수(처치 수 집계용).
+        /// </summary>
+        public static int ServerPurifyAround(Vector2 center, float radius, GameObject reference)
+        {
+            if (radius <= 0f)
+            {
+                return 0;
+            }
+            float sqrRadius = radius * radius;
+            int kills = 0;
+            AbsorbBuffer.Clear();
+            AbsorbBuffer.AddRange(ActiveEnemies); // Die 중 목록이 바뀌어도 안전하게 복사본으로 순회
+            for (int i = 0; i < AbsorbBuffer.Count; i++)
+            {
+                Enemy enemy = AbsorbBuffer[i];
+                if (enemy == null || !enemy.IsServer || !enemy.IsSpawned || enemy.isDying.Value || enemy.stats == null)
+                {
+                    continue;
+                }
+                if (((Vector2)enemy.transform.position - center).sqrMagnitude > sqrRadius)
+                {
+                    continue;
+                }
+                if (reference != null && !Boss.DeathRealm.CanInteract(reference, enemy.gameObject))
+                {
+                    continue;
+                }
+                enemy.currentHealth = 0f;
+                enemy.Die();
+                kills++;
+            }
+            AbsorbBuffer.Clear();
+            return kills;
+        }
+
         private void Update()
         {
             // 점멸 진행은 서버/클라이언트 구분 없이 전부 로컬로 돈다 - 순수 시각 효과.

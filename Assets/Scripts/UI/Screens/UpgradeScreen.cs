@@ -6,22 +6,13 @@ using UnityEngine.UI;
 namespace CheonMyeong.UI.Screens
 {
     /// <summary>
-    /// UPGRADE(증강 선택) 화면 - 레벨업 시 뜨는 오버레이. 카드 3장 레이아웃/리롤
-    /// 버튼/타이머/"동료 선택 완료" 버튼은 와이어프레임 UI를 그대로 채택하기로
-    /// 확정됐지만(261013), 실제 증강 종류·수치·희귀도 체계는 미정이라(보류) 카드
-    /// 내용은 와이어프레임에 적혀 있던 예시 텍스트를 placeholder로만 띄운다.
-    ///
-    /// "준비 완료"(261027, 예섭 요청으로 "동료 선택 완료"에서 라벨 변경)는 협동(2인) 선택
-    /// 동기화 - 각자 누르면 PartyProgress.RequestReadyRpc로 서버에 전달되고, 접속한 전원이
-    /// 다 눌러야 실제로 재개된다(PartyProgress.HandleIsPausedChanged 참고). 그래서 버튼을
-    /// 누른다고 이 화면이 바로 닫히지 않는다 - 닫힘은 오직 isPaused가 false로 바뀌는 신호로만
-    /// 일어난다(UIFlowManager.Instance.CloseOverlay()를 여기서 직접 부르지 않음).
-    ///
-    /// 카드 선택(261027 추가) - "에초에 선택도 구현 안되어있네"(예섭 지적) 대응. 카드
-    /// 3장 중 하나를 누르면 그 카드만 금색으로 하이라이트되고, 하나라도 골라야 "준비 완료"
-    /// 버튼이 눌린다(처음엔 비활성). 실제 증강 효과(수치) 적용은 증강 종류·밸런스 자체가
-    /// 여전히 기획 미정이라 범위 밖 - 지금은 "어떤 카드를 골랐는지"만 selectedCardIndex에
-    /// 기록해둔다(다음 작업에서 실제 효과 로직이 이 값을 읽어가면 됨).
+    /// UPGRADE(신통력 고르기) 화면 - 레벨업 시 뜨는 오버레이.
+    /// 261104 수정 - 기획서 v0.9.4 07장 신통력 연결:
+    /// - 카드 3장은 서버가 뽑은 내 카드(PlayerProgress.GetOffer)를 보여준다.
+    /// - 카드를 고르고 "준비 완료"를 누르면 PartyProgress.PickAugmentRpc로 서버에 알린다. 고르는 순간 적용된다.
+    /// - 둘 다 고르면(또는 10초가 지나면 무작위로) 서버가 재개하고, isPaused가 풀리면 이 화면이 닫힌다.
+    /// - 리롤권이 있으면 "다시 뽑기"로 내 카드 3장을 새로 뽑는다.
+    /// 와이어프레임 UI는 아트가 잡는 중이라 프리팹 구조는 건드리지 않고, 리롤 버튼이 없으면 실행 중에만 만든다.
     /// </summary>
     public class UpgradeScreen : MonoBehaviour
     {
@@ -29,32 +20,50 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private Transform cardsContainer;
         [SerializeField] private Button readyButton;
 
-        // UICanvasBuilder.CreateHorizontalList가 카드 배경에 쓰는 기본색과 같은 값 - 그쪽은
-        // Editor 전용 어셈블리라 여기서 직접 참조할 수 없어 값만 맞춰 따로 들고 있다.
-        private static readonly Color CardNormalColor = new Color(0.14f, 0.14f, 0.18f, 0.95f);
-        private static readonly Color CardSelectedColor = new Color(0.46f, 0.37f, 0.15f, 0.95f); // HudPanelRingColor 금색 계열과 맞춤
+        [Tooltip("비워두면 자식 중 \"RerollButton\"을 찾고, 없으면 실행 중에 만든다.")]
+        [SerializeField] private Button rerollButton;
 
+        [Tooltip("비워두면 자식 중 \"RerollCountText\"를 찾는다(없어도 됨 - 리롤 버튼 라벨에 같이 표시).")]
+        [SerializeField] private Text rerollCountText;
+
+        private static readonly Color CardNormalColor = new Color(0.14f, 0.14f, 0.18f, 0.95f);
+        private static readonly Color CardSelectedColor = new Color(0.46f, 0.37f, 0.15f, 0.95f);
+
+        private const string TitleLabel = "레벨업! 신통력을 고르세요";
         private const string ReadyButtonDefaultLabel = "✓ 준비 완료";
         private const string ReadyButtonWaitingLabel = "대기 중... (동료를 기다리는 중)";
 
         private readonly List<Image> cardBackgrounds = new List<Image>();
+        private readonly List<Button> cardButtons = new List<Button>();
+        private readonly List<Text> cardTexts = new List<Text>();
+
         private int selectedCardIndex = -1;
         private Text readyButtonLabel;
+        private Text rerollButtonLabel;
+
+        // 바뀐 것만 다시 그리기 위한 캐시(매 프레임 문자열 할당 방지).
+        private int shownRound = -1;
+        private int shownOfferVersion = -1;
+        private int shownSeconds = -1;
+        private int shownTickets = -1;
+        private bool shownPicked;
 
         private void Awake()
         {
+            Transform title = FindDeep(transform, "TitleText");
+            if (title != null && title.TryGetComponent(out Text titleText))
+            {
+                titleText.text = TitleLabel;
+            }
+
             if (readyButton != null)
             {
-                // CreateButton(UICanvasBuilder)이 버튼 아래 "Label"이라는 이름의 자식 Text를
-                // 만들어둔다 - 준비 완료를 누른 뒤 "대기 중..."으로 바꿔 보여주는 용도.
                 readyButtonLabel = readyButton.GetComponentInChildren<Text>();
+                readyButton.onClick.AddListener(HandleReadyClicked);
             }
 
             if (cardsContainer != null)
             {
-                // UICanvasBuilder.CreateHorizontalList가 만든 순서 그대로 Card_0/1/2가
-                // 자식으로 들어있다 - ChoiceMapScreen의 맵/캐릭터 타일과 같은 관례
-                // (GetChild(i).GetComponent&lt;Button&gt;()).
                 for (int i = 0; i < cardsContainer.childCount; i++)
                 {
                     Transform cardTransform = cardsContainer.GetChild(i);
@@ -65,27 +74,216 @@ namespace CheonMyeong.UI.Screens
                         continue;
                     }
 
-                    int capturedIndex = i; // 클로저 캡처용 - 루프 변수를 직접 캡처하면 전부 마지막 값을 가리키게 됨
+                    int capturedIndex = cardButtons.Count;
                     cardButton.onClick.AddListener(() => HandleCardClicked(capturedIndex));
+                    cardButtons.Add(cardButton);
                     cardBackgrounds.Add(cardBackground);
+                    cardTexts.Add(cardTransform.GetComponentInChildren<Text>(true));
                 }
             }
 
+            if (rerollCountText == null)
+            {
+                Transform found = FindDeep(transform, "RerollCountText");
+                if (found != null)
+                {
+                    found.TryGetComponent(out rerollCountText);
+                }
+            }
+            if (rerollButton == null)
+            {
+                Transform found = FindDeep(transform, "RerollButton");
+                if (found != null)
+                {
+                    found.TryGetComponent(out rerollButton);
+                }
+            }
+            if (rerollButton == null)
+            {
+                rerollButton = CreateRerollButton(transform);
+            }
+            if (rerollButton != null)
+            {
+                rerollButtonLabel = rerollButton.GetComponentInChildren<Text>();
+                rerollButton.onClick.AddListener(HandleRerollClicked);
+            }
+        }
+
+        private void OnDestroy()
+        {
             if (readyButton != null)
             {
-                readyButton.onClick.AddListener(HandleReadyClicked);
+                readyButton.onClick.RemoveListener(HandleReadyClicked);
             }
+            if (rerollButton != null)
+            {
+                rerollButton.onClick.RemoveListener(HandleRerollClicked);
+            }
+            for (int i = 0; i < cardButtons.Count; i++)
+            {
+                if (cardButtons[i] != null)
+                {
+                    cardButtons[i].onClick.RemoveAllListeners();
+                }
+            }
+        }
+
+        private void OnEnable()
+        {
+            shownRound = -1;
+            shownOfferVersion = -1;
+            shownSeconds = -1;
+            shownTickets = -1;
+            ResetSelection();
+            Refresh();
+        }
+
+        private void Update()
+        {
+            Refresh();
+        }
+
+        private void Refresh()
+        {
+            PartyProgress party = PartyProgress.Instance;
+            PlayerProgress me = PlayerProgress.Local;
+            if (party == null || me == null)
+            {
+                return;
+            }
+
+            // 새 라운드(연속 레벨업) 또는 리롤로 카드가 바뀌면 선택을 풀고 다시 그린다.
+            if (shownRound != party.ChoiceRound || shownOfferVersion != me.OfferVersion)
+            {
+                shownRound = party.ChoiceRound;
+                shownOfferVersion = me.OfferVersion;
+                ResetSelection();
+                FillCards(me);
+            }
+
+            int seconds = Mathf.CeilToInt(party.ChoiceSecondsLeft);
+            if (seconds != shownSeconds && timerText != null)
+            {
+                shownSeconds = seconds;
+                timerText.text = "남은 시간 " + seconds + "초";
+            }
+
+            bool picked = me.HasPicked;
+            int tickets = me.RerollTickets;
+            if (tickets != shownTickets || picked != shownPicked)
+            {
+                shownTickets = tickets;
+                shownPicked = picked;
+                string ticketLabel = "리롤권 ×" + tickets;
+                if (rerollCountText != null)
+                {
+                    rerollCountText.text = ticketLabel;
+                }
+                if (rerollButtonLabel != null)
+                {
+                    rerollButtonLabel.text = "↻ 다시 뽑기 (" + tickets + ")";
+                }
+                if (rerollButton != null)
+                {
+                    rerollButton.interactable = tickets > 0 && !picked;
+                }
+                for (int i = 0; i < cardButtons.Count; i++)
+                {
+                    cardButtons[i].interactable = !picked && i < me.OfferCount;
+                }
+                if (readyButton != null)
+                {
+                    readyButton.interactable = !picked && selectedCardIndex >= 0;
+                }
+                if (readyButtonLabel != null)
+                {
+                    readyButtonLabel.text = picked ? ReadyButtonWaitingLabel : ReadyButtonDefaultLabel;
+                }
+            }
+        }
+
+        private void FillCards(PlayerProgress me)
+        {
+            AugmentCatalogSO catalog = PlayerProgress.Catalog;
+            for (int i = 0; i < cardButtons.Count; i++)
+            {
+                bool has = i < me.OfferCount;
+                cardButtons[i].gameObject.SetActive(has);
+                cardButtons[i].interactable = has && !me.HasPicked;
+                if (!has || cardTexts[i] == null)
+                {
+                    continue;
+                }
+                cardTexts[i].text = DescribeCard(catalog, me.GetOffer(i));
+            }
+        }
+
+        private static string DescribeCard(AugmentCatalogSO catalog, AugmentOffer offer)
+        {
+            AugmentEntry entry = catalog.Find(offer.Augment);
+            if (entry == null)
+            {
+                return "?";
+            }
+            string tag;
+            switch (entry.kind)
+            {
+                case AugmentKind.Exclusive: tag = "[전용]"; break;
+                case AugmentKind.OneTime: tag = "[일회용]"; break;
+                case AugmentKind.Infinite: tag = "[무한]"; break;
+                default: tag = "[공통]"; break;
+            }
+            bool leveled = entry.kind == AugmentKind.Common || entry.kind == AugmentKind.Exclusive;
+            string name = leveled ? entry.displayName + " Lv." + offer.Level : entry.displayName;
+            return tag + " " + name + "\n\n" + entry.Describe(offer.Level);
         }
 
         private void HandleCardClicked(int index)
         {
+            PlayerProgress me = PlayerProgress.Local;
+            if (me == null || me.HasPicked || index >= me.OfferCount)
+            {
+                return;
+            }
             selectedCardIndex = index;
             RefreshCardHighlights();
-
             if (readyButton != null)
             {
                 readyButton.interactable = true;
             }
+        }
+
+        private void HandleReadyClicked()
+        {
+            if (selectedCardIndex < 0 || PartyProgress.Instance == null)
+            {
+                return;
+            }
+            PartyProgress.Instance.PickAugmentRpc(selectedCardIndex);
+            readyButton.interactable = false;
+            if (readyButtonLabel != null)
+            {
+                readyButtonLabel.text = ReadyButtonWaitingLabel;
+            }
+        }
+
+        private void HandleRerollClicked()
+        {
+            if (PartyProgress.Instance != null)
+            {
+                PartyProgress.Instance.RerollAugmentsRpc();
+            }
+        }
+
+        private void ResetSelection()
+        {
+            selectedCardIndex = -1;
+            RefreshCardHighlights();
+            if (readyButton != null)
+            {
+                readyButton.interactable = false;
+            }
+            shownTickets = -1; // 버튼 상태를 다음 Refresh에서 다시 계산
         }
 
         private void RefreshCardHighlights()
@@ -96,58 +294,51 @@ namespace CheonMyeong.UI.Screens
             }
         }
 
-        /// <summary>
-        /// 261027 수정 - "양측 플레이어 다 준비완료면 넘어가는걸로"(예섭 요청) 대응.
-        /// 더 이상 여기서 직접 CloseOverlay()를 부르지 않는다 - 서버에 RequestReadyRpc로
-        /// "나 준비됨"만 알리고, 실제 오버레이 닫힘은 전원이 다 준비됐을 때 서버가
-        /// isPaused를 false로 내려주는 신호(PartyProgress.HandleIsPausedChanged)로만
-        /// 일어난다. 누른 사람은 버튼을 비활성화하고 라벨을 "대기 중..."으로 바꿔서
-        /// 동료를 기다리는 중임을 보여준다.
-        /// </summary>
-        private void HandleReadyClicked()
+        private static Transform FindDeep(Transform root, string childName)
         {
-            // 261027 추가 - readyButton이 카드를 하나 고르기 전까지 interactable=false라
-            // 정상 경로에서는 selectedCardIndex가 항상 -1 이상이지만, 혹시 모를 상태 꼬임에
-            // 대비해 한 번 더 막는다(아무것도 안 고르고 완료되는 것 방지).
-            if (selectedCardIndex < 0)
+            for (int i = 0; i < root.childCount; i++)
             {
-                return;
+                Transform child = root.GetChild(i);
+                if (child.name == childName)
+                {
+                    return child;
+                }
+                Transform deeper = FindDeep(child, childName);
+                if (deeper != null)
+                {
+                    return deeper;
+                }
             }
-
-            if (PartyProgress.Instance != null)
-            {
-                PartyProgress.Instance.RequestReadyRpc();
-            }
-
-            readyButton.interactable = false;
-            if (readyButtonLabel != null)
-            {
-                readyButtonLabel.text = ReadyButtonWaitingLabel;
-            }
+            return null;
         }
 
-        private void OnEnable()
+        /// <summary>와이어프레임에 리롤 버튼이 없을 때만 - 화면 왼쪽 위에 임시 버튼(아트가 RerollButton을 넣으면 그걸 쓴다).</summary>
+        private static Button CreateRerollButton(Transform parent)
         {
-            if (timerText != null)
-            {
-                timerText.text = "제한시간 -- (타이머 로직 미구현)";
-            }
+            var go = new GameObject("RerollButton", typeof(RectTransform), typeof(Image), typeof(Button));
+            go.transform.SetParent(parent, false);
+            var rect = (RectTransform)go.transform;
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = new Vector2(16f, -56f);
+            rect.sizeDelta = new Vector2(180f, 40f);
+            go.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.26f, 0.95f);
 
-            // 261027 추가 - 오버레이가 다시 열릴 때마다(다음 레벨업) 이전 선택이 남아있지
-            // 않도록 초기화한다. 재사용되는 패널이라 OnEnable에서 매번 리셋해야 한다.
-            selectedCardIndex = -1;
-            RefreshCardHighlights();
-            if (readyButton != null)
-            {
-                readyButton.interactable = false;
-            }
-
-            // 261027 추가 - 다음 레벨업 때 지난번 "대기 중..." 라벨이 남아있지 않도록
-            // 기본 라벨로 되돌린다.
-            if (readyButtonLabel != null)
-            {
-                readyButtonLabel.text = ReadyButtonDefaultLabel;
-            }
+            var labelGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
+            labelGo.transform.SetParent(go.transform, false);
+            var labelRect = (RectTransform)labelGo.transform;
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = Vector2.zero;
+            labelRect.offsetMax = Vector2.zero;
+            var label = labelGo.GetComponent<Text>();
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.fontSize = 18;
+            label.alignment = TextAnchor.MiddleCenter;
+            label.color = Color.white;
+            label.text = "↻ 다시 뽑기";
+            return go.GetComponent<Button>();
         }
     }
 }

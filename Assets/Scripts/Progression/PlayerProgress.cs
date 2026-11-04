@@ -13,7 +13,7 @@ namespace CheonMyeong.Progression
     /// 로비 화면(LobbyScreen)에 표시할 "여러 판에 걸쳐 누적되는" 엽전은 PlayerWallet(로컬 저장)이
     /// 담당한다 - 판이 끝날 때 DepositRunGoldRpc로 이번 판 엽전이 거기에 입금된다.
     /// </summary>
-    public class PlayerProgress : NetworkBehaviour
+    public partial class PlayerProgress : NetworkBehaviour
     {
         private readonly NetworkVariable<int> gold = new NetworkVariable<int>(
             0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -31,8 +31,8 @@ namespace CheonMyeong.Progression
         private int settledRunGold;
         private bool ownedLocally;
 
-        // 261101 추가 - 기획서 9장: 5웨이브 억쇠를 시간 안에 쫓아내면 각자 리롤권 1장. 증강 리롤 기능은 아직 없어서
-        // 지금은 개수만 쌓는다(리롤 UI가 붙으면 이 값을 소비).
+        // 261101 추가 - 기획서 9장: 5웨이브 억쇠를 시간 안에 쫓아내면 각자 리롤권 1장. 261104 - 신통력 선택 화면의
+        // 리롤 버튼이 1장씩 쓴다(ServerTryReroll).
         private readonly NetworkVariable<int> rerollTickets = new NetworkVariable<int>(
             0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -70,6 +70,7 @@ namespace CheonMyeong.Progression
             runGold.Value = 0;
             runKills.Value = 0;
             rerollTickets.Value = 0;
+            ServerResetAugments();
         }
 
         public override void OnNetworkSpawn()
@@ -78,6 +79,7 @@ namespace CheonMyeong.Progression
             runGold.OnValueChanged += HandleRunGoldChanged;
             ownedLocally = IsOwner;
             settledRunGold = 0;
+            AugmentsOnNetworkSpawn();
 
             if (IsOwner)
             {
@@ -95,6 +97,7 @@ namespace CheonMyeong.Progression
             }
             gold.OnValueChanged -= HandleGoldChanged;
             runGold.OnValueChanged -= HandleRunGoldChanged;
+            AugmentsOnNetworkDespawn();
         }
 
         /// <summary>

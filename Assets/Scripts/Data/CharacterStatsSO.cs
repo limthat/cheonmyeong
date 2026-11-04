@@ -67,5 +67,15 @@ namespace CheonMyeong.Data
                  "0이면 끌어당김 없이 직접 닿아야만(LootPickup.touchPickupRadius) 줍는다 - 획득 범위는\n" +
                  "나중에 증강으로 늘리는 값.")]
         public float magnetRadius = 0f;
+
+        [Header("261104 - 신통력 · 치명타 (기획서 9장: 치명타 확률 기본 5%, 피해 150%)")]
+        [Tooltip("원거리 캐릭터면 true - 근접 전용 신통력(근접 사거리 · 연속 공격)이 카드에 안 나온다.")]
+        public bool isRanged = false;
+
+        [Tooltip("기본 치명타 확률(0~1). 기획서: 기본 5% (이아라만 10%).")]
+        [Range(0f, 1f)] public float critChance = 0.05f;
+
+        [Tooltip("치명타 피해 배율. 기획서: 기본 공격의 1.5배.")]
+        [Min(1f)] public float critMultiplier = 1.5f;
     }
 }

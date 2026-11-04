@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CheonMyeong.Combat;
 using CheonMyeong.Data;
+using CheonMyeong.Progression;
 using CheonMyeong.Waves;
 using Unity.Netcode;
 using UnityEngine;
@@ -45,6 +46,12 @@ namespace CheonMyeong.Player
 
         private float respawnTimer;
 
+        // 261104 - 신통력(기획서 v0.9.4 07장): 최대 체력 · 방어력 · 체력 재생.
+        private PlayerProgress progress;
+        private float regenBuffer;
+        private float regenFlushTimer;
+        private const float RegenFlushInterval = 0.5f; // 매 프레임 NetworkVariable을 쓰지 않게 모아서 쓴다.
+
         private readonly NetworkVariable<float> currentHealth = new NetworkVariable<float>(
             default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -52,7 +59,36 @@ namespace CheonMyeong.Player
             default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public float CurrentHealth => currentHealth.Value;
-        public float MaxHealth => stats != null ? stats.maxHealth : 1f;
+        public float MaxHealth => stats != null
+            ? stats.maxHealth * (1f + (progress != null ? progress.Modifiers.MaxHealthBonus : 0f))
+            : 1f;
+
+        /// <summary>261104 - 이 캐릭터의 기준 스탯(신통력 카드 후보 판정에 쓴다).</summary>
+        public CharacterStatsSO Stats => stats;
+
+        private void Awake()
+        {
+            TryGetComponent(out progress);
+        }
+
+        /// <summary>
+        /// 261104 - 서버 전용. 신통력으로 최대 체력이 바뀐 뒤 호출 - 늘어난 만큼 현재 체력도 채우고, 줄었으면 최대치로 자른다.
+        /// </summary>
+        public void ServerOnMaxHealthChanged(float previousMax)
+        {
+            if (!IsServer || !IsSpawned || isDead.Value)
+            {
+                return;
+            }
+            float max = MaxHealth;
+            float delta = max - previousMax;
+            float next = delta > 0f ? currentHealth.Value + delta : currentHealth.Value;
+            next = Mathf.Min(max, next);
+            if (!Mathf.Approximately(next, currentHealth.Value))
+            {
+                currentHealth.Value = next;
+            }
+        }
         public bool IsDead => isDead.Value;
 
         /// <summary>드랍 아이템(골드/경험치)이 자동으로 끌려오기 시작하는 반경(유닛) -
@@ -93,7 +129,16 @@ namespace CheonMyeong.Player
             // 261027 수정 - 웨이브 시스템(WaveManager)이 있으면 기획대로 "웨이브가 끝날 때(징) 부활"
             // (WaveManager → ServerReviveIfDead)만 쓰고 이 고정 시간 타이머는 쓰지 않는다.
             // WaveManager가 없는 씬(테스트용 등)에서만 예전 임시 동작으로 대체.
-            if (!IsServer || !isDead.Value || WaveManager.Instance != null)
+            if (!IsServer)
+            {
+                return;
+            }
+            if (!isDead.Value)
+            {
+                ServerTickRegen();
+                return;
+            }
+            if (WaveManager.Instance != null)
             {
                 return;
             }
@@ -103,6 +148,29 @@ namespace CheonMyeong.Player
             {
                 Revive();
             }
+        }
+
+        /// <summary>261104 - 신통력 '체력 재생'(초당). 일시정지 중엔 멈춘다.</summary>
+        private void ServerTickRegen()
+        {
+            float perSecond = progress != null ? progress.Modifiers.RegenPerSecond : 0f;
+            if (perSecond <= 0f || (PartyProgress.Instance != null && PartyProgress.Instance.IsPaused))
+            {
+                return;
+            }
+            regenBuffer += perSecond * Time.deltaTime;
+            regenFlushTimer += Time.deltaTime;
+            if (regenFlushTimer < RegenFlushInterval)
+            {
+                return;
+            }
+            regenFlushTimer = 0f;
+            float max = MaxHealth;
+            if (currentHealth.Value < max)
+            {
+                currentHealth.Value = Mathf.Min(max, currentHealth.Value + regenBuffer);
+            }
+            regenBuffer = 0f;
         }
 
         /// <summary>
@@ -273,6 +341,13 @@ namespace CheonMyeong.Player
             if (!IsServer || isDead.Value || stats == null)
             {
                 return;
+            }
+
+            // 261104 - 신통력 '방어력': 받는 피해에서 고정 수치만큼 뺀다(최소 1).
+            float armor = progress != null ? progress.Modifiers.Armor : 0f;
+            if (armor > 0f && amount > 0f)
+            {
+                amount = Mathf.Max(Mathf.Min(1f, amount), amount - armor);
             }
 
             currentHealth.Value -= amount;

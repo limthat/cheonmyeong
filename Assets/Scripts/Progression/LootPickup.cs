@@ -33,6 +33,12 @@ namespace CheonMyeong.Progression
                  "아이템 크기 절반 정도.")]
         [SerializeField] private float touchPickupRadius = 0.55f;
 
+        [Tooltip("261104 - 일회용 신통력 '넋 거두기'로 맵의 영혼이 끌려올 때 속도(유닛/초).")]
+        [SerializeField] private float harvestPullSpeed = 20f;
+
+        // 261104 - 넋 거두기 대상(서버 전용). 있으면 자석 범위와 상관없이 이 플레이어에게 끌려간다.
+        private PlayerHealth harvestTarget;
+
         /// <summary>
         /// 261027 추가 - 보상 양을 클라이언트에도 알려주는 값(영혼 크기별 스프라이트용). 풀링 재사용이라
         /// ServerInitialize에서 Spawn() 전에 쓰면 스폰 메시지에 실려 처음부터 맞는 값으로 복제된다
@@ -52,6 +58,7 @@ namespace CheonMyeong.Progression
 
         public override void OnNetworkSpawn()
         {
+            harvestTarget = null; // 풀링 재사용 - 이전 생애 값 제거
             if (IsServer)
             {
                 ActiveLoot.Add(this);
@@ -72,6 +79,7 @@ namespace CheonMyeong.Progression
         public override void OnNetworkDespawn()
         {
             ActiveLoot.Remove(this);
+            harvestTarget = null;
             // 풀링으로 재사용되는 컴포넌트라 해제 안 하면 재스폰마다 콜백이 쌓인다.
             visualAmount.OnValueChanged -= HandleVisualAmountChanged;
         }
@@ -150,6 +158,26 @@ namespace CheonMyeong.Progression
             AbsorbBuffer.Clear();
         }
 
+        /// <summary>
+        /// 261104 - 서버 전용. 일회용 신통력 '넋 거두기'(기획서: 맵의 영혼 전부 끌어오기).
+        /// 지금 바닥에 있는 영혼(ExpLootPickup)을 전부 target에게 끌려가게 한다. 닿으면 평소처럼 파티 경험치로 들어간다.
+        /// </summary>
+        public static void ServerPullAllExpTo(PlayerHealth target)
+        {
+            if (target == null)
+            {
+                return;
+            }
+            for (int i = 0; i < ActiveLoot.Count; i++)
+            {
+                LootPickup loot = ActiveLoot[i];
+                if (loot is ExpLootPickup && loot.IsSpawned)
+                {
+                    loot.harvestTarget = target;
+                }
+            }
+        }
+
         /// <summary>엽전 드랍이 웨이브 종료 때 나눠 가질 몫을 쌓아두는 용도(GoldLootPickup).</summary>
         protected static void AddPendingSplitGold(int value)
         {
@@ -175,6 +203,27 @@ namespace CheonMyeong.Progression
             if (!IsServer)
             {
                 return;
+            }
+
+            // 261104 - 넋 거두기로 끌려가는 중. 대상이 사라지거나 쓰러지면 평소대로 돌아간다.
+            if (harvestTarget != null)
+            {
+                if (!harvestTarget.IsSpawned || harvestTarget.IsDead)
+                {
+                    harvestTarget = null;
+                }
+                else
+                {
+                    Vector2 toTarget = (Vector2)harvestTarget.transform.position - (Vector2)transform.position;
+                    float step = harvestPullSpeed * Time.fixedDeltaTime;
+                    if (toTarget.magnitude <= Mathf.Max(touchPickupRadius, collectDistance, step))
+                    {
+                        Collect(harvestTarget);
+                        return;
+                    }
+                    transform.position += (Vector3)(toTarget.normalized * step);
+                    return;
+                }
             }
 
             PlayerHealth nearest = PlayerHealth.FindNearestAlivePlayerHealth(transform.position);
