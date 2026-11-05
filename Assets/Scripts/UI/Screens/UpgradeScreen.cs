@@ -20,7 +20,7 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private Transform cardsContainer;
         [SerializeField] private Button readyButton;
 
-        [Tooltip("비워두면 자식 중 \"RerollButton\"을 찾고, 없으면 실행 중에 만든다.")]
+        [Tooltip("비워두면 자식 중 \"RerollButton\"을 찾고, 없으면 RerollCountText를 버튼으로 쓴다. 둘 다 없을 때만 실행 중에 만든다.")]
         [SerializeField] private Button rerollButton;
 
         [Tooltip("비워두면 자식 중 \"RerollCountText\"를 찾는다(없어도 됨 - 리롤 버튼 라벨에 같이 표시).")]
@@ -98,13 +98,21 @@ namespace CheonMyeong.UI.Screens
                     found.TryGetComponent(out rerollButton);
                 }
             }
+            if (rerollButton == null && rerollCountText != null)
+            {
+                // 261105 - 와이어프레임의 "리롤권×N" 글자를 그대로 눌러서 다시 뽑는다(새 버튼을 만들지 않음).
+                rerollButton = rerollCountText.gameObject.AddComponent<Button>();
+                rerollButton.targetGraphic = rerollCountText;
+                rerollCountText.raycastTarget = true;
+            }
             if (rerollButton == null)
             {
                 rerollButton = CreateRerollButton(transform);
             }
             if (rerollButton != null)
             {
-                rerollButtonLabel = rerollButton.GetComponentInChildren<Text>();
+                Text label = rerollButton.GetComponentInChildren<Text>();
+                rerollButtonLabel = label != rerollCountText ? label : null;
                 rerollButton.onClick.AddListener(HandleRerollClicked);
             }
         }
@@ -174,7 +182,7 @@ namespace CheonMyeong.UI.Screens
             {
                 shownTickets = tickets;
                 shownPicked = picked;
-                string ticketLabel = "리롤권 ×" + tickets;
+                string ticketLabel = tickets > 0 && !picked ? "↻ 리롤권×" + tickets : "리롤권×" + tickets;
                 if (rerollCountText != null)
                 {
                     rerollCountText.text = ticketLabel;

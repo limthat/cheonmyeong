@@ -78,7 +78,7 @@ namespace CheonMyeong.Progression
         {
             if (hudView != null)
             {
-                Destroy(hudView.gameObject);
+                Destroy(hudView);
             }
             base.OnDestroy();
         }
@@ -98,7 +98,7 @@ namespace CheonMyeong.Progression
             augmentOffers.OnListChanged -= HandleOfferListChanged;
             if (hudView != null)
             {
-                Destroy(hudView.gameObject);
+                Destroy(hudView);
                 hudView = null;
             }
         }

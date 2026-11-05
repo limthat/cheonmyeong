@@ -5,87 +5,89 @@ using UnityEngine.UI;
 namespace CheonMyeong.UI
 {
     /// <summary>
-    /// 261104 추가 - 인게임 HUD 왼쪽 아래 신통력 칸 6개(기획서 v0.9.4 07장 "신통력 칸").
-    /// - 칸마다 이름 + 단계 점 5개(채운 점 = 단계, 5단계는 MAX). 전용은 테두리 색이 다르다.
-    /// - 무한 스탯을 고른 횟수는 칸 위에 한 줄로.
-    /// 와이어프레임은 아트가 잡는 중이라 프리팹을 만들지 않고 실행 중에만 만든다(씬 · 프리팹 충돌 없음).
-    /// 다시 그리는 건 AugmentsChanged가 올 때만(매 프레임 X).
+    /// 261105 수정 - 인게임 HUD에 이미 있는 신통력 칸(AugmentSlotsContainer/AugmentSlot_0~5)을 채운다. 새 UI는 만들지 않는다.
+    /// - AugmentSlot_i/StageDots: 단계(●=찬 단계, ○=빈 단계, 5단계는 MAX).
+    /// - AugmentSlot_i/NameText: 신통력 이름. 와이어프레임에 없으면 그 칸 안에만 텍스트 하나를 붙인다.
+    /// - AugmentSlot_i/Ring: 전용 신통력이면 테두리 색을 바꾼다.
+    /// - AugmentSlotsCaption: 필요 없어서(예섭) 실행 중엔 숨긴다.
+    /// 이름으로 찾기 때문에 아트가 모양을 바꿔도 이름만 같으면 그대로 붙는다.
     /// </summary>
     public class AugmentHudView : MonoBehaviour
     {
-        private static readonly Color SlotBackground = new Color(0.08f, 0.08f, 0.11f, 0.85f);
-        private static readonly Color CommonBorder = new Color(0.78f, 0.62f, 0.25f, 1f);
-        private static readonly Color ExclusiveBorder = new Color(0.55f, 0.75f, 1f, 1f);
-        private static readonly Color EmptyBorder = new Color(0.3f, 0.3f, 0.35f, 0.8f);
-        private static readonly Color DotOn = new Color(1f, 0.85f, 0.4f, 1f);
-        private static readonly Color DotOff = new Color(0.25f, 0.25f, 0.3f, 1f);
+        private const string ContainerName = "AugmentSlotsContainer";
+        private const string SlotPrefix = "AugmentSlot_";
+        private const string DotsName = "StageDots";
+        private const string NameTextName = "NameText";
+        private const string RingName = "Ring";
+        private const string CaptionName = "AugmentSlotsCaption";
 
-        private const float SlotSize = 64f;
-        private const float SlotGap = 6f;
-        private const int Dots = 5;
+        private static readonly Color ExclusiveRingColor = new Color(0.55f, 0.75f, 1f, 1f);
 
         private PlayerProgress owner;
-        private Image[] borders;
-        private Text[] names;
-        private Image[,] dots;
-        private Text infiniteText;
-        private Font font;
+        private Text[] dotTexts;
+        private Text[] nameTexts;
+        private Image[] rings;
+        private Color[] ringDefaultColors;
+        private readonly System.Text.StringBuilder builder = new System.Text.StringBuilder(64);
 
         public static AugmentHudView Create(Transform hudRoot, PlayerProgress owner)
         {
-            var go = new GameObject("AugmentHud", typeof(RectTransform));
-            go.transform.SetParent(hudRoot, false);
-            var view = go.AddComponent<AugmentHudView>();
-            view.Build(owner);
+            var view = hudRoot.gameObject.AddComponent<AugmentHudView>();
+            view.Bind(hudRoot, owner);
             return view;
         }
 
-        private void Build(PlayerProgress progress)
+        private void Bind(Transform hudRoot, PlayerProgress progress)
         {
             owner = progress;
-            font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            AugmentCatalogSO catalog = PlayerProgress.Catalog;
-            int slots = Mathf.Max(1, catalog.maxSlots);
+            int slots = Mathf.Max(1, PlayerProgress.Catalog.maxSlots);
+            dotTexts = new Text[slots];
+            nameTexts = new Text[slots];
+            rings = new Image[slots];
+            ringDefaultColors = new Color[slots];
 
-            var root = (RectTransform)transform;
-            root.anchorMin = Vector2.zero;
-            root.anchorMax = Vector2.zero;
-            root.pivot = Vector2.zero;
-            root.anchoredPosition = new Vector2(16f, 16f);
-            root.sizeDelta = new Vector2(slots * (SlotSize + SlotGap), SlotSize + 26f);
-
-            borders = new Image[slots];
-            names = new Text[slots];
-            dots = new Image[slots, Dots];
-
-            for (int i = 0; i < slots; i++)
+            Transform container = FindDeep(hudRoot, ContainerName);
+            if (container == null)
             {
-                RectTransform border = NewRect(root, "Slot_" + i, new Vector2(i * (SlotSize + SlotGap), 0f), new Vector2(SlotSize, SlotSize));
-                borders[i] = border.gameObject.AddComponent<Image>();
-                borders[i].raycastTarget = false;
-
-                RectTransform inner = NewRect(border, "Inner", new Vector2(2f, 2f), new Vector2(SlotSize - 4f, SlotSize - 4f));
-                Image innerImage = inner.gameObject.AddComponent<Image>();
-                innerImage.color = SlotBackground;
-                innerImage.raycastTarget = false;
-
-                RectTransform nameRect = NewRect(inner, "Name", new Vector2(2f, 14f), new Vector2(SlotSize - 8f, SlotSize - 18f));
-                names[i] = AddText(nameRect, 11, TextAnchor.MiddleCenter);
-
-                float dotSize = 7f;
-                float dotsWidth = Dots * dotSize + (Dots - 1) * 2f;
-                float startX = (SlotSize - 4f - dotsWidth) * 0.5f;
-                for (int d = 0; d < Dots; d++)
+                Debug.LogWarning("[CheonMyeong] HUD에서 " + ContainerName + "를 못 찾아 신통력 칸을 표시하지 않습니다.");
+            }
+            else
+            {
+                for (int i = 0; i < slots; i++)
                 {
-                    RectTransform dot = NewRect(inner, "Dot_" + d, new Vector2(startX + d * (dotSize + 2f), 4f), new Vector2(dotSize, dotSize));
-                    Image dotImage = dot.gameObject.AddComponent<Image>();
-                    dotImage.raycastTarget = false;
-                    dots[i, d] = dotImage;
+                    Transform slot = FindDeep(container, SlotPrefix + i);
+                    if (slot == null)
+                    {
+                        continue;
+                    }
+                    Transform dots = FindDeep(slot, DotsName);
+                    if (dots != null)
+                    {
+                        dots.TryGetComponent(out dotTexts[i]);
+                    }
+                    Transform ring = FindDeep(slot, RingName);
+                    if (ring != null && ring.TryGetComponent(out rings[i]))
+                    {
+                        ringDefaultColors[i] = rings[i].color;
+                    }
+                    Transform nameTransform = FindDeep(slot, NameTextName);
+                    if (nameTransform != null)
+                    {
+                        nameTransform.TryGetComponent(out nameTexts[i]);
+                    }
+                    else
+                    {
+                        nameTexts[i] = CreateNameText(slot, dotTexts[i]);
+                    }
                 }
             }
 
-            RectTransform infiniteRect = NewRect(root, "Infinite", new Vector2(0f, SlotSize + 4f), new Vector2(root.sizeDelta.x, 20f));
-            infiniteText = AddText(infiniteRect, 13, TextAnchor.LowerLeft);
+            Transform caption = FindDeep(hudRoot, CaptionName);
+            if (caption != null)
+            {
+                caption.gameObject.SetActive(false);
+                AlignToBottom(container as RectTransform, caption as RectTransform);
+            }
 
             owner.AugmentsChanged += Redraw;
             Redraw();
@@ -101,74 +103,106 @@ namespace CheonMyeong.UI
 
         private void Redraw()
         {
-            if (owner == null || borders == null)
+            if (owner == null || dotTexts == null)
             {
                 return;
             }
             AugmentCatalogSO catalog = PlayerProgress.Catalog;
-            for (int i = 0; i < borders.Length; i++)
+            int maxLevel = Mathf.Max(1, catalog.maxLevel);
+
+            for (int i = 0; i < dotTexts.Length; i++)
             {
                 bool has = i < owner.SlotCount;
                 AugmentSlot slot = has ? owner.GetSlot(i) : default;
                 AugmentEntry entry = has ? catalog.Find(slot.Augment) : null;
-                borders[i].color = entry == null ? EmptyBorder
-                    : entry.kind == AugmentKind.Exclusive ? ExclusiveBorder : CommonBorder;
-                names[i].text = entry == null ? string.Empty
-                    : slot.Level >= catalog.maxLevel ? entry.displayName + "\nMAX" : entry.displayName;
-                for (int d = 0; d < Dots; d++)
+
+                if (dotTexts[i] != null)
                 {
-                    dots[i, d].color = has && d < slot.Level ? DotOn : DotOff;
-                    dots[i, d].enabled = has;
+                    if (entry != null && slot.Level >= maxLevel)
+                    {
+                        dotTexts[i].text = "MAX";
+                    }
+                    else
+                    {
+                        builder.Clear();
+                        int level = entry != null ? slot.Level : 0;
+                        for (int d = 0; d < maxLevel; d++)
+                        {
+                            builder.Append(d < level ? '●' : '○');
+                        }
+                        dotTexts[i].text = builder.ToString();
+                    }
+                }
+                if (nameTexts[i] != null)
+                {
+                    nameTexts[i].text = entry != null ? entry.displayName : string.Empty;
+                }
+                if (rings[i] != null)
+                {
+                    rings[i].color = entry != null && entry.kind == AugmentKind.Exclusive ? ExclusiveRingColor : ringDefaultColors[i];
                 }
             }
+        }
 
-            if (owner.StackCount == 0)
+        /// <summary>
+        /// 261105 - 캡션을 숨긴 자리만큼 칸 줄을 아래로 내린다(높이 유지). 아래 여백 = 왼쪽 여백.
+        /// </summary>
+        private static void AlignToBottom(RectTransform container, RectTransform caption)
+        {
+            if (container == null || caption == null || container.parent != caption.parent)
             {
-                infiniteText.text = string.Empty;
                 return;
             }
-            var sb = new System.Text.StringBuilder("무한 ");
-            for (int i = 0; i < owner.StackCount; i++)
+            float anchorShift = container.anchorMin.y - caption.anchorMin.y;
+            if (anchorShift <= 0f)
             {
-                AugmentStack stack = owner.GetStack(i);
-                AugmentEntry entry = catalog.Find(stack.Augment);
-                if (entry == null)
-                {
-                    continue;
-                }
-                if (i > 0)
-                {
-                    sb.Append(" · ");
-                }
-                sb.Append(entry.displayName).Append(" ×").Append(stack.Count);
+                return;
             }
-            infiniteText.text = sb.ToString();
+            container.anchorMin -= new Vector2(0f, anchorShift);
+            container.anchorMax -= new Vector2(0f, anchorShift);
+            float offsetShift = container.offsetMin.x - container.offsetMin.y;
+            container.offsetMin += new Vector2(0f, offsetShift);
+            container.offsetMax += new Vector2(0f, offsetShift);
         }
 
-        private static RectTransform NewRect(Transform parent, string name, Vector2 position, Vector2 size)
+        private static Text CreateNameText(Transform slot, Text styleSource)
         {
-            var go = new GameObject(name, typeof(RectTransform));
-            go.transform.SetParent(parent, false);
+            var go = new GameObject(NameTextName, typeof(RectTransform), typeof(Text));
+            go.transform.SetParent(slot, false);
             var rect = (RectTransform)go.transform;
             rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.zero;
-            rect.pivot = Vector2.zero;
-            rect.anchoredPosition = position;
-            rect.sizeDelta = size;
-            return rect;
-        }
-
-        private Text AddText(RectTransform rect, int size, TextAnchor anchor)
-        {
-            Text text = rect.gameObject.AddComponent<Text>();
-            text.font = font;
-            text.fontSize = size;
-            text.alignment = anchor;
-            text.color = Color.white;
-            text.raycastTarget = false;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(4f, 20f);
+            rect.offsetMax = new Vector2(-4f, -4f);
+            Text text = go.GetComponent<Text>();
+            text.font = styleSource != null && styleSource.font != null
+                ? styleSource.font
+                : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.color = styleSource != null ? styleSource.color : Color.white;
+            text.fontSize = 13;
+            text.alignment = TextAnchor.MiddleCenter;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;
+            text.raycastTarget = false;
             return text;
+        }
+
+        private static Transform FindDeep(Transform root, string childName)
+        {
+            for (int i = 0; i < root.childCount; i++)
+            {
+                Transform child = root.GetChild(i);
+                if (child.name == childName)
+                {
+                    return child;
+                }
+                Transform deeper = FindDeep(child, childName);
+                if (deeper != null)
+                {
+                    return deeper;
+                }
+            }
+            return null;
         }
     }
 }

@@ -146,6 +146,45 @@ namespace CheonMyeong.Player
         /// <summary>실제 타격 부채꼴 각도 = attackArcDegrees × (1 + 넓은 베기), 최대 360.</summary>
         public float ArcDegrees => stats != null ? Mathf.Min(360f, stats.attackArcDegrees * (1f + Mods.ArcBonus)) : 0f;
 
+        /// <summary>
+        /// 261105 - 판정 모양: 각도가 180도 미만이면 사다리꼴(캐릭터 쪽 폭 attackNearWidth → 끝 쪽 폭 = 예전 부채꼴의 현).
+        /// 부채꼴은 캐릭터 바로 앞이 뾰족해서 초근접 적이 옆으로 빠졌다(예섭).
+        /// </summary>
+        public bool UsesTrapezoid => stats != null && ArcDegrees < 180f;
+
+        /// <summary>사다리꼴 캐릭터 쪽 반폭.</summary>
+        public float NearHalfWidth => stats != null ? Mathf.Min(stats.attackNearWidth * 0.5f, FarHalfWidth) : 0f;
+
+        /// <summary>사다리꼴 끝 쪽 반폭(= 예전 부채꼴이 반경 끝에서 갖던 반폭).</summary>
+        public float FarHalfWidth => HitRadius * (ArcDegrees >= 180f ? 1f : Mathf.Sin(ArcDegrees * 0.5f * Mathf.Deg2Rad));
+
+        /// <summary>이펙트 · 판정이 같이 쓰는 옆 폭(끝 쪽 전체 폭).</summary>
+        public float HitWidth => FarHalfWidth * 2f;
+
+        // 큰 대상(억쇠 등)이 사다리꼴을 너무 넓히지 않게 몸 크기 보정 상한.
+        private const float MaxTargetPad = 0.5f;
+
+        /// <summary>
+        /// 조준 방향(정규화) 기준으로 offset(캐릭터→대상 중심)이 판정 안인지. pad = 대상 몸 크기(콜라이더 반폭) -
+        /// 예전 원 판정처럼 몸이 걸치기만 해도 맞게 사다리꼴을 그만큼 넓혀서 본다.
+        /// </summary>
+        private bool IsInsideHitShape(Vector2 offset, Vector2 dir, float radius, float halfArcDegrees, float nearHalf, float farHalf, float pad)
+        {
+            if (!UsesTrapezoid)
+            {
+                // 예전 그대로: 원(OverlapCircle)에 걸린 대상 중 각도 안.
+                return offset.sqrMagnitude <= 0.0001f || Vector2.Angle(dir, offset) <= halfArcDegrees;
+            }
+            float forward = Vector2.Dot(offset, dir);
+            if (forward < -0.1f - pad || forward > radius + pad)
+            {
+                return false;
+            }
+            float t = radius > 0.0001f ? Mathf.Clamp01(forward / radius) : 1f;
+            float lateral = Mathf.Abs(dir.x * offset.y - dir.y * offset.x);
+            return lateral <= Mathf.Lerp(nearHalf, farHalf, t) + pad;
+        }
+
         /// <summary>마지막 판정 방향(연속 공격 · 연속 베기는 처음 방향 그대로). 이펙트가 읽는다.</summary>
         public Vector2 LastResolvedDirection { get; private set; }
 
@@ -372,7 +411,11 @@ namespace CheonMyeong.Player
             // 이 반경이 attackRange보다 실질적으로 더 커지지 않도록(=사거리 롤백이
             // 무의미해지지 않도록) 함.
             float hitRadius = HitRadius;
-            int hitCount = Physics2D.OverlapCircle(origin, hitRadius, contactFilter, hitBuffer);
+            float nearHalf = NearHalfWidth;
+            float farHalf = FarHalfWidth;
+            // 사다리꼴 끝 모서리까지 들어오도록 조금 넓게 모은 뒤 모양으로 거른다.
+            float queryRadius = UsesTrapezoid ? Mathf.Sqrt(hitRadius * hitRadius + farHalf * farHalf) + MaxTargetPad : hitRadius;
+            int hitCount = Physics2D.OverlapCircle(origin, queryRadius, contactFilter, hitBuffer);
 
             // 조준 방향을 중심으로 한 부채꼴(attackArcDegrees)만 실제 피해 판정에 포함한다
             // (기획 지시: "공격 폭이 너무 넓다, 지금 거의 180도인데 반으로 줄이자").
@@ -393,13 +436,27 @@ namespace CheonMyeong.Player
                     continue; // 261101 - 차원 안/밖이 다르면 못 때린다
                 }
 
+                Vector2 toTarget = (Vector2)hitBuffer[i].transform.position - origin;
                 if (hasAimDir)
                 {
-                    Vector2 toTarget = (Vector2)hitBuffer[i].transform.position - origin;
-                    if (toTarget.sqrMagnitude > 0.0001f && Vector2.Angle(aimDir, toTarget) > halfArcDegrees)
+                    Vector2 dir = aimDir.normalized;
+                    Vector3 extents = hitBuffer[i].bounds.extents;
+                    float pad = Mathf.Min(MaxTargetPad, Mathf.Min(extents.x, extents.y));
+                    // 몸 중심(+몸 크기) 또는 판정 가운데에서 가장 가까운 콜라이더 지점이 들어오면 맞음 - 억쇠처럼 큰 대상도 걸치면 맞는다.
+                    bool inside = IsInsideHitShape(toTarget, dir, hitRadius, halfArcDegrees, nearHalf, farHalf, pad);
+                    if (!inside && UsesTrapezoid)
                     {
-                        continue; // 사거리 안이어도 부채꼴 밖이면 미스
+                        Vector2 closest = hitBuffer[i].ClosestPoint(origin + dir * (hitRadius * 0.5f));
+                        inside = IsInsideHitShape(closest - origin, dir, hitRadius, halfArcDegrees, nearHalf, farHalf, 0f);
                     }
+                    if (!inside)
+                    {
+                        continue; // 사거리 안이어도 판정 모양(사다리꼴) 밖이면 미스
+                    }
+                }
+                else if (UsesTrapezoid && toTarget.magnitude > hitRadius + MaxTargetPad)
+                {
+                    continue; // 조준 정보가 없으면 원 안만(예전과 같음)
                 }
 
                 if (hitBuffer[i].TryGetComponent(out IDamageable damageable))
@@ -466,14 +523,28 @@ namespace CheonMyeong.Player
             }
             aimDir.Normalize();
 
-            float halfArc = ArcDegrees * 0.5f;
-            Vector2 leftEdge = Quaternion.Euler(0f, 0f, halfArc) * aimDir;
-            Vector2 rightEdge = Quaternion.Euler(0f, 0f, -halfArc) * aimDir;
-
-            float arcLineLength = HitRadius; // 실제 타격 판정 반경과 맞춤
             Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(origin, origin + leftEdge * arcLineLength);
-            Gizmos.DrawLine(origin, origin + rightEdge * arcLineLength);
+            if (UsesTrapezoid)
+            {
+                // 261105 - 실제 판정 사다리꼴.
+                Vector2 side = new Vector2(-aimDir.y, aimDir.x);
+                Vector2 nearL = origin + side * NearHalfWidth;
+                Vector2 nearR = origin - side * NearHalfWidth;
+                Vector2 farL = origin + aimDir * HitRadius + side * FarHalfWidth;
+                Vector2 farR = origin + aimDir * HitRadius - side * FarHalfWidth;
+                Gizmos.DrawLine(nearL, farL);
+                Gizmos.DrawLine(nearR, farR);
+                Gizmos.DrawLine(farL, farR);
+                Gizmos.DrawLine(nearL, nearR);
+            }
+            else
+            {
+                float halfArc = ArcDegrees * 0.5f;
+                Vector2 leftEdge = Quaternion.Euler(0f, 0f, halfArc) * aimDir;
+                Vector2 rightEdge = Quaternion.Euler(0f, 0f, -halfArc) * aimDir;
+                Gizmos.DrawLine(origin, origin + leftEdge * HitRadius);
+                Gizmos.DrawLine(origin, origin + rightEdge * HitRadius);
+            }
         }
     }
 }

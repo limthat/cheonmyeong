@@ -55,9 +55,17 @@ namespace CheonMyeong.Combat
         public static void FitSlash(Rect visible, Vector2 origin, Vector2 direction, float radius, float arcDegrees, bool flipY,
                                     out Vector2 center, out float angleDegrees, out Vector2 scale)
         {
-            angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 180f;
             float chord = arcDegrees >= 180f ? radius * 2f : radius * 2f * Mathf.Sin(arcDegrees * 0.5f * Mathf.Deg2Rad);
-            float scaleY = visible.height > 0.0001f ? chord / visible.height : 1f;
+            FitSlashWidth(visible, origin, direction, radius, chord, flipY, out center, out angleDegrees, out scale);
+        }
+
+        /// <summary>261105 - 앞쪽 길이(length) · 옆 폭(width)을 직접 주는 버전(사다리꼴 판정의 먼 쪽 폭에 맞출 때).</summary>
+        public static void FitSlashWidth(Rect visible, Vector2 origin, Vector2 direction, float length, float width, bool flipY,
+                                         out Vector2 center, out float angleDegrees, out Vector2 scale)
+        {
+            float radius = length;
+            angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 180f;
+            float scaleY = visible.height > 0.0001f ? width / visible.height : 1f;
             float scaleX = visible.width > 0.0001f ? radius / visible.width : scaleY;
             scale = new Vector2(scaleX, scaleY);
             float forwardExtent = -visible.xMin * scaleX;

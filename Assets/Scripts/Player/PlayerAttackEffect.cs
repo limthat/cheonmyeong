@@ -134,8 +134,9 @@ namespace CheonMyeong.Player
             if (visibleBounds.width > 0.0001f && visibleBounds.height > 0.0001f)
             {
                 // 261102 - 실제 판정 부채꼴에 맞춤(예섭): 앞뒤(가로) = 캐릭터 위치 ~ 판정 반경, 옆(세로) = 부채꼴 현(attackArcDegrees).
-                SpriteVisibleBounds.FitSlash(visibleBounds, Vector2.zero, aimDir, hitRadius, autoAttack.ArcDegrees, flip,
-                                             out Vector2 center, out float fitAngle, out Vector2 fitScale);
+                // 261105 - 판정이 사다리꼴이라 옆 폭은 끝 쪽 폭(HitWidth)에 맞춘다.
+                SpriteVisibleBounds.FitSlashWidth(visibleBounds, Vector2.zero, aimDir, hitRadius, autoAttack.HitWidth, flip,
+                                                  out Vector2 center, out float fitAngle, out Vector2 fitScale);
                 Vector3 parentScale = transform.lossyScale;
                 float parentScaleX = Mathf.Abs(parentScale.x) > 0.0001f ? Mathf.Abs(parentScale.x) : 1f;
                 effectTransform.localPosition = center / parentScaleX;

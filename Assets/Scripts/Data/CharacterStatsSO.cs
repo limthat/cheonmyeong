@@ -60,6 +60,10 @@ namespace CheonMyeong.Data
                  "거의 180도인데 반으로 줄이자\")에 따라 90도를 기본값으로 새로 설정함.")]
         public float attackArcDegrees = 90f;
 
+        [Tooltip("261105 - 공격 판정 사다리꼴의 캐릭터 쪽 폭(유닛, 전체 폭). 0이면 예전 부채꼴과 같은 뾰족한 모양.\n" +
+                 "앞으로 갈수록 attackArcDegrees 각도로 넓어진다 - 초근접에서도 좌우가 비지 않게.")]
+        [Min(0f)] public float attackNearWidth = 0.8f;
+
         [Header("자동줍기 (Magnet, 261013 추가 / 261027 기본값 0 - 예섭: \"처음엔 직접 닿아야 습득\")")]
         [Tooltip("드랍 아이템(골드/경험치)이 자동으로 끌려오기 시작하는 반경(유닛) - 공식\n" +
                  "스탯 시트의 Magnet 컬럼에 해당하는 자리. 정확한 수치는 밸런스 미정이라\n" +
