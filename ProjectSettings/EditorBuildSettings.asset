@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Gameplay_DalbamPyejangteo.unity
     guid: 7e7fe87beb28a9846941a544606910f4
+  - enabled: 1
+    path: Assets/Scenes/Jiwon/Test_Art_SampleScene.unity
+    guid: 497eb3393cf8411bbb25db7f39416b22
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
