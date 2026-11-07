@@ -11,6 +11,7 @@ Library: C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_b
 --linker-options=PdbAltPath="CM_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\USER\Desktop\PRG\CM\Temp\Burst
+--debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.3.17f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
 --decode-folder=C:\Users\USER\Desktop\PRG\CM\Library\Burst
 --output=C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_burst_generated
@@ -128,6 +129,7 @@ Library: C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_b
 --linker-options=PdbAltPath="CM_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\USER\Desktop\PRG\CM\Temp\Burst
+--debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.3.17f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
 --decode-folder=C:\Users\USER\Desktop\PRG\CM\Library\Burst
 --output=C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_burst_generated
@@ -245,6 +247,7 @@ Library: C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_b
 --linker-options=PdbAltPath="CM_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\USER\Desktop\PRG\CM\Temp\Burst
+--debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.3.17f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
 --decode-folder=C:\Users\USER\Desktop\PRG\CM\Library\Burst
 --output=C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_burst_generated
@@ -343,6 +346,7 @@ Library: C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_b
 --linker-options=PdbAltPath="CM_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\USER\Desktop\PRG\CM\Temp\Burst
+--debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.3.17f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
 --decode-folder=C:\Users\USER\Desktop\PRG\CM\Library\Burst
 --output=C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_burst_generated
@@ -443,6 +447,7 @@ Library: C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_b
 --linker-options=PdbAltPath="CM_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\USER\Desktop\PRG\CM\Temp\Burst
+--debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.3.17f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
 --decode-folder=C:\Users\USER\Desktop\PRG\CM\Library\Burst
 --output=C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_burst_generated
@@ -464,6 +469,7 @@ Library: C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_b
 --linker-options=PdbAltPath="CM_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\USER\Desktop\PRG\CM\Temp\Burst
+--debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.3.17f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
 --decode-folder=C:\Users\USER\Desktop\PRG\CM\Library\Burst
 --output=C:\Users\USER\Desktop\PRG\CM\Temp\BurstOutput\Data\Plugins\x86_64\lib_burst_generated
