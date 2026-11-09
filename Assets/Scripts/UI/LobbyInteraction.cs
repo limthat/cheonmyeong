@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,6 +27,35 @@ namespace CheonMyeong.UI
         private LobbyBuilding nearest;
         private int lastAvatarSiblingIndex = -1;
 
+        // 261109 - 앞뒤 정렬 대상: 캐릭터와 같은 부모 아래의 모든 건물(아트가 추가한 출진문처럼 상호작용 목록에 없는 것 포함),
+        // 멀리(기준선이 위) → 가까이 순.
+        private readonly List<LobbyBuilding> occluders = new List<LobbyBuilding>();
+        private bool occludersReady;
+
+        private void OnEnable()
+        {
+            occludersReady = false;
+        }
+
+        private void CollectOccluders()
+        {
+            occludersReady = true;
+            occluders.Clear();
+            if (avatar == null || avatar.transform.parent == null)
+            {
+                return;
+            }
+            Transform parent = avatar.transform.parent;
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                if (parent.GetChild(i).TryGetComponent(out LobbyBuilding building))
+                {
+                    occluders.Add(building);
+                }
+            }
+            occluders.Sort((a, b) => b.DepthLineY.CompareTo(a.DepthLineY));
+        }
+
         private void OnDisable()
         {
             SetNearest(null);
@@ -39,6 +69,10 @@ namespace CheonMyeong.UI
                 return;
             }
 
+            if (!occludersReady)
+            {
+                CollectOccluders();
+            }
             Vector2 foot = avatar.FootPosition;
             SetNearest(FindNearest(foot));
             UpdateDepth(foot);
@@ -92,10 +126,10 @@ namespace CheonMyeong.UI
         private void UpdateDepth(Vector2 foot)
         {
             int index = -1;
-            for (int i = 0; i < buildings.Length; i++)
+            for (int i = 0; i < occluders.Count; i++)
             {
-                LobbyBuilding building = buildings[i];
-                if (building != null && building.EntrancePosition.y < foot.y)
+                LobbyBuilding building = occluders[i];
+                if (building != null && building.DepthLineY < foot.y)
                 {
                     index = building.transform.GetSiblingIndex();
                     break;

@@ -47,6 +47,14 @@ namespace CheonMyeong.UI
         [Tooltip("캐릭터 스탯이 연결 안 됐을 때의 이동 속도(유닛/초) - 기획서 하영 기준 300(=5).")]
         [SerializeField] private float fallbackMoveSpeed = 5f;
 
+        [Header("261109 - 박석 마당 경계 (배경 그림 기준, 화면 비율 0~1 · 위에서부터)")]
+        [Tooltip("켜면 발밑이 양옆 회랑(기둥 줄) 쪽으로 넘어가지 않는다 - 배경(background-Sheet)의 기둥보다 캐릭터가 앞에 그려지는 문제 방지.")]
+        [SerializeField] private bool clampToPlaza = true;
+        [SerializeField] private Vector2 plazaLeftTop = new Vector2(0.181f, 0.521f);
+        [SerializeField] private Vector2 plazaLeftBottom = new Vector2(0f, 0.833f);
+        [SerializeField] private Vector2 plazaRightTop = new Vector2(0.841f, 0.528f);
+        [SerializeField] private Vector2 plazaRightBottom = new Vector2(0.977f, 0.833f);
+
         private RectTransform rectTransform;
         private Image image;
         private RectTransform imageTransform;
@@ -171,9 +179,41 @@ namespace CheonMyeong.UI
             Rect local = walkArea.rect;
             Vector2 offset = walkArea.localPosition;
             float halfWidth = rectTransform.sizeDelta.x * 0.25f;
-            return new Vector2(
+            var clamped = new Vector2(
                 Mathf.Clamp(position.x, offset.x + local.xMin + halfWidth, offset.x + local.xMax - halfWidth),
                 Mathf.Clamp(position.y, offset.y + local.yMin, offset.y + local.yMax));
+            return clampToPlaza ? ClampToPlaza(clamped, halfWidth) : clamped;
+        }
+
+        /// <summary>261109 - 배경의 박석 마당(사다리꼴) 안으로 발밑을 넣는다. 양옆 사선 경계 = 회랑 끝.</summary>
+        private Vector2 ClampToPlaza(Vector2 foot, float halfWidth)
+        {
+            if (!(rectTransform.parent is RectTransform parent))
+            {
+                return foot;
+            }
+            Rect area = parent.rect;
+            if (area.width <= 0f || area.height <= 0f)
+            {
+                return foot;
+            }
+            float v = (area.yMax - foot.y) / area.height;
+            float left = area.xMin + area.width * EdgeU(plazaLeftTop, plazaLeftBottom, v) + halfWidth;
+            float right = area.xMin + area.width * EdgeU(plazaRightTop, plazaRightBottom, v) - halfWidth;
+            if (left > right)
+            {
+                foot.x = (left + right) * 0.5f;
+                return foot;
+            }
+            foot.x = Mathf.Clamp(foot.x, left, right);
+            return foot;
+        }
+
+        private static float EdgeU(Vector2 top, Vector2 bottom, float v)
+        {
+            float span = bottom.y - top.y;
+            float t = Mathf.Abs(span) > 0.0001f ? (v - top.y) / span : 0f;
+            return Mathf.LerpUnclamped(top.x, bottom.x, t);
         }
 
         private float ResolveCanvasUnitsPerWorldUnit()

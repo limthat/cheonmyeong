@@ -243,6 +243,70 @@ namespace CheonMyeong.Progression
             return true;
         }
 
+        /// <summary>
+        /// 261109 - 서버 전용. 리롤권 1장으로 index번 카드 한 장만 다시 뽑는다(지금 나와 있는 카드와 겹치지 않게).
+        /// 바꿀 후보가 없으면 리롤권을 쓰지 않고 false.
+        /// </summary>
+        public bool ServerTryRerollCard(int index)
+        {
+            if (!IsServer || hasPicked.Value || rerollTickets.Value <= 0 || index < 0 || index >= augmentOffers.Count)
+            {
+                return false;
+            }
+            bool allMaxed = ServerBuildCandidates();
+            for (int i = 0; i < augmentOffers.Count; i++)
+            {
+                RemoveById(CandidateBuffer, augmentOffers[i].Id);
+                RemoveById(OneTimeBuffer, augmentOffers[i].Id);
+                RemoveById(InfiniteBuffer, augmentOffers[i].Id);
+            }
+            AugmentOffer replacement;
+            if (allMaxed)
+            {
+                bool wantInfinite = UnityEngine.Random.value < Catalog.infiniteShareWhenMaxed;
+                if (!TryTakeRandom(wantInfinite ? InfiniteBuffer : OneTimeBuffer, out replacement)
+                    && !TryTakeRandom(wantInfinite ? OneTimeBuffer : InfiniteBuffer, out replacement))
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                CandidateBuffer.AddRange(OneTimeBuffer);
+                if (!TryTakeRandom(CandidateBuffer, out replacement))
+                {
+                    return false;
+                }
+            }
+            rerollTickets.Value--;
+            augmentOffers[index] = replacement;
+            return true;
+        }
+
+        private static void RemoveById(List<AugmentOffer> list, byte id)
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                if (list[i].Id == id)
+                {
+                    list.RemoveAt(i);
+                }
+            }
+        }
+
+        private static bool TryTakeRandom(List<AugmentOffer> source, out AugmentOffer offer)
+        {
+            if (source.Count == 0)
+            {
+                offer = default;
+                return false;
+            }
+            int index = UnityEngine.Random.Range(0, source.Count);
+            offer = source[index];
+            source.RemoveAt(index);
+            return true;
+        }
+
         /// <summary>서버 전용 - index번 카드를 고른다. 이미 골랐거나 범위 밖이면 false.</summary>
         public bool ServerPick(int index)
         {
@@ -390,6 +454,38 @@ namespace CheonMyeong.Progression
         private void ServerRollOffers()
         {
             AugmentCatalogSO catalog = Catalog;
+            bool allMaxed = ServerBuildCandidates();
+
+            augmentOffers.Clear();
+            int cards = Mathf.Max(1, catalog.cardsPerChoice);
+            if (allMaxed)
+            {
+                for (int c = 0; c < cards; c++)
+                {
+                    bool wantInfinite = UnityEngine.Random.value < catalog.infiniteShareWhenMaxed;
+                    if (!TakeRandomInto(wantInfinite ? InfiniteBuffer : OneTimeBuffer))
+                    {
+                        TakeRandomInto(wantInfinite ? OneTimeBuffer : InfiniteBuffer);
+                    }
+                }
+                return;
+            }
+
+            // 칸이 차기 전에도, 찬 뒤에도 일회용은 같이 섞여 나온다.
+            CandidateBuffer.AddRange(OneTimeBuffer);
+            OneTimeBuffer.Clear();
+            for (int c = 0; c < cards; c++)
+            {
+                TakeRandomInto(CandidateBuffer);
+            }
+        }
+
+        /// <summary>
+        /// 카드 후보를 종류별 버퍼(CandidateBuffer · OneTimeBuffer · InfiniteBuffer)에 채운다. 6칸 전부 5단계면 true.
+        /// </summary>
+        private bool ServerBuildCandidates()
+        {
+            AugmentCatalogSO catalog = Catalog;
             CharacterStatsSO stats = playerHealth != null ? playerHealth.Stats : null;
             bool isRanged = stats != null && stats.isRanged;
             string characterId = stats != null ? stats.characterId : null;
@@ -446,29 +542,7 @@ namespace CheonMyeong.Progression
                     }
                 }
             }
-
-            augmentOffers.Clear();
-            int cards = Mathf.Max(1, catalog.cardsPerChoice);
-            if (allMaxed)
-            {
-                for (int c = 0; c < cards; c++)
-                {
-                    bool wantInfinite = UnityEngine.Random.value < catalog.infiniteShareWhenMaxed;
-                    if (!TakeRandomInto(wantInfinite ? InfiniteBuffer : OneTimeBuffer))
-                    {
-                        TakeRandomInto(wantInfinite ? OneTimeBuffer : InfiniteBuffer);
-                    }
-                }
-                return;
-            }
-
-            // 칸이 차기 전에도, 찬 뒤에도 일회용은 같이 섞여 나온다.
-            CandidateBuffer.AddRange(OneTimeBuffer);
-            OneTimeBuffer.Clear();
-            for (int c = 0; c < cards; c++)
-            {
-                TakeRandomInto(CandidateBuffer);
-            }
+            return allMaxed;
         }
 
         /// <summary>목록에서 하나를 무작위로 꺼내(목록에서 빠짐) 카드로 넣는다. 비었으면 false.</summary>

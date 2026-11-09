@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CheonMyeong.Progression;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,12 +8,14 @@ namespace CheonMyeong.UI.Screens
 {
     /// <summary>
     /// UPGRADE(신통력 고르기) 화면 - 레벨업 시 뜨는 오버레이.
-    /// 261104 수정 - 기획서 v0.9.4 07장 신통력 연결:
-    /// - 카드 3장은 서버가 뽑은 내 카드(PlayerProgress.GetOffer)를 보여준다.
-    /// - 카드를 고르고 "준비 완료"를 누르면 PartyProgress.PickAugmentRpc로 서버에 알린다. 고르는 순간 적용된다.
-    /// - 둘 다 고르면(또는 10초가 지나면 무작위로) 서버가 재개하고, isPaused가 풀리면 이 화면이 닫힌다.
-    /// - 리롤권이 있으면 "다시 뽑기"로 내 카드 3장을 새로 뽑는다.
-    /// 와이어프레임 UI는 아트가 잡는 중이라 프리팹 구조는 건드리지 않고, 리롤 버튼이 없으면 실행 중에만 만든다.
+    /// 261104 - 기획서 v0.9.4 07장 신통력 연결(서버가 뽑은 내 카드 3장, 준비 완료 → PickAugmentRpc, 10초, 리롤권).
+    /// 261109 - 아트 카드 디자인([아트] 천명_UI_에셋 · Test_Art_SampleScene) 연결. 카드 안 이름으로 찾는다:
+    /// - NameText: [분류] 이름 / DescText: 설명 / Star_0~4: 단계 별(채운 별 = 고르면 될 단계, 일회용 · 무한은 숨김)
+    /// - Icon: 신통력 아이콘 - 아이콘 시트가 v0.9.6 신통력(새 이름 · Code) 기준이라 지금 카탈로그와 짝이 없어 숨긴다.
+    /// - RerollButton: 그 카드 한 장만 리롤권 1장으로 다시 뽑는다(아트 디자인이 카드마다 버튼).
+    /// 카드 배경이 아트 그림이라 선택 표시는 색을 어둡게 칠하지 않고, 고른 카드를 살짝 키우고 나머지를 흐리게 한다.
+    /// 261109 - 리롤권이 없으면(기본 0장, 5웨이브 억쇠 격퇴 때 +1) 카드 리롤 버튼을 확실히 어둡게 하고, 버튼 구석에 남은 장수(×N)를 띄운다.
+    /// 아트 구조가 없는 예전 와이어프레임이면 예전처럼 첫 글자칸에 전부 쓰고, 리롤은 3장 전부 다시 뽑는다.
     /// </summary>
     public class UpgradeScreen : MonoBehaviour
     {
@@ -20,28 +23,42 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private Transform cardsContainer;
         [SerializeField] private Button readyButton;
 
-        [Tooltip("비워두면 자식 중 \"RerollButton\"을 찾고, 없으면 RerollCountText를 버튼으로 쓴다. 둘 다 없을 때만 실행 중에 만든다.")]
+        [Tooltip("카드 밖 리롤 버튼(전부 다시 뽑기). 비워두면 카드 밖에서 \"RerollButton\"을 찾는다. 카드마다 리롤 버튼이 있으면 쓰지 않는다.")]
         [SerializeField] private Button rerollButton;
 
-        [Tooltip("비워두면 자식 중 \"RerollCountText\"를 찾는다(없어도 됨 - 리롤 버튼 라벨에 같이 표시).")]
+        [Tooltip("비워두면 자식 중 \"RerollCountText\"를 찾는다.")]
         [SerializeField] private Text rerollCountText;
-
-        private static readonly Color CardNormalColor = new Color(0.14f, 0.14f, 0.18f, 0.95f);
-        private static readonly Color CardSelectedColor = new Color(0.46f, 0.37f, 0.15f, 0.95f);
 
         private const string TitleLabel = "레벨업! 신통력을 고르세요";
         private const string ReadyButtonDefaultLabel = "✓ 준비 완료";
         private const string ReadyButtonWaitingLabel = "대기 중... (동료를 기다리는 중)";
+        private const int StarCount = 5;
+        private const float SelectedScale = 1.04f;
+        private static readonly Color DimmedColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+        private static readonly Color RerollDisabledColor = new Color(0.35f, 0.35f, 0.38f, 1f);
 
-        private readonly List<Image> cardBackgrounds = new List<Image>();
-        private readonly List<Button> cardButtons = new List<Button>();
-        private readonly List<Text> cardTexts = new List<Text>();
+        private class CardView
+        {
+            public Transform Root;
+            public Button Button;
+            public Image Background;
+            public Color BackgroundColor;
+            public Text NameText;
+            public Text DescText;
+            public Image Icon;
+            public Image[] Stars;
+            public Button RerollButton;
+            public TMP_Text RerollCount;
+        }
+
+        private readonly List<CardView> cards = new List<CardView>();
+        private Sprite starFilled;
+        private Sprite starEmpty;
+        private bool perCardReroll;
 
         private int selectedCardIndex = -1;
         private Text readyButtonLabel;
-        private Text rerollButtonLabel;
 
-        // 바뀐 것만 다시 그리기 위한 캐시(매 프레임 문자열 할당 방지).
         private int shownRound = -1;
         private int shownOfferVersion = -1;
         private int shownSeconds = -1;
@@ -62,25 +79,7 @@ namespace CheonMyeong.UI.Screens
                 readyButton.onClick.AddListener(HandleReadyClicked);
             }
 
-            if (cardsContainer != null)
-            {
-                for (int i = 0; i < cardsContainer.childCount; i++)
-                {
-                    Transform cardTransform = cardsContainer.GetChild(i);
-                    Button cardButton = cardTransform.GetComponent<Button>();
-                    Image cardBackground = cardTransform.GetComponent<Image>();
-                    if (cardButton == null || cardBackground == null)
-                    {
-                        continue;
-                    }
-
-                    int capturedIndex = cardButtons.Count;
-                    cardButton.onClick.AddListener(() => HandleCardClicked(capturedIndex));
-                    cardButtons.Add(cardButton);
-                    cardBackgrounds.Add(cardBackground);
-                    cardTexts.Add(cardTransform.GetComponentInChildren<Text>(true));
-                }
-            }
+            BindCards();
 
             if (rerollCountText == null)
             {
@@ -90,30 +89,97 @@ namespace CheonMyeong.UI.Screens
                     found.TryGetComponent(out rerollCountText);
                 }
             }
-            if (rerollButton == null)
+            if (!perCardReroll)
             {
-                Transform found = FindDeep(transform, "RerollButton");
-                if (found != null)
+                if (rerollButton == null)
                 {
-                    found.TryGetComponent(out rerollButton);
+                    Transform found = FindDeepOutside(transform, "RerollButton", cardsContainer);
+                    if (found != null)
+                    {
+                        found.TryGetComponent(out rerollButton);
+                    }
+                }
+                if (rerollButton == null && rerollCountText != null)
+                {
+                    rerollButton = rerollCountText.gameObject.AddComponent<Button>();
+                    rerollButton.targetGraphic = rerollCountText;
+                    rerollCountText.raycastTarget = true;
+                }
+                if (rerollButton != null)
+                {
+                    rerollButton.onClick.AddListener(HandleRerollAllClicked);
                 }
             }
-            if (rerollButton == null && rerollCountText != null)
+        }
+
+        private void BindCards()
+        {
+            if (cardsContainer == null)
             {
-                // 261105 - 와이어프레임의 "리롤권×N" 글자를 그대로 눌러서 다시 뽑는다(새 버튼을 만들지 않음).
-                rerollButton = rerollCountText.gameObject.AddComponent<Button>();
-                rerollButton.targetGraphic = rerollCountText;
-                rerollCountText.raycastTarget = true;
+                return;
             }
-            if (rerollButton == null)
+            for (int i = 0; i < cardsContainer.childCount; i++)
             {
-                rerollButton = CreateRerollButton(transform);
-            }
-            if (rerollButton != null)
-            {
-                Text label = rerollButton.GetComponentInChildren<Text>();
-                rerollButtonLabel = label != rerollCountText ? label : null;
-                rerollButton.onClick.AddListener(HandleRerollClicked);
+                Transform root = cardsContainer.GetChild(i);
+                if (!root.TryGetComponent(out Button button) || !root.TryGetComponent(out Image background))
+                {
+                    continue;
+                }
+                var view = new CardView
+                {
+                    Root = root,
+                    Button = button,
+                    Background = background,
+                    BackgroundColor = background.color,
+                    NameText = FindComponent<Text>(root, "NameText"),
+                    DescText = FindComponent<Text>(root, "DescText"),
+                    Icon = FindComponent<Image>(root, "Icon"),
+                    RerollButton = FindComponent<Button>(root, "RerollButton")
+                };
+                if (view.NameText == null)
+                {
+                    view.NameText = root.GetComponentInChildren<Text>(true);
+                }
+                var stars = new Image[StarCount];
+                bool hasStars = true;
+                for (int s = 0; s < StarCount; s++)
+                {
+                    stars[s] = FindComponent<Image>(root, "Star_" + s);
+                    hasStars &= stars[s] != null;
+                }
+                if (hasStars)
+                {
+                    view.Stars = stars;
+                    // 아트 시안: 왼쪽 첫 별만 채운 1단계 모습 - 채운 별 · 빈 별 그림을 여기서 가져간다.
+                    if (starFilled == null && stars[0].sprite != null && stars[1].sprite != null)
+                    {
+                        starFilled = stars[0].sprite;
+                        starEmpty = stars[1].sprite;
+                    }
+                }
+                if (view.Icon != null)
+                {
+                    view.Icon.gameObject.SetActive(false);
+                }
+
+                int index = cards.Count;
+                button.onClick.AddListener(() => HandleCardClicked(index));
+                if (view.RerollButton != null)
+                {
+                    view.RerollButton.onClick.AddListener(() => HandleRerollCardClicked(index));
+                    ColorBlock colors = view.RerollButton.colors;
+                    colors.disabledColor = RerollDisabledColor;
+                    view.RerollButton.colors = colors;
+                    view.RerollCount = view.RerollButton.GetComponentInChildren<TMP_Text>(true);
+                    if (view.RerollCount != null)
+                    {
+                        view.RerollCount.alignment = TextAlignmentOptions.BottomRight;
+                        view.RerollCount.fontSize = 22f;
+                        view.RerollCount.margin = new Vector4(0f, 0f, 8f, 4f);
+                    }
+                    perCardReroll = true;
+                }
+                cards.Add(view);
             }
         }
 
@@ -125,13 +191,17 @@ namespace CheonMyeong.UI.Screens
             }
             if (rerollButton != null)
             {
-                rerollButton.onClick.RemoveListener(HandleRerollClicked);
+                rerollButton.onClick.RemoveListener(HandleRerollAllClicked);
             }
-            for (int i = 0; i < cardButtons.Count; i++)
+            for (int i = 0; i < cards.Count; i++)
             {
-                if (cardButtons[i] != null)
+                if (cards[i].Button != null)
                 {
-                    cardButtons[i].onClick.RemoveAllListeners();
+                    cards[i].Button.onClick.RemoveAllListeners();
+                }
+                if (cards[i].RerollButton != null)
+                {
+                    cards[i].RerollButton.onClick.RemoveAllListeners();
                 }
             }
         }
@@ -160,7 +230,6 @@ namespace CheonMyeong.UI.Screens
                 return;
             }
 
-            // 새 라운드(연속 레벨업) 또는 리롤로 카드가 바뀌면 선택을 풀고 다시 그린다.
             if (shownRound != party.ChoiceRound || shownOfferVersion != me.OfferVersion)
             {
                 shownRound = party.ChoiceRound;
@@ -182,22 +251,27 @@ namespace CheonMyeong.UI.Screens
             {
                 shownTickets = tickets;
                 shownPicked = picked;
-                string ticketLabel = tickets > 0 && !picked ? "↻ 리롤권×" + tickets : "리롤권×" + tickets;
+                bool canReroll = tickets > 0 && !picked;
                 if (rerollCountText != null)
                 {
-                    rerollCountText.text = ticketLabel;
-                }
-                if (rerollButtonLabel != null)
-                {
-                    rerollButtonLabel.text = "↻ 다시 뽑기 (" + tickets + ")";
+                    rerollCountText.text = !perCardReroll && canReroll ? "↻ 리롤권×" + tickets : "리롤권×" + tickets;
                 }
                 if (rerollButton != null)
                 {
-                    rerollButton.interactable = tickets > 0 && !picked;
+                    rerollButton.interactable = canReroll;
                 }
-                for (int i = 0; i < cardButtons.Count; i++)
+                for (int i = 0; i < cards.Count; i++)
                 {
-                    cardButtons[i].interactable = !picked && i < me.OfferCount;
+                    bool has = i < me.OfferCount;
+                    cards[i].Button.interactable = !picked && has;
+                    if (cards[i].RerollButton != null)
+                    {
+                        cards[i].RerollButton.interactable = canReroll && has;
+                    }
+                    if (cards[i].RerollCount != null)
+                    {
+                        cards[i].RerollCount.text = "×" + tickets;
+                    }
                 }
                 if (readyButton != null)
                 {
@@ -213,26 +287,31 @@ namespace CheonMyeong.UI.Screens
         private void FillCards(PlayerProgress me)
         {
             AugmentCatalogSO catalog = PlayerProgress.Catalog;
-            for (int i = 0; i < cardButtons.Count; i++)
+            for (int i = 0; i < cards.Count; i++)
             {
+                CardView card = cards[i];
                 bool has = i < me.OfferCount;
-                cardButtons[i].gameObject.SetActive(has);
-                cardButtons[i].interactable = has && !me.HasPicked;
-                if (!has || cardTexts[i] == null)
+                card.Root.gameObject.SetActive(has);
+                card.Button.interactable = has && !me.HasPicked;
+                if (has)
                 {
-                    continue;
+                    FillCard(card, catalog, me.GetOffer(i));
                 }
-                cardTexts[i].text = DescribeCard(catalog, me.GetOffer(i));
             }
         }
 
-        private static string DescribeCard(AugmentCatalogSO catalog, AugmentOffer offer)
+        private void FillCard(CardView card, AugmentCatalogSO catalog, AugmentOffer offer)
         {
             AugmentEntry entry = catalog.Find(offer.Augment);
             if (entry == null)
             {
-                return "?";
+                if (card.NameText != null)
+                {
+                    card.NameText.text = "?";
+                }
+                return;
             }
+
             string tag;
             switch (entry.kind)
             {
@@ -242,8 +321,33 @@ namespace CheonMyeong.UI.Screens
                 default: tag = "[공통]"; break;
             }
             bool leveled = entry.kind == AugmentKind.Common || entry.kind == AugmentKind.Exclusive;
-            string name = leveled ? entry.displayName + " Lv." + offer.Level : entry.displayName;
-            return tag + " " + name + "\n\n" + entry.Describe(offer.Level);
+            bool showStars = leveled && card.Stars != null && starFilled != null;
+
+            if (card.Stars != null)
+            {
+                for (int s = 0; s < card.Stars.Length; s++)
+                {
+                    card.Stars[s].gameObject.SetActive(showStars);
+                    if (showStars)
+                    {
+                        card.Stars[s].sprite = s < offer.Level ? starFilled : starEmpty;
+                    }
+                }
+            }
+
+            string name = leveled && !showStars ? entry.displayName + " Lv." + offer.Level : entry.displayName;
+            if (card.DescText != null)
+            {
+                if (card.NameText != null)
+                {
+                    card.NameText.text = tag + " " + name;
+                }
+                card.DescText.text = entry.Describe(offer.Level);
+            }
+            else if (card.NameText != null)
+            {
+                card.NameText.text = tag + " " + name + "\n\n" + entry.Describe(offer.Level);
+            }
         }
 
         private void HandleCardClicked(int index)
@@ -275,7 +379,15 @@ namespace CheonMyeong.UI.Screens
             }
         }
 
-        private void HandleRerollClicked()
+        private void HandleRerollCardClicked(int index)
+        {
+            if (PartyProgress.Instance != null)
+            {
+                PartyProgress.Instance.RerollAugmentCardRpc(index);
+            }
+        }
+
+        private void HandleRerollAllClicked()
         {
             if (PartyProgress.Instance != null)
             {
@@ -291,62 +403,52 @@ namespace CheonMyeong.UI.Screens
             {
                 readyButton.interactable = false;
             }
-            shownTickets = -1; // 버튼 상태를 다음 Refresh에서 다시 계산
+            shownTickets = -1;
         }
 
         private void RefreshCardHighlights()
         {
-            for (int i = 0; i < cardBackgrounds.Count; i++)
+            for (int i = 0; i < cards.Count; i++)
             {
-                cardBackgrounds[i].color = i == selectedCardIndex ? CardSelectedColor : CardNormalColor;
+                CardView card = cards[i];
+                bool selected = i == selectedCardIndex;
+                bool dimmed = selectedCardIndex >= 0 && !selected;
+                card.Background.color = dimmed ? card.BackgroundColor * DimmedColor : card.BackgroundColor;
+                card.Root.localScale = selected ? Vector3.one * SelectedScale : Vector3.one;
             }
+        }
+
+        private static T FindComponent<T>(Transform root, string childName) where T : Component
+        {
+            Transform found = FindDeep(root, childName);
+            return found != null && found.TryGetComponent(out T component) ? component : null;
         }
 
         private static Transform FindDeep(Transform root, string childName)
         {
+            return FindDeepOutside(root, childName, null);
+        }
+
+        private static Transform FindDeepOutside(Transform root, string childName, Transform skip)
+        {
             for (int i = 0; i < root.childCount; i++)
             {
                 Transform child = root.GetChild(i);
+                if (child == skip)
+                {
+                    continue;
+                }
                 if (child.name == childName)
                 {
                     return child;
                 }
-                Transform deeper = FindDeep(child, childName);
+                Transform deeper = FindDeepOutside(child, childName, skip);
                 if (deeper != null)
                 {
                     return deeper;
                 }
             }
             return null;
-        }
-
-        /// <summary>와이어프레임에 리롤 버튼이 없을 때만 - 화면 왼쪽 위에 임시 버튼(아트가 RerollButton을 넣으면 그걸 쓴다).</summary>
-        private static Button CreateRerollButton(Transform parent)
-        {
-            var go = new GameObject("RerollButton", typeof(RectTransform), typeof(Image), typeof(Button));
-            go.transform.SetParent(parent, false);
-            var rect = (RectTransform)go.transform;
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(16f, -56f);
-            rect.sizeDelta = new Vector2(180f, 40f);
-            go.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.26f, 0.95f);
-
-            var labelGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
-            labelGo.transform.SetParent(go.transform, false);
-            var labelRect = (RectTransform)labelGo.transform;
-            labelRect.anchorMin = Vector2.zero;
-            labelRect.anchorMax = Vector2.one;
-            labelRect.offsetMin = Vector2.zero;
-            labelRect.offsetMax = Vector2.zero;
-            var label = labelGo.GetComponent<Text>();
-            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            label.fontSize = 18;
-            label.alignment = TextAnchor.MiddleCenter;
-            label.color = Color.white;
-            label.text = "↻ 다시 뽑기";
-            return go.GetComponent<Button>();
         }
     }
 }

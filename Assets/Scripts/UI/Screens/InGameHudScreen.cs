@@ -56,7 +56,7 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private Image[] grudgeSegmentImages;
 
         private static readonly string[] GrudgeStageNames = { "맑음", "짙음", "한", "폭주" };
-        private const float GrudgeInactiveAlpha = 0.35f;
+        private const float GrudgeInactiveAlpha = 0.3f;
         private Color[] grudgeSegmentFullColors;
 
         // 체력은 전투 중 거의 매 프레임 바뀌지만, 안 바뀌는 프레임까지 매번 문자열 보간을
@@ -344,8 +344,8 @@ namespace CheonMyeong.UI.Screens
         }
 
         /// <summary>
-        /// grudgeSegmentImages 중 stage번째만 원래 색(Awake에서 캡처한 grudgeSegmentFullColors)
-        /// 그대로 두고, 나머지는 알파를 낮춰서 "지금 단계"를 한눈에 보이게 한다. 배열을 안
+        /// 261109 수정 - 지금 단계까지(맑음 → 짙음 → 한 → 폭주) 칸을 각 단계 색으로 채우고, 아직 안 온 단계는 흐리게 -
+        /// 원한이 차오르는 게 게이지처럼 보이게 한다. 배열을 안
         /// 채워뒀으면(에디터 연결 전) 그냥 조용히 생략 - 다른 Set 계열과 같은 null 안전 관례.
         /// </summary>
         private void RefreshGrudgeSegments(int stage)
@@ -363,7 +363,7 @@ namespace CheonMyeong.UI.Screens
                 }
 
                 Color fullColor = grudgeSegmentFullColors[i];
-                grudgeSegmentImages[i].color = i == stage
+                grudgeSegmentImages[i].color = i <= stage
                     ? fullColor
                     : new Color(fullColor.r, fullColor.g, fullColor.b, GrudgeInactiveAlpha);
             }

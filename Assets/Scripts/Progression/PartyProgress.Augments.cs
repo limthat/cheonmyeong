@@ -148,6 +148,21 @@ namespace CheonMyeong.Progression
             }
         }
 
+        /// <summary>261109 - 리롤권 1장으로 내 카드 한 장(cardIndex)만 다시 뽑는다(아트 카드 디자인: 카드마다 리롤 버튼).</summary>
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+        public void RerollAugmentCardRpc(int cardIndex, RpcParams rpcParams = default)
+        {
+            if (!choosing)
+            {
+                return;
+            }
+            PlayerProgress progress = ProgressOf(rpcParams.Receive.SenderClientId);
+            if (progress != null)
+            {
+                progress.ServerTryRerollCard(cardIndex);
+            }
+        }
+
         private void ServerCheckAllPicked()
         {
             foreach (NetworkClient client in NetworkManager.ConnectedClientsList)
