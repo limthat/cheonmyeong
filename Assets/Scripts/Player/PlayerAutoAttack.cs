@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CheonMyeong.Combat;
 using CheonMyeong.Data;
 using CheonMyeong.Enemies;
@@ -32,6 +33,10 @@ namespace CheonMyeong.Player
         private ContactFilter2D contactFilter;
 
         private float attackTimer;
+
+        // 261108 - 타격 연출(파티클 + 피해 숫자) 모음. 판정 한 번에 Rpc 한 번.
+        private static readonly List<HitFeedback> HitFeedbackBuffer = new List<HitFeedback>(MaxHitsPerAttack);
+        private SpriteRenderer feedbackMaterialSource;
 
         /// <summary>
         /// 261027 추가 - "증강 선택 후 공격/애니메이션에 딜레이가 생긴다"(예섭 지적) 원인
@@ -226,6 +231,7 @@ namespace CheonMyeong.Player
             attackTimer = AttackInterval;
             TryGetComponent(out movement); // 261101 - 제압(억쇠 배지기) 확인용
             TryGetComponent(out progress); // 261104 - 신통력
+            TryGetComponent(out feedbackMaterialSource); // 261108 - 타격 파티클 재질을 캐릭터 스프라이트와 같게
         }
 
         private PlayerMovement movement;
@@ -428,6 +434,7 @@ namespace CheonMyeong.Player
             AugmentModifiers mods = Mods;
             float baseDamage = stats.attackPower * (1f + mods.AttackBonus) * damageScale;
             float critChance = Mathf.Clamp01(stats.critChance + mods.CritChanceBonus);
+            HitFeedbackBuffer.Clear();
 
             for (int i = 0; i < hitCount; i++)
             {
@@ -466,8 +473,21 @@ namespace CheonMyeong.Player
                     bool wasAlive = enemy != null && !enemy.IsDying;
 
                     // 치명타는 맞은 대상마다 따로 굴린다.
-                    float damage = Random.value < critChance ? baseDamage * stats.critMultiplier : baseDamage;
+                    bool crit = Random.value < critChance;
+                    float damage = crit ? baseDamage * stats.critMultiplier : baseDamage;
+                    bool accepted = enemy == null || wasAlive; // 이미 쓰러지는 원귀는 피해를 무시하니 숫자도 안 띄운다
                     damageable.TakeDamage(damage);
+
+                    if (accepted && HitFeedbackBuffer.Count < MaxHitsPerAttack)
+                    {
+                        HitFeedbackBuffer.Add(new HitFeedback
+                        {
+                            Position = hitBuffer[i].bounds.center,
+                            Direction = hasAimDir ? aimDir.normalized : Vector2.zero,
+                            Damage = Mathf.Max(1, Mathf.RoundToInt(damage)),
+                            Crit = crit
+                        });
+                    }
 
                     if (wasAlive && enemy.IsDying && progress != null)
                     {
@@ -475,6 +495,19 @@ namespace CheonMyeong.Player
                     }
                 }
             }
+
+            if (HitFeedbackBuffer.Count > 0)
+            {
+                HitFeedbackRpc(HitFeedbackBuffer.ToArray());
+                HitFeedbackBuffer.Clear();
+            }
+        }
+
+        /// <summary>261108 - 서버(판정)만 호출. 모든 화면에서 맞은 자리에 파티클 + 피해 숫자.</summary>
+        [Rpc(SendTo.ClientsAndHost)]
+        private void HitFeedbackRpc(HitFeedback[] hits)
+        {
+            CombatFeedback.Play(hits, feedbackMaterialSource);
         }
 
         /// <summary>서버만 호출. ClientsAndHost로 보내서 호스트 자신을 포함해 접속한 모든
