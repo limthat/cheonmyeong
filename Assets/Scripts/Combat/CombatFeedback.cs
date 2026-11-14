@@ -12,12 +12,34 @@ namespace CheonMyeong.Combat
         public int Damage;
         public bool Crit;
 
+        /// <summary>
+        /// 261114 최적화 - 한 타격 21바이트 → 7바이트. 연출 전용 값이라 정밀도를 낮춰도 된다:
+        /// 위치 = half float(맵 범위 ±64칸에서 오차 0.03칸 이하), 방향 = 각도 1바이트(약 1.4도), 피해 = 15비트(최대 32,767) + 치명타 1비트.
+        /// </summary>
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref Position);
-            serializer.SerializeValue(ref Direction);
-            serializer.SerializeValue(ref Damage);
-            serializer.SerializeValue(ref Crit);
+            ushort x = 0, y = 0, packedDamage = 0;
+            byte angle = 0;
+            if (serializer.IsWriter)
+            {
+                x = Mathf.FloatToHalf(Position.x);
+                y = Mathf.FloatToHalf(Position.y);
+                float degrees = Direction.sqrMagnitude > 0.0001f ? Mathf.Atan2(Direction.y, Direction.x) * Mathf.Rad2Deg : 0f;
+                angle = (byte)(Mathf.RoundToInt(Mathf.Repeat(degrees, 360f) / 360f * 256f) & 0xFF);
+                packedDamage = (ushort)(Mathf.Clamp(Damage, 0, 0x7FFF) | (Crit ? 0x8000 : 0));
+            }
+            serializer.SerializeValue(ref x);
+            serializer.SerializeValue(ref y);
+            serializer.SerializeValue(ref angle);
+            serializer.SerializeValue(ref packedDamage);
+            if (serializer.IsReader)
+            {
+                Position = new Vector2(Mathf.HalfToFloat(x), Mathf.HalfToFloat(y));
+                float radians = angle / 256f * Mathf.PI * 2f;
+                Direction = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians));
+                Damage = packedDamage & 0x7FFF;
+                Crit = (packedDamage & 0x8000) != 0;
+            }
         }
     }
 
@@ -239,6 +261,21 @@ namespace CheonMyeong.Combat
             }
         }
 
+        // 261114 최적화 - 피해 숫자 문자열을 타격마다 새로 만들지 않고 0~999는 한 번 만든 걸 재사용한다(모든 화면에서 GC 감소).
+        private const int CachedDamageLabels = 1000;
+        private static readonly string[] NormalLabels = new string[CachedDamageLabels];
+        private static readonly string[] CritLabels = new string[CachedDamageLabels];
+
+        private static string DamageLabel(int damage, bool crit)
+        {
+            if (damage < 0 || damage >= CachedDamageLabels)
+            {
+                return crit ? damage + "!" : damage.ToString();
+            }
+            string[] table = crit ? CritLabels : NormalLabels;
+            return table[damage] ??= crit ? damage + "!" : damage.ToString();
+        }
+
         private void ShowNumber(HitFeedback hit)
         {
             if (hit.Damage <= 0)
@@ -246,7 +283,7 @@ namespace CheonMyeong.Combat
                 return;
             }
             Number number = active.Count >= MaxNumbers ? Recycle() : (pool.Count > 0 ? pool.Pop() : CreateNumber());
-            number.Text.text = hit.Crit ? hit.Damage + "!" : hit.Damage.ToString();
+            number.Text.text = DamageLabel(hit.Damage, hit.Crit);
             number.Color = hit.Crit ? CritColor : NormalColor;
             number.Text.color = number.Color;
             number.BaseScale = (hit.Crit ? CritNumberHeight : NumberHeight) / (FontSize * 0.1f);

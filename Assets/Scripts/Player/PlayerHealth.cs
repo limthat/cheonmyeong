@@ -38,6 +38,28 @@ namespace CheonMyeong.Player
 
         [SerializeField] private CharacterStatsSO stats;
 
+        /// <summary>261114 - 서버 전용. 받는 피해 배율(1 = 그대로). 패시브가 정한다.</summary>
+        public float DamageTakenScale { get; set; } = 1f;
+
+        /// <summary>261114 - 서버 전용. 피해가 들어가기 직전 - false를 돌려주면 막는다(호신부).</summary>
+        public System.Func<float, bool> ServerDamageFilter { get; set; }
+
+        /// <summary>261114 - 서버 전용. 실제로 피해를 받은 뒤(양).</summary>
+        public event System.Action<float> ServerDamaged;
+
+        /// <summary>
+        /// 261114 - PlayerCharacter가 캐릭터를 정할 때 부른다. 서버면 체력을 새 캐릭터 최대 체력으로 맞춘다
+        /// (판 시작 전 캐릭터가 정해지는 시점이라 가득 채움, 쓰러져 있으면 그대로).
+        /// </summary>
+        public void SetStats(CharacterStatsSO value)
+        {
+            stats = value;
+            if (IsServer && IsSpawned && !isDead.Value)
+            {
+                currentHealth.Value = MaxHealth;
+            }
+        }
+
         [Header("부활 (임시 구현 - 웨이브 시스템 붙으면 교체 예정)")]
         [Tooltip("사망 후 자동 부활까지 걸리는 시간(초). 기획은 \"다음 웨이브 시작 시 부활\"이지만\n" +
                  "웨이브 타이머 시스템이 아직 없어서 우선 고정 시간으로 임시 대체했다 - 웨이브\n" +
@@ -60,7 +82,7 @@ namespace CheonMyeong.Player
 
         public float CurrentHealth => currentHealth.Value;
         public float MaxHealth => stats != null
-            ? stats.maxHealth * (1f + (progress != null ? progress.Modifiers.MaxHealthBonus : 0f))
+            ? stats.maxHealth * Mathf.Max(0.1f, 1f + (progress != null ? progress.Modifiers.MaxHealthBonus : 0f) + ExtraMaxHealthBonus)
             : 1f;
 
         /// <summary>261104 - 이 캐릭터의 기준 스탯(신통력 카드 후보 판정에 쓴다).</summary>
@@ -151,9 +173,35 @@ namespace CheonMyeong.Player
         }
 
         /// <summary>261104 - 신통력 '체력 재생'(초당). 일시정지 중엔 멈춘다.</summary>
+        /// <summary>261114 - 신통력 외 최대 체력 증감(비율). 신내림 · 검기(-30%). 바꾸는 쪽이 ServerOnMaxHealthChanged를 부른다.</summary>
+        public float ExtraMaxHealthBonus
+        {
+            get => extraMaxHealthBonus.Value;
+            set
+            {
+                if (IsServer && !Mathf.Approximately(extraMaxHealthBonus.Value, value))
+                {
+                    extraMaxHealthBonus.Value = value; // 복제 - 클라이언트 체력 바의 최대값도 같아야 한다
+                }
+            }
+        }
+
+        private readonly NetworkVariable<float> extraMaxHealthBonus = new NetworkVariable<float>(
+            0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+        /// <summary>261114 - 신내림 체력 재생(최대 체력 %/초, 0.002 = 0.2%).</summary>
+        public float ExtraRegenPercent { get; set; }
+
+        /// <summary>261114 - 회복 배율(씻김: 체력 30% 이하일 때 2배).</summary>
+        public float HealingScale { get; set; } = 1f;
+
+        /// <summary>261114 - 서버 전용. 이 시각까지 피해를 받지 않는다(호신부 0.5초 · 구원의 창 2초).</summary>
+        public float ServerInvulnerableUntil { get; set; }
+
         private void ServerTickRegen()
         {
-            float perSecond = progress != null ? progress.Modifiers.RegenPerSecond : 0f;
+            float perSecond = (progress != null ? progress.Modifiers.RegenPerSecond : 0f) + MaxHealth * ExtraRegenPercent;
+            perSecond *= HealingScale;
             if (perSecond <= 0f || (PartyProgress.Instance != null && PartyProgress.Instance.IsPaused))
             {
                 return;
@@ -223,8 +271,20 @@ namespace CheonMyeong.Player
             {
                 return;
             }
-            currentHealth.Value = Mathf.Min(MaxHealth, currentHealth.Value + MaxHealth * ratio);
+            currentHealth.Value = Mathf.Min(MaxHealth, currentHealth.Value + MaxHealth * ratio * HealingScale);
         }
+
+        /// <summary>261114 - 서버 전용. 고정량 회복(씻김 · 넋 흡수 등).</summary>
+        public void ServerHealAmount(float amount)
+        {
+            if (!IsServer || isDead.Value || amount <= 0f)
+            {
+                return;
+            }
+            currentHealth.Value = Mathf.Min(MaxHealth, currentHealth.Value + amount * HealingScale);
+        }
+
+        public bool IsDeadServerSafe => isDead.Value;
 
         /// <summary>
         /// 261027 추가 - 서버 전용. 접속한 플레이어가 1명 이상이고 전원 쓰러졌으면 true
@@ -350,7 +410,23 @@ namespace CheonMyeong.Player
                 amount = Mathf.Max(Mathf.Min(1f, amount), amount - armor);
             }
 
+            if (Time.time < ServerInvulnerableUntil)
+            {
+                return;
+            }
+            // 261114 - 고유 패시브 · 신내림의 받는 피해 증감(서버가 매 프레임 정하는 배율). 호신부 등이 막으면 0.
+            amount *= Mathf.Max(0f, DamageTakenScale);
+            if (ServerDamageFilter != null && !ServerDamageFilter(amount))
+            {
+                return;
+            }
+            if (amount <= 0f)
+            {
+                return;
+            }
+
             currentHealth.Value -= amount;
+            ServerDamaged?.Invoke(amount);
 
             if (currentHealth.Value <= 0f)
             {

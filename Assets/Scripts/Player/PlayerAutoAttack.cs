@@ -111,7 +111,7 @@ namespace CheonMyeong.Player
         public Vector3 AimPosition => networkAimPosition.Value;
 
         /// <summary>261027 추가 - 공격 주기 중 실제 판정이 들어가는 지점 비율(PlayerAttackEffect가 이펙트 길이 계산에 씀).</summary>
-        public float HitDelayRatio => attackHitDelayRatio;
+        public float HitDelayRatio => stats != null ? stats.HitDelayRatio : attackHitDelayRatio;
 
         /// <summary>
         /// PlayerAnimator가 읽는 용도 - 공속(attacksPerSecond)이 바뀌어도 Attack
@@ -123,7 +123,7 @@ namespace CheonMyeong.Player
         /// </summary>
         public float AttackInterval =>
             stats != null && stats.attacksPerSecond > 0.0001f
-                ? 1f / (stats.attacksPerSecond * (1f + Mathf.Max(-0.9f, Mods.AttackSpeedBonus)))
+                ? 1f / (stats.attacksPerSecond * (1f + Mathf.Max(-0.9f, Mods.AttackSpeedBonus + ExtraAttackSpeed)))
                 : 1f;
 
         // =====================================================================
@@ -143,8 +143,8 @@ namespace CheonMyeong.Player
                 {
                     return 0f;
                 }
-                float range = stats.attackRange + (stats.isRanged ? 0f : Mods.MeleeRangeBonus);
-                return range * stats.attackAwarenessRangeMultiplier;
+                float range = stats.attackRange + (stats.isRanged || stats.IsProjectile ? 0f : Mods.MeleeRangeBonus) + RangeBonus;
+                return range * stats.attackAwarenessRangeMultiplier * (1f + AreaBonus);
             }
         }
 
@@ -231,6 +231,9 @@ namespace CheonMyeong.Player
             attackTimer = AttackInterval;
             TryGetComponent(out movement); // 261101 - 제압(억쇠 배지기) 확인용
             TryGetComponent(out progress); // 261104 - 신통력
+            TryGetComponent(out projectiles); // 261114 - 원거리 투사체
+            TryGetComponent(out kit); // 261114 - 캐릭터 고유 효과
+            RefreshCombatHooks();
             TryGetComponent(out feedbackMaterialSource); // 261108 - 타격 파티클 재질을 캐릭터 스프라이트와 같게
         }
 
@@ -342,7 +345,7 @@ namespace CheonMyeong.Player
             // 261014 추가 - 실제 타격 판정(ApplyHit)은 여기서 바로 하지 않고 attackHitDelayRatio만큼
             // 미뤄서 Update()가 나중에 실행하게 한다(위 pendingHitDelay 필드 설명 참고) - "판정이
             // 모션보다 먼저 온다" 버그 수정의 핵심.
-            pendingHitDelay = AttackInterval * attackHitDelayRatio;
+            pendingHitDelay = AttackInterval * HitDelayRatio;
         }
 
         /// <summary>
@@ -353,12 +356,23 @@ namespace CheonMyeong.Player
         /// </summary>
         private void ApplyHit()
         {
-            // 261014 추가 - 실제 판정이 일어나는 바로 이 순간을 디버그 시각화(AttackRangeDebugVisual)에
-            // 알린다. OnAttackTriggered(모션 트리거 시점)가 아니라 여기서 울려야 "빨간 원뿔이
-            // 뜨는 타이밍 = 실제 대미지가 들어가는 타이밍"이 맞아떨어진다. ApplyHit()은 서버에서만
-            // 실행되므로 Rpc로 ClientsAndHost(호스트 자신 포함 모든 접속 클라이언트)에 전파.
             Vector2 origin = transform.position;
             Vector2 aimDir = (Vector2)networkAimPosition.Value - origin;
+
+            // 261114 - 캐릭터 고유 공격 바꾸기(하영 검기 · 박규혁 당파 · 신지현 만월 · 심여레 회오리 등).
+            if (kit != null && kit.ServerTryOverrideAttack(aimDir))
+            {
+                return;
+            }
+
+            // 261114 - 원거리(투사체) 캐릭터는 발사 프레임에 투사체를 낸다. 판정은 PlayerProjectiles(서버).
+            if (stats.IsProjectile && projectiles != null)
+            {
+                AttackResolvedVisualRpc(aimDir);
+                projectiles.ServerFire(kit != null ? kit.ServerAdjustAim(aimDir) : aimDir);
+                return;
+            }
+
             ResolveHit(aimDir, 1f);
 
             // 261104 - 신통력: 연속 공격(같은 방향으로 n번 더) · 연속 베기(같은 방향으로 한 번 더, 피해 비율).
@@ -368,6 +382,10 @@ namespace CheonMyeong.Player
             extraSwingsRemaining = Mathf.Max(0, mods.ExtraSwings);
             extraSwingTimer = catalog.multiSwingInterval;
             followUpTimer = mods.FollowUpSlashRatio > 0f ? catalog.followUpSlashDelay : -1f;
+            if (kit != null)
+            {
+                kit.ServerAfterMeleeAttack(aimDir);
+            }
         }
 
         /// <summary>261104 - 서버 전용. 연속 공격 · 연속 베기 판정 예약을 처리한다.</summary>
@@ -397,111 +415,254 @@ namespace CheonMyeong.Player
             }
         }
 
+        private static readonly List<Collider2D> SingleTargetBuffer = new List<Collider2D>(MaxHitsPerAttack);
+
         /// <summary>
-        /// 261104 - 판정 한 번(기존 ApplyHit 본문). aimDir 방향 부채꼴 안 적에게 공격력 × 신통력 × damageScale(치명타 포함).
+        /// 근접 판정 한 번. aimDir 방향 판정 모양(베기 = 사다리꼴 부채꼴, 찌르기 = 좁고 긴 사다리꼴) 안 적에게 피해.
+        /// 261114 - 근접 단일(박규혁 · 임훈)은 가장 가까운 1마리 + 관통 수만큼만 맞는다.
         /// </summary>
         private void ResolveHit(Vector2 aimDir, float damageScale)
         {
             AttackResolvedVisualRpc(aimDir);
 
             Vector2 origin = transform.position;
-
-            // 버그 수정: 공격을 "시작"하는 판정(attackRange * attackAwarenessRangeMultiplier
-            // = 몬스터 인지거리)과 실제 "타격" 판정 반경이 서로 달랐었다 - 예전엔 여기서
-            // stats.attackRange(좁은 쪽)만 썼는데, 그러면 몬스터가 시작 판정엔 걸렸지만
-            // 아직 좁은 사거리까진 덜 들어온 타이밍에 스윙이 나가면 완전히 빗나가고,
-            // 계속 다가오던 몬스터가 다음 공속 주기(attackInterval)가 돼서야 진짜 사거리에
-            // 들어와 맞는 "스윙 이후 한 박자 늦게 피격되는" 증상이 생겼다. 공격을
-            // 시작하기로 한 판정 반경 그대로 실제 타격도 판정하도록 통일해서 해결.
-            // attackAwarenessRangeMultiplier 기본값을 attackRange와 동일한 1배로 둬서,
-            // 이 반경이 attackRange보다 실질적으로 더 커지지 않도록(=사거리 롤백이
-            // 무의미해지지 않도록) 함.
             float hitRadius = HitRadius;
             float nearHalf = NearHalfWidth;
             float farHalf = FarHalfWidth;
-            // 사다리꼴 끝 모서리까지 들어오도록 조금 넓게 모은 뒤 모양으로 거른다.
             float queryRadius = UsesTrapezoid ? Mathf.Sqrt(hitRadius * hitRadius + farHalf * farHalf) + MaxTargetPad : hitRadius;
             int hitCount = Physics2D.OverlapCircle(origin, queryRadius, contactFilter, hitBuffer);
 
-            // 조준 방향을 중심으로 한 부채꼴(attackArcDegrees)만 실제 피해 판정에 포함한다
-            // (기획 지시: "공격 폭이 너무 넓다, 지금 거의 180도인데 반으로 줄이자").
-            // 조준 정보가 아직 없으면(스폰 직후 한 프레임 등) 판정을 통째로 누락시키지
-            // 않기 위해 전방위로 취급한다.
             bool hasAimDir = aimDir.sqrMagnitude > 0.0001f;
+            Vector2 dir = hasAimDir ? aimDir.normalized : Vector2.zero;
             float halfArcDegrees = ArcDegrees * 0.5f;
-
-            // 261104 - 공격력 신통력(기준값 대비 %) · 치명타(확률 = 기본 + 신통력, 배율은 캐릭터 기본값).
-            AugmentModifiers mods = Mods;
-            float baseDamage = stats.attackPower * (1f + mods.AttackBonus) * damageScale;
-            float critChance = Mathf.Clamp01(stats.critChance + mods.CritChanceBonus);
             HitFeedbackBuffer.Clear();
+            SingleTargetBuffer.Clear();
 
             for (int i = 0; i < hitCount; i++)
             {
-                if (!Boss.DeathRealm.CanInteract(gameObject, hitBuffer[i].gameObject))
+                Collider2D col = hitBuffer[i];
+                if (!Boss.DeathRealm.CanInteract(gameObject, col.gameObject))
                 {
-                    continue; // 261101 - 차원 안/밖이 다르면 못 때린다
+                    continue;
                 }
-
-                Vector2 toTarget = (Vector2)hitBuffer[i].transform.position - origin;
+                Vector2 toTarget = (Vector2)col.transform.position - origin;
                 if (hasAimDir)
                 {
-                    Vector2 dir = aimDir.normalized;
-                    Vector3 extents = hitBuffer[i].bounds.extents;
+                    Vector3 extents = col.bounds.extents;
                     float pad = Mathf.Min(MaxTargetPad, Mathf.Min(extents.x, extents.y));
-                    // 몸 중심(+몸 크기) 또는 판정 가운데에서 가장 가까운 콜라이더 지점이 들어오면 맞음 - 억쇠처럼 큰 대상도 걸치면 맞는다.
                     bool inside = IsInsideHitShape(toTarget, dir, hitRadius, halfArcDegrees, nearHalf, farHalf, pad);
                     if (!inside && UsesTrapezoid)
                     {
-                        Vector2 closest = hitBuffer[i].ClosestPoint(origin + dir * (hitRadius * 0.5f));
+                        Vector2 closest = col.ClosestPoint(origin + dir * (hitRadius * 0.5f));
                         inside = IsInsideHitShape(closest - origin, dir, hitRadius, halfArcDegrees, nearHalf, farHalf, 0f);
                     }
                     if (!inside)
                     {
-                        continue; // 사거리 안이어도 판정 모양(사다리꼴) 밖이면 미스
+                        continue;
                     }
                 }
                 else if (UsesTrapezoid && toTarget.magnitude > hitRadius + MaxTargetPad)
                 {
-                    continue; // 조준 정보가 없으면 원 안만(예전과 같음)
+                    continue;
                 }
-
-                if (hitBuffer[i].TryGetComponent(out IDamageable damageable))
+                if (!col.TryGetComponent(out IDamageable _))
                 {
-                    // 261027 추가 - 결과 화면 처치 수. 이 타격 전엔 살아있었는데 타격 후 쓰러졌으면 내 처치.
-                    Enemy enemy = damageable as Enemy;
-                    bool wasAlive = enemy != null && !enemy.IsDying;
+                    continue;
+                }
+                SingleTargetBuffer.Add(col);
+            }
 
-                    // 치명타는 맞은 대상마다 따로 굴린다.
-                    bool crit = Random.value < critChance;
-                    float damage = crit ? baseDamage * stats.critMultiplier : baseDamage;
-                    bool accepted = enemy == null || wasAlive; // 이미 쓰러지는 원귀는 피해를 무시하니 숫자도 안 띄운다
-                    damageable.TakeDamage(damage);
-
-                    if (accepted && HitFeedbackBuffer.Count < MaxHitsPerAttack)
+            int limit = SingleTargetBuffer.Count;
+            if (stats.singleTarget && limit > 1)
+            {
+                // 가까운 순서로 정렬(삽입 정렬 - 후보가 적고 할당 없음).
+                for (int i = 1; i < SingleTargetBuffer.Count; i++)
+                {
+                    Collider2D key = SingleTargetBuffer[i];
+                    float keyDist = ((Vector2)key.transform.position - origin).sqrMagnitude;
+                    int j = i - 1;
+                    while (j >= 0 && ((Vector2)SingleTargetBuffer[j].transform.position - origin).sqrMagnitude > keyDist)
                     {
-                        HitFeedbackBuffer.Add(new HitFeedback
-                        {
-                            Position = hitBuffer[i].bounds.center,
-                            Direction = hasAimDir ? aimDir.normalized : Vector2.zero,
-                            Damage = Mathf.Max(1, Mathf.RoundToInt(damage)),
-                            Crit = crit
-                        });
+                        SingleTargetBuffer[j + 1] = SingleTargetBuffer[j];
+                        j--;
                     }
+                    SingleTargetBuffer[j + 1] = key;
+                }
+                limit = Mathf.Min(limit, 1 + Mathf.Max(0, stats.meleePierce + MeleePierceBonus));
+            }
 
-                    if (wasAlive && enemy.IsDying && progress != null)
-                    {
-                        progress.ServerAddKill();
-                    }
+            for (int i = 0; i < limit; i++)
+            {
+                ServerDamageTarget(SingleTargetBuffer[i], damageScale, dir, stats.knockback, false, HitFeedbackBuffer);
+            }
+            SingleTargetBuffer.Clear();
+            ServerFlushHitFeedback(HitFeedbackBuffer);
+        }
+
+        /// <summary>261114 - 근접 단일의 추가 관통(신내림 · 신통력이 더한다). 패시브/노드 구현 단계에서 채운다.</summary>
+        public int MeleePierceBonus { get; set; }
+
+        /// <summary>261114 - 근접 공격 범위 배율 추가(유격 "공격 범위 +10%").</summary>
+        public float AreaBonus { get; set; }
+
+        /// <summary>261114 - 서버 전용. 근접 판정을 원하는 방향 · 배율로 한 번 더(당파 옆 갈래 · 만월 · 일섬 등).</summary>
+        public void ServerResolveMelee(Vector2 aimDir, float damageScale) => ResolveHit(aimDir, damageScale);
+
+        /// <summary>261114 - 서버 전용. 360도 원 안 전부(만월 베기 · 산신 강림 등). knockback(칸) 있으면 바깥으로 민다.</summary>
+        public void ServerHitAround(float radius, float damageScale, float knockback)
+        {
+            Vector2 origin = transform.position;
+            int count = Physics2D.OverlapCircle(origin, radius, contactFilter, hitBuffer);
+            HitFeedbackBuffer.Clear();
+            for (int i = 0; i < count; i++)
+            {
+                Collider2D col = hitBuffer[i];
+                if (!Boss.DeathRealm.CanInteract(gameObject, col.gameObject))
+                {
+                    continue;
+                }
+                Vector2 away = (Vector2)col.transform.position - origin;
+                if (damageScale > 0f)
+                {
+                    ServerDamageTarget(col, damageScale, away.sqrMagnitude > 0.0001f ? away.normalized : Vector2.up, knockback, false, HitFeedbackBuffer);
+                }
+                else if (knockback > 0f && col.TryGetComponent(out Enemy enemy))
+                {
+                    enemy.ServerKnockback(away, knockback);
                 }
             }
-
-            if (HitFeedbackBuffer.Count > 0)
-            {
-                HitFeedbackRpc(HitFeedbackBuffer.ToArray());
-                HitFeedbackBuffer.Clear();
-            }
+            ServerFlushHitFeedback(HitFeedbackBuffer);
         }
+
+        /// <summary>261114 - 서버 전용. 원 안 원귀 목록을 버퍼에 담아 수를 돌려준다(패시브 · 도발용, 할당 없음).</summary>
+        public int ServerOverlapEnemies(Vector2 center, float radius, Collider2D[] results)
+        {
+            return Physics2D.OverlapCircle(center, radius, contactFilter, results);
+        }
+
+        /// <summary>261114 - 사거리 추가(칸). 각궁 · 신내림 유격 등.</summary>
+        public float RangeBonus { get; set; }
+
+        /// <summary>261114 - 신통력 외 공격 속도 추가(비율). 고유 패시브 · 신내림 · 말 위에서 등.</summary>
+        public float ExtraAttackSpeed { get; set; }
+
+        /// <summary>
+        /// 261114 - 서버 전용 피해 공통 처리(근접 · 투사체 둘 다). 공격력 × 신통력 × damageScale, 치명타, 넉백,
+        /// 캐릭터 고유 효과(IPlayerCombatHook: 고유 패시브 · 신내림 · 전용 신통력)를 여기 한 곳에서 거친다.
+        /// 맞았으면 true. feedback에 피해 숫자를 모은다(호출부가 ServerFlushHitFeedback으로 보낸다).
+        /// </summary>
+        public bool ServerDamageTarget(Collider2D col, float damageScale, Vector2 direction, float knockback, bool isProjectile,
+                                       List<HitFeedback> feedback)
+        {
+            if (!IsServer || col == null || stats == null || !col.TryGetComponent(out IDamageable damageable))
+            {
+                return false;
+            }
+            if (damageable is PlayerHealth)
+            {
+                return false; // 아군 피해 없음
+            }
+            Enemy enemy = damageable as Enemy;
+            bool wasAlive = enemy == null || !enemy.IsDying;
+            if (!wasAlive)
+            {
+                return false;
+            }
+
+            AugmentModifiers mods = Mods;
+            var hit = new OutgoingHit
+            {
+                Target = col,
+                Enemy = enemy,
+                Damage = stats.attackPower * (1f + mods.AttackBonus) * damageScale,
+                CritChance = Mathf.Clamp01(stats.critChance + mods.CritChanceBonus),
+                CritMultiplier = stats.critMultiplier,
+                Knockback = knockback,
+                Direction = direction,
+                Distance = Vector2.Distance(transform.position, col.transform.position),
+                IsProjectile = isProjectile,
+                ForceCrit = ForceNextCrit,
+                HitIndex = NextHitIndex,
+                Tag = NextHitTag,
+            };
+            for (int i = 0; i < combatHooks.Length; i++)
+            {
+                combatHooks[i].ModifyOutgoing(ref hit);
+            }
+            hit.Crit = hit.ForceCrit || Random.value < Mathf.Clamp01(hit.CritChance);
+            float damage = hit.Crit ? hit.Damage * hit.CritMultiplier : hit.Damage;
+            hit.FinalDamage = damage;
+            damageable.TakeDamage(damage);
+
+            if (enemy != null && hit.Knockback > 0f && !enemy.IsDying && direction.sqrMagnitude > 0.0001f)
+            {
+                enemy.ServerKnockback(direction, hit.Knockback);
+            }
+
+            if (feedback != null && feedback.Count < MaxHitsPerAttack)
+            {
+                feedback.Add(new HitFeedback
+                {
+                    Position = col.bounds.center,
+                    Direction = direction,
+                    Damage = Mathf.Max(1, Mathf.RoundToInt(damage)),
+                    Crit = hit.Crit
+                });
+            }
+
+            bool killed = enemy != null && enemy.IsDying;
+            if (killed && progress != null)
+            {
+                progress.ServerAddKill();
+            }
+            for (int i = 0; i < combatHooks.Length; i++)
+            {
+                combatHooks[i].OnHitLanded(in hit, killed);
+            }
+            return true;
+        }
+
+        /// <summary>261114 - 모은 피해 숫자를 모든 화면에 보내고 비운다.</summary>
+        public void ServerFlushHitFeedback(List<HitFeedback> feedback)
+        {
+            if (feedback == null || feedback.Count == 0)
+            {
+                return;
+            }
+            HitFeedbackRpc(feedback.ToArray());
+            feedback.Clear();
+        }
+
+        private IPlayerCombatHook[] combatHooks = System.Array.Empty<IPlayerCombatHook>();
+        private PlayerProjectiles projectiles;
+        private CharacterKit kit;
+
+        /// <summary>261114 - 고유 패시브 · 신내림 등 피해 계산에 끼는 컴포넌트를 다시 모은다(캐릭터가 정해질 때).</summary>
+        public void RefreshCombatHooks()
+        {
+            combatHooks = GetComponents<IPlayerCombatHook>();
+        }
+
+        /// <summary>261114 - PlayerCharacter가 캐릭터를 정할 때 부른다.</summary>
+        public void SetStats(CharacterStatsSO value)
+        {
+            stats = value;
+            attackTimer = AttackInterval;
+            pendingHitDelay = -1f;
+            ClearExtraHits();
+            RefreshCombatHooks();
+        }
+
+        public CharacterStatsSO Stats => stats;
+
+        public LayerMask EnemyLayer => enemyLayer;
+
+        /// <summary>261114 - 다음 ServerDamageTarget 한 번을 반드시 치명타로(돌아오는 신칼 5단계 등). 호출부가 바로 끈다.</summary>
+        public bool ForceNextCrit { get; set; }
+
+        /// <summary>261114 - 다음 ServerDamageTarget들에 붙는 순번 · 종류(투사체 · 전용 신통력이 정하고 끝나면 0으로).</summary>
+        public int NextHitIndex { get; set; }
+        public int NextHitTag { get; set; }
 
         /// <summary>261108 - 서버(판정)만 호출. 모든 화면에서 맞은 자리에 파티클 + 피해 숫자.</summary>
         [Rpc(SendTo.ClientsAndHost)]

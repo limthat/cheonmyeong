@@ -437,6 +437,12 @@ namespace CheonMyeong.UI.Screens
             }
         }
 
+        /// <summary>261114 - HUD 신통력 칸(AugmentHudView)도 같은 아이콘을 쓴다.</summary>
+        public Sprite GetIcon(AugmentId id)
+        {
+            return FindIcon(id);
+        }
+
         private Sprite FindIcon(AugmentId id)
         {
             for (int i = 0; i < augmentIcons.Length; i++)

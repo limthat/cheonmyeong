@@ -27,6 +27,8 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private Button settingsButton;
         [SerializeField] private CharacterCatalogSO characterCatalog;
 
+        public CharacterCatalogSO Catalog => characterCatalog;
+
         [Header("261110 - 건물 로비 (가운데 아래 출진문 = 출정, 큰 전각 = 팀원 모집, 상점 = 스킬트리, 게시판 = 스토리 저장소)")]
         [SerializeField] private LobbyBuilding sortieBuilding;
         [SerializeField] private LobbyBuilding recruitBuilding;
@@ -118,8 +120,9 @@ namespace CheonMyeong.UI.Screens
             }
             if (portraitImage != null)
             {
-                Sprite portrait = selected != null && selected.lobbyIdleFrames != null && selected.lobbyIdleFrames.Length > 0
-                    ? selected.lobbyIdleFrames[0]
+                Sprite portrait = selected == null ? null
+                    : selected.portrait != null ? selected.portrait
+                    : selected.lobbyIdleFrames != null && selected.lobbyIdleFrames.Length > 0 ? selected.lobbyIdleFrames[0]
                     : null;
                 portraitImage.sprite = portrait;
                 portraitImage.enabled = portrait != null;

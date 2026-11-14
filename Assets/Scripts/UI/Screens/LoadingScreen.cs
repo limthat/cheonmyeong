@@ -41,6 +41,19 @@ namespace CheonMyeong.UI.Screens
             }
         }
 
+        private void Update()
+        {
+            // 261114 - 참가자가 방장보다 늦게 로딩 화면에 들어온 경우(로드 완료 이벤트가 이미 지나감) 기다리지 않고 바로 넘어간다.
+            // 방장은 자기가 로드/재로드를 시작한 쪽이라 항상 이벤트를 기다린다(다시 하기 땐 옛 씬이 아직 남아 있을 수 있음).
+            GameplaySceneLoader loader = GameplaySceneLoader.Instance;
+            var network = Unity.Netcode.NetworkManager.Singleton;
+            if (loader != null && !string.IsNullOrEmpty(loader.LoadedGameplayScene)
+                && network != null && network.IsConnectedClient && !network.IsServer)
+            {
+                AdvanceToStory();
+            }
+        }
+
         private void OnDisable()
         {
             if (GameplaySceneLoader.Instance != null)

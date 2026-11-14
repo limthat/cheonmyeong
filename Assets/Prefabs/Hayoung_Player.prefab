@@ -23,6 +23,9 @@ GameObject:
   - component: {fileID: 3686651664287292191}
   - component: {fileID: 1185933471179363800}
   - component: {fileID: 5595697286378998397}
+  - component: {fileID: 7140235190234561002}
+  - component: {fileID: 7140235190234561001}
+  - component: {fileID: 7140235190234561003}
   m_Layer: 0
   m_Name: Hayoung_Player
   m_TagString: Untagged
@@ -226,13 +229,13 @@ MonoBehaviour:
   UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
+  SyncPositionZ: 0
+  SyncRotAngleX: 0
+  SyncRotAngleY: 0
+  SyncRotAngleZ: 0
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
@@ -401,3 +404,47 @@ MonoBehaviour:
   sizeToRangeRatio: 0.9
   minDuration: 0.15
   sortingOrder: 20
+--- !u!114 &7140235190234561002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6164677979144622706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37173210e8764a8795d18c7d68e8e574, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Player.PlayerProjectiles
+  ShowTopMostFoldoutHeaderGroup: 1
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  sortingOrder: 21
+--- !u!114 &7140235190234561001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6164677979144622706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae7a19bad8c547f2b0ce12a29b778395, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Player.PlayerCharacter
+  ShowTopMostFoldoutHeaderGroup: 1
+  catalog: {fileID: 11400000, guid: 76ac81f41a6da494c9cef342b6b2157d, type: 2}
+--- !u!114 &7140235190234561003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6164677979144622706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90bfcb66d49847898a116c886f109f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Player.CharacterKit
+  ShowTopMostFoldoutHeaderGroup: 1

@@ -18,18 +18,22 @@ MonoBehaviour:
     gameplaySceneName: Gameplay_DalbamPyejangteo
     bossCaption: "\uBCF4\uC2A4\xB7\uC5B5\uC1E0 | 10\uC6E8\uC774\uBE0C"
     isUnlocked: 1
+    thumbnail: {fileID: 21300000, guid: efb637c291042db4ab66797c8dcc3c3e, type: 3}
   - mapId: map_locked_1
     displayName: "\uCD94\uD6C4 \uACF5\uAC1C"
     gameplaySceneName: 
     bossCaption: 
     isUnlocked: 0
+    thumbnail: {fileID: 0}
   - mapId: map_locked_2
     displayName: "\uCD94\uD6C4 \uACF5\uAC1C"
     gameplaySceneName: 
     bossCaption: 
     isUnlocked: 0
+    thumbnail: {fileID: 0}
   - mapId: map_locked_3
     displayName: "\uCD94\uD6C4 \uACF5\uAC1C"
     gameplaySceneName: 
     bossCaption: 
     isUnlocked: 0
+    thumbnail: {fileID: 0}

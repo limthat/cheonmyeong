@@ -50,6 +50,24 @@ namespace CheonMyeong.UI.Title
             }
         }
 
+        /// <summary>
+        /// 261114 추가 - 터치 투 스타트. 화면 아무 곳이나 누르면 TitleDragCutController가 부른다.
+        /// 시작 부적이 있으면 그걸 발동해서(중복 발동 방지 IsCut 그대로 사용) 문 열림 → 로비 흐름을 탄다.
+        /// </summary>
+        public void RequestStart()
+        {
+            if (gate != null && gate.IsOpening)
+            {
+                return;
+            }
+            if (startTalisman != null)
+            {
+                startTalisman.Activate();
+                return;
+            }
+            HandleStartCut();
+        }
+
         private void HandleStartCut()
         {
             if (gate != null && gate.isActiveAndEnabled)

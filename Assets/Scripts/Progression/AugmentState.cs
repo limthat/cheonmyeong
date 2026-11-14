@@ -71,5 +71,7 @@ namespace CheonMyeong.Progression
         public int ExtraSwings;
         public float ArcBonus;
         public float FollowUpSlashRatio;
+        public float ProjectileSpeedBonus; // 261114
+        public int ExtraProjectiles;       // 261114
     }
 }

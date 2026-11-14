@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c526bc8f39ab7fe4b882fcb0d287bbb0, type: 3}
+  m_Name: LimHoon
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Data.CharacterStatsSO
+  characterId: imhun
+  displayName: "\uC784\uD6C8"
+  maxHealth: 135
+  moveSpeed: 5.0
+  attackPower: 18
+  attacksPerSecond: 1.24
+  attackRange: 3
+  attackAwarenessRangeMultiplier: 1
+  attackArcDegrees: 12
+  attackNearWidth: 0.5
+  magnetRadius: 0
+  isRanged: 0
+  critChance: 0.05
+  critMultiplier: 1.5
+  attackStyle: 1
+  singleTarget: 1
+  meleePierce: 0
+  atkFrameCount: 13
+  hitFrame: 5
+  projectileCount: 1
+  projectileSpeed: 8.0
+  autoTargets: 0
+  homingDegreesPerSecond: 0
+  projectilePierce: 0
+  projectileSpinDegreesPerSecond: 0
+  projectileRadius: 0.3
+  projectileScale: 1
+  knockback: 0

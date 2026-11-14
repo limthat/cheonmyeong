@@ -24,6 +24,43 @@ namespace CheonMyeong.Player
         [SerializeField] private PlayerInputReader inputReader;
         [SerializeField] private CharacterStatsSO stats;
 
+        private Vector2 serverDashVelocity;
+        private float serverDashTime;
+
+        /// <summary>261114 - 서버 전용. direction으로 distance(칸)를 seconds 동안 일정 속도로 돌진한다(철기 돌격 · 언월 진격).</summary>
+        public void ServerDash(Vector2 direction, float distance, float seconds)
+        {
+            if (!IsServer || direction.sqrMagnitude < 0.0001f || distance <= 0f || seconds <= 0f)
+            {
+                return;
+            }
+            serverDashVelocity = direction.normalized * (distance / seconds);
+            serverDashTime = seconds;
+        }
+
+        public bool IsDashing => serverDashTime > 0f;
+
+        /// <summary>261114 - 서버 전용. 그 자리로 바로 옮긴다(구원의 창).</summary>
+        public void ServerTeleport(Vector2 position)
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            rb.position = position;
+            transform.position = position;
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        /// <summary>261114 - 신통력 외 이동 속도 추가(비율). 고유 패시브 · 신내림이 서버에서 매 프레임 정한다.</summary>
+        public float ExtraMoveSpeed { get; set; }
+
+        /// <summary>261114 - PlayerCharacter가 캐릭터를 정할 때 부른다.</summary>
+        public void SetStats(CharacterStatsSO value)
+        {
+            stats = value;
+        }
+
         private Rigidbody2D rb;
 
         private readonly NetworkVariable<Vector2> networkMoveInput = new NetworkVariable<Vector2>(
@@ -175,7 +212,18 @@ namespace CheonMyeong.Player
             if (serverHeld)
             {
                 serverKnockbackTime = 0f;
+                serverDashTime = 0f;
                 return; // 위치는 억쇠가 직접 옮긴다(EoksoeBoss.SetHeldPosition)
+            }
+            if (serverDashTime > 0f)
+            {
+                serverDashTime -= Time.fixedDeltaTime;
+                rb.linearVelocity = serverDashVelocity;
+                if (serverDashTime <= 0f)
+                {
+                    rb.linearVelocity = Vector2.zero;
+                }
+                return;
             }
             if (serverKnockbackTime > 0f)
             {
@@ -198,7 +246,7 @@ namespace CheonMyeong.Player
 
             // 261104 - 신통력 이동 속도(기준값 대비 %, 무한 이동 속도는 최대 20%).
             float speedBonus = progress != null ? progress.Modifiers.MoveSpeedBonus : 0f;
-            rb.linearVelocity = move * (stats.moveSpeed * (1f + speedBonus) * (1f - serverBossSlow));
+            rb.linearVelocity = move * (stats.moveSpeed * (1f + speedBonus + ExtraMoveSpeed) * (1f - serverBossSlow));
         }
     }
 }

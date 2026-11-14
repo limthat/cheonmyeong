@@ -85,6 +85,8 @@ namespace CheonMyeong.UI.Screens
             public bool IsDead;
             public float Health = float.MinValue;
             public float MaxHealth = float.MinValue;
+            public bool PassiveOn;
+            public int Shields;
         }
 
         private void Awake()
@@ -404,7 +406,11 @@ namespace CheonMyeong.UI.Screens
             float health = player.CurrentHealth;
             float maxHealth = player.MaxHealth;
 
-            bool unchanged = cache.HasPlayer && cache.IsDead == isDead
+            // 261114 - 조건형 고유 패시브가 켜지면 체력 옆에 이름 · 호신부 수(기획서 6장 고유 패시브 규칙).
+            player.TryGetComponent(out CheonMyeong.Player.CharacterKit kit);
+            bool passiveOn = kit != null && kit.PassiveActive;
+            int shields = kit != null ? kit.ShieldCharges : 0;
+            bool unchanged = cache.HasPlayer && cache.IsDead == isDead && cache.PassiveOn == passiveOn && cache.Shields == shields
                               && (isDead || (cache.Health == health && cache.MaxHealth == maxHealth));
             if (unchanged)
             {
@@ -415,10 +421,14 @@ namespace CheonMyeong.UI.Screens
             cache.IsDead = isDead;
             cache.Health = health;
             cache.MaxHealth = maxHealth;
+            cache.PassiveOn = passiveOn;
+            cache.Shields = shields;
 
             slot.text = isDead
                 ? $"P{playerIndex + 1} 쓰러짐 · 다음 웨이브에 부활"
-                : $"P{playerIndex + 1} 체력 {health:0}/{maxHealth:0}";
+                : $"P{playerIndex + 1} 체력 {health:0}/{maxHealth:0}"
+                  + (shields > 0 ? $" · 호신부 {shields}" : string.Empty)
+                  + (passiveOn ? $" · [{kit.PassiveName}]" : string.Empty);
 
             if (fillImage != null)
             {

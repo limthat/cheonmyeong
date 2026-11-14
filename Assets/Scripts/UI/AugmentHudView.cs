@@ -20,6 +20,7 @@ namespace CheonMyeong.UI
         private const string NameTextName = "NameText";
         private const string RingName = "Ring";
         private const string CaptionName = "AugmentSlotsCaption";
+        private const string IconName = "Icon";
 
         private static readonly Color ExclusiveRingColor = new Color(0.55f, 0.75f, 1f, 1f);
 
@@ -27,6 +28,8 @@ namespace CheonMyeong.UI
         private Text[] dotTexts;
         private Text[] nameTexts;
         private Image[] rings;
+        private Image[] icons;
+        private CheonMyeong.UI.Screens.UpgradeScreen iconSource;
         private Color[] ringDefaultColors;
         private readonly System.Text.StringBuilder builder = new System.Text.StringBuilder(64);
 
@@ -44,6 +47,9 @@ namespace CheonMyeong.UI
             dotTexts = new Text[slots];
             nameTexts = new Text[slots];
             rings = new Image[slots];
+            icons = new Image[slots];
+            // 261114 - 칸에 신통력 아이콘(신내림 카드와 같은 그림)을 보인다.
+            iconSource = FindFirstObjectByType<CheonMyeong.UI.Screens.UpgradeScreen>(FindObjectsInactive.Include);
             ringDefaultColors = new Color[slots];
 
             Transform container = FindDeep(hudRoot, ContainerName);
@@ -69,6 +75,11 @@ namespace CheonMyeong.UI
                     if (ring != null && ring.TryGetComponent(out rings[i]))
                     {
                         ringDefaultColors[i] = rings[i].color;
+                    }
+                    Transform iconTransform = FindDeep(slot, IconName);
+                    if (iconTransform != null)
+                    {
+                        iconTransform.TryGetComponent(out icons[i]);
                     }
                     Transform nameTransform = FindDeep(slot, NameTextName);
                     if (nameTransform != null)
@@ -136,6 +147,12 @@ namespace CheonMyeong.UI
                 if (nameTexts[i] != null)
                 {
                     nameTexts[i].text = entry != null ? entry.displayName : string.Empty;
+                }
+                if (icons[i] != null)
+                {
+                    Sprite icon = entry != null && iconSource != null ? iconSource.GetIcon(entry.id) : null;
+                    icons[i].sprite = icon;
+                    icons[i].enabled = icon != null;
                 }
                 if (rings[i] != null)
                 {

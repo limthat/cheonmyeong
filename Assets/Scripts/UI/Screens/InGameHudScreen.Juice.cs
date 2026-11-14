@@ -38,10 +38,17 @@ namespace CheonMyeong.UI.Screens
         private const float GrudgeFollowSharpness = 8f;
         private const float GrudgeMaxHoldSeconds = 3f;
         private const float GrudgePunchSeconds = 0.18f;
-        private const float GrudgePunchScale = 0.12f;
+        private const float GrudgePunchScale = 0.04f; // 261114 - 칸 밖으로 커지지 않게 0.12 → 0.04
         private const float GrudgeFlashSeconds = 0.2f;
         private const float GrudgeSegmentBackAlpha = 0.25f;
         private static readonly int[] DefaultGrudgeThresholds = { 200, 500, 1000 };
+        private static readonly Color[] DefaultGrudgeStageColors =
+        {
+            new Color(0.2f, 0.62f, 0.85f, 1f),
+            new Color(0.16f, 0.3f, 0.72f, 1f),
+            new Color(0.42f, 0.16f, 0.58f, 1f),
+            new Color(0.72f, 0.07f, 0.1f, 1f)
+        };
 
         private class HealthJuice
         {
@@ -65,7 +72,9 @@ namespace CheonMyeong.UI.Screens
 
         private RectTransform[] grudgeFills;
         private RectTransform grudgeGauge;
-        private Image grudgeFlash;
+        // 261114 - 번쩍임은 게이지 전체가 아니라 지금 차오르는 칸의 안쪽(채움 칸)만.
+        private Image[] grudgeFlashes;
+        private int grudgeActiveSegment;
         private float grudgeTarget;
         private float grudgeShown;
         private float grudgeHoldLeft;
@@ -364,6 +373,7 @@ namespace CheonMyeong.UI.Screens
                 return;
             }
             grudgeFills = new RectTransform[grudgeSegmentImages.Length];
+            grudgeFlashes = new Image[grudgeSegmentImages.Length];
             for (int i = 0; i < grudgeSegmentImages.Length; i++)
             {
                 Image segment = grudgeSegmentImages[i];
@@ -378,40 +388,60 @@ namespace CheonMyeong.UI.Screens
                 Color full = grudgeSegmentFullColors != null && i < grudgeSegmentFullColors.Length
                     ? grudgeSegmentFullColors[i]
                     : segment.color;
+                // 261114 - 아트 게이지 틀(Bar-Sheet, 9분할 테두리)이면 틀은 그대로 두고 안쪽 칸만 단계 색으로 채운다.
+                bool framed = segment.sprite != null && segment.type == Image.Type.Sliced && segment.sprite.border.sqrMagnitude > 0f;
+                if (framed && full.r > 0.95f && full.g > 0.95f && full.b > 0.95f)
+                {
+                    full = DefaultGrudgeStageColors[Mathf.Min(i, DefaultGrudgeStageColors.Length - 1)];
+                }
+
+                RectTransform fillParent = segment.rectTransform;
+                if (framed)
+                {
+                    var areaGo = new GameObject("FillArea", typeof(RectTransform));
+                    var area = (RectTransform)areaGo.transform;
+                    area.SetParent(segment.rectTransform, false);
+                    area.anchorMin = Vector2.zero;
+                    area.anchorMax = Vector2.one;
+                    Vector4 border = segment.sprite.border / Mathf.Max(0.0001f, segment.pixelsPerUnit * segment.pixelsPerUnitMultiplier);
+                    area.offsetMin = new Vector2(border.x, border.y);
+                    area.offsetMax = new Vector2(-border.z, -border.w);
+                    fillParent = area;
+                }
 
                 var go = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
                 var rect = (RectTransform)go.transform;
-                rect.SetParent(segment.rectTransform, false);
+                rect.SetParent(fillParent, false);
                 rect.anchorMin = Vector2.zero;
                 rect.anchorMax = new Vector2(0f, 1f);
                 rect.pivot = new Vector2(0f, 0.5f);
                 rect.offsetMin = Vector2.zero;
                 rect.offsetMax = Vector2.zero;
                 Image fill = go.GetComponent<Image>();
-                fill.sprite = segment.sprite;
-                fill.type = segment.type;
+                fill.sprite = framed ? null : segment.sprite;
+                fill.type = framed ? Image.Type.Simple : segment.type;
                 fill.color = full;
                 fill.raycastTarget = false;
                 grudgeFills[i] = rect;
 
-                // 칸 바탕은 같은 색을 흐리게 - 어느 단계 칸인지는 보이게.
-                segment.color = new Color(full.r, full.g, full.b, full.a * GrudgeSegmentBackAlpha);
-            }
-
-            if (grudgeGauge != null)
-            {
-                var flashGo = new GameObject("GrudgeFlash", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                var flashGo = new GameObject("Flash", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
                 var flashRect = (RectTransform)flashGo.transform;
-                flashRect.SetParent(grudgeGauge, false);
-                flashRect.SetAsLastSibling();
+                flashRect.SetParent(fillParent, false);
                 flashRect.anchorMin = Vector2.zero;
                 flashRect.anchorMax = Vector2.one;
-                flashRect.offsetMin = new Vector2(-2f, -2f);
-                flashRect.offsetMax = new Vector2(2f, 2f);
-                grudgeFlash = flashGo.GetComponent<Image>();
-                grudgeFlash.raycastTarget = false;
-                grudgeFlash.color = new Color(1f, 1f, 1f, 0f);
-                grudgeFlash.enabled = false;
+                flashRect.offsetMin = Vector2.zero;
+                flashRect.offsetMax = Vector2.zero;
+                Image flash = flashGo.GetComponent<Image>();
+                flash.raycastTarget = false;
+                flash.color = new Color(1f, 1f, 1f, 0f);
+                flash.enabled = false;
+                grudgeFlashes[i] = flash;
+
+                if (!framed)
+                {
+                    // 칸 바탕은 같은 색을 흐리게 - 어느 단계 칸인지는 보이게.
+                    segment.color = new Color(full.r, full.g, full.b, full.a * GrudgeSegmentBackAlpha);
+                }
             }
         }
 
@@ -442,17 +472,29 @@ namespace CheonMyeong.UI.Screens
                 }
             }
 
-            if (grudgeFlash != null)
+            if (grudgeFlashes != null)
             {
                 if (grudgeFlashLeft > 0f)
                 {
                     grudgeFlashLeft -= dt;
-                    grudgeFlash.enabled = true;
-                    grudgeFlash.color = new Color(1f, 1f, 1f, 0.7f * Mathf.Max(0f, grudgeFlashLeft / GrudgeFlashSeconds));
                 }
-                else if (grudgeFlash.enabled)
+                float alpha = 0.7f * Mathf.Max(0f, grudgeFlashLeft / GrudgeFlashSeconds);
+                for (int i = 0; i < grudgeFlashes.Length; i++)
                 {
-                    grudgeFlash.enabled = false;
+                    Image flash = grudgeFlashes[i];
+                    if (flash == null)
+                    {
+                        continue;
+                    }
+                    bool on = alpha > 0f && i == grudgeActiveSegment;
+                    if (flash.enabled != on)
+                    {
+                        flash.enabled = on;
+                    }
+                    if (on)
+                    {
+                        flash.color = new Color(1f, 1f, 1f, alpha);
+                    }
                 }
             }
         }
@@ -472,6 +514,7 @@ namespace CheonMyeong.UI.Screens
                 return;
             }
             float lower = 0f;
+            grudgeActiveSegment = 0;
             for (int i = 0; i < grudgeFills.Length; i++)
             {
                 float upper = SegmentUpper(i, lower);
@@ -480,6 +523,10 @@ namespace CheonMyeong.UI.Screens
                 if (fill != null && !Mathf.Approximately(fill.anchorMax.x, ratio))
                 {
                     fill.anchorMax = new Vector2(ratio, 1f);
+                }
+                if (ratio > 0f)
+                {
+                    grudgeActiveSegment = i;
                 }
                 lower = upper;
             }

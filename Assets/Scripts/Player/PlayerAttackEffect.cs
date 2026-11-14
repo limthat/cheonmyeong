@@ -49,6 +49,22 @@ namespace CheonMyeong.Player
         private Rect visibleBounds;
         private bool visibleBoundsReady;
 
+        /// <summary>기획서 11장: 이펙트는 프레임당 50ms, 1번 재생.</summary>
+        private const float EffectFrameSeconds = 0.05f;
+
+        private bool uniformScale;
+
+        /// <summary>261114 - PlayerCharacter가 캐릭터를 정할 때 부른다. 근접만 프레임이 있다(원거리는 투사체 그림이 곧 공격 표시).</summary>
+        public void SetCharacter(CharacterStatsSO value, Sprite[] effectFrames)
+        {
+            stats = value;
+            frames = effectFrames;
+            visibleBoundsReady = false;
+            // 찌르기(창 · 삼지창)는 그림이 원래 길고 가늘어서 가로세로 같은 배율로 사거리에 맞춘다(늘어나 보이지 않게).
+            uniformScale = value != null && value.attackStyle == AttackStyle.MeleeThrust;
+            StopEffect();
+        }
+
         private void Awake()
         {
             if (autoAttack == null)
@@ -137,6 +153,15 @@ namespace CheonMyeong.Player
                 // 261105 - 판정이 사다리꼴이라 옆 폭은 끝 쪽 폭(HitWidth)에 맞춘다.
                 SpriteVisibleBounds.FitSlashWidth(visibleBounds, Vector2.zero, aimDir, hitRadius, autoAttack.HitWidth, flip,
                                                   out Vector2 center, out float fitAngle, out Vector2 fitScale);
+                if (uniformScale)
+                {
+                    // 길이(사거리)만 맞추고 굵기는 같은 배율 - 가운데 정렬은 FitSlashWidth와 같은 식으로 다시 계산.
+                    float s = fitScale.x;
+                    float lateral = (flip ? -visibleBounds.center.y : visibleBounds.center.y) * s;
+                    Vector2 lateralAxis = Quaternion.Euler(0f, 0f, fitAngle) * Vector3.up;
+                    center = aimDir * (hitRadius + visibleBounds.xMin * s) - lateralAxis * lateral;
+                    fitScale = new Vector2(s, s);
+                }
                 Vector3 parentScale = transform.lossyScale;
                 float parentScaleX = Mathf.Abs(parentScale.x) > 0.0001f ? Mathf.Abs(parentScale.x) : 1f;
                 effectTransform.localPosition = center / parentScaleX;
@@ -153,7 +178,8 @@ namespace CheonMyeong.Player
                 effectTransform.localScale = new Vector3(scale, scale, 1f);
             }
 
-            duration = Mathf.Max(minDuration, autoAttack.AttackInterval * (1f - autoAttack.HitDelayRatio));
+            // 261114 - 기획서: EFFECT는 50ms씩 1번(하영 9장 = 0.45초). 공속이 빨라 다음 공격이 먼저 오면 새로 시작한다.
+            duration = Mathf.Max(minDuration, frames.Length * EffectFrameSeconds);
             elapsed = 0f;
             playing = true;
             effectRenderer.sprite = frames[0];

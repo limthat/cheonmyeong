@@ -47,8 +47,29 @@ namespace CheonMyeong.UI.Screens
         // 실제로 바뀐 프레임에만 문자열을 새로 만든다.
         private string lastAppliedJoinCode;
 
+        // 261114 - 두 플레이어 칸(그림 pl1/pl2 · 글 Player1Label/2)에 실제로 고른 캐릭터를 보인다. P1 = 방장.
+        private readonly Image[] playerImages = new Image[2];
+        private readonly Text[] playerLabels = new Text[2];
+        private readonly CheonMyeong.Player.PlayerCharacter[] shownCharacters = new CheonMyeong.Player.PlayerCharacter[2];
+        private readonly string[] shownIds = new string[2];
+        private float playerAnimTime;
+        private bool playersDirty = true;
+
         private void Awake()
         {
+            for (int i = 0; i < 2; i++)
+            {
+                Transform image = transform.Find("pl" + (i + 1));
+                if (image != null)
+                {
+                    image.TryGetComponent(out playerImages[i]);
+                }
+                Transform label = transform.Find("Player" + (i + 1) + "Label");
+                if (label != null)
+                {
+                    label.TryGetComponent(out playerLabels[i]);
+                }
+            }
             if (backButton != null)
             {
                 backButton.onClick.AddListener(() => UIFlowManager.Instance.ShowScreen(UIFlowManager.ChoiceMap));
@@ -59,10 +80,73 @@ namespace CheonMyeong.UI.Screens
             }
         }
 
+        private bool followHost;
+        private Text startLabel;
+        private int shownRole = -1;
+
+        private void OnEnable()
+        {
+            playersDirty = true; // 처음 열 때 빈 칸(null == null)도 반드시 한 번 반영 - 씬에 박힌 하영 그림을 지운다
+            followHost = false;
+            shownRole = -1;
+            if (GameplaySceneLoader.Instance != null)
+            {
+                GameplaySceneLoader.Instance.OnGameplaySceneLoadStarted += HandleHostStartedLoading;
+                GameplaySceneLoader.Instance.OnGameplaySceneLoaded += HandleHostStartedLoading;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (GameplaySceneLoader.Instance != null)
+            {
+                GameplaySceneLoader.Instance.OnGameplaySceneLoadStarted -= HandleHostStartedLoading;
+                GameplaySceneLoader.Instance.OnGameplaySceneLoaded -= HandleHostStartedLoading;
+            }
+        }
+
+        /// <summary>
+        /// 261114 - 참가자는 방장이 START를 누르면 자동으로 따라 들어간다. 예전엔 참가자도 START를 직접 눌러야 로딩 화면으로 갔는데,
+        /// 방장이 먼저 누르면 "로드 완료" 신호가 참가자 대기실에서 지나가 버려 나중에 눌러도 로딩 화면에서 영영 멈췄다
+        /// (방장은 참가자가 게임 화면이 아니라서 시간 정지 상태로 같이 멈춤).
+        /// </summary>
+        private void HandleHostStartedLoading(string sceneName)
+        {
+            followHost = true; // 화면 전환은 Update에서(이벤트 콜백 도중 화면을 끄지 않게)
+        }
+
+        private void UpdateRole()
+        {
+            NetworkManager network = NetworkManager.Singleton;
+            int role = network == null || !network.IsListening ? 0 : network.IsServer ? 1 : 2;
+            if (role == shownRole)
+            {
+                return;
+            }
+            shownRole = role;
+            if (startLabel == null && startButton != null)
+            {
+                startLabel = startButton.GetComponentInChildren<Text>(true);
+            }
+            if (startLabel != null)
+            {
+                startLabel.text = role == 2 ? "방장이 시작하면 함께 들어갑니다" : "START";
+            }
+            if (startButton != null)
+            {
+                startButton.interactable = role != 2;
+            }
+        }
+
         private void OnStartPressed()
         {
             string sceneName = CurrentRun.SelectedMap != null ? CurrentRun.SelectedMap.gameplaySceneName : null;
             bool isHost = NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer;
+            if (!isHost)
+            {
+                SetStatus("방장이 시작하면 함께 들어갑니다.");
+                return;
+            }
 
             // 261014 추가 - 호스트인데 맵을 안 골랐으면(sceneName 없음) 여기서 막는다. 화면
             // 전환(Loading)까지 가버리면 실제로 로드할 씬이 없어 그대로 멈춰버리므로, 전환
@@ -93,8 +177,54 @@ namespace CheonMyeong.UI.Screens
             }
         }
 
+        private void UpdatePlayers()
+        {
+            playerAnimTime += Time.unscaledDeltaTime;
+            for (int slot = 0; slot < 2; slot++)
+            {
+                CheonMyeong.Player.PlayerCharacter pc = CheonMyeong.Player.PlayerCharacter.FindBySlot(slot);
+                CharacterCatalogSO.CharacterEntry entry = pc != null ? pc.Entry : null;
+                string id = entry != null ? entry.characterId : null;
+                if (playersDirty || pc != shownCharacters[slot] || id != shownIds[slot])
+                {
+                    shownCharacters[slot] = pc;
+                    shownIds[slot] = id;
+                    if (playerLabels[slot] != null)
+                    {
+                        playerLabels[slot].text = entry != null
+                            ? $"PLAYER {slot + 1} · {entry.displayName}\n({(slot == 0 ? "방장" : "참가자")})"
+                            : string.Empty;
+                    }
+                    if (playerImages[slot] != null)
+                    {
+                        playerImages[slot].enabled = entry != null;
+                    }
+                }
+                if (entry != null && playerImages[slot] != null && entry.lobbyIdleFrames != null && entry.lobbyIdleFrames.Length > 0)
+                {
+                    Sprite frame = entry.lobbyIdleFrames[(int)(playerAnimTime * 10f) % entry.lobbyIdleFrames.Length];
+                    if (playerImages[slot].sprite != frame)
+                    {
+                        playerImages[slot].sprite = frame;
+                    }
+                }
+            }
+            playersDirty = false;
+        }
+
+
         private void Update()
         {
+            UpdateRole();
+            NetworkManager network = NetworkManager.Singleton;
+            bool participant = network != null && network.IsConnectedClient && !network.IsServer;
+            if (participant && (followHost || (GameplaySceneLoader.Instance != null && !string.IsNullOrEmpty(GameplaySceneLoader.Instance.LoadedGameplayScene))))
+            {
+                followHost = false;
+                UIFlowManager.Instance.ShowScreen(UIFlowManager.Loading);
+                return;
+            }
+            UpdatePlayers();
             if (joinCodeText == null || sessionManager == null)
             {
                 return;

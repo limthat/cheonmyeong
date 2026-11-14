@@ -76,6 +76,18 @@ namespace CheonMyeong.UI
             }
         }
 
+        /// <summary>
+        /// 261114 - 시작할 때는 화면을 전부 끄고 타이틀부터 보인다. 씬이 로비 등이 켜진 채 저장돼 있으면
+        /// 타이틀(문 · 부적)이 그 뒤에 살아 있어서 클릭이 부적으로 넘어갔다.
+        /// </summary>
+        private void Start()
+        {
+            if (string.IsNullOrEmpty(currentBaseScreenId) && overlayStack.Count == 0)
+            {
+                ApplyVisibility();
+            }
+        }
+
         private void Update()
         {
             // New Input System 기준(Keyboard.current) - 이 프로젝트 전역이 이미 이 방식을

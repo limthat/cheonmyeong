@@ -17,6 +17,11 @@ namespace CheonMyeong.UI.Title
     {
         [SerializeField] private Camera targetCamera;
         [SerializeField] private LayerMask talismanLayer = ~0;
+        [Tooltip("261114 - 켜면 부적이 아니라 화면 아무 곳이나 누르면(또는 아무 키) 문이 열리며 시작한다. 끄면 예전 부적 클릭 방식.")]
+        [SerializeField] private bool tapAnywhereToStart = true;
+        [SerializeField] private TitleToLobbyBridge bridge;
+
+        private bool anywherePressed;
 
         private TitleTalisman pressedTarget;
         private TitleTalisman hoveredTarget;
@@ -27,6 +32,10 @@ namespace CheonMyeong.UI.Title
             {
                 targetCamera = Camera.main;
             }
+            if (bridge == null)
+            {
+                bridge = FindAnyObjectByType<TitleToLobbyBridge>();
+            }
         }
 
         private void Update()
@@ -34,12 +43,19 @@ namespace CheonMyeong.UI.Title
             // 설정 창 등 오버레이가 떠 있으면 그 아래 부적이 같이 눌리지 않게 막는다(클릭 방식이라 실수로 종료가 눌릴 수 있음).
             if (IsBlockedByUi())
             {
+                anywherePressed = false;
                 pressedTarget = null;
                 if (hoveredTarget != null)
                 {
                     hoveredTarget.SetHovered(false);
                     hoveredTarget = null;
                 }
+                return;
+            }
+
+            if (tapAnywhereToStart)
+            {
+                UpdateTapAnywhere();
                 return;
             }
 
@@ -64,9 +80,35 @@ namespace CheonMyeong.UI.Title
             }
         }
 
+        // 누른 뒤 뗄 때 시작(누르는 순간 바로 넘어가면 이전 화면에서 누르던 입력이 그대로 넘어올 수 있다). 키보드는 누르는 순간.
+        private void UpdateTapAnywhere()
+        {
+            if (bridge == null)
+            {
+                return;
+            }
+            if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
+            {
+                bridge.RequestStart();
+                return;
+            }
+            if (TryGetPointerDownThisFrame(out _))
+            {
+                anywherePressed = true;
+                return;
+            }
+            if (anywherePressed && TryGetPointerUpThisFrame(out _))
+            {
+                anywherePressed = false;
+                bridge.RequestStart();
+            }
+        }
+
         private static bool IsBlockedByUi()
         {
-            return UIFlowManager.Instance != null && UIFlowManager.Instance.HasOverlay;
+            // 261114 - 타이틀이 아닌 화면(로비 등)이 떠 있으면 뒤에 남은 부적이 눌리지 않게 막는다(눌리면 문이 열리거나 게임이 꺼졌다).
+            return UIFlowManager.Instance != null
+                   && (UIFlowManager.Instance.HasOverlay || !string.IsNullOrEmpty(UIFlowManager.Instance.CurrentScreen));
         }
 
         private TitleTalisman FindTalisman(Vector2 worldPos)

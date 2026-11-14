@@ -158,6 +158,8 @@ namespace CheonMyeong.Progression
                             if (slot.Level >= 4) m.AttackBonus += catalog.multiSwingAttackBonusPerStep;
                             break;
                         case AugmentId.HayoungWideSlash: m.ArcBonus += v / 100f; break;
+                        case AugmentId.ProjectileSpeed: m.ProjectileSpeedBonus += v / 100f; break;
+                        case AugmentId.ProjectileCount: m.ExtraProjectiles += Mathf.RoundToInt(v); break;
                         case AugmentId.HayoungFollowUpSlash: m.FollowUpSlashRatio = v / 100f; break;
                     }
                 }
@@ -333,6 +335,15 @@ namespace CheonMyeong.Progression
                 return;
             }
             ServerPick(UnityEngine.Random.Range(0, augmentOffers.Count));
+        }
+
+        /// <summary>261114 - 서버 전용. 카드 없이 신통력을 바로 준다(신내림 관문: 전용 신통력 하나를 Lv1로 들고 시작).</summary>
+        public void ServerGrantAugment(AugmentId id)
+        {
+            if (IsServer)
+            {
+                ServerApply(id);
+            }
         }
 
         private void ServerApply(AugmentId id)

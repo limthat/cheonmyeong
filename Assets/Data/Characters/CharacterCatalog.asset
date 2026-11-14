@@ -26,7 +26,7 @@ MonoBehaviour:
     - {fileID: -8771070252863845956, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
     - {fileID: 7710026285879910484, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
     - {fileID: 8978153641333118618, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
-    lobbyIdleFps: 8
+    lobbyIdleFps: 10
     lobbyWalkFrames:
     - {fileID: -3647958575022085746, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
     - {fileID: -5283390665470537459, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
@@ -36,72 +36,926 @@ MonoBehaviour:
     - {fileID: 2887301945769700840, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
     - {fileID: 3700275050895930902, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
     lobbyWalkFps: 10
+    portrait: {fileID: 5475743760083329431, guid: f364a8548205c364a92d04d5432c1e9b, type: 3}
+    previewAttackFrames:
+    - {fileID: -5867187631060410333, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 3409048856818712125, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -7634591589526436974, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -4286788439241543297, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 4277724273264076699, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -1638711635374869446, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 6573180093449487494, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 6772974122978823067, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -2416460149328053387, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    previewAttackFps: 10
+    previewHitFrame: 6
+    previewSlashFrames:
+    - {fileID: -2445420096094572361, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 4266029267608003835, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -8683579157637147703, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 6880603214866322451, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -9203066760788284703, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 3591781132014101358, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -7992201239367319672, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -1689686421956675724, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -3675303022314623121, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    roleTags: "\uADFC\uC811 \xB7 \uB2E4\uC218"
+    basicAttackDescription: "\uC0AC\uC778\uAC80\uC73C\uB85C \uC55E\uC744 \uB113\uAC8C \uBCA0\uC5B4 \uC5EC\uB7EC \uC6D0\uADC0\uB97C \uD55C\uAEBC\uBC88\uC5D0 \uBCA4\uB2E4."
+    passiveDescription: "10\uCD08 \uB3D9\uC548 \uC548 \uB9DE\uC73C\uBA74 \uACF5\uACA9\uB825 +10% \xB7 \uB9DE\uC73C\uBA74 \uCD08\uAE30\uD654 (\uD638\uC2E0\uBD80\uB85C \uB9C9\uC740 \uACF5\uACA9\uC740 \uC548 \uB9DE\uC740 \uAC83\uC73C\uB85C \uCE68)"
+    atkFrames:
+    - {fileID: -5867187631060410333, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 3409048856818712125, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -7634591589526436974, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -4286788439241543297, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 4277724273264076699, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -1638711635374869446, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 6573180093449487494, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 6772974122978823067, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -2416460149328053387, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    dieFrames:
+    - {fileID: 781942496883761654, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -2814889977689549952, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    effectFrames:
+    - {fileID: -2445420096094572361, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 4266029267608003835, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -8683579157637147703, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 6880603214866322451, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -9203066760788284703, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: 3591781132014101358, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -7992201239367319672, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -1689686421956675724, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    - {fileID: -3675303022314623121, guid: 8ae2ade20b8e57347a401d20f490368f, type: 3}
+    projectileSprite: {fileID: 0}
+    unlockPrice: 0
+    passiveName: "\uC644\uBCBD\uC8FC\uC758"
+    exclusiveNames:
+    - "\uAC80\uAE30"
+    - "\uACC4\uD68D\uB300\uB85C"
+    exclusiveDescriptions:
+    - "\uBCC0\uC2E0\uD615 \xB7 \uCD5C\uB300 \uCCB4\uB825 -30% \xB7 \uBCA0\uAE30\uAC00 \uAC80\uAE30\uB85C \uB0A0\uC544\uAC10 (\uC0AC\uAC70\uB9AC 8\uCE78, \uAD00\uD1B5 2~4) \xB7 \uD53C\uD574 70~110%"
+    - "\u300C\uC644\uBCBD\uC8FC\uC758\u300D \uACF5\uACA9\uB825 \uBCF4\uB108\uC2A4 +10% \u2192 +14~30%"
+    quote: "\uB2A6\uC5C8\uC2B5\uB2C8\uB2E4. \uD574 \uC9C0\uAE30 \uBC18 \uAC01 \uC804\uAE4C\uC9C0 \uC624\uAE30\uB85C \uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uAE4C."
+    sinnaerim:
+    - nodeName: "\uB0A0 \uC120 \uC0AC\uC778\uAC80"
+      cost: 100
+      selfEffect: "\uACF5\uACA9\uB825 +5%"
+      allyEffect: "\uCD5C\uB300 \uCCB4\uB825 +5%"
+    - nodeName: "\uC55E\uC7A5\uC11C\uB294 \uCE7C"
+      cost: 200
+      selfEffect: "\uCD5C\uB300 \uCCB4\uB825 +10%"
+      allyEffect: "\uB0B4 \uC8FC\uBCC0 3\uCE78 \uC6D0\uADC0\uB294 \uB098\uB97C \uBA3C\uC800 \uB178\uB9BC"
+    - nodeName: "\uC55E\uC7A5\uC11C\uB294 \uCE7C 2"
+      cost: 300
+      selfEffect: "\uD638\uC2E0\uBD80 +1\uD68C"
+      allyEffect: "\uB0B4\uAC00 \uB9DE\uC73C\uBA74 \uB3D9\uB8CC \uACF5\uACA9\uB825 +3% (3\uCD08)"
+    - nodeName: "\uACC1\uC744 \uC9C0\uD0A4\uB294 \uCE7C"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uACF5\uACA9\uB825 +8%"
+      allyEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uB3D9\uB8CC \uBC1B\uB294 \uD53C\uD574 -5%"
+    - nodeName: "\uACC1\uC744 \uC9C0\uD0A4\uB294 \uCE7C 2"
+      cost: 300
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uC7AC\uC0DD \uCD5C\uB300 \uCCB4\uB825 0.2%/\uCD08"
+      allyEffect: "\uB3D9\uB8CC \uCCB4\uB825 \uC7AC\uC0DD \uCD5C\uB300 \uCCB4\uB825 0.15%/\uCD08"
+    - nodeName: "\uB530\uB85C \uBCA0\uB294 \uCE7C"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC\uC640 10\uCE78 \uC774\uC0C1 \uB5A8\uC5B4\uC9C0\uBA74 \uC774\uC18D +10%"
+      allyEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uB3D9\uB8CC\uB3C4 \uAC19\uC740 \uD6A8\uACFC"
+    - nodeName: "\uB530\uB85C \uBCA0\uB294 \uCE7C 2"
+      cost: 300
+      selfEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uACF5\uACA9 \uC18D\uB3C4 +8%"
+      allyEffect: "\uB0B4\uAC00 \uC8FC\uC6B4 \uC601\uD63C +5%"
+    - nodeName: "\uC804\uC6A9 \uC2E0\uD1B5\uB825 \uC2DC\uC791"
+      cost: 500
+      selfEffect: "\uAC80\uAE30 \xB7 \uACC4\uD68D\uB300\uB85C \uC911 \uD558\uB098\uB97C Lv1\uB85C \uB4E4\uACE0 \uC2DC\uC791"
+      allyEffect: "-"
+    - nodeName: "\uC815\uD655\uD55C \uBCA0\uAE30"
+      cost: 700
+      selfEffect: "\uCE58\uBA85\uD0C0 \uD655\uB960 +5%"
+      allyEffect: "\uB3D9\uB8CC \uCE58\uBA85\uD0C0 \uD655\uB960 +2%"
+    - nodeName: "\uC6D0\uCE59\uB300\uB85C"
+      cost: 700
+      selfEffect: "\u300C\uC644\uBCBD\uC8FC\uC758\u300D \uBC1C\uB3D9\uAE4C\uC9C0 10\uCD08 \u2192 8\uCD08"
+      allyEffect: "\uB3D9\uB8CC \uD53C\uACA9 \uC2DC \uB0B4 \uC774\uC18D +15%"
+    - nodeName: "\uBCBD\uC0AC\uC758 \uC77C\uC12C"
+      cost: 1000
+      selfEffect: "30\uCD08\uB9C8\uB2E4 \uC55E\uC73C\uB85C 3\uCE78 \uBED7\uB294 \uC77C\uC12C (\uD53C\uD574 300%)"
+      allyEffect: "\uB3D9\uB8CC\uAC00 6\uCE78 \uC548\uC774\uBA74 \uCFE8\uD0C0\uC784 24\uCD08 \xB7 \uAC80\uAE30 \uC0C1\uD0DC\uBA74 \uC77C\uC12C \uAE38\uC774 8\uCE78"
   - characterId: hanjuwon
     displayName: "\uD55C\uC8FC\uC6D0"
-    weaponCaption: "\uBD80\uC801 \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C (\uCD94\uD6C4
-      \uAC1C\uBC1C)"
+    weaponCaption: "\uBD80\uC801 \xB7 \uC6D0\uAC70\uB9AC \xB7 2\uB9C8\uB9AC"
     isUnlocked: 0
-    stats: {fileID: 0}
-    lobbyIdleFrames: []
-    lobbyIdleFps: 8
-    lobbyWalkFrames: []
+    stats: {fileID: 11400000, guid: 88b2a3eac5e342de9bb3c484c819bcbf, type: 2}
+    lobbyIdleFrames:
+    - {fileID: -8727441627150718005, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -8332772821264810456, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -3820268470979808208, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -290509871546697789, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    lobbyIdleFps: 10
+    lobbyWalkFrames:
+    - {fileID: -8565082764343952517, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -6216270731730622165, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -2364811975242188399, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 203089246309757222, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -3995736756951190132, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -7986484718878528119, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 6760952516046872370, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 3774462459616484088, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -4624209964772477008, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
     lobbyWalkFps: 10
+    portrait: {fileID: -3708695821059530178, guid: f364a8548205c364a92d04d5432c1e9b, type: 3}
+    previewAttackFrames:
+    - {fileID: 1518642085496384810, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -6193587835437569920, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 6784335075658333219, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -4475939137848612358, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 8313284744954487709, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 4515613388052644070, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -8581225628518164589, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -7728947882874133151, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -4568065663077237652, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 1674274659979405581, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    previewAttackFps: 10
+    previewHitFrame: 6
+    previewSlashFrames: []
+    roleTags: "\uC6D0\uAC70\uB9AC \xB7 2\uB9C8\uB9AC \xB7 \uC720\uB3C4"
+    basicAttackDescription: "\uC0AC\uAC70\uB9AC \uC548 \uAC00\uC7A5 \uAC00\uAE4C\uC6B4 \uB450 \uB9C8\uB9AC\uC5D0\uAC8C \uBD80\uC801\uC774 \uC54C\uC544\uC11C \uB0A0\uC544\uAC04\uB2E4."
+    passiveDescription: "\uBD80\uC801\uC5D0 \uB9DE\uC740 \uC6D0\uADC0\uC5D0 5\uCD08 \uB3D9\uC548 \uB099\uC778 \xB7 \uB3D9\uB8CC\uAC00 \uACF5\uACA9\uD558\uBA74 \uD130\uC838\uC11C \uACF5\uACA9\uB825 50% \uCD94\uAC00 \uD53C\uD574"
+    atkFrames:
+    - {fileID: 1518642085496384810, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -6193587835437569920, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 6784335075658333219, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -4475939137848612358, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 8313284744954487709, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 4515613388052644070, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -8581225628518164589, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -7728947882874133151, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: -4568065663077237652, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 1674274659979405581, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    dieFrames:
+    - {fileID: 4713019108936293680, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    - {fileID: 5043950096780950231, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    effectFrames: []
+    projectileSprite: {fileID: 4295561147123653691, guid: 28b94c2e285d90b49a348f9de0fef105, type: 3}
+    unlockPrice: 500
+    passiveName: "\uC8FC\uC0AC \uB099\uC778"
+    exclusiveNames:
+    - "\uBCBD\uC0AC\uBD80"
+    - "\uACB0\uBC15\uBD80"
+    exclusiveDescriptions:
+    - "\uBD80\uC801\uC774 \uC6D0\uADC0\uB97C +1~5\uBA85 \uB6AB\uACE0 \uC9C0\uB098\uAC10"
+    - "\uC801\uC911\uD55C \uC6D0\uADC0 \uC774\uB3D9 \uC18D\uB3C4 -10~30% (1\uCD08)"
+    quote: "\uBC24\uC774 \uB05D\uB098\uBA74 \uB108\uD76C\uB294 \uB2E4\uC2DC \u2018\uBB34\uB2F9 \uAC83\uB4E4\u2019\uC774\uB2E4. \uADF8\uB798\uB3C4 \uD574\uAC00 \uB728\uAE38 \uBC14\uB77C\uB098?"
+    sinnaerim:
+    - nodeName: "\uBA39 \uAC08\uAE30"
+      cost: 100
+      selfEffect: "\uACF5\uACA9\uB825 +5%"
+      allyEffect: "\uD22C\uC0AC\uCCB4 \uC18D\uB3C4 +10%"
+    - nodeName: "\uC55E\uC5D0 \uC120 \uBD80\uC801"
+      cost: 200
+      selfEffect: "\uCD5C\uB300 \uCCB4\uB825 +10%"
+      allyEffect: "\uBD80\uC801 \uB9DE\uC740 \uC6D0\uADC0\uB294 2\uCD08\uAC04 \uB098\uB97C \uB178\uB9BC"
+    - nodeName: "\uC55E\uC5D0 \uC120 \uBD80\uC801 2"
+      cost: 300
+      selfEffect: "\uD638\uC2E0\uBD80 +1\uD68C"
+      allyEffect: "\uB0B4 \uBD80\uC801 \uB9DE\uC740 \uC6D0\uADC0, \uB3D9\uB8CC \uD53C\uD574 +5%"
+    - nodeName: "\uACC1\uC744 \uBD09\uD558\uB294 \uBD80\uC801"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uACF5\uACA9\uB825 +8%"
+      allyEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uB3D9\uB8CC \uACF5\uACA9\uB825 +5%"
+    - nodeName: "\uACC1\uC744 \uBD09\uD558\uB294 \uBD80\uC801 2"
+      cost: 300
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uACF5\uACA9 \uC18D\uB3C4 +8%"
+      allyEffect: "\uB3D9\uB8CC \uC8FC\uBCC0 \uC6D0\uADC0\uB97C \uBA3C\uC800 \uB178\uB9BC"
+    - nodeName: "\uBA40\uB9AC \uB744\uC6B4 \uBD80\uC801"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC\uC640 10\uCE78 \uC774\uC0C1 \uB5A8\uC5B4\uC9C0\uBA74 \uC0AC\uAC70\uB9AC +1\uCE78"
+      allyEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uB3D9\uB8CC \uC774\uC18D +8%"
+    - nodeName: "\uBA40\uB9AC \uB744\uC6B4 \uBD80\uC801 2"
+      cost: 300
+      selfEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uACF5\uACA9\uB825 +10%"
+      allyEffect: "\uB0B4\uAC00 \uC8FC\uC6B4 \uC601\uD63C +5%"
+    - nodeName: "\uC804\uC6A9 \uC2E0\uD1B5\uB825 \uC2DC\uC791"
+      cost: 500
+      selfEffect: "\uBCBD\uC0AC\uBD80 \xB7 \uACB0\uBC15\uBD80 \uC911 \uD558\uB098\uB97C Lv1\uB85C \uB4E4\uACE0 \uC2DC\uC791"
+      allyEffect: "-"
+    - nodeName: "\uACB9\uBD80\uC801"
+      cost: 700
+      selfEffect: "\uC9C0\uC815 \uB300\uC0C1 3\uB9C8\uB9AC\uB85C, \uACF5\uACA9\uB825 -10%"
+      allyEffect: "\uB3D9\uB8CC\uAC00 \uB178\uB9AC\uB294 \uC6D0\uADC0\uB97C \uBA3C\uC800 \uC9C0\uC815"
+    - nodeName: "\uC9D9\uC740 \uC8FC\uC0AC"
+      cost: 700
+      selfEffect: "\uC8FC\uC0AC \uB099\uC778 \uC720\uC9C0 5\uCD08 \u2192 7\uCD08"
+      allyEffect: "\uB099\uC778\uC744 \uD130\uB728\uB9B0 \uB3D9\uB8CC \uCCB4\uB825 1% \uD68C\uBCF5"
+    - nodeName: "\uBC95\uC744 \uBD80\uB974\uB294 \uBD80\uC801"
+      cost: 1000
+      selfEffect: "25\uCD08\uB9C8\uB2E4 \uD654\uBA74 \uC548 \uC6D0\uADC0 10\uB9C8\uB9AC\uC5D0 \uBD80\uC801 (\uD53C\uD574 200%) \xB7 \uB9DE\uC740 \uC6D0\uADC0\uC5D0 \uC8FC\uC0AC \uB099\uC778"
+      allyEffect: "\uB3D9\uB8CC\uAC00 6\uCE78 \uC548\uC774\uBA74 \uB3D9\uB8CC \uC8FC\uBCC0 \uC6D0\uADC0\uBD80\uD130 \uB9DE\uD798"
   - characterId: parkgyuhyeok
     displayName: "\uBC15\uADDC\uD601"
-    weaponCaption: "\uC0BC\uC9C0\uCC3D \xB7 \uADFC\uC811 \xB7 \uB2E8\uC77C (\uCD94\uD6C4
-      \uAC1C\uBC1C)"
+    weaponCaption: "\uC0BC\uC9C0\uCC3D \xB7 \uADFC\uC811 \xB7 \uB2E8\uC77C"
     isUnlocked: 0
-    stats: {fileID: 0}
-    lobbyIdleFrames: []
-    lobbyIdleFps: 8
-    lobbyWalkFrames: []
+    stats: {fileID: 11400000, guid: 45bcf7f8643648d8aec1aac935525b28, type: 2}
+    lobbyIdleFrames:
+    - {fileID: -4355410537135473224, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -8292685876874038825, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -6282657756448273667, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 4219759014794860792, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -1494121918235593727, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    lobbyIdleFps: 10
+    lobbyWalkFrames:
+    - {fileID: -689346386483265765, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 5258161615869656458, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -1460997375633064564, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 488935711007989453, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -1959045458406741720, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -7273268197613320568, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -3787718629165310190, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 3830870533161321477, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 6622468304848547967, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
     lobbyWalkFps: 10
+    portrait: {fileID: -8552403347106754031, guid: f364a8548205c364a92d04d5432c1e9b, type: 3}
+    previewAttackFrames:
+    - {fileID: 5418702631838957823, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -9135855430525934508, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 2413035129594239726, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -3107127739765847531, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 8930996482277882544, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 3969720693572718536, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 7922582160726524042, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 4503380759397511213, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    previewAttackFps: 10
+    previewHitFrame: 4
+    previewSlashFrames:
+    - {fileID: 8997213161466723853, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -649285749417179622, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -7712111625500410182, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 202136812292923372, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 2130299698366011891, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 6333184282940915429, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -2893553209880212985, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    roleTags: "\uADFC\uC811 \xB7 \uB2E8\uC77C \xB7 \uBCF4\uC2A4"
+    basicAttackDescription: "\uC0BC\uC9C0\uCC3D\uC73C\uB85C \uC55E\uC758 \uD55C \uB9C8\uB9AC\uB97C \uBB35\uC9C1\uD558\uAC8C \uCC0C\uB978\uB2E4."
+    passiveDescription: "\uB3D9\uB8CC \uCCB4\uB825 30% \uC774\uD558 \u2192 \uBC1B\uB294 \uD53C\uD574 -20% \xB7 \uB3D9\uB8CC \uCABD \uC774\uB3D9 \uC18D\uB3C4 +15%"
+    atkFrames:
+    - {fileID: 5418702631838957823, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -9135855430525934508, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 2413035129594239726, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -3107127739765847531, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 8930996482277882544, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 3969720693572718536, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 7922582160726524042, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 4503380759397511213, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    dieFrames:
+    - {fileID: 3572276850884982852, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 3448893712556954895, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    effectFrames:
+    - {fileID: 8997213161466723853, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -649285749417179622, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -7712111625500410182, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 202136812292923372, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 2130299698366011891, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: 6333184282940915429, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    - {fileID: -2893553209880212985, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
+    projectileSprite: {fileID: 0}
+    unlockPrice: 500
+    passiveName: "\uB2E4\uC2DC\uB294 \uC783\uC9C0 \uC54A\uB294\uB2E4"
+    exclusiveNames:
+    - "\uB2F9\uD30C \uCC0C\uB974\uAE30"
+    - "\uC801\uC7A5 \uC0AC\uB0E5"
+    exclusiveDescriptions:
+    - "\uCC0C\uB974\uAE30\uAC00 \uC138 \uBC29\uD5A5\uC73C\uB85C \uB098\uAC10 \xB7 \uC606 \uAC08\uB798 \uD53C\uD574 30~70%"
+    - "\uC911\uD615 \uC6D0\uADC0 \xB7 \uBCF4\uC2A4\uC5D0\uAC8C \uC8FC\uB294 \uD53C\uD574 +10~50%"
+    quote: "\u2026\uB610 \uBC24\uC774\uB0D0. \uD574 \uC880 \uBCF4\uACE0 \uC8FD\uC790."
+    sinnaerim:
+    - nodeName: "\uBB34\uAC70\uC6B4 \uC0BC\uC9C0\uCC3D"
+      cost: 100
+      selfEffect: "\uACF5\uACA9\uB825 +5%"
+      allyEffect: "\uCD5C\uB300 \uCCB4\uB825 +5%"
+    - nodeName: "\uB9E8 \uC55E\uC758 \uCC3D"
+      cost: 200
+      selfEffect: "\uCD5C\uB300 \uCCB4\uB825 +15%"
+      allyEffect: "\uB0B4 \uC8FC\uBCC0 3\uCE78 \uC6D0\uADC0\uB294 \uB098\uB97C \uBA3C\uC800 \uB178\uB9BC"
+    - nodeName: "\uB9E8 \uC55E\uC758 \uCC3D 2"
+      cost: 300
+      selfEffect: "\uD638\uC2E0\uBD80 +1\uD68C"
+      allyEffect: "\uB0B4\uAC00 \uB9DE\uC73C\uBA74 \uB3D9\uB8CC \uACF5\uACA9\uB825 +3% (3\uCD08)"
+    - nodeName: "\uB4A4\uB97C \uBC1B\uCE58\uB294 \uCC3D"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uACF5\uACA9\uB825 +8%"
+      allyEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uB3D9\uB8CC \uCD5C\uB300 \uCCB4\uB825 +8%"
+    - nodeName: "\uB4A4\uB97C \uBC1B\uCE58\uB294 \uCC3D 2"
+      cost: 300
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uC7AC\uC0DD \uCD5C\uB300 \uCCB4\uB825 0.2%/\uCD08"
+      allyEffect: "\uB3D9\uB8CC \uCCB4\uB825 \uC7AC\uC0DD \uCD5C\uB300 \uCCB4\uB825 0.15%/\uCD08"
+    - nodeName: "\uD640\uB85C \uC11C\uB294 \uCC3D"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC\uC640 10\uCE78 \uC774\uC0C1 \uB5A8\uC5B4\uC9C0\uBA74 \uC774\uC18D +12%"
+      allyEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uB3D9\uB8CC \uC774\uC18D +8%"
+    - nodeName: "\uD640\uB85C \uC11C\uB294 \uCC3D 2"
+      cost: 300
+      selfEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uC815\uC608 \xB7 \uBCF4\uC2A4 \uD53C\uD574 +10%"
+      allyEffect: "\uB0B4\uAC00 \uC8FC\uC6B4 \uC601\uD63C +5%"
+    - nodeName: "\uC804\uC6A9 \uC2E0\uD1B5\uB825 \uC2DC\uC791"
+      cost: 500
+      selfEffect: "\uB2F9\uD30C \uCC0C\uB974\uAE30 \xB7 \uC801\uC7A5 \uC0AC\uB0E5 \uC911 \uD558\uB098\uB97C Lv1\uB85C \uB4E4\uACE0 \uC2DC\uC791"
+      allyEffect: "-"
+    - nodeName: "\uC9C0\uD718\uAD00"
+      cost: 700
+      selfEffect: "\u300C\uB2E4\uC2DC\uB294 \uC783\uC9C0 \uC54A\uB294\uB2E4\u300D \uBC1C\uB3D9 \uAE30\uC900 \uB3D9\uB8CC \uCCB4\uB825 30% \u2192 40%"
+      allyEffect: "\uADF8\uB3D9\uC548 \uB3D9\uB8CC \uACF5\uACA9\uB825 +5%"
+    - nodeName: "\uBC00\uC5B4\uB0B4\uAE30"
+      cost: 700
+      selfEffect: "\uCC0C\uB974\uAE30\uC5D0 \uB109\uBC31 1\uCE78"
+      allyEffect: "\uBC00\uB824\uB09C \uC6D0\uADC0, \uB3D9\uB8CC \uD53C\uD574 +10% (2\uCD08)"
+    - nodeName: "\uC7A5\uAD70\uC2E0 \uAC15\uB9BC"
+      cost: 1000
+      selfEffect: "30\uCD08\uB9C8\uB2E4 5\uCD08\uAC04 \uACF5\uACA9\uB825 +30% \xB7 \uC8FC\uBCC0 4\uCE78 \uC6D0\uADC0\uAC00 \uB098\uB97C \uB178\uB9BC"
+      allyEffect: "\uADF8\uB3D9\uC548 \uB3D9\uB8CC \uBC1B\uB294 \uD53C\uD574 -20%"
   - characterId: leeara
     displayName: "\uC774\uC544\uB77C"
-    weaponCaption: "\uC2E0\uCE7C \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C (\uCD94\uD6C4
-      \uAC1C\uBC1C)"
+    weaponCaption: "\uC2E0\uCE7C \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C"
     isUnlocked: 0
-    stats: {fileID: 0}
-    lobbyIdleFrames: []
-    lobbyIdleFps: 8
-    lobbyWalkFrames: []
+    stats: {fileID: 11400000, guid: 0080ec4cff5f4fc99366f97f96dd94a6, type: 2}
+    lobbyIdleFrames:
+    - {fileID: -7544882024009360514, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -5869896799400101836, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: 2194971400136859124, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: 482939166572644472, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: 5095986121804561138, guid: 7435390de07e450429702d593689dff6, type: 3}
+    lobbyIdleFps: 10
+    lobbyWalkFrames:
+    - {fileID: 8784559434531935940, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: 7553979402018542026, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -74107306040451452, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -1203459062252844106, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -3152276255725375016, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -4508866981671639716, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -4850360733105273753, guid: 7435390de07e450429702d593689dff6, type: 3}
     lobbyWalkFps: 10
+    portrait: {fileID: 5523077600722399564, guid: f364a8548205c364a92d04d5432c1e9b, type: 3}
+    previewAttackFrames:
+    - {fileID: 3188984892568085655, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -162678240289249945, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: 5492317940683077192, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: 4355011223941718130, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -4948345323037921078, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -129299410967026181, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: 4967338055774262885, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -4719149224796718549, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -4860602794945097175, guid: 7435390de07e450429702d593689dff6, type: 3}
+    previewAttackFps: 10
+    previewHitFrame: 6
+    previewSlashFrames: []
+    roleTags: "\uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C \xB7 \uCE58\uBA85"
+    basicAttackDescription: "\uC2E0\uCE7C\uC744 \uB358\uC838 \uD55C \uB9C8\uB9AC\uB97C \uD06C\uAC8C \uB178\uB9B0\uB2E4. \uCE58\uBA85\uD0C0 \uD655\uB960\uC774 \uB192\uB2E4."
+    passiveDescription: "\uC6E8\uC774\uBE0C \uC2DC\uC791\uB9C8\uB2E4 \uC810\uAD18 (\uAE38 50%) \xB7 \uAE38: \uCE58\uBA85 +10% / \uD749: \uBC1B\uB294 \uD53C\uD574 +10%, \uB3D9\uB8CC \uCE58\uBA85 +10%"
+    atkFrames:
+    - {fileID: 3188984892568085655, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -162678240289249945, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: 5492317940683077192, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: 4355011223941718130, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -4948345323037921078, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -129299410967026181, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: 4967338055774262885, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -4719149224796718549, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -4860602794945097175, guid: 7435390de07e450429702d593689dff6, type: 3}
+    dieFrames:
+    - {fileID: 203215907168035911, guid: 7435390de07e450429702d593689dff6, type: 3}
+    - {fileID: -3140510175291101161, guid: 7435390de07e450429702d593689dff6, type: 3}
+    effectFrames: []
+    projectileSprite: {fileID: 2302651526142315596, guid: 7435390de07e450429702d593689dff6, type: 3}
+    unlockPrice: 800
+    passiveName: "\uC624\uB298\uC758 \uC6B4\uC138"
+    exclusiveNames:
+    - "\uB3CC\uC544\uC624\uB294 \uC2E0\uCE7C"
+    - "\uCE60\uC131\uC758 \uC810\uAD18"
+    exclusiveDescriptions:
+    - "\uB358\uC9C4 \uC2E0\uCE7C\uC774 \uB3CC\uC544\uC624\uBA70 \uD55C \uBC88 \uB354 \uD0C0\uACA9 (\uC655\uBCF5 \uD53C\uD574 50~100%)"
+    - "\u300C\uC624\uB298\uC758 \uC6B4\uC138\u300D \uAE38 \uD655\uB960 58~90%"
+    quote: "\uC624\uB298 \uC6B4\uC138\u2026 \uD749. \uC544, \uD558\uC601 \uC5B8\uB2C8 \uB9D0\uACE0 \uC800\uC694."
+    sinnaerim:
+    - nodeName: "\uC798 \uBCBC\uB9B0 \uC2E0\uCE7C"
+      cost: 100
+      selfEffect: "\uACF5\uACA9\uB825 +5%"
+      allyEffect: "\uCE58\uBA85\uD0C0 \uD655\uB960 +2%"
+    - nodeName: "\uC810\uC744 \uCE58\uB294 \uCE7C"
+      cost: 200
+      selfEffect: "\uCD5C\uB300 \uCCB4\uB825 +15%"
+      allyEffect: "\uC2E0\uCE7C \uB9DE\uC740 \uC6D0\uADC0\uB294 2\uCD08\uAC04 \uB098\uB97C \uB178\uB9BC"
+    - nodeName: "\uC810\uC744 \uCE58\uB294 \uCE7C 2"
+      cost: 300
+      selfEffect: "\uD638\uC2E0\uBD80 +1\uD68C"
+      allyEffect: "\uB0B4\uAC00 \uB9DE\uC73C\uBA74 \uB3D9\uB8CC \uCE58\uBA85\uD0C0 +3% (3\uCD08)"
+    - nodeName: "\uB3D9\uB8CC \uC6B4\uC138"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uCE58\uBA85\uD0C0 \uD655\uB960 +4%"
+      allyEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uB3D9\uB8CC \uCE58\uBA85\uD0C0 \uD655\uB960 +5%"
+    - nodeName: "\uB3D9\uB8CC \uC6B4\uC138 2"
+      cost: 300
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uCE58\uBA85\uD0C0 \uD53C\uD574 +0.1\uBC30"
+      allyEffect: "\uB3D9\uB8CC \uCE58\uBA85\uD0C0 \uD53C\uD574 +0.1\uBC30"
+    - nodeName: "\uBA3C \uB370 \uC810\uAD18"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC\uC640 10\uCE78 \uC774\uC0C1 \uB5A8\uC5B4\uC9C0\uBA74 \uC774\uC18D +10%"
+      allyEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uB3D9\uB8CC \uC774\uC18D +8%"
+    - nodeName: "\uBA3C \uB370 \uC810\uAD18 2"
+      cost: 300
+      selfEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uCE58\uBA85\uD0C0 \uD53C\uD574 +0.2\uBC30"
+      allyEffect: "\uB0B4\uAC00 \uC8FC\uC6B4 \uC601\uD63C +5%"
+    - nodeName: "\uC804\uC6A9 \uC2E0\uD1B5\uB825 \uC2DC\uC791"
+      cost: 500
+      selfEffect: "\uB3CC\uC544\uC624\uB294 \uC2E0\uCE7C \xB7 \uCE60\uC131\uC758 \uC810\uAD18 \uC911 \uD558\uB098\uB97C Lv1\uB85C \uB4E4\uACE0 \uC2DC\uC791"
+      allyEffect: "-"
+    - nodeName: "\uC810\uAD18 \uD480\uC774"
+      cost: 700
+      selfEffect: "\u300C\uC624\uB298\uC758 \uC6B4\uC138\u300D \uD749\uC774 \uB098\uC640\uB3C4 \uB0B4 \uBC1B\uB294 \uD53C\uD574 \uC99D\uAC00 \uC5C6\uC74C"
+      allyEffect: "\uD749\uC77C \uB54C \uB3D9\uB8CC \uCE58\uBA85 +10%\uB294 \uADF8\uB300\uB85C"
+    - nodeName: "\uC561\uB9C9\uC774"
+      cost: 700
+      selfEffect: "\uD638\uC2E0\uBD80 +1\uD68C \xB7 \uD638\uC2E0\uBD80\uB85C \uB9C9\uC73C\uBA74 \uB2E4\uC74C \uACF5\uACA9 \uCE58\uBA85 1\uD68C \uD655\uC815"
+      allyEffect: "6\uCE78 \uC548 \uB3D9\uB8CC\uB3C4 \uD638\uC2E0\uBD80 +1\uD68C"
+    - nodeName: "\uBD81\uB450\uCE60\uC131"
+      cost: 1000
+      selfEffect: "20\uCD08\uB9C8\uB2E4 \uB2E4\uC74C 5\uBC88\uC758 \uACF5\uACA9\uC774 \uBC18\uB4DC\uC2DC \uCE58\uBA85\uD0C0"
+      allyEffect: "\uBC1C\uB3D9 \uC911 6\uCE78 \uC548 \uB3D9\uB8CC \uCE58\uBA85\uD0C0 \uD655\uB960 +10%"
   - characterId: choihwanjo
     displayName: "\uCD5C\uD658\uC870"
-    weaponCaption: "\uD65C \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C (\uCD94\uD6C4
-      \uAC1C\uBC1C)"
+    weaponCaption: "\uD65C \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C"
     isUnlocked: 0
-    stats: {fileID: 0}
-    lobbyIdleFrames: []
-    lobbyIdleFps: 8
-    lobbyWalkFrames: []
+    stats: {fileID: 11400000, guid: a0347e68f7e140c5bcaefb3a87815404, type: 2}
+    lobbyIdleFrames:
+    - {fileID: -5323432031759175039, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 4435353239440123837, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -5778001868406477246, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -3844539635089217580, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 2985644350595446989, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -7152543163531224470, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    lobbyIdleFps: 10
+    lobbyWalkFrames:
+    - {fileID: 5849493223407799055, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -732701531756898673, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -2869580174863167786, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 512924202387903130, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -5474531811618361222, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 3788665157440875949, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 5735506012835697525, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -4385981665299054482, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
     lobbyWalkFps: 10
+    portrait: {fileID: 2247919629415776743, guid: f364a8548205c364a92d04d5432c1e9b, type: 3}
+    previewAttackFrames:
+    - {fileID: -7006768764116336250, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -2546983946368831542, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 2566079025070953368, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 1266800231134433688, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 8150086496399903356, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -6370753835849942321, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -535994443170442248, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -798852819764818462, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 9168043464294900235, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    previewAttackFps: 10
+    previewHitFrame: 7
+    previewSlashFrames: []
+    roleTags: "\uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C \xB7 \uC800\uACA9"
+    basicAttackDescription: "\uAC00\uC7A5 \uBA40\uB9AC, \uAC00\uC7A5 \uBE60\uB974\uAC8C \uD654\uC0B4\uC744 \uC3DC\uB2E4."
+    passiveDescription: "8\uCE78 \uB118\uAC8C \uB5A8\uC5B4\uC9C4 \uC6D0\uADC0\uC5D0\uAC8C \uC8FC\uB294 \uD53C\uD574 +15%"
+    atkFrames:
+    - {fileID: -7006768764116336250, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -2546983946368831542, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 2566079025070953368, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 1266800231134433688, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 8150086496399903356, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -6370753835849942321, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -535994443170442248, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -798852819764818462, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: 9168043464294900235, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    dieFrames:
+    - {fileID: 3365893071119409160, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    - {fileID: -4312357163219714923, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    effectFrames: []
+    projectileSprite: {fileID: -4706154537537761012, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
+    unlockPrice: 1200
+    passiveName: "\uBC14\uB78C\uC744 \uC77D\uB2E4"
+    exclusiveNames:
+    - "\uCCA0\uC804"
+    - "\uAC01\uAD81"
+    exclusiveDescriptions:
+    - "\uD654\uC0B4\uC774 \uC6D0\uADC0\uB97C +1~5\uBA85 \uAD00\uD1B5"
+    - "\uC0AC\uAC70\uB9AC +1~5\uCE78 \xB7 \uD22C\uC0AC\uCCB4 \uC18D\uB3C4 +10~50%"
+    quote: "\uACC4\uD68D \uC88B\uB124. \uADFC\uB370 \uD654\uC0B4\uC740 \uBC14\uB78C\uB300\uB85C \uB0A0\uC544\uAC00. \uADF8 \uCE78\uC740 \uB0B4\uAC00 \uACE0\uCE60\uAC8C."
+    sinnaerim:
+    - nodeName: "\uD33D\uD33D\uD55C \uC2DC\uC704"
+      cost: 100
+      selfEffect: "\uACF5\uACA9\uB825 +5%"
+      allyEffect: "\uD22C\uC0AC\uCCB4 \uC18D\uB3C4 +10%"
+    - nodeName: "\uC55E\uC744 \uC5EC\uB294 \uD654\uC0B4"
+      cost: 200
+      selfEffect: "\uCD5C\uB300 \uCCB4\uB825 +15%"
+      allyEffect: "\uD654\uC0B4 \uB9DE\uC740 \uC6D0\uADC0\uB294 2\uCD08\uAC04 \uB098\uB97C \uB178\uB9BC"
+    - nodeName: "\uC55E\uC744 \uC5EC\uB294 \uD654\uC0B4 2"
+      cost: 300
+      selfEffect: "\uD638\uC2E0\uBD80 +1\uD68C"
+      allyEffect: "\uB0B4\uAC00 \uB9DE\uC73C\uBA74 \uB3D9\uB8CC \uC774\uC18D +10% (3\uCD08)"
+    - nodeName: "\uC5C4\uD638 \uC0AC\uACA9"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uACF5\uACA9\uB825 +8%"
+      allyEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uB3D9\uB8CC \uC774\uC18D +5%"
+    - nodeName: "\uC5C4\uD638 \uC0AC\uACA9 2"
+      cost: 300
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uACF5\uACA9 \uC18D\uB3C4 +8%"
+      allyEffect: "\uB3D9\uB8CC \uC8FC\uBCC0 \uC6D0\uADC0\uB97C \uBA3C\uC800 \uC3E8"
+    - nodeName: "\uBA3C \uB370 \uD654\uC0B4"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC\uC640 10\uCE78 \uC774\uC0C1 \uB5A8\uC5B4\uC9C0\uBA74 \uC0AC\uAC70\uB9AC +2\uCE78"
+      allyEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uB3D9\uB8CC \uC774\uC18D +8%"
+    - nodeName: "\uBA3C \uB370 \uD654\uC0B4 2"
+      cost: 300
+      selfEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uACF5\uACA9\uB825 +10%"
+      allyEffect: "\uB0B4\uAC00 \uC8FC\uC6B4 \uC601\uD63C +5%"
+    - nodeName: "\uC804\uC6A9 \uC2E0\uD1B5\uB825 \uC2DC\uC791"
+      cost: 500
+      selfEffect: "\uCCA0\uC804 \xB7 \uAC01\uAD81 \uC911 \uD558\uB098\uB97C Lv1\uB85C \uB4E4\uACE0 \uC2DC\uC791"
+      allyEffect: "-"
+    - nodeName: "\uBC14\uB78C\uACB0"
+      cost: 700
+      selfEffect: "\u300C\uBC14\uB78C\uC744 \uC77D\uB2E4\u300D \uAC70\uB9AC \uAE30\uC900 8\uCE78 \u2192 6\uCE78"
+      allyEffect: "\uB3D9\uB8CC \uADFC\uCC98 \uC6D0\uADC0\uC5D0\uAC8C\uB3C4 \uD328\uC2DC\uBE0C \uC801\uC6A9"
+    - nodeName: "\uC5F0\uC0AC"
+      cost: 700
+      selfEffect: "\uACF5\uACA9 \uC18D\uB3C4 +10%, \uACF5\uACA9\uB825 -5%"
+      allyEffect: "6\uCE78 \uC548 \uB3D9\uB8CC \uACF5\uACA9 \uC18D\uB3C4 +3%"
+    - nodeName: "\uC2ED \uB9AC \uD654\uC0B4"
+      cost: 1000
+      selfEffect: "30\uCD08\uB9C8\uB2E4 \uD654\uBA74 \uB05D\uAE4C\uC9C0 \uAFF0\uB6AB\uB294 \uD654\uC0B4 (\uD53C\uD574 400%, \uAD00\uD1B5 \uBB34\uC81C\uD55C)"
+      allyEffect: "\uD654\uC0B4\uC774 \uC9C0\uB098\uAC04 \uC6D0\uADC0, \uB3D9\uB8CC \uD53C\uD574 +15% (3\uCD08)"
   - characterId: sinjihyeon
     displayName: "\uC2E0\uC9C0\uD604"
-    weaponCaption: "\uACE1\uB3C4 \xB7 \uADFC\uC811 \xB7 \uB2E4\uC218 (\uCD94\uD6C4
-      \uAC1C\uBC1C)"
+    weaponCaption: "\uACE1\uB3C4 \xB7 \uADFC\uC811 \xB7 \uB2E4\uC218"
     isUnlocked: 0
-    stats: {fileID: 0}
-    lobbyIdleFrames: []
-    lobbyIdleFps: 8
-    lobbyWalkFrames: []
+    stats: {fileID: 11400000, guid: e65baa3fd8a440b29e180661e87f4234, type: 2}
+    lobbyIdleFrames:
+    - {fileID: 1846905675546016681, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -6976699586216498529, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 1438897429105143162, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -1528149298305578397, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -3112361472965908900, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 9125497764407596434, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    lobbyIdleFps: 10
+    lobbyWalkFrames:
+    - {fileID: -2842886020614136798, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 5456935165803034431, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 2193529314670861373, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -8672765173619060219, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 3391532164075500841, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 2179653456419289680, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 7894571818768744741, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 1538995600978312077, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
     lobbyWalkFps: 10
+    portrait: {fileID: -586990128864770491, guid: f364a8548205c364a92d04d5432c1e9b, type: 3}
+    previewAttackFrames:
+    - {fileID: 4289444915253139895, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -3647657540973089438, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 4503361468005606163, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 3090734368058851871, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 2516707426314863865, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -8257748803744441130, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 3143915626800509813, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 7482585857071619357, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 5606261442124120327, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -2934254142504527671, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    previewAttackFps: 10
+    previewHitFrame: 5
+    previewSlashFrames:
+    - {fileID: -6018304391562378872, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -9041567615816806598, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 2946601318803462848, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -1170634159812356639, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 3003313154643177550, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -7961644035639786373, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -8014439782469094599, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 6217052668226010535, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -2134295743309507226, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    roleTags: "\uADFC\uC811 \xB7 \uB2E4\uC218 \xB7 \uB3CC\uD30C"
+    basicAttackDescription: "\uACE1\uB3C4\uB97C \uD06C\uAC8C \uD718\uB458\uB7EC \uC55E\uC744 \uB113\uAC8C \uBCA4\uB2E4."
+    passiveDescription: "4\uCE78 \uC548 \uC6D0\uADC0 1\uB9C8\uB9AC\uB2F9 \uBC1B\uB294 \uD53C\uD574 -2% (\uCD5C\uB300 -20%)"
+    atkFrames:
+    - {fileID: 4289444915253139895, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -3647657540973089438, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 4503361468005606163, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 3090734368058851871, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 2516707426314863865, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -8257748803744441130, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 3143915626800509813, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 7482585857071619357, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 5606261442124120327, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -2934254142504527671, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    dieFrames:
+    - {fileID: 1387472206722318336, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 2214890274370134905, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    effectFrames:
+    - {fileID: -6018304391562378872, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -9041567615816806598, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 2946601318803462848, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -1170634159812356639, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 3003313154643177550, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -7961644035639786373, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -8014439782469094599, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: 6217052668226010535, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    - {fileID: -2134295743309507226, guid: 85ac58e101ce1bb4184e3dbec40f8f01, type: 3}
+    projectileSprite: {fileID: 0}
+    unlockPrice: 800
+    passiveName: "\uBB3C\uB7EC\uC11C\uC9C0 \uC54A\uB294\uB2E4"
+    exclusiveNames:
+    - "\uBC30\uC218\uC9C4"
+    - "\uB9CC\uC6D4 \uBCA0\uAE30"
+    exclusiveDescriptions:
+    - "\u300C\uBB3C\uB7EC\uC11C\uC9C0 \uC54A\uB294\uB2E4\u300D \uB9C8\uB9AC\uB2F9 2.2~3% \xB7 \uCD5C\uB300 -22~30%"
+    - "5\uBC88\uC9F8 \uACF5\uACA9\uB9C8\uB2E4 \uC8FC\uBCC0 \uC804\uCCB4\uB97C \uBCA4\uB2E4 (\uD53C\uD574 100~200%)"
+    quote: "\uC57D\uC18D\uC740 \uC9C0\uD0A4\uB77C\uACE0 \uC788\uB294 \uAC70\uC608\uC694. \uC6D0\uADC0\uB791 \uD55C \uC57D\uC18D\uB9CC \uBE7C\uACE0\uC694."
+    sinnaerim:
+    - nodeName: "\uD718\uC5B4\uC9C4 \uB0A0"
+      cost: 100
+      selfEffect: "\uACF5\uACA9\uB825 +5%"
+      allyEffect: "\uACF5\uACA9 \uC18D\uB3C4 +3%"
+    - nodeName: "\uBC00\uACE0 \uB098\uAC00\uB294 \uCE7C"
+      cost: 200
+      selfEffect: "\uCD5C\uB300 \uCCB4\uB825 +10%"
+      allyEffect: "\uB0B4 \uC8FC\uBCC0 3\uCE78 \uC6D0\uADC0\uB294 \uB098\uB97C \uBA3C\uC800 \uB178\uB9BC"
+    - nodeName: "\uBC00\uACE0 \uB098\uAC00\uB294 \uCE7C 2"
+      cost: 300
+      selfEffect: "\uD638\uC2E0\uBD80 +1\uD68C"
+      allyEffect: "\uB0B4\uAC00 \uB9DE\uC73C\uBA74 \uB3D9\uB8CC \uACF5\uC18D +5% (3\uCD08)"
+    - nodeName: "\uC57D\uC18D\uD55C \uCE7C"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uACF5\uACA9\uB825 +8%"
+      allyEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uB3D9\uB8CC \uACF5\uACA9 \uC18D\uB3C4 +5%"
+    - nodeName: "\uC57D\uC18D\uD55C \uCE7C 2"
+      cost: 300
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uC7AC\uC0DD \uCD5C\uB300 \uCCB4\uB825 0.2%/\uCD08"
+      allyEffect: "\uB3D9\uB8CC \uCCB4\uB825 \uC7AC\uC0DD \uCD5C\uB300 \uCCB4\uB825 0.15%/\uCD08"
+    - nodeName: "\uD640\uB85C \uD718\uB450\uB974\uB294 \uCE7C"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC\uC640 10\uCE78 \uC774\uC0C1 \uB5A8\uC5B4\uC9C0\uBA74 \uACF5\uACA9 \uBC94\uC704 +10%"
+      allyEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uB3D9\uB8CC \uC774\uC18D +8%"
+    - nodeName: "\uD640\uB85C \uD718\uB450\uB974\uB294 \uCE7C 2"
+      cost: 300
+      selfEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uACF5\uACA9 \uC18D\uB3C4 +8%"
+      allyEffect: "\uB0B4\uAC00 \uC8FC\uC6B4 \uC601\uD63C +5%"
+    - nodeName: "\uC804\uC6A9 \uC2E0\uD1B5\uB825 \uC2DC\uC791"
+      cost: 500
+      selfEffect: "\uBC30\uC218\uC9C4 \xB7 \uB9CC\uC6D4 \uBCA0\uAE30 \uC911 \uD558\uB098\uB97C Lv1\uB85C \uB4E4\uACE0 \uC2DC\uC791"
+      allyEffect: "-"
+    - nodeName: "\uC815\uBA74 \uB3CC\uD30C"
+      cost: 700
+      selfEffect: "4\uCE78 \uC548 \uC6D0\uADC0 5\uB9C8\uB9AC \uC774\uC0C1\uC774\uBA74 \uACF5\uACA9\uB825 +15%"
+      allyEffect: "6\uCE78 \uC548 \uB3D9\uB8CC \uACF5\uACA9\uB825 +5%"
+    - nodeName: "\uC758\uB9AC"
+      cost: 700
+      selfEffect: "\uB3D9\uB8CC\uAC00 \uB9DE\uC73C\uBA74 2\uCD08\uAC04 \uB0B4 \uACF5\uACA9 \uC18D\uB3C4 +15%"
+      allyEffect: "\uB3D9\uB8CC\uAC00 \uBC1B\uB294 \uD53C\uD574 10%\uB97C \uB0B4\uAC00 \uB300\uC2E0 \uBC1B\uC74C"
+    - nodeName: "\uC5B8\uC6D4 \uC9C4\uACA9"
+      cost: 1000
+      selfEffect: "20\uCD08\uB9C8\uB2E4 \uC55E\uC73C\uB85C 4\uCE78 \uBC00\uACE0 \uB098\uAC00\uBA70 \uBCB0 (\uD53C\uD574 200%, 1\uCE78 \uBC00\uCE68)"
+      allyEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 3\uCD08\uAC04 \uB3D9\uB8CC \uBC1B\uB294 \uD53C\uD574 -20%"
   - characterId: imhun
     displayName: "\uC784\uD6C8"
-    weaponCaption: "\uCC3D \xB7 \uADFC\uC811 \xB7 \uB2E8\uC77C (\uCD94\uD6C4 \uAC1C\uBC1C)"
+    weaponCaption: "\uCC3D \xB7 \uADFC\uC811 \xB7 \uB2E8\uC77C"
     isUnlocked: 0
-    stats: {fileID: 0}
-    lobbyIdleFrames: []
-    lobbyIdleFps: 8
-    lobbyWalkFrames: []
+    stats: {fileID: 11400000, guid: f60498d8a8e84b7cbc7c66f3316fe65a, type: 2}
+    lobbyIdleFrames:
+    - {fileID: 6604293829859579409, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -7507311926573448031, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 5077978716839219730, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -4438097533554118378, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    lobbyIdleFps: 10
+    lobbyWalkFrames:
+    - {fileID: -4525264674536035880, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 2074025451581186041, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 6387892308121475986, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -6962818649260566635, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 6884875740238469631, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -1727109111599617639, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -1254357193100734442, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -737060708113199697, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 4557039326108315073, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
     lobbyWalkFps: 10
+    portrait: {fileID: 5976746117182714862, guid: f364a8548205c364a92d04d5432c1e9b, type: 3}
+    previewAttackFrames:
+    - {fileID: -324862363130059849, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -3182572619752535755, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -252919463725590090, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 418926717153572825, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 1550742620944311013, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 7270329825673627237, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 1566334522825185030, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 2946508015614698606, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 8378721542458341889, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 3566659667380713321, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -1858074178409834609, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 9053297795926174505, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 5465834696613170222, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    previewAttackFps: 10
+    previewHitFrame: 4
+    previewSlashFrames:
+    - {fileID: -5847905189042278624, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 3011500135356675352, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 6977987175683069848, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 4574518983080945535, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 3686349386949587081, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -6447486345248750025, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 8319808282600326277, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    roleTags: "\uADFC\uC811 \xB7 \uB2E8\uC77C \xB7 \uAD6C\uC6D0"
+    basicAttackDescription: "\uAC00\uC7A5 \uAE34 \uB9AC\uCE58\uB85C \uC55E\uC758 \uD55C \uB9C8\uB9AC\uB97C \uAE38\uAC8C \uCC0C\uB978\uB2E4."
+    passiveDescription: "\uB3D9\uB8CC\uAC00 \uB9DE\uC73C\uBA74 3\uCD08 \uB3D9\uC548 \uC774\uB3D9 \uC18D\uB3C4 +20% \xB7 \uB3D9\uB8CC\uAC00 \uC4F0\uB7EC\uC9C0\uBA74 \uADF8 \uC6E8\uC774\uBE0C \uB3D9\uC548 \uACF5\uACA9\uB825 +20%"
+    atkFrames:
+    - {fileID: -324862363130059849, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -3182572619752535755, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -252919463725590090, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 418926717153572825, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 1550742620944311013, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 7270329825673627237, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 1566334522825185030, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 2946508015614698606, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 8378721542458341889, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 3566659667380713321, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -1858074178409834609, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 9053297795926174505, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 5465834696613170222, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    dieFrames:
+    - {fileID: 735273619342666496, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 7719347425734807876, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    effectFrames:
+    - {fileID: -5847905189042278624, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 3011500135356675352, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 6977987175683069848, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 4574518983080945535, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 3686349386949587081, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: -6447486345248750025, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    - {fileID: 8319808282600326277, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
+    projectileSprite: {fileID: 0}
+    unlockPrice: 800
+    passiveName: "\uC81C\uAC00 \uAC08\uAC8C\uC694!"
+    exclusiveNames:
+    - "\uCCA0\uAE30 \uB3CC\uACA9"
+    - "\uB9D0 \uC704\uC5D0\uC11C"
+    exclusiveDescriptions:
+    - "Space\uB97C \uB204\uB974\uB294 \uB3D9\uC548 \uCDA9\uC804, \uB5BC\uBA74 \uB9C8\uC6B0\uC2A4 \uBC29\uD5A5\uC73C\uB85C \uB3CC\uC9C4 (\uD53C\uD574 100~250%)"
+    - "\uC774\uB3D9 \uC911 \uACF5\uACA9 \uC18D\uB3C4 +6~30%"
+    quote: "\uC81C\uAC00 \uAC08\uAC8C\uC694! \u2026\uADFC\uB370 \uC5B4\uB514\uB85C \uAC00\uBA74 \uB3FC\uC694?"
+    sinnaerim:
+    - nodeName: "\uACE7\uC740 \uCC3D\uB300"
+      cost: 100
+      selfEffect: "\uACF5\uACA9\uB825 +5%"
+      allyEffect: "\uC0AC\uAC70\uB9AC +0.2\uCE78"
+    - nodeName: "\uBA3C\uC800 \uB6F0\uC5B4\uB4DC\uB294 \uCC3D"
+      cost: 200
+      selfEffect: "\uCD5C\uB300 \uCCB4\uB825 +10%"
+      allyEffect: "\uB0B4 \uC8FC\uBCC0 3\uCE78 \uC6D0\uADC0\uB294 \uB098\uB97C \uBA3C\uC800 \uB178\uB9BC"
+    - nodeName: "\uBA3C\uC800 \uB6F0\uC5B4\uB4DC\uB294 \uCC3D 2"
+      cost: 300
+      selfEffect: "\uD638\uC2E0\uBD80 +1\uD68C"
+      allyEffect: "\uB0B4\uAC00 \uB9DE\uC73C\uBA74 \uB3D9\uB8CC \uACF5\uACA9\uB825 +3% (3\uCD08)"
+    - nodeName: "\uB2EC\uB824\uAC00\uB294 \uCC3D"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uACF5\uACA9\uB825 +8%"
+      allyEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uB3D9\uB8CC \uC0AC\uAC70\uB9AC +8%"
+    - nodeName: "\uB2EC\uB824\uAC00\uB294 \uCC3D 2"
+      cost: 300
+      selfEffect: "\uB3D9\uB8CC \uCABD\uC73C\uB85C \uAC08 \uB54C \uC774\uB3D9 \uC18D\uB3C4 +15%"
+      allyEffect: "\uB3D9\uB8CC \uCCB4\uB825 \uC7AC\uC0DD \uCD5C\uB300 \uCCB4\uB825 0.15%/\uCD08"
+    - nodeName: "\uCC99\uD6C4\uC758 \uCC3D"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC\uC640 10\uCE78 \uC774\uC0C1 \uB5A8\uC5B4\uC9C0\uBA74 \uC774\uC18D +10%"
+      allyEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uB3D9\uB8CC \uC774\uC18D +8%"
+    - nodeName: "\uCC99\uD6C4\uC758 \uCC3D 2"
+      cost: 300
+      selfEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uCC0C\uB974\uAE30 \uAD00\uD1B5 +1"
+      allyEffect: "\uB0B4\uAC00 \uC8FC\uC6B4 \uC601\uD63C +5%"
+    - nodeName: "\uC804\uC6A9 \uC2E0\uD1B5\uB825 \uC2DC\uC791"
+      cost: 500
+      selfEffect: "\uCCA0\uAE30 \uB3CC\uACA9 \xB7 \uB9D0 \uC704\uC5D0\uC11C \uC911 \uD558\uB098\uB97C Lv1\uB85C \uB4E4\uACE0 \uC2DC\uC791"
+      allyEffect: "-"
+    - nodeName: "\uB2E8\uB828\uB41C \uC9D1\uC911"
+      cost: 700
+      selfEffect: "\u300C\uCCA0\uAE30 \uB3CC\uACA9\u300D \uCD5C\uB300 \uCDA9\uC804 1.5\uCD08 \u2192 1\uCD08"
+      allyEffect: "\uCCA0\uAE30 \uB3CC\uACA9\uC774 \uB3D9\uB8CC \uADFC\uCC98\uC5D0\uC11C \uB05D\uB098\uBA74 \uB3D9\uB8CC \uC774\uC18D +15% (3\uCD08)"
+    - nodeName: "\uD638\uC704"
+      cost: 700
+      selfEffect: "\uB3D9\uB8CC\uAC00 6\uCE78 \uC548\uC774\uBA74 \uBC1B\uB294 \uD53C\uD574 -8%"
+      allyEffect: "\uB3D9\uB8CC\uB3C4 \uBC1B\uB294 \uD53C\uD574 -4%"
+    - nodeName: "\uAD6C\uC6D0\uC758 \uCC3D"
+      cost: 1000
+      selfEffect: "\uB3D9\uB8CC \uCCB4\uB825 30% \uC774\uD558\uBA74 \uB3D9\uB8CC \uC606\uC73C\uB85C \uC21C\uAC04\uC774\uB3D9, \uC8FC\uBCC0 3\uCE78 \uBC00\uCCD0\uB0C4 (40\uCD08\uB9C8\uB2E4)"
+      allyEffect: "\uC774\uB3D9 \uC9C1\uD6C4 \uB3D9\uB8CC 2\uCD08 \uBB34\uC801"
   - characterId: simyeore
     displayName: "\uC2EC\uC5EC\uB808"
-    weaponCaption: "\uBD80\uCC44 \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E4\uC218 \xB7 \uB109\uBC31
-      (\uCD94\uD6C4 \uAC1C\uBC1C)"
+    weaponCaption: "\uBD80\uCC44 \xB7 \uC6D0\uAC70\uB9AC \xB7 \uB2E4\uC218 \xB7 \uB109\uBC31"
     isUnlocked: 0
-    stats: {fileID: 0}
-    lobbyIdleFrames: []
-    lobbyIdleFps: 8
-    lobbyWalkFrames: []
+    stats: {fileID: 11400000, guid: 13fddf7cd56c4095967aa19a17888bed, type: 2}
+    lobbyIdleFrames:
+    - {fileID: -7382892060028560996, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 1037257687231789052, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 7516227566928881158, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -3994562838792906720, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -5159025214910753584, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    lobbyIdleFps: 10
+    lobbyWalkFrames:
+    - {fileID: 7915541632257030733, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -1064766625558814431, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 8791504331596139175, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 2700032720188268405, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 2506158818370768215, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -7024159104506534102, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 4372117192171754593, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 675366818561940410, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 539117463214968071, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
     lobbyWalkFps: 10
+    portrait: {fileID: 1078466381, guid: f364a8548205c364a92d04d5432c1e9b, type: 3}
+    previewAttackFrames:
+    - {fileID: 6226676060334187198, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -5144483355438956136, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 3462383161579470230, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -2202665681959591207, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 8626523375499853036, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 695887965080497577, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -4551913858350193559, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -3838931846912298853, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -1288108047720957538, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 1938268349471134036, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -3223541922144649960, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    previewAttackFps: 10
+    previewHitFrame: 6
+    previewSlashFrames: []
+    roleTags: "\uC6D0\uAC70\uB9AC \xB7 \uB2E4\uC218 \xB7 \uB109\uBC31"
+    basicAttackDescription: "\uBD80\uCC44\uB85C \uBC14\uB78C\uC744 \uB0A0\uB824 \uC5EC\uB7EC \uB9C8\uB9AC\uB97C \uAFF0\uB6AB\uACE0 \uBC00\uC5B4\uB0B8\uB2E4."
+    passiveDescription: "\uB3D9\uB8CC \uCCB4\uB825 50% \uC774\uD558 \u2192 \uACF5\uACA9\uB825 +20% \xB7 \uB109\uBC31 \uAC70\uB9AC +30%"
+    atkFrames:
+    - {fileID: 6226676060334187198, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -5144483355438956136, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 3462383161579470230, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -2202665681959591207, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 8626523375499853036, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 695887965080497577, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -4551913858350193559, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -3838931846912298853, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -1288108047720957538, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: 1938268349471134036, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -3223541922144649960, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    dieFrames:
+    - {fileID: 2417460114034702680, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    - {fileID: -654668540769350651, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    effectFrames: []
+    projectileSprite: {fileID: -3793940142275175900, guid: bdf1807c1fc1c864f806d21a0926ea8c, type: 3}
+    unlockPrice: 1200
+    passiveName: "\uD654\uB098\uBA74 \uC81C\uC77C \uBB34\uC12D\uB2E4"
+    exclusiveNames:
+    - "\uD718\uBAB0\uC774"
+    - "\uBD88\uAC19\uC740 \uC131\uBBF8"
+    exclusiveDescriptions:
+    - "4\uBC88\uC9F8 \uBC14\uB78C\uB9C8\uB2E4 \uD68C\uC624\uB9AC\uAC00 2\uCD08 \uBA38\uBB3C\uBA70 \uC6D0\uADC0\uB97C \uB04C\uC5B4\uB2F9\uAE40 (\uCD08\uB2F9 \uD53C\uD574 20~60%)"
+    - "\u300C\uD654\uB098\uBA74 \uC81C\uC77C \uBB34\uC12D\uB2E4\u300D \uACF5\uACA9\uB825 \uBCF4\uB108\uC2A4 +25~45%"
+    quote: "\uBC25\uC740 \uBA39\uACE0 \uC2F8\uC6CC\uC57C\uC9C0. \uC6D0\uADC0\uB3C4 \uBC25 \uBA39\uACE0 \uC624\uB294\uB370."
+    sinnaerim:
+    - nodeName: "\uC0C8 \uBD80\uCC44\uC0B4"
+      cost: 100
+      selfEffect: "\uACF5\uACA9\uB825 +5%"
+      allyEffect: "\uCD5C\uB300 \uCCB4\uB825 +5%"
+    - nodeName: "\uBC14\uB78C\uB9C9\uC774"
+      cost: 200
+      selfEffect: "\uCD5C\uB300 \uCCB4\uB825 +15%"
+      allyEffect: "\uBD80\uCC44 \uB9DE\uC740 \uC6D0\uADC0\uB294 2\uCD08\uAC04 \uB098\uB97C \uB178\uB9BC"
+    - nodeName: "\uBC14\uB78C\uB9C9\uC774 2"
+      cost: 300
+      selfEffect: "\uD638\uC2E0\uBD80 +1\uD68C"
+      allyEffect: "\uB0B4\uAC00 \uB9DE\uC73C\uBA74 \uB3D9\uB8CC \uCCB4\uB825 1% \uD68C\uBCF5"
+    - nodeName: "\uBC25 \uCC59\uAE30\uB294 \uC190"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uACF5\uACA9\uB825 +8%"
+      allyEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uB3D9\uB8CC \uC7AC\uC0DD \uCD5C\uB300 \uCCB4\uB825 0.2%/\uCD08"
+    - nodeName: "\uBC25 \uCC59\uAE30\uB294 \uC190 2"
+      cost: 300
+      selfEffect: "\uB3D9\uB8CC 6\uCE78 \uC548\uC774\uBA74 \uC7AC\uC0DD \uCD5C\uB300 \uCCB4\uB825 0.2%/\uCD08"
+      allyEffect: "\uB3D9\uB8CC \uCCB4\uB825 \uC7AC\uC0DD \uCD5C\uB300 \uCCB4\uB825 0.15%/\uCD08"
+    - nodeName: "\uBA40\uB9AC \uBD80\uB294 \uBC14\uB78C"
+      cost: 200
+      selfEffect: "\uB3D9\uB8CC\uC640 10\uCE78 \uC774\uC0C1 \uB5A8\uC5B4\uC9C0\uBA74 \uB109\uBC31 +20%"
+      allyEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uB3D9\uB8CC \uC774\uC18D +8%"
+    - nodeName: "\uBA40\uB9AC \uBD80\uB294 \uBC14\uB78C 2"
+      cost: 300
+      selfEffect: "\uB5A8\uC5B4\uC838 \uC788\uC73C\uBA74 \uACF5\uACA9 \uC18D\uB3C4 +8%"
+      allyEffect: "\uB0B4\uAC00 \uC8FC\uC6B4 \uC601\uD63C +5%"
+    - nodeName: "\uC804\uC6A9 \uC2E0\uD1B5\uB825 \uC2DC\uC791"
+      cost: 500
+      selfEffect: "\uD718\uBAB0\uC774 \xB7 \uBD88\uAC19\uC740 \uC131\uBBF8 \uC911 \uD558\uB098\uB97C Lv1\uB85C \uB4E4\uACE0 \uC2DC\uC791"
+      allyEffect: "-"
+    - nodeName: "\uBD80\uB52A\uD788\uB294 \uBC14\uB78C"
+      cost: 700
+      selfEffect: "\uBC00\uB824\uB09C \uC6D0\uADC0\uAC00 \uB2E4\uB978 \uC6D0\uADC0\uC640 \uBD80\uB52A\uD788\uBA74 \uD53C\uD574 50%"
+      allyEffect: "\uBD80\uB52A\uD78C \uC6D0\uADC0, \uB3D9\uB8CC \uD53C\uD574 +10%"
+    - nodeName: "\uC53B\uAE40"
+      cost: 700
+      selfEffect: "\uB0B4 \uCCB4\uB825 30% \uC774\uD558\uC77C \uB54C \uD68C\uBCF5 2\uBC30"
+      allyEffect: "\uB3D9\uB8CC \uCCB4\uB825 30% \uC774\uD558\uBA74 \uB0B4\uAC00 \uC900 \uD53C\uD574\uC758 3%\uB97C \uB3D9\uB8CC\uAC00 \uD68C\uBCF5"
+    - nodeName: "\uC0B0\uC2E0 \uAC15\uB9BC"
+      cost: 1000
+      selfEffect: "30\uCD08\uB9C8\uB2E4 \uC8FC\uBCC0 4\uCE78 \uC6D0\uADC0\uB97C \uD06C\uAC8C \uBC00\uC5B4\uB0C4"
+      allyEffect: "\uB3D9\uB8CC\uAC00 \uC5B4\uB514 \uC788\uB4E0 \uB458 \uB2E4 \uCD5C\uB300 \uCCB4\uB825 10% \uD68C\uBCF5"

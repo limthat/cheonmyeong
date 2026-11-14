@@ -50,10 +50,36 @@ namespace CheonMyeong.UI
             if (normalImage != null)
             {
                 RectTransform art = normalImage.rectTransform;
-                artBottomOffset = art.localPosition.y - art.rect.height * art.pivot.y;
+                // 261114 - 새 로비 시트는 512 칸 안에 건물이 그려져 있어 아래 여백이 있다(출진문 92px). 그림의 실제 밑단을 기준선으로.
+                artBottomOffset = art.localPosition.y - art.rect.height * art.pivot.y
+                                  + art.rect.height * VisibleBottomRatio(normalImage.sprite);
                 UseArtForPointer();
             }
             Apply(true);
+        }
+
+        /// <summary>스프라이트에서 실제로 그려진 부분의 밑단 높이 비율(0~1). Tight 메시면 꼭짓점으로, 아니면 0.</summary>
+        private static float VisibleBottomRatio(Sprite sprite)
+        {
+            if (sprite == null || sprite.rect.height <= 0f)
+            {
+                return 0f;
+            }
+            Vector2[] vertices = sprite.vertices;
+            if (vertices == null || vertices.Length == 0)
+            {
+                return 0f;
+            }
+            float minY = float.MaxValue;
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                if (vertices[i].y < minY)
+                {
+                    minY = vertices[i].y;
+                }
+            }
+            float pixelY = minY * sprite.pixelsPerUnit + sprite.pivot.y;
+            return Mathf.Clamp01(pixelY / sprite.rect.height);
         }
 
         private void OnDisable()

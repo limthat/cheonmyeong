@@ -33,12 +33,22 @@ namespace CheonMyeong.Progression
             0d, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         private readonly HashSet<ulong> pauseVoteYes = new HashSet<ulong>();
+
+        // 261114 - 화면 멈춤: 누구든 인게임 화면이 아닌 곳(대기실 · 로딩 · 스토리 컷신 등)에 있으면 판 시간이 흐르지 않는다.
+        // 각자 자기 화면 상태를 서버에 알리고, 서버가 접속자 전원이 인게임 화면일 때만 푼다(아직 안 알린 사람 = 멈춤).
+        private readonly NetworkVariable<bool> screenPaused = new NetworkVariable<bool>(
+            false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+        private readonly Dictionary<ulong, bool> clientsInGameView = new Dictionary<ulong, bool>();
+        private bool hasReportedView;
+        private bool lastReportedInGameView;
         private PauseVoteView pauseVoteView;
 
         /// <summary>투표가 끝났을 때(모든 화면). true = 일시정지됨, false = 거절 · 시간 초과.</summary>
         public static event Action<bool> PauseVoteFinished;
 
         public bool IsMenuPaused => menuPaused.Value;
+        public bool IsScreenPaused => screenPaused.Value;
         public bool IsPauseVoteActive => pauseVoteRequester.Value != NoPauseVote;
         public ulong PauseVoteRequester => pauseVoteRequester.Value;
 
@@ -58,6 +68,8 @@ namespace CheonMyeong.Progression
         {
             menuPaused.OnValueChanged += HandleMenuPausedChanged;
             pauseVoteYes.Clear();
+            clientsInGameView.Clear();
+            hasReportedView = false;
             if (menuPaused.Value)
             {
                 HandleMenuPausedChanged(false, true);
@@ -67,6 +79,7 @@ namespace CheonMyeong.Progression
         private void PauseOnNetworkDespawn()
         {
             menuPaused.OnValueChanged -= HandleMenuPausedChanged;
+            clientsInGameView.Clear();
             if (pauseVoteView != null)
             {
                 Destroy(pauseVoteView.gameObject);
@@ -78,6 +91,51 @@ namespace CheonMyeong.Progression
         {
             AugmentChoiceUpdate();
             PauseUpdate();
+            ScreenPauseUpdate();
+        }
+
+        private void ScreenPauseUpdate()
+        {
+            if (!IsSpawned)
+            {
+                return;
+            }
+            UIFlowManager flow = UIFlowManager.Instance;
+            bool inGameView = flow != null && flow.CurrentScreen == UIFlowManager.InGame;
+            if (!hasReportedView || inGameView != lastReportedInGameView)
+            {
+                hasReportedView = true;
+                lastReportedInGameView = inGameView;
+                ReportInGameViewRpc(inGameView);
+            }
+            if (IsServer)
+            {
+                ServerRefreshScreenPause();
+            }
+        }
+
+        [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+        private void ReportInGameViewRpc(bool inGameView, RpcParams rpcParams = default)
+        {
+            clientsInGameView[rpcParams.Receive.SenderClientId] = inGameView;
+        }
+
+        private void ServerRefreshScreenPause()
+        {
+            bool paused = false;
+            IReadOnlyList<NetworkClient> clients = NetworkManager.ConnectedClientsList;
+            for (int i = 0; i < clients.Count; i++)
+            {
+                if (!clientsInGameView.TryGetValue(clients[i].ClientId, out bool inGameView) || !inGameView)
+                {
+                    paused = true;
+                    break;
+                }
+            }
+            if (screenPaused.Value != paused)
+            {
+                screenPaused.Value = paused;
+            }
         }
 
         private void PauseUpdate()

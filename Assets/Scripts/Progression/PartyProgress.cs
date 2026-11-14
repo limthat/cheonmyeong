@@ -77,8 +77,8 @@ namespace CheonMyeong.Progression
 
         public int Level => level.Value;
         public int CurrentExp => currentExp.Value;
-        /// <summary>261110 - 신통력 고르기(isPaused) 또는 ESC 일시정지(menuPaused) 중이면 true.</summary>
-        public bool IsPaused => isPaused.Value || menuPaused.Value;
+        /// <summary>261110 - 신통력 고르기(isPaused) 또는 ESC 일시정지(menuPaused) 중이면 true. 261114 - 누가 인게임 화면 밖(대기실 · 컷신 등)에 있어도(screenPaused).</summary>
+        public bool IsPaused => isPaused.Value || menuPaused.Value || screenPaused.Value;
         public int Grudge => grudge.Value;
 
         /// <summary>261110 - 원한 단계 경계값(HUD 게이지가 단계 칸을 실제 수치만큼 채울 때 쓴다).</summary>
