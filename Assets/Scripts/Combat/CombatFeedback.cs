@@ -106,12 +106,25 @@ namespace CheonMyeong.Combat
             {
                 return;
             }
+            // 261115 - 설정 > 기타: 타격 이펙트 / 피해 숫자 끄기.
+            bool sparks = CheonMyeong.Settings.GameSettings.HitEffects;
+            bool numbers = CheonMyeong.Settings.GameSettings.DamageNumbers;
+            if (!sparks && !numbers)
+            {
+                return;
+            }
             CombatFeedback feedback = GetOrCreate();
             feedback.TryAssignMaterial(materialSource);
             for (int i = 0; i < hits.Length; i++)
             {
-                feedback.EmitSparks(hits[i]);
-                feedback.ShowNumber(hits[i]);
+                if (sparks)
+                {
+                    feedback.EmitSparks(hits[i]);
+                }
+                if (numbers)
+                {
+                    feedback.ShowNumber(hits[i]);
+                }
             }
         }
 
@@ -121,7 +134,7 @@ namespace CheonMyeong.Combat
         /// </summary>
         public static void PlayDust(Vector2 center, float radius, Vector2 direction, Color tint, SpriteRenderer materialSource)
         {
-            if (radius <= 0f)
+            if (radius <= 0f || !CheonMyeong.Settings.GameSettings.HitEffects)
             {
                 return;
             }

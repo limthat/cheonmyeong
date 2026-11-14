@@ -66,6 +66,8 @@ namespace CheonMyeong.Player
         /// <summary>화면 흔들기(로컬 연출). amplitude = 최대 흔들림(유닛), seconds = 지속 시간. 더 센 흔들림이 우선.</summary>
         public static void Shake(float amplitude, float seconds)
         {
+            // 261115 - 설정 > 화면 > 화면 흔들림(끔 0 / 약하게 0.5 / 보통 1).
+            amplitude *= CheonMyeong.Settings.GameSettings.ShakeScale;
             if (Instance == null || amplitude <= 0f || seconds <= 0f)
             {
                 return;
