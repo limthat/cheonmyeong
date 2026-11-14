@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,25 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private Text previewNameText;
         [SerializeField] private Text previewDescText;
 
+        /// <summary>
+        /// 261110 - 로비 건물별로 같은 화면을 나눠 쓴다. 캐릭터 목록은 둘 다 보인다.
+        /// 팀원 모집(가운데 전각) = 목록 · 미리보기(대기 모션). 스킬트리(상점) = 목록 · 스킬트리 - 잠긴 캐릭터도 눌러서 그 캐릭터 스킬트리를 볼 수 있다.
+        /// </summary>
+        public enum Mode
+        {
+            Recruit,
+            SkillTree
+        }
+
+        /// <summary>다음에 이 화면이 열릴 때 쓸 모드. LobbyScreen이 열기 직전에 정한다.</summary>
+        public static Mode RequestedMode = Mode.Recruit;
+
+        [Tooltip("팀원 모집 모드에서만 보이는 것(대기 모션 자리). 비워두면 이름으로 찾는다(PreviewPlaceholder).")]
+        [SerializeField] private GameObject[] recruitOnly;
+
+        [Tooltip("스킬트리 모드에서만 보이는 것. 비워두면 이름으로 찾는다(SkillTreeContainer).")]
+        [SerializeField] private GameObject[] skillTreeOnly;
+
         private void Awake()
         {
             if (backButton != null)
@@ -52,12 +72,59 @@ namespace CheonMyeong.UI.Screens
                 }
             }
 
+            if (recruitOnly == null || recruitOnly.Length == 0)
+            {
+                recruitOnly = FindChildren("PreviewPlaceholder");
+            }
+            if (skillTreeOnly == null || skillTreeOnly.Length == 0)
+            {
+                skillTreeOnly = FindChildren("SkillTreeContainer");
+            }
+
             SelectCharacter(0);
+        }
+
+        private void OnEnable()
+        {
+            bool recruit = RequestedMode == Mode.Recruit;
+            SetActive(recruitOnly, recruit);
+            SetActive(skillTreeOnly, !recruit);
+            // 팀원 모집에선 쓸 수 있는 캐릭터만 고를 수 있어서, 스킬트리에서 잠긴 캐릭터를 보던 중이면 하영으로 돌린다.
+            SelectCharacter(recruit && selectedIndex != 0 ? 0 : selectedIndex);
+        }
+
+        private static void SetActive(GameObject[] targets, bool active)
+        {
+            if (targets == null)
+            {
+                return;
+            }
+            for (int i = 0; i < targets.Length; i++)
+            {
+                if (targets[i] != null && targets[i].activeSelf != active)
+                {
+                    targets[i].SetActive(active);
+                }
+            }
+        }
+
+        private GameObject[] FindChildren(params string[] names)
+        {
+            var found = new List<GameObject>(names.Length);
+            for (int i = 0; i < names.Length; i++)
+            {
+                Transform child = transform.Find(names[i]);
+                if (child != null)
+                {
+                    found.Add(child.gameObject);
+                }
+            }
+            return found.ToArray();
         }
 
         private void OnRosterClicked(int index, bool unlocked)
         {
-            if (!unlocked)
+            if (!unlocked && RequestedMode != Mode.SkillTree)
             {
                 Debug.Log($"[CheonMyeong] '{RosterNames[index]}'는 추후 개발 예정 캐릭터 - 아직 선택할 수 없습니다.");
                 return;
@@ -66,11 +133,15 @@ namespace CheonMyeong.UI.Screens
             SelectCharacter(index);
         }
 
+        private int selectedIndex;
+
         private void SelectCharacter(int index)
         {
+            selectedIndex = index;
             if (previewNameText != null)
             {
-                previewNameText.text = index == 0 ? "하영 · 사인검" : RosterNames[index];
+                string title = index == 0 ? "하영 · 사인검" : RosterNames[index];
+                previewNameText.text = RequestedMode == Mode.SkillTree ? title + " · 스킬트리" : title;
             }
             if (previewDescText != null)
             {

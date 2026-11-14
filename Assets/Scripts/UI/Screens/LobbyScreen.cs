@@ -27,8 +27,9 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private Button settingsButton;
         [SerializeField] private CharacterCatalogSO characterCatalog;
 
-        [Header("261101 - 건물 로비 (큰 전각 = 게임 시작, 상점 = 스킬 · 캐릭터, 게시판 = 스토리 저장소)")]
+        [Header("261110 - 건물 로비 (가운데 아래 출진문 = 출정, 큰 전각 = 팀원 모집, 상점 = 스킬트리, 게시판 = 스토리 저장소)")]
         [SerializeField] private LobbyBuilding sortieBuilding;
+        [SerializeField] private LobbyBuilding recruitBuilding;
         [SerializeField] private LobbyBuilding skillTreeBuilding;
         [SerializeField] private LobbyBuilding storyStorageBuilding;
 
@@ -40,7 +41,7 @@ namespace CheonMyeong.UI.Screens
             }
             if (skillTreeButton != null)
             {
-                skillTreeButton.onClick.AddListener(() => UIFlowManager.Instance.ShowScreen(UIFlowManager.CharSkillTree));
+                skillTreeButton.onClick.AddListener(OpenSkillTree);
             }
             if (storyStorageButton != null)
             {
@@ -55,6 +56,10 @@ namespace CheonMyeong.UI.Screens
             if (sortieBuilding != null)
             {
                 sortieBuilding.Activated += OpenChoiceMap;
+            }
+            if (recruitBuilding != null)
+            {
+                recruitBuilding.Activated += OpenRecruit;
             }
             if (skillTreeBuilding != null)
             {
@@ -71,8 +76,15 @@ namespace CheonMyeong.UI.Screens
             UIFlowManager.Instance.ShowScreen(UIFlowManager.ChoiceMap);
         }
 
+        private static void OpenRecruit()
+        {
+            CharSkillTreeScreen.RequestedMode = CharSkillTreeScreen.Mode.Recruit;
+            UIFlowManager.Instance.ShowScreen(UIFlowManager.CharSkillTree);
+        }
+
         private static void OpenSkillTree()
         {
+            CharSkillTreeScreen.RequestedMode = CharSkillTreeScreen.Mode.SkillTree;
             UIFlowManager.Instance.ShowScreen(UIFlowManager.CharSkillTree);
         }
 

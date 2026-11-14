@@ -204,6 +204,10 @@ namespace CheonMyeong.Progression
             {
                 return;
             }
+            if (PartyProgress.Instance != null && PartyProgress.Instance.IsPaused)
+            {
+                return; // 261110 - 일시정지 중엔 끌려가지도 · 주워지지도 않는다
+            }
 
             // 261104 - 넋 거두기로 끌려가는 중. 대상이 사라지거나 쓰러지면 평소대로 돌아간다.
             if (harvestTarget != null)

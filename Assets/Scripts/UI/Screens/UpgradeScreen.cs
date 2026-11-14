@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CheonMyeong.Progression;
 using TMPro;
@@ -11,7 +12,7 @@ namespace CheonMyeong.UI.Screens
     /// 261104 - 기획서 v0.9.4 07장 신통력 연결(서버가 뽑은 내 카드 3장, 준비 완료 → PickAugmentRpc, 10초, 리롤권).
     /// 261109 - 아트 카드 디자인([아트] 천명_UI_에셋 · Test_Art_SampleScene) 연결. 카드 안 이름으로 찾는다:
     /// - NameText: [분류] 이름 / DescText: 설명 / Star_0~4: 단계 별(채운 별 = 고르면 될 단계, 일회용 · 무한은 숨김)
-    /// - Icon: 신통력 아이콘 - 아이콘 시트가 v0.9.6 신통력(새 이름 · Code) 기준이라 지금 카탈로그와 짝이 없어 숨긴다.
+    /// - Icon: 신통력 아이콘(Sintong_Icon-Sheet). 261110 - augmentIcons 표로 카탈로그 id ↔ 아이콘을 잇는다. 표에 없으면 숨긴다.
     /// - RerollButton: 그 카드 한 장만 리롤권 1장으로 다시 뽑는다(아트 디자인이 카드마다 버튼).
     /// 카드 배경이 아트 그림이라 선택 표시는 색을 어둡게 칠하지 않고, 고른 카드를 살짝 키우고 나머지를 흐리게 한다.
     /// 261109 - 리롤권이 없으면(기본 0장, 5웨이브 억쇠 격퇴 때 +1) 카드 리롤 버튼을 확실히 어둡게 하고, 버튼 구석에 남은 장수(×N)를 띄운다.
@@ -28,6 +29,16 @@ namespace CheonMyeong.UI.Screens
 
         [Tooltip("비워두면 자식 중 \"RerollCountText\"를 찾는다.")]
         [SerializeField] private Text rerollCountText;
+
+        [Serializable]
+        public struct AugmentIcon
+        {
+            public AugmentId id;
+            public Sprite sprite;
+        }
+
+        [Tooltip("261110 - 신통력 id → 카드 아이콘(Sintong_Icon-Sheet). 아이콘 시트는 기획서 v0.9.6 이름 기준이라 v0.9.4 카탈로그와는 뜻이 가장 가까운 아이콘으로 이었다.")]
+        [SerializeField] private AugmentIcon[] augmentIcons = Array.Empty<AugmentIcon>();
 
         private const string TitleLabel = "레벨업! 신통력을 고르세요";
         private const string ReadyButtonDefaultLabel = "✓ 준비 완료";
@@ -320,6 +331,14 @@ namespace CheonMyeong.UI.Screens
                 case AugmentKind.Infinite: tag = "[무한]"; break;
                 default: tag = "[공통]"; break;
             }
+            if (card.Icon != null)
+            {
+                Sprite icon = FindIcon(offer.Augment);
+                card.Icon.sprite = icon;
+                card.Icon.preserveAspect = true;
+                card.Icon.gameObject.SetActive(icon != null);
+            }
+
             bool leveled = entry.kind == AugmentKind.Common || entry.kind == AugmentKind.Exclusive;
             bool showStars = leveled && card.Stars != null && starFilled != null;
 
@@ -416,6 +435,18 @@ namespace CheonMyeong.UI.Screens
                 card.Background.color = dimmed ? card.BackgroundColor * DimmedColor : card.BackgroundColor;
                 card.Root.localScale = selected ? Vector3.one * SelectedScale : Vector3.one;
             }
+        }
+
+        private Sprite FindIcon(AugmentId id)
+        {
+            for (int i = 0; i < augmentIcons.Length; i++)
+            {
+                if (augmentIcons[i].id == id)
+                {
+                    return augmentIcons[i].sprite;
+                }
+            }
+            return null;
         }
 
         private static T FindComponent<T>(Transform root, string childName) where T : Component

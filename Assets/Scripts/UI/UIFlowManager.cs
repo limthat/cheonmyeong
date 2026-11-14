@@ -59,6 +59,9 @@ namespace CheonMyeong.UI
 
         private string currentBaseScreenId;
 
+        /// <summary>261110 - 지금 베이스 화면 id(오버레이 제외).</summary>
+        public string CurrentScreen => currentBaseScreenId;
+
         private void Awake()
         {
             Instance = this;
@@ -83,13 +86,64 @@ namespace CheonMyeong.UI
             }
         }
 
+        /// <summary>
+        /// 261110 수정 - ESC:
+        /// - 인게임: 위에 창이 없으면 일시정지 요청(혼자면 바로 정지, 둘이면 동료 수락 투표 - PartyProgress.Pause).
+        ///   ESC 메뉴(일시정지 중)에서 누르면 일시정지를 푼다. 설정이 위에 있으면 설정만 닫는다. 신통력 고르는 중엔 무시.
+        /// - 로비: 설정 창을 열고 닫는다.
+        /// - 그 밖: 맨 위 창을 닫는다.
+        /// </summary>
         private void HandleEscapePressed()
         {
+            if (currentBaseScreenId == InGame)
+            {
+                HandleInGameEscape();
+                return;
+            }
             if (overlayStack.Count > 0)
             {
                 CloseOverlay();
             }
-            else if (currentBaseScreenId == InGame)
+            else if (currentBaseScreenId == Lobby)
+            {
+                OpenOverlay(Settings);
+            }
+        }
+
+        private void HandleInGameEscape()
+        {
+            Progression.PartyProgress party = Progression.PartyProgress.Instance;
+            if (IsTopOverlay(Settings))
+            {
+                CloseOverlay();
+                return;
+            }
+            if (IsOverlayOpen(Upgrade))
+            {
+                return;
+            }
+            if (IsOverlayOpen(EscMenu))
+            {
+                if (party != null && party.IsSpawned && party.IsMenuPaused)
+                {
+                    party.RequestMenuResumeRpc();
+                }
+                else
+                {
+                    CloseOverlay(EscMenu);
+                }
+                return;
+            }
+            if (overlayStack.Count > 0)
+            {
+                CloseOverlay();
+                return;
+            }
+            if (party != null && party.IsSpawned)
+            {
+                party.LocalPressPause();
+            }
+            else
             {
                 OpenOverlay(EscMenu);
             }

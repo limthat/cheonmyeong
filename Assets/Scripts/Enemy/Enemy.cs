@@ -202,6 +202,20 @@ namespace CheonMyeong.Enemies
             ServerAbsorbAllIntoGrudge();
         }
 
+        /// <summary>261110 - 서버 전용. 지금 살아있는(쓰러지는 중 아닌) 원귀 위치를 buffer에 담는다 - 웨이브 끝 원한 흡수 연출용.</summary>
+        public static void ServerCollectAlivePositions(List<Vector2> buffer)
+        {
+            buffer.Clear();
+            for (int i = 0; i < ActiveEnemies.Count; i++)
+            {
+                Enemy enemy = ActiveEnemies[i];
+                if (enemy != null && enemy.IsServer && enemy.IsSpawned && !enemy.isDying.Value)
+                {
+                    buffer.Add(enemy.transform.position);
+                }
+            }
+        }
+
         public static int ServerAbsorbAllIntoGrudge()
         {
             float total = 0f;

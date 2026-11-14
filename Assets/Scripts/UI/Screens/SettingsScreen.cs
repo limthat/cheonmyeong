@@ -17,6 +17,8 @@ namespace CheonMyeong.UI.Screens
     public class SettingsScreen : MonoBehaviour
     {
         [SerializeField] private Button backButton;
+        [Tooltip("261110 - 게임 종료(앱 끄기). 비어 있으면 자식 중 QuitButton을 찾는다.")]
+        [SerializeField] private Button quitButton;
         [SerializeField] private Slider masterVolumeSlider;
         [SerializeField] private Slider bgmVolumeSlider;
         [SerializeField] private Slider sfxVolumeSlider;
@@ -26,6 +28,18 @@ namespace CheonMyeong.UI.Screens
             if (backButton != null)
             {
                 backButton.onClick.AddListener(OnBackPressed);
+            }
+            if (quitButton == null)
+            {
+                Transform found = FindChild(transform, "QuitButton");
+                if (found != null)
+                {
+                    found.TryGetComponent(out quitButton);
+                }
+            }
+            if (quitButton != null)
+            {
+                quitButton.onClick.AddListener(QuitGame);
             }
             if (masterVolumeSlider != null)
             {
@@ -52,6 +66,37 @@ namespace CheonMyeong.UI.Screens
             {
                 UIFlowManager.Instance.ShowScreen(UIFlowManager.Lobby);
             }
+        }
+
+        /// <summary>
+        /// 261110 - 게임을 완전히 끈다. 세션은 SessionManager.OnApplicationQuit에서 LeaveAsync로 정리된다.
+        /// 에디터에서는 Application.Quit이 무시되므로 플레이 모드를 끈다.
+        /// </summary>
+        private static void QuitGame()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
+        private static Transform FindChild(Transform root, string childName)
+        {
+            for (int i = 0; i < root.childCount; i++)
+            {
+                Transform child = root.GetChild(i);
+                if (child.name == childName)
+                {
+                    return child;
+                }
+                Transform deeper = FindChild(child, childName);
+                if (deeper != null)
+                {
+                    return deeper;
+                }
+            }
+            return null;
         }
 
         private static void OnBgmVolumeChanged(float value)

@@ -111,6 +111,16 @@ namespace CheonMyeong.UI.Screens
             }
         }
 
+        /// <summary>
+        /// 261110 - 방 만들기/참가가 성공하면 버튼을 잠근 채로 대기실로 넘어가서, 나가기로 로비 → 다시 이 화면에 오면
+        /// 방 만들기 · 참가 버튼이 계속 잠겨 있었다(방이 다시 안 만들어지던 원인 중 하나). 열릴 때마다 풀고 안내 문구도 비운다.
+        /// </summary>
+        private void OnEnable()
+        {
+            SetNetworkButtonsInteractable(true);
+            SetStatus(string.Empty);
+        }
+
         private void OnMapTileClicked(MapCatalogSO.MapEntry entry)
         {
             if (entry == null || !entry.isUnlocked || string.IsNullOrEmpty(entry.gameplaySceneName))

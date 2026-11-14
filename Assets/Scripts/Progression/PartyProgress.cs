@@ -77,8 +77,12 @@ namespace CheonMyeong.Progression
 
         public int Level => level.Value;
         public int CurrentExp => currentExp.Value;
-        public bool IsPaused => isPaused.Value;
+        /// <summary>261110 - 신통력 고르기(isPaused) 또는 ESC 일시정지(menuPaused) 중이면 true.</summary>
+        public bool IsPaused => isPaused.Value || menuPaused.Value;
         public int Grudge => grudge.Value;
+
+        /// <summary>261110 - 원한 단계 경계값(HUD 게이지가 단계 칸을 실제 수치만큼 채울 때 쓴다).</summary>
+        public System.Collections.Generic.IReadOnlyList<int> GrudgeThresholds => grudgeThresholds;
         public int GrudgeStage => GetGrudgeStage(grudge.Value);
         public bool IsMaxLevel => levelCap > 0 && level.Value >= levelCap;
 
@@ -131,6 +135,7 @@ namespace CheonMyeong.Progression
             // 주기적 재계산값).
             grudge.OnValueChanged += HandleGrudgeChanged;
             AugmentChoiceOnNetworkSpawn();
+            PauseOnNetworkSpawn();
             RefreshHud();
             RefreshGrudgeHud();
         }
@@ -142,6 +147,7 @@ namespace CheonMyeong.Progression
             isPaused.OnValueChanged -= HandleIsPausedChanged;
             grudge.OnValueChanged -= HandleGrudgeChanged;
             AugmentChoiceOnNetworkDespawn();
+            PauseOnNetworkDespawn();
         }
 
         /// <summary>

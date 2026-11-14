@@ -25,6 +25,7 @@ namespace CheonMyeong.Progression
             0d, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         private int pendingChoices;
+        private double choiceHoldUntil;
         private bool choosing;
 
         public AugmentCatalogSO AugmentCatalog => augmentCatalog != null ? augmentCatalog : AugmentCatalogSO.Default;
@@ -48,6 +49,24 @@ namespace CheonMyeong.Progression
             choiceRound.OnValueChanged += HandleChoiceRoundChanged;
             pendingChoices = 0;
             choosing = false;
+            choiceHoldUntil = 0d;
+        }
+
+        /// <summary>
+        /// 261110 서버 전용 - 웨이브 종료 흡수 연출 동안 신통력 화면을 미룬다. 그 사이 레벨업은 쌓아뒀다가
+        /// 시간이 지나면 AugmentChoiceUpdate가 연다.
+        /// </summary>
+        public void ServerDelayAugmentChoices(float seconds)
+        {
+            if (!IsServer || !IsSpawned || seconds <= 0f)
+            {
+                return;
+            }
+            double until = NetworkManager.ServerTime.Time + seconds;
+            if (until > choiceHoldUntil)
+            {
+                choiceHoldUntil = until;
+            }
         }
 
         private void AugmentChoiceOnNetworkDespawn()
@@ -72,7 +91,7 @@ namespace CheonMyeong.Progression
                 return;
             }
             pendingChoices += count;
-            if (!choosing)
+            if (!choosing && NetworkManager.ServerTime.Time >= choiceHoldUntil)
             {
                 ServerStartChoiceRound();
             }
@@ -94,10 +113,20 @@ namespace CheonMyeong.Progression
             choiceRound.Value++;
         }
 
-        private void Update()
+        /// <summary>서버 - 10초가 지나면 아직 안 고른 사람은 무작위로. Update는 PartyProgress.Pause.cs에서 부른다.</summary>
+        private void AugmentChoiceUpdate()
         {
-            if (!IsServer || !IsSpawned || !choosing)
+            if (!IsServer || !IsSpawned)
             {
+                return;
+            }
+            if (!choosing)
+            {
+                // 261110 - 미뤄둔 레벨업(흡수 연출 끝)
+                if (pendingChoices > 0 && NetworkManager.ServerTime.Time >= choiceHoldUntil)
+                {
+                    ServerStartChoiceRound();
+                }
                 return;
             }
             if (NetworkManager.ServerTime.Time < choiceDeadline.Value)

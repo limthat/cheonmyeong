@@ -122,6 +122,12 @@ namespace CheonMyeong.UI.Screens
         {
             pendingRetryReload = false;
             UIFlowManager.Instance.ShowScreen(UIFlowManager.Lobby);
+            // 261110 - 세션 · 네트워크까지 정리(안 하면 로비에서 방을 다시 못 만듦). 씬도 SessionManager가 내린다.
+            if (SessionManager.Instance != null)
+            {
+                _ = SessionManager.Instance.LeaveAsync();
+                return;
+            }
             UnloadCurrentGameplayScene();
         }
 

@@ -47,6 +47,9 @@ namespace CheonMyeong.UI
         [Tooltip("캐릭터 스탯이 연결 안 됐을 때의 이동 속도(유닛/초) - 기획서 하영 기준 300(=5).")]
         [SerializeField] private float fallbackMoveSpeed = 5f;
 
+        [Tooltip("261110 - 로비 캐릭터 크기 배율(인게임 크기 기준).")]
+        [Min(0.1f)] [SerializeField] private float sizeMultiplier = 1.5f;
+
         [Header("261109 - 박석 마당 경계 (배경 그림 기준, 화면 비율 0~1 · 위에서부터)")]
         [Tooltip("켜면 발밑이 양옆 회랑(기둥 줄) 쪽으로 넘어가지 않는다 - 배경(background-Sheet)의 기둥보다 캐릭터가 앞에 그려지는 문제 방지.")]
         [SerializeField] private bool clampToPlaza = true;
@@ -240,7 +243,7 @@ namespace CheonMyeong.UI
             }
 
             Vector2 worldSize = first.rect.size / first.pixelsPerUnit;
-            rectTransform.sizeDelta = worldSize * unitsScale;
+            rectTransform.sizeDelta = worldSize * (unitsScale * sizeMultiplier);
         }
 
         private void ApplyFacing()
