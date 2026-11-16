@@ -36,6 +36,15 @@ namespace CheonMyeong.Player
         /// <summary>현재 스폰돼 있는 모든 PlayerHealth. Enemy의 타겟 탐색용.</summary>
         public static readonly List<PlayerHealth> ActivePlayers = new List<PlayerHealth>();
 
+        /// <summary>261115 개발자 모드(서버 전용) - 켜져 있으면 모든 플레이어가 피해를 받지 않는다. WaveManager F7.</summary>
+        public static bool DebugGodMode { get; set; }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetDebugStatics()
+        {
+            DebugGodMode = false;
+        }
+
         [SerializeField] private CharacterStatsSO stats;
 
         /// <summary>261114 - 서버 전용. 받는 피해 배율(1 = 그대로). 패시브가 정한다.</summary>
@@ -398,7 +407,7 @@ namespace CheonMyeong.Player
         {
             // 피해 적용은 서버만 - 적 쪽도 서버에서만 공격 판정을 하게 될 예정이라
             // 보통 서버에서만 호출되지만, 혹시 몰라 한 번 더 막는다.
-            if (!IsServer || isDead.Value || stats == null)
+            if (!IsServer || isDead.Value || stats == null || DebugGodMode)
             {
                 return;
             }
@@ -445,6 +454,12 @@ namespace CheonMyeong.Player
             else
             {
                 ApplyAliveState();
+            }
+            // 261115 - 쓰러짐 · 부활 소리(모든 화면). 동료 쪽이면 '동료 소리 크기' 적용.
+            if (previous != current)
+            {
+                CheonMyeong.Audio.GameAudio.PlayAt(current ? CheonMyeong.Audio.SoundKeys.PlayerDown : CheonMyeong.Audio.SoundKeys.PlayerRevive,
+                    transform.position, !IsOwner);
             }
         }
 

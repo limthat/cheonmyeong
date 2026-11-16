@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a69240bdcd54f95ae7c9c10d7d430c9, type: 3}
+  m_Name: SoundLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Audio.SoundLibrary
+  entries:
+  - key: bgm.title
+    cue: {fileID: 0}
+  - key: bgm.lobby
+    cue: {fileID: 0}
+  - key: bgm.wave_early
+    cue: {fileID: 0}
+  - key: bgm.wave_late
+    cue: {fileID: 0}
+  - key: bgm.boss
+    cue: {fileID: 0}
+  - key: bgm.final
+    cue: {fileID: 0}
+  - key: bgm.victory
+    cue: {fileID: 0}
+  - key: bgm.defeat
+    cue: {fileID: 0}
+  - key: wave.start
+    cue: {fileID: 0}
+  - key: wave.gong
+    cue: {fileID: 0}
+  - key: wave.final_start
+    cue: {fileID: 0}
+  - key: grow.level_up
+    cue: {fileID: 0}
+  - key: grow.card_show
+    cue: {fileID: 0}
+  - key: grow.card_pick
+    cue: {fileID: 0}
+  - key: grow.card_burn
+    cue: {fileID: 0}
+  - key: grow.card_reroll
+    cue: {fileID: 0}
+  - key: grow.pickup_soul
+    cue: {fileID: 0}
+  - key: grow.pickup_coin
+    cue: {fileID: 0}
+  - key: combat.hit
+    cue: {fileID: 0}
+  - key: combat.hit_crit
+    cue: {fileID: 0}
+  - key: combat.enemy_die
+    cue: {fileID: 0}
+  - key: combat.player_hurt
+    cue: {fileID: 0}
+  - key: combat.player_down
+    cue: {fileID: 0}
+  - key: combat.player_revive
+    cue: {fileID: 0}
+  - key: boss.appear
+    cue: {fileID: 0}
+  - key: boss.slam
+    cue: {fileID: 0}
+  - key: boss.summon
+    cue: {fileID: 0}
+  - key: boss.mental
+    cue: {fileID: 0}
+  - key: boss.grab
+    cue: {fileID: 0}
+  - key: boss.die
+    cue: {fileID: 0}
+  - key: ui.click
+    cue: {fileID: 0}
+  - key: ui.back
+    cue: {fileID: 0}
+  - key: ui.open
+    cue: {fileID: 0}
+  - key: ui.error
+    cue: {fileID: 0}
+  - key: ui.notice
+    cue: {fileID: 0}

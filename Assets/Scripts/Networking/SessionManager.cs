@@ -19,16 +19,32 @@ namespace CheonMyeong.Networking
     /// 기획 확정(261013, UI 전반 구현 1순위) - 임시 OnGUI 디버그 버튼은 제거했다.
     /// 이제 ChoiceMapScreen(방 만들기/참가 코드 입력)과 WaitRoomScreen(초대 코드
     /// 표시)이 HostAsync/JoinAsync/JoinCode를 직접 호출·참조한다.
+    ///
+    /// 261115 연결 끊김 보완 (기획서 4장 "연결 끊김 - 남은 사람이 혼자 계속, 나간 사람도 그때까지 주운 엽전은 받는다"):
+    /// - 방 인원은 2명(maxPlayers). 판이 시작되면(게임 씬 로드 시작) 세션을 잠가 코드로 새로 못 들어오게 하고,
+    ///   게임 씬을 내리면 다시 연다. 잠그기 전에 끼어든 접속은 서버가 이유와 함께 끊는다(DisconnectClient).
+    /// - 호스트: 동료가 들어오거나 나가면 알림(NoticeToast). 판 중이면 "혼자 계속" 안내 - 투표 · 신통력 선택 정리는 PartyProgress가 한다.
+    /// - 호스트가 '나가기'를 누르면 동료에게 이유("호스트가 방을 나갔어요")를 보낸 뒤 세션을 정리한다.
+    /// - 참가자: 호스트가 나가거나 연결이 끊기면 세션을 정리하고 로비로 + 이유 알림. 엽전은 PlayerProgress.OnNetworkDespawn이 정산.
+    /// - 끊김 감지 시간: UnityTransport Disconnect Timeout(씬 값 10초).
     /// </summary>
     public class SessionManager : MonoBehaviour
     {
-        [SerializeField] private int maxPlayers = 4; // 인원수 미정 - 임시값
+        [Tooltip("261115 - 방 최대 인원(기획서: 2인 협동).")]
+        [Min(1)] [SerializeField] private int maxPlayers = 2;
 
         private const float ShutdownWaitSeconds = 3f;
+        private const float ReasonFlushSeconds = 0.3f;
+
+        private const string ReasonHostLeft = "호스트가 방을 나갔어요.";
+        private const string ReasonRoomFull = "방이 가득 찼어요.";
+        private const string ReasonInProgress = "이미 게임이 진행 중인 방이에요.";
 
         private ISession currentSession;
         private NetworkManager subscribedManager;
         private bool leaving;
+        private bool gameplayActive;
+        private GameplaySceneLoader subscribedLoader;
 
         /// <summary>261110 추가 - 나가기(ESC 메뉴 · 결과 화면)에서 세션을 정리하려고 찾는다.</summary>
         public static SessionManager Instance { get; private set; }
@@ -54,6 +70,14 @@ namespace CheonMyeong.Networking
             if (subscribedManager != null)
             {
                 subscribedManager.OnClientStopped += HandleClientStopped;
+                subscribedManager.OnClientConnectedCallback += HandleClientConnected;
+                subscribedManager.OnClientDisconnectCallback += HandleClientDisconnected;
+            }
+            subscribedLoader = GameplaySceneLoader.Instance;
+            if (subscribedLoader != null)
+            {
+                subscribedLoader.OnGameplaySceneLoadStarted += HandleGameplayLoadStarted;
+                subscribedLoader.OnGameplaySceneUnloaded += HandleGameplayUnloaded;
             }
         }
 
@@ -62,7 +86,15 @@ namespace CheonMyeong.Networking
             if (subscribedManager != null)
             {
                 subscribedManager.OnClientStopped -= HandleClientStopped;
+                subscribedManager.OnClientConnectedCallback -= HandleClientConnected;
+                subscribedManager.OnClientDisconnectCallback -= HandleClientDisconnected;
                 subscribedManager = null;
+            }
+            if (subscribedLoader != null)
+            {
+                subscribedLoader.OnGameplaySceneLoadStarted -= HandleGameplayLoadStarted;
+                subscribedLoader.OnGameplaySceneUnloaded -= HandleGameplayUnloaded;
+                subscribedLoader = null;
             }
             if (Instance == this)
             {
@@ -88,6 +120,8 @@ namespace CheonMyeong.Networking
             {
                 ISession session = currentSession;
                 currentSession = null;
+                gameplayActive = false;
+                await DisconnectPartnersAsync(ReasonHostLeft);
                 if (session != null)
                 {
                     try
@@ -106,6 +140,41 @@ namespace CheonMyeong.Networking
             {
                 leaving = false;
                 IsBusy = false;
+            }
+        }
+
+        /// <summary>호스트가 나가기 전에 동료들에게 이유를 보내고 끊는다(동료 화면에 "호스트가 방을 나갔어요"가 뜬다).</summary>
+        private static async Task DisconnectPartnersAsync(string reason)
+        {
+            NetworkManager manager = NetworkManager.Singleton;
+            if (manager == null || !manager.IsServer || !manager.IsListening || manager.ShutdownInProgress)
+            {
+                return;
+            }
+            bool any = false;
+            // ConnectedClientsIds는 끊는 동안 바뀌므로 복사본으로 돈다(2명 방이라 할당은 작다).
+            ulong[] ids = new ulong[manager.ConnectedClientsIds.Count];
+            for (int i = 0; i < ids.Length; i++)
+            {
+                ids[i] = manager.ConnectedClientsIds[i];
+            }
+            for (int i = 0; i < ids.Length; i++)
+            {
+                if (ids[i] != NetworkManager.ServerClientId)
+                {
+                    manager.DisconnectClient(ids[i], reason);
+                    any = true;
+                }
+            }
+            if (!any)
+            {
+                return;
+            }
+            // 이유 메시지가 실제로 나갈 시간을 잠깐 준다.
+            float until = Time.realtimeSinceStartup + ReasonFlushSeconds;
+            while (Time.realtimeSinceStartup < until)
+            {
+                await Task.Yield();
             }
         }
 
@@ -152,21 +221,101 @@ namespace CheonMyeong.Networking
             {
                 return;
             }
-            _ = HandleUnexpectedStopAsync();
+            // 이유는 Shutdown 정리 전에 읽어 둔다(서버가 DisconnectClient(id, reason)으로 보낸 문장).
+            string reason = subscribedManager != null ? subscribedManager.DisconnectReason : null;
+            _ = HandleUnexpectedStopAsync(wasHost, reason);
         }
 
-        private async Task HandleUnexpectedStopAsync()
+        private async Task HandleUnexpectedStopAsync(bool wasHost, string reason)
         {
             await LeaveAsync();
             UIFlowManager flow = UIFlowManager.Instance;
-            if (flow == null)
+            string screen = flow != null ? flow.CurrentScreen : null;
+            bool joining = screen == UIFlowManager.ChoiceMap;
+            if (flow != null && screen != UIFlowManager.Lobby && !joining)
+            {
+                flow.ShowScreen(UIFlowManager.Lobby);
+            }
+
+            if (!string.IsNullOrEmpty(reason))
+            {
+                NoticeToast.Show(joining ? "방에 들어가지 못했어요. " + reason : reason);
+            }
+            else if (!joining)
+            {
+                NoticeToast.Show(wasHost
+                    ? "네트워크가 멈춰서 로비로 돌아왔어요."
+                    : "호스트와 연결이 끊겨서 로비로 돌아왔어요.");
+            }
+        }
+
+        // ---------------- 261115 호스트 쪽: 입장 · 퇴장
+
+        private void HandleClientConnected(ulong clientId)
+        {
+            NetworkManager manager = subscribedManager;
+            if (manager == null || !manager.IsServer || clientId == NetworkManager.ServerClientId)
             {
                 return;
             }
-            string screen = flow.CurrentScreen;
-            if (screen != UIFlowManager.Lobby && screen != UIFlowManager.ChoiceMap)
+            if (manager.ConnectedClientsIds.Count > maxPlayers)
             {
-                flow.ShowScreen(UIFlowManager.Lobby);
+                manager.DisconnectClient(clientId, ReasonRoomFull);
+                return;
+            }
+            if (gameplayActive)
+            {
+                manager.DisconnectClient(clientId, ReasonInProgress);
+                return;
+            }
+            NoticeToast.Show("동료가 방에 들어왔어요.");
+        }
+
+        private void HandleClientDisconnected(ulong clientId)
+        {
+            NetworkManager manager = subscribedManager;
+            if (leaving || manager == null || !manager.IsServer || manager.ShutdownInProgress || clientId == NetworkManager.ServerClientId)
+            {
+                return;
+            }
+            NoticeToast.Show(gameplayActive
+                ? "동료와 연결이 끊겼어요. 혼자 계속합니다."
+                : "동료가 방을 나갔어요.");
+        }
+
+        private void HandleGameplayLoadStarted(string sceneName)
+        {
+            gameplayActive = true;
+            _ = SetSessionLockedAsync(true);
+        }
+
+        private void HandleGameplayUnloaded(string sceneName)
+        {
+            gameplayActive = false;
+            _ = SetSessionLockedAsync(false);
+        }
+
+        /// <summary>호스트만 - 판 중엔 세션을 잠가 참가 코드로 새로 못 들어오게 한다.</summary>
+        private async Task SetSessionLockedAsync(bool locked)
+        {
+            ISession session = currentSession;
+            if (session == null || !session.IsHost)
+            {
+                return;
+            }
+            try
+            {
+                IHostSession host = session.AsHost();
+                if (host.IsLocked == locked)
+                {
+                    return;
+                }
+                host.IsLocked = locked;
+                await host.SavePropertiesAsync();
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[CheonMyeong] 세션 {(locked ? "잠금" : "잠금 해제")} 실패: {e.Message}");
             }
         }
 

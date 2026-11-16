@@ -168,6 +168,11 @@ namespace CheonMyeong.UI
             overlayMembershipCounts.Clear();
             currentBaseScreenId = screenId;
             ApplyVisibility();
+            // 261115 - 로비 배경음(인게임 곡은 WaveManager가 웨이브 단계에 맞춰 바꾼다).
+            if (screenId == Lobby)
+            {
+                CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmLobby);
+            }
         }
 
         /// <summary>현재 화면 위에 오버레이를 하나 더 쌓는다(ESC 위의 설정처럼 중첩 가능).</summary>

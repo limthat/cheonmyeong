@@ -44,6 +44,11 @@ namespace CheonMyeong.Progression
         private bool lastReportedInGameView;
         private PauseVoteView pauseVoteView;
 
+        // 261115 - 동료가 나갔을 때(서버) 다음 Update에서 투표 · 화면 멈춤 · 신통력 선택을 남은 사람 기준으로 다시 본다.
+        // 끊김 콜백 시점엔 ConnectedClients에 아직 남아 있을 수 있어서 한 프레임 미룬다.
+        private NetworkManager rosterManager;
+        private bool rosterDirty;
+
         /// <summary>투표가 끝났을 때(모든 화면). true = 일시정지됨, false = 거절 · 시간 초과.</summary>
         public static event Action<bool> PauseVoteFinished;
 
@@ -74,11 +79,66 @@ namespace CheonMyeong.Progression
             {
                 HandleMenuPausedChanged(false, true);
             }
+            if (IsServer)
+            {
+                rosterManager = NetworkManager;
+                rosterManager.OnClientDisconnectCallback += HandleRosterClientDisconnected;
+            }
         }
+
+        private void HandleRosterClientDisconnected(ulong clientId)
+        {
+            rosterDirty = true;
+        }
+
+        /// <summary>서버 - 나간 사람을 투표 · 화면 상태에서 빼고, 남은 사람만으로 결정을 다시 내린다.</summary>
+        private void ServerRefreshRoster()
+        {
+            rosterDirty = false;
+            var connected = NetworkManager.ConnectedClients;
+            pauseVoteYes.RemoveWhere(id => !connected.ContainsKey(id));
+            staleViewIds.Clear();
+            foreach (ulong id in clientsInGameView.Keys)
+            {
+                if (!connected.ContainsKey(id))
+                {
+                    staleViewIds.Add(id);
+                }
+            }
+            for (int i = 0; i < staleViewIds.Count; i++)
+            {
+                clientsInGameView.Remove(staleViewIds[i]);
+            }
+
+            if (IsPauseVoteActive)
+            {
+                if (!connected.ContainsKey(pauseVoteRequester.Value))
+                {
+                    ServerFinishPauseVote(false);
+                }
+                else
+                {
+                    // 요청한 사람만 남았으면 그대로 멈춘다(혼자면 바로 멈추는 규칙과 같게).
+                    ServerAcceptPauseVote(pauseVoteRequester.Value);
+                }
+            }
+            if (choosing)
+            {
+                ServerCheckAllPicked();
+            }
+        }
+
+        private readonly List<ulong> staleViewIds = new List<ulong>(4);
 
         private void PauseOnNetworkDespawn()
         {
             menuPaused.OnValueChanged -= HandleMenuPausedChanged;
+            if (rosterManager != null)
+            {
+                rosterManager.OnClientDisconnectCallback -= HandleRosterClientDisconnected;
+                rosterManager = null;
+            }
+            rosterDirty = false;
             clientsInGameView.Clear();
             if (pauseVoteView != null)
             {
@@ -145,6 +205,10 @@ namespace CheonMyeong.Progression
                 pauseVoteView = PauseVoteView.Create(InGameHudScreen.Instance.transform);
             }
 
+            if (IsServer && IsSpawned && rosterDirty)
+            {
+                ServerRefreshRoster();
+            }
             if (!IsServer || !IsSpawned || !IsPauseVoteActive)
             {
                 return;

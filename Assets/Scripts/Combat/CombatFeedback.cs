@@ -106,6 +106,14 @@ namespace CheonMyeong.Combat
             {
                 return;
             }
+            // 261115 - 타격 소리: 한 묶음에 한 번(치명타가 섞이면 치명타 소리). 폭주 방지는 SoundCue의 MaxInstances · MinInterval.
+            bool anyCrit = false;
+            for (int i = 0; i < hits.Length; i++)
+            {
+                anyCrit |= hits[i].Crit;
+            }
+            CheonMyeong.Audio.GameAudio.PlayAt(anyCrit ? CheonMyeong.Audio.SoundKeys.HitCrit : CheonMyeong.Audio.SoundKeys.Hit, hits[0].Position);
+
             // 261115 - 설정 > 기타: 타격 이펙트 / 피해 숫자 끄기.
             bool sparks = CheonMyeong.Settings.GameSettings.HitEffects;
             bool numbers = CheonMyeong.Settings.GameSettings.DamageNumbers;

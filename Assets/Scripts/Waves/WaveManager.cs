@@ -170,6 +170,8 @@ namespace CheonMyeong.Waves
             if (IsServer)
             {
                 EoksoeBoss.ServerEncounterEnded -= HandleBossEncounterEnded;
+                // 261115 - 판이 끝나면 테스트 무적도 끈다(다음 판에 남지 않게).
+                PlayerHealth.DebugGodMode = false;
             }
         }
 
@@ -282,13 +284,17 @@ namespace CheonMyeong.Waves
             SyncRemainingSeconds();
         }
 
-        // 261110 테스트용 - F1: 웨이브 · 대기 시간만 3배속(캐릭터 · 원귀 속도는 그대로). 다시 누르면 1배속.
-        private const float DebugFastTimerScale = 3f;
+        // 261110 테스트용 - F1: 웨이브 · 대기 시간만 빨리(캐릭터 · 원귀 속도는 그대로).
+        // 261115 - 누를 때마다 1 → 3 → 5 → 1배속 순환.
+        private static readonly float[] DebugTimerScales = { 1f, 3f, 5f };
+        private int debugTimerScaleIndex;
         private float debugTimerScale = 1f;
+        private string debugOverlayText;
 
         /// <summary>
         /// 261101 테스트용 - 호스트 화면에서 F5 = 5웨이브, F10 = 10웨이브, F11 = 최종전으로 바로 이동.
-        /// 261110 - F1 = 웨이브 · 대기 시간 3배속 켜기/끄기. F2 = 지금 웨이브(또는 대기 시간)를 바로 끝내기.
+        /// 261110 - F1 = 웨이브 · 대기 시간 배속(1 → 3 → 5 → 1). F2 = 지금 웨이브(또는 대기 시간)를 바로 끝내기.
+        /// 261115 - F6 = 즉시 레벨업(Shift = 5레벨), F7 = 무적(모든 플레이어) 켜기/끄기.
         /// 에디터 / Development Build에서만 동작한다(정식 빌드에선 무시).
         /// </summary>
         private void HandleDebugSkipKeys()
@@ -304,8 +310,23 @@ namespace CheonMyeong.Waves
             }
             if (keyboard.f1Key.wasPressedThisFrame)
             {
-                debugTimerScale = debugTimerScale > 1f ? 1f : DebugFastTimerScale;
+                debugTimerScaleIndex = (debugTimerScaleIndex + 1) % DebugTimerScales.Length;
+                debugTimerScale = DebugTimerScales[debugTimerScaleIndex];
                 Debug.Log($"[CheonMyeong] 웨이브 · 대기 시간 {debugTimerScale:0}배속 (F1)");
+                RefreshDebugOverlay();
+            }
+            if (keyboard.f6Key.wasPressedThisFrame && PartyProgress.Instance != null)
+            {
+                bool shift = keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed;
+                int levels = shift ? 5 : 1;
+                PartyProgress.Instance.ServerDebugLevelUp(levels);
+                Debug.Log($"[CheonMyeong] (테스트) 즉시 레벨업 +{levels} (F6)");
+            }
+            if (keyboard.f7Key.wasPressedThisFrame)
+            {
+                PlayerHealth.DebugGodMode = !PlayerHealth.DebugGodMode;
+                Debug.Log($"[CheonMyeong] (테스트) 무적 {(PlayerHealth.DebugGodMode ? "켬" : "끔")} (F7)");
+                RefreshDebugOverlay();
             }
             if (keyboard.f2Key.wasPressedThisFrame)
             {
@@ -323,6 +344,25 @@ namespace CheonMyeong.Waves
             {
                 ServerDebugSkipToWave(totalWaves.Value + 1);
             }
+        }
+
+        private void RefreshDebugOverlay()
+        {
+            bool fast = debugTimerScale > 1f;
+            bool god = PlayerHealth.DebugGodMode;
+            debugOverlayText = !fast && !god
+                ? null
+                : "[DEV]" + (fast ? $" 시간 x{debugTimerScale:0}" : string.Empty) + (god ? " 무적" : string.Empty);
+        }
+
+        /// <summary>261115 - 켜진 치트를 호스트 화면 왼쪽 위에 작게 표시(에디터 / Development Build, 켜진 게 있을 때만).</summary>
+        private void OnGUI()
+        {
+            if (debugOverlayText == null || !IsServer)
+            {
+                return;
+            }
+            GUI.Label(new Rect(8f, 8f, 400f, 24f), debugOverlayText);
         }
 
         /// <summary>
@@ -713,6 +753,7 @@ namespace CheonMyeong.Waves
         private void HandlePhaseChanged(int previous, int current)
         {
             RefreshHud();
+            PlayPhaseSound(previous, current);
             if (current != PhaseCleared && current != PhaseFailed)
             {
                 return;
@@ -726,6 +767,40 @@ namespace CheonMyeong.Waves
             if (UIFlowManager.Instance != null)
             {
                 UIFlowManager.Instance.ShowScreen(UIFlowManager.Reward);
+            }
+        }
+
+        /// <summary>
+        /// 261115 - 웨이브 흐름 소리(모든 화면이 각자 냄). 웨이브 시작 · 징(웨이브 끝) · 최종전 · 결과, 배경음 전환.
+        /// 5웨이브까지 전반 곡, 6웨이브부터 후반 곡(기획서 11장 "웨이브 전반 → 후반 → 보스로 변주").
+        /// </summary>
+        private void PlayPhaseSound(int previous, int current)
+        {
+            switch (current)
+            {
+                case PhaseRunning:
+                    CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.WaveStart);
+                    CheonMyeong.Audio.GameAudio.PlayBgm(currentWave.Value > 5
+                        ? CheonMyeong.Audio.SoundKeys.BgmWaveLate
+                        : CheonMyeong.Audio.SoundKeys.BgmWaveEarly);
+                    break;
+                case PhaseIntermission:
+                    if (previous == PhaseRunning)
+                    {
+                        CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.WaveGong);
+                    }
+                    break;
+                case PhaseFinalBattle:
+                    CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.FinalBattleStart);
+                    CheonMyeong.Audio.GameAudio.SetBgmIntensity(1);
+                    CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmFinal);
+                    break;
+                case PhaseCleared:
+                    CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmVictory);
+                    break;
+                case PhaseFailed:
+                    CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmDefeat);
+                    break;
             }
         }
 

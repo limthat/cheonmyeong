@@ -225,6 +225,7 @@ namespace CheonMyeong.UI.Screens
             shownTickets = -1;
             ResetSelection();
             Refresh();
+            CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.CardShow);
         }
 
         private void Update()
@@ -391,6 +392,7 @@ namespace CheonMyeong.UI.Screens
                 return;
             }
             PartyProgress.Instance.PickAugmentRpc(selectedCardIndex);
+            CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.CardPick);
             readyButton.interactable = false;
             if (readyButtonLabel != null)
             {
@@ -403,6 +405,7 @@ namespace CheonMyeong.UI.Screens
             if (PartyProgress.Instance != null)
             {
                 PartyProgress.Instance.RerollAugmentCardRpc(index);
+                CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.CardReroll);
             }
         }
 

@@ -8,7 +8,7 @@ namespace CheonMyeong.Progression
     /// 261114 개발자 모드 - 엽전(PlayerWallet) 증감 치트. 에디터 / Development Build에서만 생긴다(정식 빌드엔 오브젝트 자체가 없음).
     /// F4 = +1,000 · F3 = -1,000, Shift를 같이 누르면 ×10(10,000). 어느 화면에서나 동작하고 화면들은 YeopjeonChanged로 바로 갱신된다.
     /// F8 = 신내림 초기화: 신내림 화면이 열려 있으면 거기서 보고 있는 캐릭터, 아니면 지금 쓰는 캐릭터(CurrentRun)의 칸을 전부 닫는다.
-    /// (F1 · F2 · F5 · F10 · F11은 WaveManager 웨이브 치트가 쓴다.)
+    /// (F1 · F2 · F5 · F6 · F7 · F10 · F11은 WaveManager 치트가 쓴다.)
     /// </summary>
     public sealed class DevYeopjeonCheat : MonoBehaviour
     {

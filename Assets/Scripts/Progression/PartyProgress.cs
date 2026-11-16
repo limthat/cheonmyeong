@@ -179,9 +179,20 @@ namespace CheonMyeong.Progression
             return stage;
         }
 
+        private void HandleGrudgeChangedSound(int stage)
+        {
+            // 261115 - 최종전 배경음은 원한 단계마다 악기 층이 하나씩 더해진다(기획서 11장). 맑음 = 1층.
+            CheonMyeong.Audio.GameAudio.SetBgmIntensity(stage + 1);
+        }
+
         private void HandleGrudgeChanged(int previous, int current)
         {
             RefreshGrudgeHud();
+            int stage = GetGrudgeStage(current);
+            if (stage != GetGrudgeStage(previous))
+            {
+                HandleGrudgeChangedSound(stage);
+            }
         }
 
         /// <summary>261027 추가 - HUD가 켜질 때 현재 레벨/경험치/원한을 직접 당겨가는 용도(InGameHudScreen.OnEnable).</summary>
@@ -227,6 +238,28 @@ namespace CheonMyeong.Progression
             }
         }
 
+        /// <summary>261115 개발자 모드(서버 전용) - 지금 레벨에서 levels번 바로 올린다(평소처럼 신통력 선택이 이어진다).</summary>
+        public void ServerDebugLevelUp(int levels)
+        {
+            if (!IsServer || levels <= 0)
+            {
+                return;
+            }
+            long need = -currentExp.Value;
+            for (int i = 0; i < levels; i++)
+            {
+                if (levelCap > 0 && level.Value + i >= levelCap)
+                {
+                    break;
+                }
+                need += ExpRequiredForNextLevel(level.Value + i);
+            }
+            if (need > 0)
+            {
+                AddExp((int)Mathf.Min(need, int.MaxValue));
+            }
+        }
+
         private int ExpRequiredForNextLevel(int fromLevel)
         {
             float raw = (expFormulaBase + expFormulaLinear * fromLevel + expFormulaQuadratic * fromLevel * fromLevel) * expFormulaScale;
@@ -242,6 +275,10 @@ namespace CheonMyeong.Progression
         {
             // 261104 - 일시정지 · 신통력 화면 열기는 레벨업 라운드(PartyProgress.Augments)가 맡는다. 여기선 HUD만.
             RefreshHud();
+            if (current > previous)
+            {
+                CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.LevelUp);
+            }
         }
 
         /// <summary>
