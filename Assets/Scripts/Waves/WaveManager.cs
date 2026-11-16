@@ -780,9 +780,7 @@ namespace CheonMyeong.Waves
             {
                 case PhaseRunning:
                     CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.WaveStart);
-                    CheonMyeong.Audio.GameAudio.PlayBgm(currentWave.Value > 5
-                        ? CheonMyeong.Audio.SoundKeys.BgmWaveLate
-                        : CheonMyeong.Audio.SoundKeys.BgmWaveEarly);
+                    RestoreWaveBgm();
                     break;
                 case PhaseIntermission:
                     if (previous == PhaseRunning)
@@ -796,12 +794,25 @@ namespace CheonMyeong.Waves
                     CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmFinal);
                     break;
                 case PhaseCleared:
+                    CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.BossSeal);
                     CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmVictory);
                     break;
                 case PhaseFailed:
                     CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmDefeat);
                     break;
             }
+        }
+
+        /// <summary>261116 - 웨이브 곡(5웨이브까지 전반, 6웨이브부터 후반). 중간 보스가 사라질 때도 부른다(EoksoeBoss).</summary>
+        public void RestoreWaveBgm()
+        {
+            if (phase.Value != PhaseRunning && phase.Value != PhaseIntermission && phase.Value != PhasePreparing)
+            {
+                return;
+            }
+            CheonMyeong.Audio.GameAudio.PlayBgm(currentWave.Value > 5
+                ? CheonMyeong.Audio.SoundKeys.BgmWaveLate
+                : CheonMyeong.Audio.SoundKeys.BgmWaveEarly);
         }
 
         /// <summary>261027 추가 - HUD가 켜질 때 현재 값을 직접 당겨가는 용도(InGameHudScreen.OnEnable).</summary>

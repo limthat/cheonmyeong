@@ -77,6 +77,7 @@ namespace CheonMyeong.UI.Title
                 return;
             }
             opening = StartCoroutine(OpenRoutine(onOpened));
+            CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.UiGateOpen);
         }
 
         private IEnumerator OpenRoutine(Action onOpened)

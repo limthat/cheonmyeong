@@ -1095,12 +1095,12 @@ namespace CheonMyeong.Player
             {
                 return;
             }
-            Key key = Key.Space;
-            if (Keyboard.current[key].wasPressedThisFrame)
+            // 261116 - 설정에서 바꿀 수 있는 '기술' 키(KeyBindings, 기본 Space).
+            if (CheonMyeong.Input.KeyBindings.WasPressed(CheonMyeong.Input.GameAction.Skill))
             {
                 ChargeStartRpc();
             }
-            else if (Keyboard.current[key].wasReleasedThisFrame)
+            else if (CheonMyeong.Input.KeyBindings.WasReleased(CheonMyeong.Input.GameAction.Skill))
             {
                 ChargeReleaseRpc();
             }

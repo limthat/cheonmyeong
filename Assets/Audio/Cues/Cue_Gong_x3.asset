@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60cf290cf5fd4fe49ccecabdde1f3f2a, type: 3}
+  m_Name: Cue_Gong_x3
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Audio.SoundCue
+  clips:
+  - {fileID: 8300000, guid: c8a6371a075fd5843822817c5e287ae1, type: 3}
+  bus: 0
+  volume: 1.0
+  volumeJitter: 0.0
+  pitchRange: {x: 1, y: 1}
+  loop: 0
+  maxInstances: 3
+  minInterval: 1.0
+  priority: 0
+  repeatCount: 3
+  repeatInterval: 0.9
+  maxDuration: 0.0
+  positional: 0
+  hearRange: 16
+  stereoSpread: 0.6
+  layered: 0

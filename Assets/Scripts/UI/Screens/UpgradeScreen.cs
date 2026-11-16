@@ -393,6 +393,7 @@ namespace CheonMyeong.UI.Screens
             }
             PartyProgress.Instance.PickAugmentRpc(selectedCardIndex);
             CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.CardPick);
+            CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.CardBurn);
             readyButton.interactable = false;
             if (readyButtonLabel != null)
             {

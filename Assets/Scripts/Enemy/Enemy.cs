@@ -756,6 +756,11 @@ namespace CheonMyeong.Enemies
             {
                 spriteRenderer.enabled = true;
             }
+            // 261116 - 퇴마 소리(모든 화면, 위치 소리 - 폭주 방지는 SoundCue MaxInstances · MinInterval).
+            if (currentValue && !previousValue)
+            {
+                CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.EnemyDie, transform.position);
+            }
 
             if (currentValue && animator != null && animator.runtimeAnimatorController != null)
             {

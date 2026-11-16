@@ -22,6 +22,10 @@ namespace CheonMyeong.Audio
 
         private Dictionary<string, SoundCue> lookup;
 
+        public int Count => entries.Count;
+
+        public SoundCue CueAt(int index) => index >= 0 && index < entries.Count ? entries[index].cue : null;
+
         public SoundCue Find(string key)
         {
             if (string.IsNullOrEmpty(key))

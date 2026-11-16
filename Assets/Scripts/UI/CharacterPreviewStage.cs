@@ -47,6 +47,8 @@ namespace CheonMyeong.UI
         [SerializeField, Min(1f)] private float dummyFps = 8f;
         [Tooltip("261114 - 베기 이펙트 원본은 왼쪽을 향해 그려져 있다(인게임 PlayerAttackEffect도 오른쪽 조준 시 뒤집음). 미리보기는 오른쪽 허수아비를 베니 좌우를 뒤집는다.")]
         [SerializeField] private bool mirrorSlash = true;
+        [Tooltip("261116 - 캐릭터 그림도 원본이 왼쪽을 본다. 오른쪽 허수아비(원귀)를 보도록 좌우를 뒤집는다.")]
+        [SerializeField] private bool faceRight = true;
 
         private enum Tab
         {
@@ -94,6 +96,11 @@ namespace CheonMyeong.UI
             {
                 Vector3 s = slashImage.rectTransform.localScale;
                 slashImage.rectTransform.localScale = new Vector3(mirrorSlash ? -Mathf.Abs(s.x) : Mathf.Abs(s.x), s.y, s.z);
+            }
+            if (characterImage != null)
+            {
+                Vector3 c = characterImage.rectTransform.localScale;
+                characterImage.rectTransform.localScale = new Vector3(faceRight ? -Mathf.Abs(c.x) : Mathf.Abs(c.x), c.y, c.z);
             }
             if (attackTab != null)
             {

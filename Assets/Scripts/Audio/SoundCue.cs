@@ -42,6 +42,14 @@ namespace CheonMyeong.Audio
         [Tooltip("소리 칸이 모자랄 때 우선순위(0 = 가장 중요, 256 = 가장 덜 중요). AudioSource.priority와 같은 의미.")]
         [Range(0, 256)] public int priority = 128;
 
+        [Header("반복 (한 파일 여러 쓰임 - 사운드 기획서 1장)")]
+        [Tooltip("한 번 부를 때 몇 번 울릴지(예: 북 3타 = 3). 1 = 한 번.")]
+        [Range(1, 8)] public int repeatCount = 1;
+        [Tooltip("반복 사이 간격(초).")]
+        [Min(0.02f)] public float repeatInterval = 0.3f;
+        [Tooltip("이 길이(초)에서 끊는다(0 = 끝까지). 파일 뒤 무음 · 긴 꼬리를 잘라 쓸 때.")]
+        [Min(0f)] public float maxDuration;
+
         [Header("위치")]
         [Tooltip("켜면 위치를 준 소리는 내 카메라에서 멀수록 작아지고 좌우로 나뉜다.")]
         public bool positional;

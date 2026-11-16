@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CheonMyeong.Input;
 using CheonMyeong.Settings;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,8 @@ namespace CheonMyeong.UI.Screens
     ///   Tab_* / Page_* / Row_*(Opt_0..n · Slider · Value · Prev · Next) / BackButton · DefaultsButton · SaveButton · QuitButton · StatusText.
     ///   고르는 버튼(Opt_i, Tab_*)은 자식 Label(글자) · Underline(고른 칸 밑줄)을 쓴다.
     /// - 소리는 전체 음량만 실제 반영(AudioListener). 나머지는 값만 저장 - 소리 넣을 때 GameSettings.Active에서 읽으면 된다.
-    /// - 조작 키는 아직 고정 키라(PlayerInputReader 등) 안내만 보여 준다.
+    /// - 261116 조작 키 바꾸기: Bind_&lt;GameAction&gt;/Button을 누르면 다음 키 하나를 받아 바로 저장한다(KeyBindings). ESC = 취소.
+    ///   KeyReset 버튼 · '기본값'은 키도 기본으로 되돌린다. 방향키 · ESC · 마우스 · F1~F12는 고정.
     /// </summary>
     public class SettingsScreen : MonoBehaviour
     {
@@ -74,6 +76,14 @@ namespace CheonMyeong.UI.Screens
         private Text statusText;
         private Button saveButton;
 
+        private static readonly GameAction[] BindActions =
+        {
+            GameAction.MoveUp, GameAction.MoveDown, GameAction.MoveLeft, GameAction.MoveRight, GameAction.Interact, GameAction.Skill,
+        };
+        private readonly Button[] bindButtons = new Button[BindActions.Length];
+        private readonly Text[] bindLabels = new Text[BindActions.Length];
+        private int capturing = -1;
+
         private SettingsData working;
         private int tabIndex;
         private bool bound;
@@ -94,11 +104,15 @@ namespace CheonMyeong.UI.Screens
             working = GameSettings.Saved;
             SelectTab(tabIndex);
             Refresh();
+            RefreshKeys();
             SetStatus(string.Empty);
+            KeyBindings.Changed += RefreshKeys;
         }
 
         private void OnDisable()
         {
+            KeyBindings.Changed -= RefreshKeys;
+            StopCapture(false);
             // 저장하지 않고 닫힘 → 미리보기로 바꿔 둔 값을 저장본으로 되돌린다.
             if (bound && !working.Equals(GameSettings.Saved))
             {
@@ -154,6 +168,25 @@ namespace CheonMyeong.UI.Screens
             {
                 versionText.text = "v" + Application.version;
             }
+
+            // 261116 - 조작 키
+            for (int i = 0; i < BindActions.Length; i++)
+            {
+                int index = i;
+                Button button = FindComponent<Button>(root, "Bind_" + BindActions[i] + "/Button");
+                bindButtons[i] = button;
+                if (button != null)
+                {
+                    bindLabels[i] = button.GetComponentInChildren<Text>(true);
+                    button.onClick.AddListener(() => StartCapture(index));
+                }
+            }
+            BindButton(root, "KeyReset", () =>
+            {
+                StopCapture(false);
+                KeyBindings.ResetToDefaults();
+                SetStatus("조작 키를 기본으로 되돌렸어요.");
+            });
 
             BindButton(root, "BackButton", OnBackPressed);
             BindButton(root, "QuitButton", QuitGame);
@@ -240,6 +273,8 @@ namespace CheonMyeong.UI.Screens
 
         private void OnDefaults()
         {
+            StopCapture(false);
+            KeyBindings.ResetToDefaults();
             working = GameSettings.Defaults();
             OnChanged();
             SetStatus("기본값으로 바꿨어요. 저장을 눌러야 남아요.");
@@ -275,6 +310,67 @@ namespace CheonMyeong.UI.Screens
 #else
             Application.Quit();
 #endif
+        }
+
+        // ---------------- 조작 키
+
+        private void StartCapture(int index)
+        {
+            StopCapture(false);
+            capturing = index;
+            KeyBindings.BeginCapture();
+            RefreshKeys();
+            SetStatus("바꿀 키를 누르세요. (ESC = 취소)");
+        }
+
+        private void StopCapture(bool escapeUsed)
+        {
+            if (capturing < 0)
+            {
+                return;
+            }
+            capturing = -1;
+            KeyBindings.EndCapture(escapeUsed);
+            RefreshKeys();
+        }
+
+        private void Update()
+        {
+            if (capturing < 0)
+            {
+                return;
+            }
+            UnityEngine.InputSystem.Key key = KeyBindings.PollPressedKey();
+            if (key == UnityEngine.InputSystem.Key.None)
+            {
+                return;
+            }
+            if (key == UnityEngine.InputSystem.Key.Escape)
+            {
+                StopCapture(true);
+                SetStatus("키 바꾸기를 취소했어요.");
+                return;
+            }
+            if (KeyBindings.IsReserved(key))
+            {
+                SetStatus(KeyBindings.DisplayName(key) + " 키는 쓸 수 없어요. 다른 키를 누르세요.");
+                return;
+            }
+            GameAction action = BindActions[capturing];
+            KeyBindings.Set(action, key);
+            StopCapture(false);
+            SetStatus("키를 바꿨어요. (바로 저장)");
+        }
+
+        private void RefreshKeys()
+        {
+            for (int i = 0; i < BindActions.Length; i++)
+            {
+                if (bindLabels[i] != null)
+                {
+                    bindLabels[i].text = i == capturing ? "…" : KeyBindings.DisplayName(KeyBindings.Get(BindActions[i]));
+                }
+            }
         }
 
         private void SetStatus(string message)

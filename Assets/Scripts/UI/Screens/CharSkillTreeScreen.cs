@@ -87,12 +87,19 @@ namespace CheonMyeong.UI.Screens
         [Tooltip("스킬트리 모드에서만 보이는 것. 비워두면 이름으로 찾는다(SkillTreeContainer).")]
         [SerializeField] private GameObject[] skillTreeOnly;
 
+        [Tooltip("261116 - SinNaerim_icon-Sheet 0~35 순서. 첫 줄(0~3) = 공통(선봉 · 유격 · 수호 · 관문), 그다음 줄마다 캐릭터 목록 순서로 " +
+                 "기본 · 택1 A · 택1 B · 각성 4칸(기획서 6장 ③ 캐릭터 순서와 같음).")]
+        [SerializeField] private Sprite[] sinnaerimIcons;
+
         private Text titleText;
         private CharacterPreviewStage previewStage;
         private Image heroImage;
         private Text heroInfoText;
         private Button confirmButton;
         private Text confirmLabel;
+        private Button levelUpButton;
+        private Text levelUpLabel;
+        private SpiritLevelPopup levelPopup;
         private Text walletText;
 
         private readonly List<Text> rosterLabels = new List<Text>(8);
@@ -109,6 +116,11 @@ namespace CheonMyeong.UI.Screens
         private Text nodeBodyText;
         private Button openNodeButton;
         private Text openNodeLabel;
+
+        // 캐릭터마다 바뀌는 칸(나머지 갈래 · 관문은 공통 그림 그대로) → 그 캐릭터 줄 안의 순서.
+        private static readonly int[] CharacterIconSlots = { 0, 8, 9, 10 };
+        private const int IconsPerRow = 4;
+        private int appliedIconCharacter = -1;
 
         private int selectedIndex;
         private int selectedSlot;
@@ -290,6 +302,7 @@ namespace CheonMyeong.UI.Screens
                 return;
             }
             selectedIndex = index;
+            ApplyNodeIcons(index);
             CharacterProgressStore.FocusedCharacterId = catalog.At(index).characterId;
             selectedSlot = FirstInterestingSlot();
             heroAnimTime = 0f;
@@ -339,11 +352,27 @@ namespace CheonMyeong.UI.Screens
             // 오른쪽 두루마리 종이 안(아래 청 · 홍 줄 y≈141~155 바로 위)에 위에서부터 능력치 → 보유 엽전 → 확정 버튼(아트 좌표 1920×1080).
             heroInfoText = CreateText(panel, "HeroInfo", new Vector2(1318f, ScrollContentBottom + 96f), new Vector2(470f, 130f), 19, TextAnchor.UpperLeft);
             walletText = CreateText(panel, "Wallet", new Vector2(1318f, ScrollContentBottom + 64f), new Vector2(470f, 28f), 18, TextAnchor.MiddleCenter);
+            // 261116 - 왼쪽 선택하기 / 사용 중 · 오른쪽 레벨업(영력 수련, 기획서 v0.9.9 7장). 두루마리 가운데(x 1553) 기준 좌우 대칭.
             Button template = FindDeepComponent<Button>(panel, "AttackTab");
-            confirmButton = CreateButton(panel, template, "ConfirmButton", new Vector2(1388f, ScrollContentBottom), new Vector2(330f, 60f), out confirmLabel);
+            confirmButton = CreateButton(panel, template, "ConfirmButton", new Vector2(1343f, ScrollContentBottom), new Vector2(200f, 60f), out confirmLabel);
             if (confirmButton != null)
             {
                 confirmButton.onClick.AddListener(OnConfirmClicked);
+            }
+            levelUpButton = CreateButton(panel, template, "LevelUpButton", new Vector2(1563f, ScrollContentBottom), new Vector2(200f, 60f), out levelUpLabel);
+            if (levelUpButton != null)
+            {
+                levelUpButton.onClick.AddListener(OnLevelUpClicked);
+            }
+            levelPopup = FindDeepComponent<SpiritLevelPopup>(transform, "LevelUpPopup");
+        }
+
+        private void OnLevelUpClicked()
+        {
+            CharacterCatalogSO.CharacterEntry entry = Selected;
+            if (entry != null && levelPopup != null)
+            {
+                levelPopup.Open(entry);
             }
         }
 
@@ -367,12 +396,15 @@ namespace CheonMyeong.UI.Screens
                     }
                 }
                 builder.Append('\n');
+                // 261116 - 영력 레벨과, 레벨이 반영된 체력 · 공격력 · 공속.
+                int level = CharacterProgressStore.Level(entry.characterId);
+                builder.Append("<color=#9e1f1f><b>영력</b></color> Lv.").Append(level).Append(" / ").Append(SpiritLevel.MaxLevel).Append('\n');
                 if (stats != null)
                 {
-                    builder.Append("<color=#9e1f1f><b>능력치</b></color> 체력 ").Append(stats.maxHealth.ToString("0"))
-                        .Append(" · 공격력 ").Append(stats.attackPower.ToString("0"))
+                    builder.Append("<color=#9e1f1f><b>능력치</b></color> 체력 ").Append((stats.maxHealth * SpiritLevel.HealthScale(level)).ToString("0"))
+                        .Append(" · 공격력 ").Append((stats.attackPower * SpiritLevel.AttackScale(level)).ToString("0.#"))
                         .Append(" · 이동 ").Append((stats.moveSpeed * 60f).ToString("0")).Append('\n')
-                        .Append("공속 ").Append(stats.attacksPerSecond.ToString("0.##")).Append("회/초 · 사거리 ")
+                        .Append("공속 ").Append((stats.attacksPerSecond * SpiritLevel.AttackSpeedScale(level)).ToString("0.##")).Append("회/초 · 사거리 ")
                         .Append(stats.attackRange.ToString("0.#")).Append("칸 · 치명 ").Append((stats.critChance * 100f).ToString("0")).Append('%');
                 }
                 heroInfoText.text = builder.ToString();
@@ -397,6 +429,18 @@ namespace CheonMyeong.UI.Screens
             if (walletText != null)
             {
                 walletText.text = "보유 엽전 " + wallet.ToString("N0") + (owned || wallet >= entry.unlockPrice ? string.Empty : " · 엽전이 모자랍니다");
+            }
+
+            // 레벨업: 보유한 캐릭터만. 누르면 수련 창(비용 · 수치 비교)이 뜬다 - 엽전 판정은 창에서.
+            bool maxLevel = CharacterProgressStore.Level(entry.characterId) >= SpiritLevel.MaxLevel;
+            if (levelUpButton != null)
+            {
+                levelUpButton.interactable = owned && levelPopup != null;
+            }
+            if (levelUpLabel != null)
+            {
+                levelUpLabel.text = maxLevel ? "최대 레벨" : "레벨업";
+                levelUpLabel.color = owned ? Red : DisabledLabel;
             }
         }
 
@@ -442,6 +486,26 @@ namespace CheonMyeong.UI.Screens
         }
 
         // ───────── 신내림 ─────────
+
+        /// <summary>261116 - 기본 · 택1 A · B · 각성 칸 그림을 그 캐릭터 것으로(아트 시트 줄 = 캐릭터 목록 순서 + 1).</summary>
+        private void ApplyNodeIcons(int characterIndex)
+        {
+            if (characterIndex == appliedIconCharacter || sinnaerimIcons == null || sinnaerimIcons.Length == 0)
+            {
+                return;
+            }
+            appliedIconCharacter = characterIndex;
+            int rowStart = (characterIndex + 1) * IconsPerRow;
+            for (int i = 0; i < CharacterIconSlots.Length; i++)
+            {
+                int slot = CharacterIconSlots[i];
+                int iconIndex = rowStart + i;
+                if (nodeIcons[slot] != null && iconIndex < sinnaerimIcons.Length && sinnaerimIcons[iconIndex] != null)
+                {
+                    nodeIcons[slot].sprite = sinnaerimIcons[iconIndex];
+                }
+            }
+        }
 
         private void BuildTree()
         {
@@ -784,9 +848,21 @@ namespace CheonMyeong.UI.Screens
             label = go.GetComponentInChildren<Text>(true);
             if (label != null)
             {
-                label.fontSize = 26;
+                label.fontSize = 24;
                 label.fontStyle = FontStyle.Bold;
                 label.color = Red;
+                label.alignment = TextAnchor.MiddleCenter;
+                // 261116 - 글자가 버튼 테두리 선(Btn-Sheet 안쪽 선: 가로 18 · 세로 15)에 닿지 않게 안쪽으로, 길면 줄여서 맞춘다.
+                label.resizeTextForBestFit = true;
+                label.resizeTextMinSize = 14;
+                label.resizeTextMaxSize = 24;
+                label.horizontalOverflow = HorizontalWrapMode.Wrap;
+                label.verticalOverflow = VerticalWrapMode.Truncate;
+                var labelRect = label.rectTransform;
+                labelRect.anchorMin = Vector2.zero;
+                labelRect.anchorMax = Vector2.one;
+                labelRect.offsetMin = new Vector2(22f, 17f);
+                labelRect.offsetMax = new Vector2(-22f, -15f);
             }
             return button;
         }

@@ -123,7 +123,7 @@ namespace CheonMyeong.Player
         /// </summary>
         public float AttackInterval =>
             stats != null && stats.attacksPerSecond > 0.0001f
-                ? 1f / (stats.attacksPerSecond * (1f + Mathf.Max(-0.9f, Mods.AttackSpeedBonus + ExtraAttackSpeed)))
+                ? 1f / (stats.attacksPerSecond * LevelAttackSpeedScale * (1f + Mathf.Max(-0.9f, Mods.AttackSpeedBonus + ExtraAttackSpeed)))
                 : 1f;
 
         // =====================================================================
@@ -133,6 +133,14 @@ namespace CheonMyeong.Player
 
         private PlayerProgress progress;
         private AugmentModifiers Mods => progress != null ? progress.Modifiers : default;
+
+        // 261116 - 영력(캐릭터 레벨) 배율. 신통력 % 보너스는 이 값이 반영된 기본값에 곱한다.
+        private PlayerCharacter character;
+        private float LevelAttackScale => character != null ? character.AttackScale : 1f;
+        private float LevelAttackSpeedScale => character != null ? character.AttackSpeedScale : 1f;
+
+        /// <summary>261116 - 영력이 반영된 기본 공격력(신통력 보너스 전).</summary>
+        public float BaseAttackPower => stats != null ? stats.attackPower * LevelAttackScale : 0f;
 
         /// <summary>실제 타격 반경 = (attackRange + 근접 사거리 신통력) × 인지 배수.</summary>
         public float HitRadius
@@ -231,6 +239,7 @@ namespace CheonMyeong.Player
             attackTimer = AttackInterval;
             TryGetComponent(out movement); // 261101 - 제압(억쇠 배지기) 확인용
             TryGetComponent(out progress); // 261104 - 신통력
+            TryGetComponent(out character); // 261116 - 영력
             TryGetComponent(out projectiles); // 261114 - 원거리 투사체
             TryGetComponent(out kit); // 261114 - 캐릭터 고유 효과
             RefreshCombatHooks();
@@ -574,7 +583,7 @@ namespace CheonMyeong.Player
             {
                 Target = col,
                 Enemy = enemy,
-                Damage = stats.attackPower * (1f + mods.AttackBonus) * damageScale,
+                Damage = BaseAttackPower * (1f + mods.AttackBonus) * damageScale,
                 CritChance = Mathf.Clamp01(stats.critChance + mods.CritChanceBonus),
                 CritMultiplier = stats.critMultiplier,
                 Knockback = knockback,
@@ -689,6 +698,11 @@ namespace CheonMyeong.Player
         {
             LastResolvedDirection = direction;
             OnAttackResolved?.Invoke();
+            // 261116 - 캐릭터별 공격 소리(타격 · 발사 순간, 모든 화면). 동료 공격은 '동료 소리 크기'.
+            if (character != null && character.AttackSoundKey != null)
+            {
+                CheonMyeong.Audio.GameAudio.PlayAt(character.AttackSoundKey, transform.position, !IsOwner);
+            }
         }
 
         private void OnDrawGizmosSelected()

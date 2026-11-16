@@ -1,30 +1,38 @@
 using CheonMyeong.Settings;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace CheonMyeong.UI
 {
     /// <summary>
-    /// 261115 - 마우스 커서를 아트 커서(Cursor-Sheet.png, 붓)로 바꾼다. UICanvas에 붙어 있다.
-    /// - Cursor.SetCursor(하드웨어 커서) - 화면 프레임과 따로 그려져 느린 프레임에서도 커서가 밀리지 않는다.
-    /// - 텍스처 임포트: Texture Type = Cursor, Read/Write 켬, 압축 없음(SetCursor 요구 조건).
-    /// - 261115 - 원본(48px)이 작아서 '보통' = 2배, '크게' = 3배(점 보간). 확대 텍스처는 크기를 바꿀 때만 새로 만들고 이전 것은 지운다.
-    /// - hotspot = 붓 끝 픽셀(왼쪽 위 기준).
+    /// 261116 재작성 - 아트 커서(Cursor-Sheet.png, 붓)를 화면 맨 위 UI 그림으로 그린다. UICanvas에 붙어 있다.
+    /// - 예전 방식(Cursor.SetCursor)은 윈도우가 하드웨어 커서를 시스템 크기로 맞춰 버리고, 소프트웨어 커서도 크기 변경이 반영되지 않았다.
+    ///   그래서 OS 커서는 숨기고(Cursor.visible = false) 전용 오버레이 캔버스의 RawImage가 마우스를 따라가게 했다.
+    /// - 크기(설정 &gt; 조작 &gt; 커서 크기): 작게 1배 · 보통 2배 · 크게 3배(원본 48px, 1920×1080 기준 화면 크기에 맞춰 늘고 줄어듦).
+    /// - 그림 끝(hotspot, 왼쪽 위 기준 픽셀)이 실제 클릭 지점이 되도록 피벗을 맞춘다.
+    /// - 캔버스를 따로 둬서 커서가 움직여도 다른 UI가 다시 그려지지 않는다. 매 프레임 할당 없음.
+    /// - 창 밖으로 나가거나 포커스를 잃으면 OS 커서를 돌려준다.
     /// </summary>
     public class CursorStyle : MonoBehaviour
     {
         [SerializeField] private Texture2D cursor;
         [Tooltip("커서 끝(클릭 지점) 픽셀 좌표, 왼쪽 위 기준.")]
         [SerializeField] private Vector2 hotspot = new Vector2(8f, 7f);
-        [Tooltip("하드웨어 커서 크기가 OS에서 제한되어 '크게'가 안 커지면 켠다(소프트웨어 커서, 프레임에 묶임).")]
-        [SerializeField] private bool forceSoftware;
+        [Tooltip("작게 · 보통 · 크게 배율(원본 픽셀 기준).")]
+        [SerializeField] private float[] scales = { 1f, 2f, 3f };
 
-        private static readonly int[] Scales = { 2, 3 };
+        private const int SortingOrder = 32767;
 
-        private Texture2D scaled;
+        private Canvas canvas;
+        private RectTransform cursorRect;
+        private RawImage cursorImage;
         private int appliedSize = -1;
+        private bool focused = true;
 
         private void OnEnable()
         {
+            EnsureView();
             GameSettings.Changed += Refresh;
             appliedSize = -1;
             Refresh();
@@ -33,82 +41,100 @@ namespace CheonMyeong.UI
         private void OnDisable()
         {
             GameSettings.Changed -= Refresh;
-            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-            appliedSize = -1;
+            if (canvas != null)
+            {
+                canvas.gameObject.SetActive(false);
+            }
+            Cursor.visible = true;
         }
 
         private void OnDestroy()
         {
-            ReleaseScaled();
+            if (canvas != null)
+            {
+                Destroy(canvas.gameObject);
+                canvas = null;
+            }
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            focused = hasFocus;
+        }
+
+        private void EnsureView()
+        {
+            if (canvas != null)
+            {
+                canvas.gameObject.SetActive(true);
+                return;
+            }
+            var go = new GameObject("[Cursor]", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
+            go.transform.SetParent(transform.root.parent, false);
+            canvas = go.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = SortingOrder;
+            canvas.pixelPerfect = false;
+            var scaler = go.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 1f;
+
+            var imageGo = new GameObject("Brush", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
+            imageGo.transform.SetParent(go.transform, false);
+            cursorRect = (RectTransform)imageGo.transform;
+            cursorRect.anchorMin = Vector2.zero;
+            cursorRect.anchorMax = Vector2.zero;
+            cursorImage = imageGo.GetComponent<RawImage>();
+            cursorImage.raycastTarget = false;
+            cursorImage.texture = cursor;
+            if (cursor != null)
+            {
+                cursorRect.pivot = new Vector2(hotspot.x / cursor.width, 1f - hotspot.y / cursor.height);
+            }
         }
 
         private void Refresh()
         {
-            if (cursor == null)
+            if (cursor == null || cursorRect == null)
             {
                 return;
             }
-            int size = GameSettings.Active.CursorSize;
+            int size = Mathf.Clamp(GameSettings.Active.CursorSize, 0, scales.Length - 1);
             if (size == appliedSize)
             {
                 return;
             }
             appliedSize = size;
-            CursorMode mode = forceSoftware ? CursorMode.ForceSoftware : CursorMode.Auto;
-            int factor = Scales[Mathf.Clamp(size, 0, Scales.Length - 1)];
-            Texture2D next = factor > 1 ? Upscale(cursor, factor) : null;
-            if (next != null)
-            {
-                Cursor.SetCursor(next, hotspot * factor, mode);
-            }
-            else
-            {
-                Cursor.SetCursor(cursor, hotspot, mode);
-            }
-            // 새 커서를 건 다음에 이전 확대 텍스처를 지운다.
-            ReleaseScaled();
-            scaled = next;
+            float scale = scales[size];
+            cursorRect.sizeDelta = new Vector2(cursor.width * scale, cursor.height * scale);
         }
 
-        private void ReleaseScaled()
+        private void LateUpdate()
         {
-            if (scaled != null)
+            if (cursorRect == null)
             {
-                Destroy(scaled);
-                scaled = null;
+                return;
             }
-        }
-
-        /// <summary>점 보간(픽셀 아트 유지) 확대. 원본이 Read/Write 꺼져 있으면 null.</summary>
-        private static Texture2D Upscale(Texture2D source, int factor)
-        {
-            if (!source.isReadable)
+            Mouse mouse = Mouse.current;
+            Vector2 screen = mouse != null ? mouse.position.ReadValue() : Vector2.zero;
+            bool inside = mouse != null && focused
+                          && screen.x >= 0f && screen.y >= 0f && screen.x <= Screen.width && screen.y <= Screen.height;
+            if (cursorImage.enabled != inside)
             {
-                Debug.LogWarning("[CheonMyeong] 커서 텍스처 Read/Write가 꺼져 있어 '크게'를 만들 수 없습니다.");
-                return null;
+                cursorImage.enabled = inside;
             }
-            int w = source.width;
-            int h = source.height;
-            Color32[] src = source.GetPixels32();
-            var dst = new Color32[w * factor * h * factor];
-            int dw = w * factor;
-            for (int y = 0; y < h * factor; y++)
+            if (Cursor.visible == inside)
             {
-                int sy = y / factor;
-                for (int x = 0; x < dw; x++)
-                {
-                    dst[y * dw + x] = src[sy * w + x / factor];
-                }
+                Cursor.visible = !inside;
             }
-            var result = new Texture2D(dw, h * factor, TextureFormat.RGBA32, false)
+            if (!inside)
             {
-                filterMode = FilterMode.Point,
-                wrapMode = TextureWrapMode.Clamp,
-                name = source.name + "_x" + factor,
-            };
-            result.SetPixels32(dst);
-            result.Apply(false, false);
-            return result;
+                return;
+            }
+            float factor = canvas.scaleFactor > 0f ? canvas.scaleFactor : 1f;
+            cursorRect.anchoredPosition = screen / factor;
         }
     }
 }

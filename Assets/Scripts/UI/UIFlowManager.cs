@@ -92,7 +92,8 @@ namespace CheonMyeong.UI
         {
             // New Input System 기준(Keyboard.current) - 이 프로젝트 전역이 이미 이 방식을
             // 쓰고 있다(PlayerInputReader/TitleDragCutController 참고).
-            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            // 261116 - 설정 화면이 키 입력을 기다리는 중이면 ESC는 그 대기 취소용(메뉴를 닫지 않음).
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame && !CheonMyeong.Input.KeyBindings.IsEscapeBlocked)
             {
                 HandleEscapePressed();
             }

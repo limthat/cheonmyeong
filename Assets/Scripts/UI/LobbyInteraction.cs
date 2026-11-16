@@ -78,8 +78,8 @@ namespace CheonMyeong.UI
             UpdateDepth(foot);
 
             bool overlayOpen = UIFlowManager.Instance != null && UIFlowManager.Instance.HasOverlay;
-            Keyboard keyboard = Keyboard.current;
-            if (!overlayOpen && nearest != null && keyboard != null && keyboard[interactKey].wasPressedThisFrame)
+            // 261116 - 상호작용 키는 설정에서 바꿀 수 있다(KeyBindings, 기본 E).
+            if (!overlayOpen && nearest != null && CheonMyeong.Input.KeyBindings.WasPressed(CheonMyeong.Input.GameAction.Interact))
             {
                 nearest.Activate();
             }

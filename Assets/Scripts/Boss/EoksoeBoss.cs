@@ -289,6 +289,8 @@ namespace CheonMyeong.Boss
             visible.OnValueChanged -= HandleVisibleChanged;
             realmActive.OnValueChanged -= HandleRealmChanged;
             SetRealmVisual(false);
+            CheonMyeong.Audio.GameAudio.Stop(realmAmbience);
+            realmAmbience = default;
             if (IsServer)
             {
                 ReleaseHeldPlayer();
@@ -1407,6 +1409,7 @@ namespace CheonMyeong.Boss
         [Rpc(SendTo.ClientsAndHost)]
         private void WarnRpc(float seconds)
         {
+            CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.BossWarn, transform.position);
             warnTimeLeft = seconds;
             warnDuration = Mathf.Max(0.05f, seconds);
         }
@@ -1447,6 +1450,7 @@ namespace CheonMyeong.Boss
             }
             EnsureFxBounds();
             float impact = ImpactScale();
+            CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.BossSlam, origin);
             switch ((ImpactKind)kind)
             {
                 case ImpactKind.Swing:
@@ -1513,6 +1517,17 @@ namespace CheonMyeong.Boss
         private void HandleVisibleChanged(bool previous, bool current)
         {
             ApplyVisible(current);
+            // 261116 - 등장: 웃음 + 북 연타 + 보스전 곡. 사라지면(중간 보스 도망) 웨이브 곡으로.
+            if (current && !previous)
+            {
+                CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.BossAppear);
+                CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.BossDrum);
+                CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmBoss);
+            }
+            else if (!current && previous && CheonMyeong.Waves.WaveManager.Instance != null)
+            {
+                CheonMyeong.Waves.WaveManager.Instance.RestoreWaveBgm();
+            }
         }
 
         private void ApplyVisible(bool on)
@@ -1822,9 +1837,18 @@ namespace CheonMyeong.Boss
             cloneRenderer.color = new Color(0.55f, 0.3f, 0.85f, 0.78f + 0.12f * Mathf.Sin(Time.time * 8f));
         }
 
+        private CheonMyeong.Audio.SoundHandle realmAmbience;
+
         private void HandleRealmChanged(bool previous, bool current)
         {
             SetRealmVisual(current);
+            // 261116 - 정신병 차원: 들어가고 나올 때 휘감기는 소리, 안에 있는 동안 먹먹한 환경음(반복).
+            if (current != previous)
+            {
+                CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.BossWarp);
+            }
+            CheonMyeong.Audio.GameAudio.Stop(realmAmbience);
+            realmAmbience = current ? CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.BossDimension) : default;
         }
 
         /// <summary>

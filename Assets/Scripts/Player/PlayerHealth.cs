@@ -90,16 +90,21 @@ namespace CheonMyeong.Player
             default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public float CurrentHealth => currentHealth.Value;
+        // 261116 - 영력 배율이 반영된 기본 체력에 신통력 % 보너스를 곱한다(기획서 v0.9.9 7장).
         public float MaxHealth => stats != null
-            ? stats.maxHealth * Mathf.Max(0.1f, 1f + (progress != null ? progress.Modifiers.MaxHealthBonus : 0f) + ExtraMaxHealthBonus)
+            ? stats.maxHealth * (character != null ? character.HealthScale : 1f)
+              * Mathf.Max(0.1f, 1f + (progress != null ? progress.Modifiers.MaxHealthBonus : 0f) + ExtraMaxHealthBonus)
             : 1f;
 
         /// <summary>261104 - 이 캐릭터의 기준 스탯(신통력 카드 후보 판정에 쓴다).</summary>
         public CharacterStatsSO Stats => stats;
 
+        private PlayerCharacter character;
+
         private void Awake()
         {
             TryGetComponent(out progress);
+            TryGetComponent(out character);
         }
 
         /// <summary>
@@ -134,6 +139,7 @@ namespace CheonMyeong.Player
             }
 
             isDead.OnValueChanged += HandleDeadChanged;
+            currentHealth.OnValueChanged += HandleHealthChanged;
             ActivePlayers.Add(this);
 
             // 늦게 접속해서 이미 죽어있는 상태로 동기화받은 경우도 처리.
@@ -151,7 +157,17 @@ namespace CheonMyeong.Player
         public override void OnNetworkDespawn()
         {
             isDead.OnValueChanged -= HandleDeadChanged;
+            currentHealth.OnValueChanged -= HandleHealthChanged;
             ActivePlayers.Remove(this);
+        }
+
+        /// <summary>261116 - 내 캐릭터가 맞았을 때만 피격 소리(동료 피격까지 내면 너무 시끄럽다 - 사운드 기획서 우선순위 「내 피격」).</summary>
+        private void HandleHealthChanged(float previous, float current)
+        {
+            if (IsOwner && current < previous && current > 0f && !isDead.Value)
+            {
+                CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.PlayerHurt);
+            }
         }
 
         private void Update()

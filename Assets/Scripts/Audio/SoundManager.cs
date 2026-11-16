@@ -46,6 +46,10 @@ namespace CheonMyeong.Audio
         [SerializeField] private AudioMixerGroup voiceGroup;
         [SerializeField] private AudioMixerGroup uiGroup;
 
+        [Header("전체 출력")]
+        [Tooltip("261116 - 모든 소리에 곱하는 기준 배율. 설정 슬라이더 100% = 이 값(0.1 = 원본의 1/10). 원본 파일이 커서 낮춰 둔다.")]
+        [Range(0f, 1f)] [SerializeField] private float outputGain = 0.1f;
+
         [Header("배경음")]
         [Min(0f)] [SerializeField] private float defaultBgmFade = 1.2f;
         [Min(0f)] [SerializeField] private float layerFade = 1.5f;
@@ -58,6 +62,7 @@ namespace CheonMyeong.Audio
             public float BaseVolume;
             public bool FromAlly;
             public int Generation;
+            public float BusyUntil; // 예약 재생(반복) 시작 전엔 isPlaying이 false일 수 있어 그때까지 칸을 비우지 않는다
         }
 
         private sealed class CueState
@@ -108,6 +113,35 @@ namespace CheonMyeong.Audio
             BuildVoices();
             BuildDecks();
             ReadSettings();
+            PreloadClips();
+        }
+
+        /// <summary>
+        /// 261116 - 효과음 데이터를 미리 올린다. 임포트 설정 Preload Audio Data가 꺼져 있으면 처음 Play할 때 읽느라 늦게 나거나 끊길 수 있다.
+        /// 배경음(Streaming)은 건너뛴다 - 스트리밍은 재생할 때 조금씩 읽어서 메모리를 아낀다.
+        /// </summary>
+        private void PreloadClips()
+        {
+            if (library == null)
+            {
+                return;
+            }
+            for (int i = 0; i < library.Count; i++)
+            {
+                SoundCue cue = library.CueAt(i);
+                if (cue == null || cue.clips == null)
+                {
+                    continue;
+                }
+                for (int c = 0; c < cue.clips.Length; c++)
+                {
+                    AudioClip clip = cue.clips[c];
+                    if (clip != null && clip.loadType != AudioClipLoadType.Streaming && clip.loadState == AudioDataLoadState.Unloaded)
+                    {
+                        clip.LoadAudioData();
+                    }
+                }
+            }
         }
 
         private void OnEnable()
@@ -175,32 +209,50 @@ namespace CheonMyeong.Audio
                 StopOldestOf(cue);
             }
 
-            int index = FindFreeVoice(cue.priority);
-            if (index < 0)
+            // 반복(북 3타 등)은 칸을 따로 잡아 정확한 시각에 예약 재생한다(dspTime 기준 - 프레임과 무관).
+            int repeats = cue.loop ? 1 : Mathf.Max(1, cue.repeatCount);
+            double dspNow = AudioSettings.dspTime;
+            SoundHandle first = SoundHandle.None;
+            for (int r = 0; r < repeats; r++)
             {
-                return SoundHandle.None;
+                int index = FindFreeVoice(cue.priority);
+                if (index < 0)
+                {
+                    break;
+                }
+                Voice voice = voices[index];
+                StopVoice(voice);
+                AudioSource src = voice.Source;
+                src.clip = PickClip(cue, state);
+                src.loop = cue.loop;
+                src.priority = cue.priority;
+                src.pitch = Random.Range(Mathf.Min(cue.pitchRange.x, cue.pitchRange.y), Mathf.Max(cue.pitchRange.x, cue.pitchRange.y));
+                src.panStereo = pan;
+                src.outputAudioMixerGroup = GroupOf(cue.bus);
+                voice.Cue = cue;
+                voice.FromAlly = fromAlly;
+                voice.BaseVolume = cue.volume * (1f - Random.value * cue.volumeJitter) * distanceGain;
+                voice.StartedAt = now;
+                voice.Generation++;
+                float delay = r * cue.repeatInterval;
+                voice.BusyUntil = now + delay + 0.1f;
+                src.volume = voice.BaseVolume * BusVolume(cue.bus) * (fromAlly ? allyScale : 1f);
+                // SetScheduledEndTime(길이 자르기)은 예약 재생(PlayScheduled)에만 걸리므로 첫 소리도 지금 시각으로 예약한다.
+                double start = dspNow + delay;
+                src.PlayScheduled(start);
+                if (cue.maxDuration > 0f && !cue.loop)
+                {
+                    src.SetScheduledEndTime(start + cue.maxDuration);
+                }
+                if (r == 0)
+                {
+                    first = new SoundHandle(index, voice.Generation);
+                }
+                state.Playing++;
             }
 
-            Voice voice = voices[index];
-            StopVoice(voice);
-            AudioSource src = voice.Source;
-            src.clip = PickClip(cue, state);
-            src.loop = cue.loop;
-            src.priority = cue.priority;
-            src.pitch = Random.Range(Mathf.Min(cue.pitchRange.x, cue.pitchRange.y), Mathf.Max(cue.pitchRange.x, cue.pitchRange.y));
-            src.panStereo = pan;
-            src.outputAudioMixerGroup = GroupOf(cue.bus);
-            voice.Cue = cue;
-            voice.FromAlly = fromAlly;
-            voice.BaseVolume = cue.volume * (1f - Random.value * cue.volumeJitter) * distanceGain;
-            voice.StartedAt = now;
-            voice.Generation++;
-            src.volume = voice.BaseVolume * BusVolume(cue.bus) * (fromAlly ? allyScale : 1f);
-            src.Play();
-
             state.LastPlayed = now;
-            state.Playing++;
-            return new SoundHandle(index, voice.Generation);
+            return first;
         }
 
         public void Stop(SoundHandle handle)
@@ -345,7 +397,7 @@ namespace CheonMyeong.Audio
             for (int i = 0; i < voices.Length; i++)
             {
                 Voice voice = voices[i];
-                if (voice.Cue != null && !voice.Source.isPlaying)
+                if (voice.Cue != null && !voice.Source.isPlaying && Time.unscaledTime > voice.BusyUntil)
                 {
                     ReleaseVoice(voice);
                 }
@@ -516,7 +568,7 @@ namespace CheonMyeong.Audio
                 {
                     continue;
                 }
-                float baseVolume = deck.Cue.volume * deck.Volume * busBgm;
+                float baseVolume = deck.Cue.volume * deck.Volume * busBgm * outputGain;
                 for (int i = 0; i < deck.LayerCount; i++)
                 {
                     deck.Layers[i].volume = baseVolume * deck.LayerVolume[i];
@@ -556,9 +608,9 @@ namespace CheonMyeong.Audio
         {
             switch (bus)
             {
-                case SoundBus.Bgm: return busBgm;
-                case SoundBus.Voice: return busVoice;
-                default: return busSfx; // Sfx · Ui
+                case SoundBus.Bgm: return busBgm * outputGain;
+                case SoundBus.Voice: return busVoice * outputGain;
+                default: return busSfx * outputGain; // Sfx · Ui
             }
         }
 

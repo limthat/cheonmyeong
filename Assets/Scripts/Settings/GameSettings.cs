@@ -28,7 +28,7 @@ namespace CheonMyeong.Settings
         public bool MuteInBackground;
 
         // 조작
-        public int CursorSize;      // 0 보통 / 1 크게
+        public int CursorSize;      // 261116 - 0 작게 / 1 보통 / 2 크게
         public bool ConfineCursor;
 
         // 기타
@@ -111,12 +111,13 @@ namespace CheonMyeong.Settings
                 FrameCapIndex = 1,
                 Shake = 2,
                 Master = 1f,
-                Bgm = 0.8f,
-                Sfx = 0.8f,
-                Voice = 0.8f,
+                // 261116 - 전부 100%가 기본값. 실제 크기는 SoundManager.outputGain(100% = 원본의 1/10)이 정한다.
+                Bgm = 1f,
+                Sfx = 1f,
+                Voice = 1f,
                 AllyVolume = 1,
                 MuteInBackground = false,
-                CursorSize = 0,
+                CursorSize = 1,
                 ConfineCursor = false,
                 DamageNumbers = true,
                 HitEffects = true,
@@ -228,7 +229,8 @@ namespace CheonMyeong.Settings
             d.Voice = Mathf.Clamp01(PlayerPrefs.GetFloat(Prefix + "voice", d.Voice));
             d.AllyVolume = Mathf.Clamp(PlayerPrefs.GetInt(Prefix + "ally", d.AllyVolume), 0, AllyScales.Length - 1);
             d.MuteInBackground = PlayerPrefs.GetInt(Prefix + "muteBg", d.MuteInBackground ? 1 : 0) != 0;
-            d.CursorSize = Mathf.Clamp(PlayerPrefs.GetInt(Prefix + "cursorSize", d.CursorSize), 0, 1);
+            // 261116 - 작게가 생겨 값 뜻이 바뀌었으므로 저장 키도 바꿨다(옛 cursorSize 값은 무시).
+            d.CursorSize = Mathf.Clamp(PlayerPrefs.GetInt(Prefix + "cursorScale", d.CursorSize), 0, 2);
             d.ConfineCursor = PlayerPrefs.GetInt(Prefix + "confine", d.ConfineCursor ? 1 : 0) != 0;
             d.DamageNumbers = PlayerPrefs.GetInt(Prefix + "dmgNum", d.DamageNumbers ? 1 : 0) != 0;
             d.HitEffects = PlayerPrefs.GetInt(Prefix + "hitFx", d.HitEffects ? 1 : 0) != 0;
@@ -247,7 +249,7 @@ namespace CheonMyeong.Settings
             PlayerPrefs.SetFloat(Prefix + "voice", d.Voice);
             PlayerPrefs.SetInt(Prefix + "ally", d.AllyVolume);
             PlayerPrefs.SetInt(Prefix + "muteBg", d.MuteInBackground ? 1 : 0);
-            PlayerPrefs.SetInt(Prefix + "cursorSize", d.CursorSize);
+            PlayerPrefs.SetInt(Prefix + "cursorScale", d.CursorSize);
             PlayerPrefs.SetInt(Prefix + "confine", d.ConfineCursor ? 1 : 0);
             PlayerPrefs.SetInt(Prefix + "dmgNum", d.DamageNumbers ? 1 : 0);
             PlayerPrefs.SetInt(Prefix + "hitFx", d.HitEffects ? 1 : 0);

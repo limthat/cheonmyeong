@@ -26,6 +26,12 @@ namespace CheonMyeong.UI.Title
         private TitleTalisman pressedTarget;
         private TitleTalisman hoveredTarget;
 
+        private void Start()
+        {
+            // 261116 - 타이틀 곡(로비와 같은 곡이면 로비로 넘어가도 끊기지 않는다 - SoundManager가 같은 Cue면 다시 틀지 않음).
+            CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmTitle);
+        }
+
         private void Awake()
         {
             if (targetCamera == null)

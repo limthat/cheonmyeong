@@ -189,9 +189,14 @@ namespace CheonMyeong.Progression
         {
             RefreshGrudgeHud();
             int stage = GetGrudgeStage(current);
-            if (stage != GetGrudgeStage(previous))
+            int previousStage = GetGrudgeStage(previous);
+            if (stage != previousStage)
             {
                 HandleGrudgeChangedSound(stage);
+                if (stage > previousStage)
+                {
+                    CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.GrudgeRise);
+                }
             }
         }
 

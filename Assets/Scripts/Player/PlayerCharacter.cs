@@ -10,6 +10,7 @@ namespace CheonMyeong.Player
     /// - 오너가 자기 선택(CurrentRun.SelectedCharacter, 영웅 화면 "선택하기")과 신내림 연 칸(PlayerPrefs)을 NetworkVariable에 쓴다.
     /// - 전원이 값이 바뀔 때 스탯(이동 · 체력 · 공격) · 모션 · 이펙트 · 투사체 그림을 바꾼다. 판정은 원래대로 서버만.
     /// - 신내림 마스크는 서버의 노드 효과(SinnaerimEffects)가 읽는다.
+    /// - 261116 영력 레벨도 오너가 쓴다(PlayerPrefs). 체력 · 공격력 · 공격 속도 기본값에 SpiritLevel 배율을 곱한다(PlayerHealth · PlayerAutoAttack이 읽음).
     /// 둘이 같은 캐릭터여도 된다(기획서 4장).
     /// </summary>
     public class PlayerCharacter : NetworkBehaviour
@@ -21,6 +22,9 @@ namespace CheonMyeong.Player
 
         private readonly NetworkVariable<int> sinnaerimMask = new NetworkVariable<int>(
             0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+        private readonly NetworkVariable<int> spiritLevel = new NetworkVariable<int>(
+            SpiritLevel.MinLevel, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         private PlayerAutoAttack attack;
         private PlayerMovement movement;
@@ -36,6 +40,13 @@ namespace CheonMyeong.Player
         public CharacterStatsSO Stats => Entry != null ? Entry.stats : null;
         public string CharacterId => Entry != null ? Entry.characterId : string.Empty;
         public int SinnaerimMask => sinnaerimMask.Value;
+        public int Level => spiritLevel.Value;
+
+        /// <summary>261116 - 이 캐릭터 공격 소리 이름(SoundKeys.AttackKey). 캐릭터를 입힐 때 한 번 만든다.</summary>
+        public string AttackSoundKey { get; private set; }
+        public float HealthScale => SpiritLevel.HealthScale(spiritLevel.Value);
+        public float AttackScale => SpiritLevel.AttackScale(spiritLevel.Value);
+        public float AttackSpeedScale => SpiritLevel.AttackSpeedScale(spiritLevel.Value);
 
         /// <summary>캐릭터(또는 신내림)가 바뀌어 적용이 끝났을 때(전원).</summary>
         public event Action CharacterApplied;
@@ -55,9 +66,11 @@ namespace CheonMyeong.Player
         {
             characterIndex.OnValueChanged += HandleIndexChanged;
             sinnaerimMask.OnValueChanged += HandleMaskChanged;
+            spiritLevel.OnValueChanged += HandleLevelChanged;
             if (IsOwner)
             {
                 CurrentRun.CharacterChanged += HandleLocalSelectionChanged;
+                CharacterProgressStore.Changed += HandleLocalProgressChanged;
                 CurrentRun.EnsureCharacterSelected(catalog);
                 WriteOwnerSelection(CurrentRun.SelectedCharacter);
             }
@@ -68,7 +81,30 @@ namespace CheonMyeong.Player
         {
             characterIndex.OnValueChanged -= HandleIndexChanged;
             sinnaerimMask.OnValueChanged -= HandleMaskChanged;
+            spiritLevel.OnValueChanged -= HandleLevelChanged;
             CurrentRun.CharacterChanged -= HandleLocalSelectionChanged;
+            CharacterProgressStore.Changed -= HandleLocalProgressChanged;
+        }
+
+        /// <summary>261116 - 접속 중에 신내림 · 영력이 바뀌면(로비에서 수련 등) 지금 캐릭터 값을 다시 쓴다.</summary>
+        private void HandleLocalProgressChanged(string characterId)
+        {
+            if (IsOwner && IsSpawned && Entry != null && Entry.characterId == characterId)
+            {
+                sinnaerimMask.Value = CharacterProgressStore.SinnaerimMask(characterId);
+                spiritLevel.Value = CharacterProgressStore.Level(characterId);
+            }
+        }
+
+        private void HandleLevelChanged(int previous, int current)
+        {
+            // 서버: 최대 체력이 바뀌었으니 현재 체력도 맞춘다(늘면 그만큼 채움).
+            if (IsServer && health != null && health.Stats != null)
+            {
+                float previousMax = health.MaxHealth / SpiritLevel.HealthScale(current) * SpiritLevel.HealthScale(previous);
+                health.ServerOnMaxHealthChanged(previousMax);
+            }
+            CharacterApplied?.Invoke();
         }
 
         private void HandleLocalSelectionChanged(CharacterCatalogSO.CharacterEntry entry)
@@ -88,6 +124,7 @@ namespace CheonMyeong.Player
             }
             CharacterCatalogSO.CharacterEntry chosen = catalog != null ? catalog.At(index) : null;
             sinnaerimMask.Value = chosen != null ? CharacterProgressStore.SinnaerimMask(chosen.characterId) : 0;
+            spiritLevel.Value = chosen != null ? CharacterProgressStore.Level(chosen.characterId) : SpiritLevel.MinLevel;
             characterIndex.Value = index;
         }
 
@@ -122,6 +159,7 @@ namespace CheonMyeong.Player
             }
             appliedIndex = index;
             Entry = entry;
+            AttackSoundKey = CheonMyeong.Audio.SoundKeys.AttackKey(entry.characterId);
             CharacterStatsSO stats = entry.stats;
             if (movement != null)
             {

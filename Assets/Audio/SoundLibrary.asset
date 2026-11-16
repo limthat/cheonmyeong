@@ -14,35 +14,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Audio.SoundLibrary
   entries:
   - key: bgm.title
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 2ed83cc424b64401a468ea679477d6bf, type: 2}
   - key: bgm.lobby
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 2ed83cc424b64401a468ea679477d6bf, type: 2}
   - key: bgm.wave_early
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: fa690defc8e24b5bb6201b2179b20ce5, type: 2}
   - key: bgm.wave_late
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: fa690defc8e24b5bb6201b2179b20ce5, type: 2}
   - key: bgm.boss
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: d983ec8228f4425c88f8f8ef482369db, type: 2}
   - key: bgm.final
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: d983ec8228f4425c88f8f8ef482369db, type: 2}
   - key: bgm.victory
     cue: {fileID: 0}
   - key: bgm.defeat
     cue: {fileID: 0}
   - key: wave.start
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 9d8cdad1d5274977912bfa5a33094030, type: 2}
   - key: wave.gong
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 0b372c07553e4364a7f7d13b2304695c, type: 2}
   - key: wave.final_start
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 52a256331a914f85a89fce47381530c2, type: 2}
+  - key: wave.absorb
+    cue: {fileID: 11400000, guid: cc31f1cdd51b45ebb4e281fb84bdfc83, type: 2}
+  - key: wave.grudge_rise
+    cue: {fileID: 11400000, guid: 57310f9f7d2d4c01b3176e9ee75a5976, type: 2}
   - key: grow.level_up
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 193a86db35ef4f228358f49c0e98fc94, type: 2}
   - key: grow.card_show
     cue: {fileID: 0}
   - key: grow.card_pick
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 193a86db35ef4f228358f49c0e98fc94, type: 2}
   - key: grow.card_burn
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 9d135acfaf114b59ba24209bbab248cd, type: 2}
   - key: grow.card_reroll
     cue: {fileID: 0}
   - key: grow.pickup_soul
@@ -54,15 +58,25 @@ MonoBehaviour:
   - key: combat.hit_crit
     cue: {fileID: 0}
   - key: combat.enemy_die
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 9c9fa84aefde45b698ee6d5a515fba7d, type: 2}
   - key: combat.player_hurt
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 58b64909d321435985ebe8b8cb231f27, type: 2}
   - key: combat.player_down
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: eb6a445d7c9b4c889568d5edfbb45969, type: 2}
   - key: combat.player_revive
-    cue: {fileID: 0}
+    cue: {fileID: 11400000, guid: 193a86db35ef4f228358f49c0e98fc94, type: 2}
   - key: boss.appear
+    cue: {fileID: 11400000, guid: ebc341a5659f4ba1a9403d109e940459, type: 2}
+  - key: boss.drum
+    cue: {fileID: 11400000, guid: 2139de3b39754c378bc0438db8b6b21b, type: 2}
+  - key: boss.warn
     cue: {fileID: 0}
+  - key: boss.warp
+    cue: {fileID: 11400000, guid: 13db478a5978407cbed970eff33426c3, type: 2}
+  - key: boss.dimension
+    cue: {fileID: 11400000, guid: 9c9b3f9fc0d1440c90017263cb928d68, type: 2}
+  - key: boss.seal
+    cue: {fileID: 11400000, guid: 951efc7e8f464642b4e64335ee9500ee, type: 2}
   - key: boss.slam
     cue: {fileID: 0}
   - key: boss.summon
@@ -83,3 +97,23 @@ MonoBehaviour:
     cue: {fileID: 0}
   - key: ui.notice
     cue: {fileID: 0}
+  - key: ui.gate_open
+    cue: {fileID: 11400000, guid: 54177b8784bc4d1698cb355724a650dd, type: 2}
+  - key: ui.outgame_upgrade
+    cue: {fileID: 11400000, guid: 193a86db35ef4f228358f49c0e98fc94, type: 2}
+  - key: atk.hayoung
+    cue: {fileID: 11400000, guid: f34b057de3c4446ea9600bb3095d0ac1, type: 2}
+  - key: atk.hanjuwon
+    cue: {fileID: 11400000, guid: fba924a928f4436cbebaf85a9d0985b1, type: 2}
+  - key: atk.parkgyuhyeok
+    cue: {fileID: 11400000, guid: 7da3a7fa0005442bb67c1bd172757d97, type: 2}
+  - key: atk.leeara
+    cue: {fileID: 11400000, guid: 953d999adc3a45fabed7413631e1f3ba, type: 2}
+  - key: atk.choihwanjo
+    cue: {fileID: 11400000, guid: 03650409c4fb46a2b4808f4a917485a1, type: 2}
+  - key: atk.sinjihyeon
+    cue: {fileID: 11400000, guid: 2b77521094684b4eb47c24615df2226c, type: 2}
+  - key: atk.imhun
+    cue: {fileID: 11400000, guid: 147e2a82633f455bb304bde579b288aa, type: 2}
+  - key: atk.simyeore
+    cue: {fileID: 11400000, guid: b9225997ad3e47a3a06a61e862587a2b, type: 2}

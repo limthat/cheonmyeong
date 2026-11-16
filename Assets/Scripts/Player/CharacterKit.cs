@@ -470,7 +470,7 @@ namespace CheonMyeong.Player
                 return;
             }
             // 주사 낙인: 동료가 공격하면 터져서 (한주원) 공격력 50% 추가 피해.
-            hit.Damage += brander.Stats.attackPower * 0.5f;
+            hit.Damage += brander.BaseAttackPower * 0.5f;
             if (source.TryGetComponent(out CharacterKit branderKit) && branderKit.Has(CharacterCatalogSO.SinnaerimSlot.ChoiceB) && health != null)
             {
                 health.ServerHealByRatio(0.01f); // 짙은 주사(동료): 낙인을 터뜨린 동료 체력 1% 회복

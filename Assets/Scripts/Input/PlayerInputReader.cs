@@ -54,10 +54,11 @@ namespace CheonMyeong.Input
             float x = 0f;
             float y = 0f;
 
-            if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) x -= 1f;
-            if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) x += 1f;
-            if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed) y -= 1f;
-            if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed) y += 1f;
+            // 261116 - 이동 키는 설정에서 바꿀 수 있다(KeyBindings). 방향키는 항상 같이 동작.
+            if (KeyBindings.IsPressed(GameAction.MoveLeft) || keyboard.leftArrowKey.isPressed) x -= 1f;
+            if (KeyBindings.IsPressed(GameAction.MoveRight) || keyboard.rightArrowKey.isPressed) x += 1f;
+            if (KeyBindings.IsPressed(GameAction.MoveDown) || keyboard.downArrowKey.isPressed) y -= 1f;
+            if (KeyBindings.IsPressed(GameAction.MoveUp) || keyboard.upArrowKey.isPressed) y += 1f;
 
             return new Vector2(x, y);
         }

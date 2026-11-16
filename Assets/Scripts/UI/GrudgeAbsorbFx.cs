@@ -96,6 +96,10 @@ namespace CheonMyeong.UI
         /// <summary>모든 화면에서 호출(WaveManager.GrudgeAbsorbFxRpc). worldPositions = 남은 원귀 위치.</summary>
         public static void Play(Vector2[] worldPositions)
         {
+            if (worldPositions != null && worldPositions.Length > 0)
+            {
+                CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.WaveAbsorb);
+            }
             InGameHudScreen hud = InGameHudScreen.Instance;
             if (worldPositions == null || worldPositions.Length == 0 || hud == null || !hud.isActiveAndEnabled)
             {
