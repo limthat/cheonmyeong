@@ -128,8 +128,13 @@ namespace CheonMyeong.Enemies
             int trickleTotal = Mathf.RoundToInt(wave.enemyCount * trickleShare);
             int patternTotal = wave.enemyCount - trickleTotal;
 
-            // 상시 소환 - 웨이브 시간에 맞춰 고르게.
-            int trickleTarget = Mathf.Min(trickleTotal, Mathf.CeilToInt(trickleTotal * waveManager.ServerWaveProgress));
+            // 261110 - 웨이브 끝 30초(spawnEndsBeforeWaveEnd) 전까지 전부 나오게: 웨이브 길이 대신 소환 구간 길이로 나눈다.
+            float waveDuration = waveManager.ServerWaveDuration;
+            float spawnWindow = config != null ? config.SpawnWindow(waveDuration) : waveDuration;
+            float spawnProgress = spawnWindow > 0f ? Mathf.Clamp01(waveManager.ServerWaveElapsed / spawnWindow) : 1f;
+
+            // 상시 소환 - 소환 구간에 맞춰 고르게.
+            int trickleTarget = Mathf.Min(trickleTotal, Mathf.CeilToInt(trickleTotal * spawnProgress));
             int spawnedThisFrame = 0;
             while (trickleSpawnedThisWave < trickleTarget && spawnedThisFrame < MaxSpawnPerFrame)
             {
@@ -144,7 +149,7 @@ namespace CheonMyeong.Enemies
             // 패턴 소환 - patternIntervalSeconds마다 한 번, 남은 몫을 남은 횟수로 나눠서.
             if (usePatterns && patternTotal > 0)
             {
-                float duration = waveManager.ServerWaveDuration;
+                float duration = spawnWindow;
                 int eventCount = Mathf.Max(1, Mathf.FloorToInt(duration / config.patternIntervalSeconds));
                 int due = Mathf.Min(eventCount, Mathf.FloorToInt(waveManager.ServerWaveElapsed / config.patternIntervalSeconds));
                 while (patternEventsFired < due)

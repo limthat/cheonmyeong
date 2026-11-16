@@ -33,6 +33,9 @@ namespace CheonMyeong.Data
             public string bossCaption;
 
             public bool isUnlocked;
+
+            [Tooltip("261114 - 맵 선택 칸에 보일 썸네일. 비우면 이름만 보인다.")]
+            public Sprite thumbnail;
         }
 
         public MapEntry[] maps = Array.Empty<MapEntry>();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CheonMyeong.Boss;
 using CheonMyeong.Enemies;
 using CheonMyeong.Maps;
@@ -44,6 +45,8 @@ namespace CheonMyeong.Waves
         public const int PhaseFailed = 3;
         /// <summary>261101 - 억쇠 최종전(마지막 웨이브 뒤). HUD에는 웨이브 번호 대신 "최종전"이 보인다.</summary>
         public const int PhaseFinalBattle = 4;
+        /// <summary>261110 - 웨이브와 웨이브 사이 대기(WaveConfigSO.intermissionSeconds). 원귀가 안 나온다.</summary>
+        public const int PhaseIntermission = 5;
 
         [SerializeField] private WaveConfigSO config;
 
@@ -61,6 +64,7 @@ namespace CheonMyeong.Waves
             0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         private float timer;
+        private bool intermissionToFinal;
         private float currentDuration;
         private float runElapsed;
 
@@ -89,6 +93,7 @@ namespace CheonMyeong.Waves
         public int Phase => phase.Value;
         public bool IsWaveRunning => phase.Value == PhaseRunning;
         public bool IsFinalBattle => phase.Value == PhaseFinalBattle;
+        public bool IsIntermission => phase.Value == PhaseIntermission;
         public int CurrentWave => currentWave.Value;
         public int TotalWaves => totalWaves.Value;
         public int RemainingSeconds => remainingSeconds.Value;
@@ -194,7 +199,7 @@ namespace CheonMyeong.Waves
                 runElapsed += Time.deltaTime;
             }
 
-            timer -= Time.deltaTime;
+            timer -= Time.deltaTime * debugTimerScale;
             SyncRemainingSeconds();
             if (timer > 0f)
             {
@@ -204,6 +209,19 @@ namespace CheonMyeong.Waves
             if (phase.Value == PhasePreparing)
             {
                 StartWave(1);
+                return;
+            }
+
+            if (phase.Value == PhaseIntermission)
+            {
+                if (intermissionToFinal)
+                {
+                    StartFinalBattle();
+                }
+                else
+                {
+                    StartWave(currentWave.Value + 1);
+                }
                 return;
             }
 
@@ -232,13 +250,9 @@ namespace CheonMyeong.Waves
             // 최종전 전에도 징 규칙(회복 · 부활)은 그대로 - 기획서 "최종전에는 부활이 없다"는 최종전 도중 얘기.
             EndCurrentWave(hasNext || hasFinal);
 
-            if (hasNext)
+            if (hasNext || hasFinal)
             {
-                StartWave(next);
-            }
-            else if (hasFinal)
-            {
-                StartFinalBattle();
+                BeginIntermission(hasFinal);
             }
             else
             {
@@ -246,8 +260,35 @@ namespace CheonMyeong.Waves
             }
         }
 
+        /// <summary>261110 - 웨이브가 끝나면 바로 다음 웨이브로 가지 않고 intermissionSeconds만큼 쉰다.</summary>
+        private void BeginIntermission(bool toFinal)
+        {
+            float seconds = config != null ? config.intermissionSeconds : 0f;
+            if (seconds <= 0f)
+            {
+                if (toFinal)
+                {
+                    StartFinalBattle();
+                }
+                else
+                {
+                    StartWave(currentWave.Value + 1);
+                }
+                return;
+            }
+            intermissionToFinal = toFinal;
+            phase.Value = PhaseIntermission;
+            timer = seconds;
+            SyncRemainingSeconds();
+        }
+
+        // 261110 테스트용 - F1: 웨이브 · 대기 시간만 3배속(캐릭터 · 원귀 속도는 그대로). 다시 누르면 1배속.
+        private const float DebugFastTimerScale = 3f;
+        private float debugTimerScale = 1f;
+
         /// <summary>
         /// 261101 테스트용 - 호스트 화면에서 F5 = 5웨이브, F10 = 10웨이브, F11 = 최종전으로 바로 이동.
+        /// 261110 - F1 = 웨이브 · 대기 시간 3배속 켜기/끄기. F2 = 지금 웨이브(또는 대기 시간)를 바로 끝내기.
         /// 에디터 / Development Build에서만 동작한다(정식 빌드에선 무시).
         /// </summary>
         private void HandleDebugSkipKeys()
@@ -261,6 +302,15 @@ namespace CheonMyeong.Waves
             {
                 return;
             }
+            if (keyboard.f1Key.wasPressedThisFrame)
+            {
+                debugTimerScale = debugTimerScale > 1f ? 1f : DebugFastTimerScale;
+                Debug.Log($"[CheonMyeong] 웨이브 · 대기 시간 {debugTimerScale:0}배속 (F1)");
+            }
+            if (keyboard.f2Key.wasPressedThisFrame)
+            {
+                ServerDebugEndCurrentPhase();
+            }
             if (keyboard.f5Key.wasPressedThisFrame)
             {
                 ServerDebugSkipToWave(5);
@@ -273,6 +323,21 @@ namespace CheonMyeong.Waves
             {
                 ServerDebugSkipToWave(totalWaves.Value + 1);
             }
+        }
+
+        /// <summary>
+        /// 261110 테스트용(서버 전용) - F2. 남은 시간을 0으로 만들어 평소 흐름 그대로 넘긴다:
+        /// 웨이브 중이면 웨이브 종료(남은 원귀 흡수 · 회복 · 다음 웨이브 전 대기), 대기 · 준비 중이면 다음 웨이브 시작.
+        /// 최종전은 시간 초과 = 실패라 무시한다.
+        /// </summary>
+        public void ServerDebugEndCurrentPhase()
+        {
+            if (!IsServer || IsFinished() || phase.Value == PhaseFinalBattle)
+            {
+                return;
+            }
+            timer = 0f;
+            Debug.Log("[CheonMyeong] (테스트) 지금 단계를 바로 끝냅니다 (F2).");
         }
 
         /// <summary>
@@ -411,6 +476,10 @@ namespace CheonMyeong.Waves
             // 261027 추가 - 이전 판에서 살아남은 원귀/드랍 정리("다시 하기" 하자마자 맞아 죽던 문제).
             Enemy.ServerDespawnAll();
             LootPickup.ServerDespawnAll();
+            if (PartyProgress.Instance != null)
+            {
+                PartyProgress.Instance.ServerClearMenuPause(); // 261110 - 이전 판 ESC 일시정지가 남지 않게
+            }
 
             // 새 판 시작 - 이전 판에서 쓰러진 플레이어가 그대로 남아있지 않게 전원 초기화(다시 하기 대응).
             for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
@@ -494,6 +563,20 @@ namespace CheonMyeong.Waves
         /// <summary>징 - 남은 원귀 → 원한, 바닥 드랍 흡수, 다음 웨이브가 있으면 회복/부활.</summary>
         private void EndCurrentWave(bool hasNextWave)
         {
+            // 261110 - 남은 원귀 → 붉은 구체가 화면 가운데로 모였다가 원한 게이지로 빨려 드는 연출(각 화면에서 로컬).
+            Enemy.ServerCollectAlivePositions(AbsorbPositionBuffer);
+            Vector2[] absorbPositions = AbsorbPositionBuffer.Count > 0 ? SampleAbsorbPositions() : null;
+            if (absorbPositions != null)
+            {
+                GrudgeAbsorbFxRpc(absorbPositions);
+            }
+            // 261110 - 웨이브 끝에 바닥 영혼이 한꺼번에 경험치로 들어가 레벨업하는데, 신통력 화면은 흡수 연출이 끝난 뒤에 연다.
+            if (PartyProgress.Instance != null)
+            {
+                PartyProgress.Instance.ServerDelayAugmentChoices(
+                    GrudgeAbsorbFx.TotalSeconds(absorbPositions != null ? absorbPositions.Length : 0) + ChoiceDelayAfterAbsorb);
+            }
+
             int absorbedGrudge = Enemy.ServerAbsorbAllIntoGrudge();
             if (PartyProgress.Instance != null)
             {
@@ -517,6 +600,28 @@ namespace CheonMyeong.Waves
             }
 
             ServerWaveEnded?.Invoke(currentWave.Value);
+        }
+
+        private const int MaxAbsorbOrbs = 48;
+        private const float ChoiceDelayAfterAbsorb = 0.6f;
+        private static readonly List<Vector2> AbsorbPositionBuffer = new List<Vector2>(256);
+
+        /// <summary>남은 원귀가 많으면 고르게 골라 최대 MaxAbsorbOrbs개만 보낸다(연출용).</summary>
+        private static Vector2[] SampleAbsorbPositions()
+        {
+            int count = Mathf.Min(MaxAbsorbOrbs, AbsorbPositionBuffer.Count);
+            var result = new Vector2[count];
+            for (int i = 0; i < count; i++)
+            {
+                result[i] = AbsorbPositionBuffer[i * AbsorbPositionBuffer.Count / count];
+            }
+            return result;
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void GrudgeAbsorbFxRpc(Vector2[] positions)
+        {
+            GrudgeAbsorbFx.Play(positions);
         }
 
         private void FinishRun(bool cleared)
@@ -607,6 +712,7 @@ namespace CheonMyeong.Waves
         /// </summary>
         private void HandlePhaseChanged(int previous, int current)
         {
+            RefreshHud();
             if (current != PhaseCleared && current != PhaseFailed)
             {
                 return;
@@ -633,7 +739,7 @@ namespace CheonMyeong.Waves
         {
             if (InGameHudScreen.Instance != null)
             {
-                InGameHudScreen.Instance.SetWaveStatus(currentWave.Value, totalWaves.Value, remainingSeconds.Value);
+                InGameHudScreen.Instance.SetWaveStatus(currentWave.Value, totalWaves.Value, remainingSeconds.Value, IsIntermission);
             }
         }
     }

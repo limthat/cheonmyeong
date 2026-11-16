@@ -34,6 +34,12 @@ namespace CheonMyeong.Networking
         /// <summary>이 씬의 언로드가 완료됐을 때.</summary>
         public event Action<string> OnGameplaySceneUnloaded;
 
+        /// <summary>261114 - 방장이 Gameplay 씬 로드를 시작했을 때(참가자 쪽에도 온다). 참가자 대기실이 이걸 보고 같이 로딩으로 넘어간다.</summary>
+        public event Action<string> OnGameplaySceneLoadStarted;
+
+        /// <summary>261114 - 지금 모두에게 로드가 끝나 있는 Gameplay 씬 이름(없거나 내리는 중이면 null).</summary>
+        public string LoadedGameplayScene { get; private set; }
+
         // NetworkManager.SceneManager(NetworkSceneManager)는 NetworkManager가 실제로
         // 시작(StartHost/StartClient/StartServer)된 뒤에야 생성된다(공식 문서 확인, 261013 수정) -
         // 그 전에는 null이라, 씬이 로드되자마자 도는 OnEnable에서 곧바로 구독하면
@@ -67,6 +73,7 @@ namespace CheonMyeong.Networking
                 // 시도하면 또 NRE가 날 수 있어 시도하지 않는다(NGO가 셧다운 시 내부적으로
                 // 정리함). 플래그만 내려서 다음에 다시 시작되면 재구독되게 한다.
                 isSubscribedToSceneEvents = false;
+                LoadedGameplayScene = null;
             }
         }
 
@@ -137,10 +144,28 @@ namespace CheonMyeong.Networking
         {
             switch (sceneEvent.SceneEventType)
             {
+                case SceneEventType.Load:
+                    // 서버는 접속자마다 한 번씩 받으므로 로컬(내 클라이언트 id) 것만 알린다.
+                    if (sceneEvent.ClientId == NetworkManager.Singleton.LocalClientId)
+                    {
+                        OnGameplaySceneLoadStarted?.Invoke(sceneEvent.SceneName);
+                    }
+                    break;
                 case SceneEventType.LoadEventCompleted:
+                    LoadedGameplayScene = sceneEvent.SceneName;
                     OnGameplaySceneLoaded?.Invoke(sceneEvent.SceneName);
                     break;
+                case SceneEventType.Unload:
+                    if (sceneEvent.SceneName == LoadedGameplayScene)
+                    {
+                        LoadedGameplayScene = null;
+                    }
+                    break;
                 case SceneEventType.UnloadEventCompleted:
+                    if (sceneEvent.SceneName == LoadedGameplayScene)
+                    {
+                        LoadedGameplayScene = null;
+                    }
                     OnGameplaySceneUnloaded?.Invoke(sceneEvent.SceneName);
                     break;
             }

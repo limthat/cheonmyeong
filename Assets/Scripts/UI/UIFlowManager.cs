@@ -59,6 +59,9 @@ namespace CheonMyeong.UI
 
         private string currentBaseScreenId;
 
+        /// <summary>261110 - 지금 베이스 화면 id(오버레이 제외).</summary>
+        public string CurrentScreen => currentBaseScreenId;
+
         private void Awake()
         {
             Instance = this;
@@ -73,6 +76,18 @@ namespace CheonMyeong.UI
             }
         }
 
+        /// <summary>
+        /// 261114 - 시작할 때는 화면을 전부 끄고 타이틀부터 보인다. 씬이 로비 등이 켜진 채 저장돼 있으면
+        /// 타이틀(문 · 부적)이 그 뒤에 살아 있어서 클릭이 부적으로 넘어갔다.
+        /// </summary>
+        private void Start()
+        {
+            if (string.IsNullOrEmpty(currentBaseScreenId) && overlayStack.Count == 0)
+            {
+                ApplyVisibility();
+            }
+        }
+
         private void Update()
         {
             // New Input System 기준(Keyboard.current) - 이 프로젝트 전역이 이미 이 방식을
@@ -83,13 +98,64 @@ namespace CheonMyeong.UI
             }
         }
 
+        /// <summary>
+        /// 261110 수정 - ESC:
+        /// - 인게임: 위에 창이 없으면 일시정지 요청(혼자면 바로 정지, 둘이면 동료 수락 투표 - PartyProgress.Pause).
+        ///   ESC 메뉴(일시정지 중)에서 누르면 일시정지를 푼다. 설정이 위에 있으면 설정만 닫는다. 신통력 고르는 중엔 무시.
+        /// - 로비: 설정 창을 열고 닫는다.
+        /// - 그 밖: 맨 위 창을 닫는다.
+        /// </summary>
         private void HandleEscapePressed()
         {
+            if (currentBaseScreenId == InGame)
+            {
+                HandleInGameEscape();
+                return;
+            }
             if (overlayStack.Count > 0)
             {
                 CloseOverlay();
             }
-            else if (currentBaseScreenId == InGame)
+            else if (currentBaseScreenId == Lobby)
+            {
+                OpenOverlay(Settings);
+            }
+        }
+
+        private void HandleInGameEscape()
+        {
+            Progression.PartyProgress party = Progression.PartyProgress.Instance;
+            if (IsTopOverlay(Settings))
+            {
+                CloseOverlay();
+                return;
+            }
+            if (IsOverlayOpen(Upgrade))
+            {
+                return;
+            }
+            if (IsOverlayOpen(EscMenu))
+            {
+                if (party != null && party.IsSpawned && party.IsMenuPaused)
+                {
+                    party.RequestMenuResumeRpc();
+                }
+                else
+                {
+                    CloseOverlay(EscMenu);
+                }
+                return;
+            }
+            if (overlayStack.Count > 0)
+            {
+                CloseOverlay();
+                return;
+            }
+            if (party != null && party.IsSpawned)
+            {
+                party.LocalPressPause();
+            }
+            else
             {
                 OpenOverlay(EscMenu);
             }
@@ -162,6 +228,36 @@ namespace CheonMyeong.UI
 
         /// <summary>261027 추가 - 오버레이(설정 등)가 하나라도 떠 있는지. 로비 캐릭터가 이때는 입력을 무시한다.</summary>
         public bool HasOverlay => overlayStack.Count > 0;
+
+        /// <summary>261104 추가 - 이 화면이 지금 오버레이로 열려 있는지.</summary>
+        public bool IsOverlayOpen(string screenId) => overlayMembershipCounts.ContainsKey(screenId);
+
+        /// <summary>
+        /// 261104 추가 - 맨 위가 아니어도 지정한 오버레이 하나를 닫는다(신통력 선택 중 ESC 메뉴가 위에 열려 있어도
+        /// 신통력 화면이 닫혀야 해서). 열려 있지 않으면 아무 일도 안 한다.
+        /// </summary>
+        public void CloseOverlay(string screenId)
+        {
+            int index = overlayStack.LastIndexOf(screenId);
+            if (index < 0)
+            {
+                return;
+            }
+            overlayStack.RemoveAt(index);
+            if (overlayMembershipCounts.TryGetValue(screenId, out int count))
+            {
+                if (count <= 1)
+                {
+                    overlayMembershipCounts.Remove(screenId);
+                }
+                else
+                {
+                    overlayMembershipCounts[screenId] = count - 1;
+                }
+            }
+            OnOverlayClosed?.Invoke(screenId);
+            ApplyVisibility();
+        }
 
         private void ApplyVisibility()
         {

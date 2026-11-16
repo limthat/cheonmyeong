@@ -32,7 +32,7 @@ namespace CheonMyeong.UI.Screens
     /// (cachedLevel 등)는 여전히 UnsetCacheValue로 두므로 실제 시스템이 처음 SetXxx를
     /// 호출하는 순간엔(우연히 0이 들어와도) 다시 그려진다.
     /// </summary>
-    public class InGameHudScreen : MonoBehaviour
+    public partial class InGameHudScreen : MonoBehaviour
     {
         public static InGameHudScreen Instance { get; private set; }
 
@@ -56,7 +56,6 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private Image[] grudgeSegmentImages;
 
         private static readonly string[] GrudgeStageNames = { "맑음", "짙음", "한", "폭주" };
-        private const float GrudgeInactiveAlpha = 0.35f;
         private Color[] grudgeSegmentFullColors;
 
         // 체력은 전투 중 거의 매 프레임 바뀌지만, 안 바뀌는 프레임까지 매번 문자열 보간을
@@ -73,6 +72,7 @@ namespace CheonMyeong.UI.Screens
         private int cachedLevel = UnsetCacheValue;
         private int cachedGrudge = UnsetCacheValue;
         private int cachedGold = UnsetCacheValue;
+        private bool cachedIntermission;
 
         // 경험치 바는 정수가 아니라 0~1 비율 캐시 - UnsetCacheValue(int.MinValue) 같은
         // "확실히 다른 값" 역할로 음수를 써서 최초 1회는 반드시 다시 그리게 한다.
@@ -85,6 +85,8 @@ namespace CheonMyeong.UI.Screens
             public bool IsDead;
             public float Health = float.MinValue;
             public float MaxHealth = float.MinValue;
+            public bool PassiveOn;
+            public int Shields;
         }
 
         private void Awake()
@@ -112,10 +114,12 @@ namespace CheonMyeong.UI.Screens
                     }
                 }
             }
+            JuiceAwake();
         }
 
         private void OnDestroy()
         {
+            JuiceDestroy();
             if (Instance == this)
             {
                 Instance = null;
@@ -162,7 +166,7 @@ namespace CheonMyeong.UI.Screens
                 // SetGold와 같은 포맷.
                 goldText.text = "엽전 0";
             }
-            RefreshGrudgeSegments(0);
+            JuiceResetGrudge();
 
             PullCurrentState();
         }
@@ -261,11 +265,18 @@ namespace CheonMyeong.UI.Screens
         {
             UpdateHealthSlot(p1HealthText, p1HealthFillImage, 0, p1Cache);
             UpdateHealthSlot(p2HealthText, p2HealthFillImage, 1, p2Cache);
+            JuiceUpdate();
         }
 
         /// <summary>웨이브 매니저가 생기면 매 프레임 호출할 자리 - 초 단위로 반올림해서 캐시
         /// 비교하므로, 프레임마다 미세하게 흐르는 Time.deltaTime 때문에 매번 새로 그리지 않는다.</summary>
         public void SetWaveStatus(int currentWave, int totalWaves, float remainingSeconds)
+        {
+            SetWaveStatus(currentWave, totalWaves, remainingSeconds, false);
+        }
+
+        /// <summary>261110 - intermission = 웨이브 사이 대기. "다음 WAVE n까지" / "최종전까지"로 보인다.</summary>
+        public void SetWaveStatus(int currentWave, int totalWaves, float remainingSeconds, bool intermission)
         {
             if (waveTimerText == null)
             {
@@ -273,16 +284,26 @@ namespace CheonMyeong.UI.Screens
             }
 
             int roundedSeconds = Mathf.Max(0, Mathf.RoundToInt(remainingSeconds));
-            if (cachedWaveCurrent == currentWave && cachedWaveTotal == totalWaves && cachedWaveRemainingSeconds == roundedSeconds)
+            if (cachedWaveCurrent == currentWave && cachedWaveTotal == totalWaves && cachedWaveRemainingSeconds == roundedSeconds
+                && cachedIntermission == intermission)
             {
                 return;
             }
             cachedWaveCurrent = currentWave;
             cachedWaveTotal = totalWaves;
             cachedWaveRemainingSeconds = roundedSeconds;
+            cachedIntermission = intermission;
 
             int minutes = roundedSeconds / 60;
             int seconds = roundedSeconds % 60;
+            if (intermission)
+            {
+                int next = currentWave + 1;
+                waveTimerText.text = totalWaves > 0 && next > totalWaves
+                    ? $"최종전까지 {minutes:00}:{seconds:00}"
+                    : $"다음 WAVE {next}/{totalWaves}까지 {minutes:00}:{seconds:00}";
+                return;
+            }
             // 261101 - 마지막 웨이브 뒤 억쇠 최종전(WaveManager가 currentWave = totalWaves + 1로 보낸다).
             waveTimerText.text = totalWaves > 0 && currentWave > totalWaves
                 ? $"최종전 {minutes:00}:{seconds:00}"
@@ -331,42 +352,20 @@ namespace CheonMyeong.UI.Screens
         /// </summary>
         public void SetGrudge(int grudgeValue, int stage)
         {
-            RefreshGrudgeSegments(stage);
+            // 261110 - 게이지 · 글자는 표시값(실제 값을 따라 차오름)으로 그린다 - InGameHudScreen.Juice.cs.
+            SetGrudgeTarget(grudgeValue);
+        }
 
+        private void DrawGrudgeText(int grudgeValue)
+        {
             if (grudgeText == null || cachedGrudge == grudgeValue)
             {
                 return;
             }
             cachedGrudge = grudgeValue;
-
+            int stage = PartyProgress.Instance != null ? PartyProgress.Instance.GetGrudgeStage(grudgeValue) : 0;
             string stageName = stage >= 0 && stage < GrudgeStageNames.Length ? GrudgeStageNames[stage] : "?";
             grudgeText.text = $"원한 {grudgeValue} · {stageName}";
-        }
-
-        /// <summary>
-        /// grudgeSegmentImages 중 stage번째만 원래 색(Awake에서 캡처한 grudgeSegmentFullColors)
-        /// 그대로 두고, 나머지는 알파를 낮춰서 "지금 단계"를 한눈에 보이게 한다. 배열을 안
-        /// 채워뒀으면(에디터 연결 전) 그냥 조용히 생략 - 다른 Set 계열과 같은 null 안전 관례.
-        /// </summary>
-        private void RefreshGrudgeSegments(int stage)
-        {
-            if (grudgeSegmentImages == null || grudgeSegmentFullColors == null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < grudgeSegmentImages.Length; i++)
-            {
-                if (grudgeSegmentImages[i] == null)
-                {
-                    continue;
-                }
-
-                Color fullColor = grudgeSegmentFullColors[i];
-                grudgeSegmentImages[i].color = i == stage
-                    ? fullColor
-                    : new Color(fullColor.r, fullColor.g, fullColor.b, GrudgeInactiveAlpha);
-            }
         }
 
         /// <summary>재화(엽전) 시스템이 생기면 호출할 자리.</summary>
@@ -407,7 +406,11 @@ namespace CheonMyeong.UI.Screens
             float health = player.CurrentHealth;
             float maxHealth = player.MaxHealth;
 
-            bool unchanged = cache.HasPlayer && cache.IsDead == isDead
+            // 261114 - 조건형 고유 패시브가 켜지면 체력 옆에 이름 · 호신부 수(기획서 6장 고유 패시브 규칙).
+            player.TryGetComponent(out CheonMyeong.Player.CharacterKit kit);
+            bool passiveOn = kit != null && kit.PassiveActive;
+            int shields = kit != null ? kit.ShieldCharges : 0;
+            bool unchanged = cache.HasPlayer && cache.IsDead == isDead && cache.PassiveOn == passiveOn && cache.Shields == shields
                               && (isDead || (cache.Health == health && cache.MaxHealth == maxHealth));
             if (unchanged)
             {
@@ -418,10 +421,14 @@ namespace CheonMyeong.UI.Screens
             cache.IsDead = isDead;
             cache.Health = health;
             cache.MaxHealth = maxHealth;
+            cache.PassiveOn = passiveOn;
+            cache.Shields = shields;
 
             slot.text = isDead
                 ? $"P{playerIndex + 1} 쓰러짐 · 다음 웨이브에 부활"
-                : $"P{playerIndex + 1} 체력 {health:0}/{maxHealth:0}";
+                : $"P{playerIndex + 1} 체력 {health:0}/{maxHealth:0}"
+                  + (shields > 0 ? $" · 호신부 {shields}" : string.Empty)
+                  + (passiveOn ? $" · [{kit.PassiveName}]" : string.Empty);
 
             if (fillImage != null)
             {

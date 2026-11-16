@@ -324,10 +324,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Progression.PartyProgress
   ShowTopMostFoldoutHeaderGroup: 1
-  expCurveBase: 6
-  expCurveLinear: 5
-  expCurveQuadratic: 0.2
-  maxLevel: 30
+  augmentCatalog: {fileID: 0}
+  pauseVoteSeconds: 10
+  expFormulaBase: 20
+  expFormulaLinear: 11
+  expFormulaQuadratic: 0.04
+  expFormulaScale: 0.41666666
+  levelCap: 0
   grudgeThresholds: c8000000f4010000e8030000
 --- !u!114 &66540055
 MonoBehaviour:
@@ -385,6 +388,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &421093252
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 421093253}
+  m_Layer: 0
+  m_Name: =============
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &421093253
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421093252}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.70611, y: -0.36596, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -24211,3 +24245,4 @@ SceneRoots:
   - {fileID: 1827699020}
   - {fileID: 588273004}
   - {fileID: 652758040}
+  - {fileID: 421093253}

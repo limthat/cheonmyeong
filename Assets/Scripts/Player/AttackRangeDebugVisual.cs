@@ -32,6 +32,12 @@ namespace CheonMyeong.Player
     public class AttackRangeDebugVisual : MonoBehaviour
     {
         [SerializeField] private CharacterStatsSO stats;
+
+        /// <summary>261114 - PlayerCharacter가 캐릭터를 정할 때 부른다.</summary>
+        public void SetStats(CharacterStatsSO value)
+        {
+            stats = value;
+        }
         [SerializeField] private PlayerAutoAttack autoAttack;
 
         [Tooltip("부채꼴을 몇 개의 삼각형으로 쪼갤지 - 높을수록 호(弧)가 매끈해지지만 비용도 늘어난다.\n" +

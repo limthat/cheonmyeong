@@ -46,6 +46,18 @@ namespace CheonMyeong.Data
             SelectedCharacter = entry;
             PlayerPrefs.SetString(LastCharacterIdPrefsKey, entry.characterId);
             PlayerPrefs.Save();
+            CharacterChanged?.Invoke(entry);
+        }
+
+        /// <summary>261114 - 캐릭터를 확정했을 때(영웅 화면 "선택하기"). 내 플레이어 오브젝트가 있으면 바로 바뀐다.</summary>
+        public static event System.Action<CharacterCatalogSO.CharacterEntry> CharacterChanged;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            SelectedMap = null;
+            SelectedCharacter = null;
+            CharacterChanged = null;
         }
 
         /// <summary>
@@ -63,7 +75,7 @@ namespace CheonMyeong.Data
 
             string lastId = PlayerPrefs.GetString(LastCharacterIdPrefsKey, string.Empty);
             CharacterCatalogSO.CharacterEntry lastEntry = catalog.FindById(lastId);
-            if (lastEntry != null && lastEntry.isUnlocked)
+            if (lastEntry != null && CharacterProgressStore.IsUnlocked(lastEntry))
             {
                 SelectedCharacter = lastEntry;
                 return;
@@ -71,7 +83,7 @@ namespace CheonMyeong.Data
 
             foreach (CharacterCatalogSO.CharacterEntry entry in catalog.characters)
             {
-                if (entry != null && entry.isUnlocked)
+                if (entry != null && CharacterProgressStore.IsUnlocked(entry))
                 {
                     SelectedCharacter = entry;
                     return;

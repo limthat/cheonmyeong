@@ -24,6 +24,9 @@ namespace CheonMyeong.Waves
         [Tooltip("게임 시작 후 첫 웨이브 전 준비 시간(초) - 261013 기획 지시 15초.")]
         [Min(0f)] public float preparationSeconds = 15f;
 
+        [Tooltip("261110 - 웨이브가 끝나고 다음 웨이브(또는 최종전)가 시작되기 전 대기 시간(초). 이 동안 원귀가 안 나온다.")]
+        [Min(0f)] public float intermissionSeconds = 15f;
+
         [Tooltip("모든 웨이브의 기본 길이(초). 이 값 하나로 전 웨이브 길이가 바뀐다 - 기획서 v0.9.3: 75초.")]
         [Min(1f)] public float defaultWaveDurationSeconds = 75f;
 
@@ -42,6 +45,15 @@ namespace CheonMyeong.Waves
 
         [Tooltip("패턴 소환 간격(초). 웨이브 시간 ÷ 이 값 = 그 웨이브의 패턴 소환 횟수.")]
         [Min(1f)] public float patternIntervalSeconds = 6f;
+
+        [Tooltip("261110 - 웨이브 끝나기 이 시간(초) 전까지 그 웨이브 원귀를 전부 낸다(마지막 패턴 원귀를 잡을 시간). 웨이브가 짧으면 최소 절반 길이 동안은 나눠 낸다.")]
+        [Min(0f)] public float spawnEndsBeforeWaveEnd = 30f;
+
+        /// <summary>261110 - 원귀를 나눠 내는 시간(초) = 웨이브 길이 - spawnEndsBeforeWaveEnd (최소 웨이브의 절반).</summary>
+        public float SpawnWindow(float waveDuration)
+        {
+            return Mathf.Max(waveDuration * 0.5f, waveDuration - spawnEndsBeforeWaveEnd);
+        }
 
         [Tooltip("패턴 종류와 뽑힐 비중. 비어 있으면 패턴 몫도 상시로 흘러나온다.")]
         public List<SpawnPatternEntry> spawnPatterns = new List<SpawnPatternEntry>

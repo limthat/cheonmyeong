@@ -36,10 +36,50 @@ namespace CheonMyeong.UI
         /// <summary>입구 지점(부모 기준 로컬 좌표).</summary>
         public Vector2 EntrancePosition => rectTransform.localPosition;
 
+        /// <summary>
+        /// 261109 - 앞뒤 정렬 기준선(부모 기준 로컬 y). 아트가 건물 그림(Normal)을 피벗보다 위로 올려 둔 만큼(출진문 +102) 올린다 -
+        /// 예전엔 피벗 높이로 비교해서 기둥 밑동 근처에 서면 캐릭터가 기둥 앞에 그려졌다.
+        /// </summary>
+        public float DepthLineY => rectTransform.localPosition.y + artBottomOffset;
+
+        private float artBottomOffset;
+
         private void Awake()
         {
             rectTransform = (RectTransform)transform;
+            if (normalImage != null)
+            {
+                RectTransform art = normalImage.rectTransform;
+                // 261114 - 새 로비 시트는 512 칸 안에 건물이 그려져 있어 아래 여백이 있다(출진문 92px). 그림의 실제 밑단을 기준선으로.
+                artBottomOffset = art.localPosition.y - art.rect.height * art.pivot.y
+                                  + art.rect.height * VisibleBottomRatio(normalImage.sprite);
+                UseArtForPointer();
+            }
             Apply(true);
+        }
+
+        /// <summary>스프라이트에서 실제로 그려진 부분의 밑단 높이 비율(0~1). Tight 메시면 꼭짓점으로, 아니면 0.</summary>
+        private static float VisibleBottomRatio(Sprite sprite)
+        {
+            if (sprite == null || sprite.rect.height <= 0f)
+            {
+                return 0f;
+            }
+            Vector2[] vertices = sprite.vertices;
+            if (vertices == null || vertices.Length == 0)
+            {
+                return 0f;
+            }
+            float minY = float.MaxValue;
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                if (vertices[i].y < minY)
+                {
+                    minY = vertices[i].y;
+                }
+            }
+            float pixelY = minY * sprite.pixelsPerUnit + sprite.pivot.y;
+            return Mathf.Clamp01(pixelY / sprite.rect.height);
         }
 
         private void OnDisable()
@@ -65,6 +105,19 @@ namespace CheonMyeong.UI
         }
 
         /// <summary>발밑 좌표(부모 기준 로컬)가 건물 바닥 영역 안인지 - LobbyAvatar가 통과 못 하게 막는 데 쓴다.</summary>
+        /// <summary>
+        /// 261109 - 마우스 올림 범위를 실제 건물 그림(Normal · Hover) 크기로. 아트가 그림만 키워서 예전 작은 루트 칸이 범위로 남아 있었다.
+        /// 자식 그림이 받은 포인터 이벤트는 부모(이 컴포넌트)까지 올라온다.
+        /// </summary>
+        private void UseArtForPointer()
+        {
+            Image[] images = GetComponentsInChildren<Image>(true);
+            for (int i = 0; i < images.Length; i++)
+            {
+                images[i].raycastTarget = images[i] == normalImage || images[i] == hoverImage;
+            }
+        }
+
         public bool BlocksPoint(Vector2 foot)
         {
             if (footprintDepth <= 0f)

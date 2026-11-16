@@ -77,3 +77,7 @@ crashlytics-build.properties
 /Assets/Scripts/Editor/GameplaySceneSplitSetup.cs.meta
 /Assets/Scripts/Editor/UICanvasBuilder.cs
 /Assets/Scripts/Editor/UICanvasBuilder.cs.meta
+
+# 빌드 결과물 - 저장소에 올리지 않음(100MB 넘는 파일 때문에 GitHub 푸시가 막힘). 시연용 빌드는 따로 압축해서 공유.
+/[Bb]il/
+/[Bb]il.zip

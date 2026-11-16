@@ -48,6 +48,11 @@ namespace CheonMyeong.Progression
 
         protected override void ApplyReward(PlayerProgress progress, int rewardAmount)
         {
+            // 261114 - 신내림 "내가 주운 영혼 +5%"(공유 경험치에 더 들어감). 소수점은 캐릭터마다 모아뒀다 정수로.
+            if (progress != null && progress.TryGetComponent(out CheonMyeong.Player.CharacterKit kit))
+            {
+                rewardAmount = kit.ServerScaleSoul(rewardAmount);
+            }
             if (PartyProgress.Instance != null)
             {
                 PartyProgress.Instance.AddExp(rewardAmount);

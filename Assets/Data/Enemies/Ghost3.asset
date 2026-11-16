@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Data.EnemyStatsSO
   enemyId: songaksi
   displayName: "\uC190\uAC01\uC2DC"
-  maxHealth: 120
+  maxHealth: 84
   moveSpeed: 2
   contactDamage: 10
   contactDamageInterval: 1

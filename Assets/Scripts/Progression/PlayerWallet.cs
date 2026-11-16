@@ -53,6 +53,13 @@ namespace CheonMyeong.Progression
             return true;
         }
 
+        /// <summary>261114 개발자 모드 치트(DevYeopjeonCheat · 에디터 메뉴) 전용 - 음수면 빼고, 0 아래로는 안 내려간다.</summary>
+        public static void DebugAdjust(int delta)
+        {
+            long next = (long)Yeopjeon + delta;
+            SetYeopjeon((int)System.Math.Max(0L, System.Math.Min(int.MaxValue, next)));
+        }
+
         private static void SetYeopjeon(int value)
         {
             cachedYeopjeon = Mathf.Max(0, value);

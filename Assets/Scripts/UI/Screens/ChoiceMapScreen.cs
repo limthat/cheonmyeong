@@ -55,6 +55,8 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private Text statusText;
         [SerializeField] private Text selectedMapText;
         [SerializeField] private Text selectedCharacterText;
+        [Tooltip("261114 - 오른쪽 두루마리의 선택된 맵 그림. 비우면 MapInfoPanel/Image를 찾는다. 미정이면 흰 빈 사각형.")]
+        [SerializeField] private Image selectedMapImage;
 
         private void Awake()
         {
@@ -63,9 +65,22 @@ namespace CheonMyeong.UI.Screens
                 backButton.onClick.AddListener(() => UIFlowManager.Instance.ShowScreen(UIFlowManager.Lobby));
             }
 
+            if (selectedMapImage == null)
+            {
+                Transform picture = transform.Find("MapInfoPanel/Image");
+                if (picture != null)
+                {
+                    picture.TryGetComponent(out selectedMapImage);
+                }
+            }
+
+            // 261114 - 맵 칸은 첫 칸을 틀로 맵 목록 수만큼 만들고, 위아래로 스크롤된다(맵이 늘어날 예정).
+            BuildMapTiles();
+            SetupMapScroll();
+
             if (mapTilesContainer != null && mapCatalog != null)
             {
-                // 자식 i번째 버튼 = mapCatalog.maps[i] - UICanvasBuilder가 같은 순서로 만들어둔다.
+                // 자식 i번째 버튼 = mapCatalog.maps[i]
                 for (int i = 0; i < mapTilesContainer.childCount && i < mapCatalog.maps.Length; i++)
                 {
                     Button tileButton = mapTilesContainer.GetChild(i).GetComponent<Button>();
@@ -111,6 +126,135 @@ namespace CheonMyeong.UI.Screens
             }
         }
 
+        /// <summary>
+        /// 261110 - 방 만들기/참가가 성공하면 버튼을 잠근 채로 대기실로 넘어가서, 나가기로 로비 → 다시 이 화면에 오면
+        /// 방 만들기 · 참가 버튼이 계속 잠겨 있었다(방이 다시 안 만들어지던 원인 중 하나). 열릴 때마다 풀고 안내 문구도 비운다.
+        /// </summary>
+        private void OnEnable()
+        {
+            SetNetworkButtonsInteractable(true);
+            SetStatus(string.Empty);
+            RefreshSelectionLabels();
+        }
+
+        [Header("261114 - 맵 칸 스크롤")]
+        [SerializeField, Min(0f)] private float mapTileSpacing = 40f;
+        [SerializeField, Min(1f)] private float mapScrollSensitivity = 40f;
+
+        /// <summary>맵 목록(MapCatalog) 수만큼 칸을 맞춘다. 첫 칸이 틀 - 이름(Label) · 썸네일(Thumbnail).</summary>
+        private void BuildMapTiles()
+        {
+            if (mapTilesContainer == null || mapCatalog == null || mapTilesContainer.childCount == 0)
+            {
+                return;
+            }
+            GameObject template = mapTilesContainer.GetChild(0).gameObject;
+            for (int i = mapTilesContainer.childCount; i < mapCatalog.maps.Length; i++)
+            {
+                GameObject tile = Instantiate(template, mapTilesContainer, false);
+                tile.name = "Item_" + i;
+            }
+            for (int i = 0; i < mapTilesContainer.childCount; i++)
+            {
+                Transform tile = mapTilesContainer.GetChild(i);
+                bool used = i < mapCatalog.maps.Length;
+                tile.gameObject.SetActive(used);
+                if (used)
+                {
+                    ApplyMapTile(tile, mapCatalog.maps[i]);
+                }
+            }
+        }
+
+        private static void ApplyMapTile(Transform tile, MapCatalogSO.MapEntry entry)
+        {
+            // 261114 - 그림이 없는(추후 공개) 맵은 흰 빈 사각형으로 자리만 보인다.
+            Transform thumbTransform = tile.Find("Thumbnail");
+            bool showThumb = thumbTransform != null;
+            if (showThumb && thumbTransform.TryGetComponent(out Image thumb))
+            {
+                thumbTransform.gameObject.SetActive(true);
+                ApplyMapPicture(thumb, entry.isUnlocked ? entry.thumbnail : null);
+            }
+            Transform labelTransform = tile.Find("Label");
+            if (labelTransform != null && labelTransform.TryGetComponent(out Text label))
+            {
+                label.text = entry.isUnlocked && !string.IsNullOrEmpty(entry.bossCaption)
+                    ? entry.displayName + "\n(" + entry.bossCaption + ")"
+                    : entry.displayName;
+                // 그림 칸이 있으면 아래 띠, 없으면 칸 가운데.
+                var rect = (RectTransform)labelTransform;
+                rect.anchorMin = showThumb ? new Vector2(0.06f, 0.04f) : Vector2.zero;
+                rect.anchorMax = showThumb ? new Vector2(0.94f, 0.27f) : Vector2.one;
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
+            }
+        }
+
+        /// <summary>맵 그림을 넣는다. 그림이 없으면(미정 · 추후 공개) 흰 빈 사각형.</summary>
+        private static void ApplyMapPicture(Image image, Sprite picture)
+        {
+            image.sprite = picture;
+            image.color = Color.white;
+            image.preserveAspect = picture != null;
+        }
+
+        /// <summary>맵 칸 묶음을 스크롤 영역으로 감싼다. 묶음이 있던 자리가 보이는 창(Viewport)이 된다.</summary>
+        private void SetupMapScroll()
+        {
+            if (!(mapTilesContainer is RectTransform content) || content.parent == null || content.GetComponentInParent<ScrollRect>() != null)
+            {
+                return;
+            }
+            var viewportGo = new GameObject("MapScroll", typeof(RectTransform), typeof(Image), typeof(RectMask2D), typeof(ScrollRect));
+            var viewport = (RectTransform)viewportGo.transform;
+            viewport.SetParent(content.parent, false);
+            viewport.SetSiblingIndex(content.GetSiblingIndex());
+            viewport.anchorMin = content.anchorMin;
+            viewport.anchorMax = content.anchorMax;
+            viewport.pivot = content.pivot;
+            viewport.offsetMin = content.offsetMin;
+            viewport.offsetMax = content.offsetMax;
+            Image dragArea = viewportGo.GetComponent<Image>();
+            dragArea.color = new Color(0f, 0f, 0f, 0f); // 칸 사이 빈 곳에서도 드래그 · 휠이 되게
+
+            content.SetParent(viewport, false);
+            content.anchorMin = new Vector2(0f, 1f);
+            content.anchorMax = new Vector2(1f, 1f);
+            content.pivot = new Vector2(0.5f, 1f);
+            content.anchoredPosition = Vector2.zero;
+            content.sizeDelta = Vector2.zero;
+
+            VerticalLayoutGroup layout = content.GetComponent<VerticalLayoutGroup>();
+            if (layout == null)
+            {
+                layout = content.gameObject.AddComponent<VerticalLayoutGroup>();
+            }
+            layout.spacing = mapTileSpacing;
+            layout.padding = new RectOffset(0, 0, 10, 10);
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+
+            ContentSizeFitter fitter = content.GetComponent<ContentSizeFitter>();
+            if (fitter == null)
+            {
+                fitter = content.gameObject.AddComponent<ContentSizeFitter>();
+            }
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            ScrollRect scroll = viewportGo.GetComponent<ScrollRect>();
+            scroll.content = content;
+            scroll.viewport = viewport;
+            scroll.horizontal = false;
+            scroll.vertical = true;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = mapScrollSensitivity;
+        }
+
         private void OnMapTileClicked(MapCatalogSO.MapEntry entry)
         {
             if (entry == null || !entry.isUnlocked || string.IsNullOrEmpty(entry.gameplaySceneName))
@@ -126,7 +270,7 @@ namespace CheonMyeong.UI.Screens
 
         private void OnCharacterTileClicked(CharacterCatalogSO.CharacterEntry entry)
         {
-            if (entry == null || !entry.isUnlocked)
+            if (entry == null || !CheonMyeong.Data.CharacterProgressStore.IsUnlocked(entry))
             {
                 SetStatus("추후 개발 예정인 캐릭터입니다.");
                 return;
@@ -150,6 +294,10 @@ namespace CheonMyeong.UI.Screens
                 selectedMapText.text = CurrentRun.SelectedMap != null
                     ? $"선택된 맵: {CurrentRun.SelectedMap.displayName}"
                     : "선택된 맵: 미정";
+            }
+            if (selectedMapImage != null)
+            {
+                ApplyMapPicture(selectedMapImage, CurrentRun.SelectedMap != null ? CurrentRun.SelectedMap.thumbnail : null);
             }
 
             if (selectedCharacterText != null)

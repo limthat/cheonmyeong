@@ -14,6 +14,14 @@ namespace CheonMyeong.Data
     /// 여전히 미정이며 플레이 테스트로 조정한다. 8명 캐릭터 중 하영 외 나머지는
     /// MVP 범위 "미정"이라 아직 별도 에셋을 만들지 않았다.
     /// </summary>
+    /// <summary>261114 - 기본 공격 방식. 이펙트 · 투사체 그림은 전부 왼쪽을 향해 그려져 있다(코드가 조준 방향으로 돌린다).</summary>
+    public enum AttackStyle
+    {
+        MeleeSlash,
+        MeleeThrust,
+        Projectile
+    }
+
     [CreateAssetMenu(fileName = "NewCharacterStats", menuName = "CheonMyeong/Character Stats")]
     public class CharacterStatsSO : ScriptableObject
     {
@@ -60,6 +68,10 @@ namespace CheonMyeong.Data
                  "거의 180도인데 반으로 줄이자\")에 따라 90도를 기본값으로 새로 설정함.")]
         public float attackArcDegrees = 90f;
 
+        [Tooltip("261105 - 공격 판정 사다리꼴의 캐릭터 쪽 폭(유닛, 전체 폭). 0이면 예전 부채꼴과 같은 뾰족한 모양.\n" +
+                 "앞으로 갈수록 attackArcDegrees 각도로 넓어진다 - 초근접에서도 좌우가 비지 않게.")]
+        [Min(0f)] public float attackNearWidth = 0.8f;
+
         [Header("자동줍기 (Magnet, 261013 추가 / 261027 기본값 0 - 예섭: \"처음엔 직접 닿아야 습득\")")]
         [Tooltip("드랍 아이템(골드/경험치)이 자동으로 끌려오기 시작하는 반경(유닛) - 공식\n" +
                  "스탯 시트의 Magnet 컬럼에 해당하는 자리. 정확한 수치는 밸런스 미정이라\n" +
@@ -67,5 +79,62 @@ namespace CheonMyeong.Data
                  "0이면 끌어당김 없이 직접 닿아야만(LootPickup.touchPickupRadius) 줍는다 - 획득 범위는\n" +
                  "나중에 증강으로 늘리는 값.")]
         public float magnetRadius = 0f;
+
+        [Header("261104 - 신통력 · 치명타 (기획서 9장: 치명타 확률 기본 5%, 피해 150%)")]
+        [Tooltip("원거리 캐릭터면 true - 근접 전용 신통력(근접 사거리 · 연속 공격)이 카드에 안 나온다.")]
+        public bool isRanged = false;
+
+        [Tooltip("기본 치명타 확률(0~1). 기획서: 기본 5% (이아라만 10%).")]
+        [Range(0f, 1f)] public float critChance = 0.05f;
+
+        [Tooltip("치명타 피해 배율. 기획서: 기본 공격의 1.5배.")]
+        [Min(1f)] public float critMultiplier = 1.5f;
+
+        [Header("261114 - 공격 방식 (기획서 v0.9.7 6장 · [스탯] 엑셀 Sheet1)")]
+        public AttackStyle attackStyle = AttackStyle.MeleeSlash;
+
+        [Tooltip("근접 단일(박규혁 · 임훈) - 판정 안에서 가장 가까운 1마리만 맞는다. 관통 수만큼 더 맞는다.")]
+        public bool singleTarget;
+
+        [Tooltip("근접 단일의 기본 관통 수(추가로 맞는 마리 수).")]
+        [Min(0)] public int meleePierce;
+
+        [Tooltip("ATK 클립 프레임 수(Aseprite ATK 태그). 타격 시점 = (hitFrame - 1) / atkFrameCount × 공격 간격.")]
+        [Min(1)] public int atkFrameCount = 9;
+
+        [Tooltip("타격 · 발사 프레임(1부터, 기획서 제안값).")]
+        [Min(1)] public int hitFrame = 7;
+
+        [Tooltip("원거리 - 한 번에 날리는 투사체 수(Amount).")]
+        [Min(0)] public int projectileCount = 1;
+
+        [Tooltip("원거리 - 투사체 속도(유닛/초) = 기획서 px/초 ÷ 60.")]
+        [Min(0f)] public float projectileSpeed = 8f;
+
+        [Tooltip("원거리 - 가장 가까운 적을 자동 지정하는 수(한주원 2). 0이면 마우스 방향.")]
+        [Min(0)] public int autoTargets;
+
+        [Tooltip("원거리 - 유도(도/초, 한주원 120).")]
+        [Min(0f)] public float homingDegreesPerSecond;
+
+        [Tooltip("원거리 - 관통 수(맞고 더 지나가는 마리 수). -1 = 무제한(심여레 바람).")]
+        public int projectilePierce;
+
+        [Tooltip("원거리 - 날아가며 도는 속도(도/초). 0이면 날아가는 방향을 바라본다(화살 · 바람).")]
+        public float projectileSpinDegreesPerSecond;
+
+        [Tooltip("원거리 - 투사체 판정 반지름(유닛).")]
+        [Min(0.05f)] public float projectileRadius = 0.3f;
+
+        [Tooltip("투사체 그림 크기 배율(원본 128px 기준).")]
+        [Min(0.05f)] public float projectileScale = 1f;
+
+        [Tooltip("맞은 원귀를 밀쳐내는 거리(칸 = 유닛). 심여레 기본 넉백.")]
+        [Min(0f)] public float knockback;
+
+        public bool IsProjectile => attackStyle == AttackStyle.Projectile;
+
+        /// <summary>공격 간격 중 타격 · 발사까지 걸리는 비율.</summary>
+        public float HitDelayRatio => Mathf.Clamp01((hitFrame - 1f) / Mathf.Max(1, atkFrameCount));
     }
 }

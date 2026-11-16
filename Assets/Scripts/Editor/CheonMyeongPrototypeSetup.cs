@@ -525,7 +525,7 @@ namespace CheonMyeong.EditorTools
             EnemyStatsSO egg = EnsureGhostStats(Ghost2StatsPath);
             ApplyGhostDesignStats(egg, "dalgyal_gwisin", "달걀귀신", 10f, 3f, 8f, 2, 0.03f, 1);
             EnemyStatsSO songaksi = EnsureGhostStats(Ghost3StatsPath);
-            ApplyGhostDesignStats(songaksi, "songaksi", "손각시", 120f, 2f, 10f, 5, 0.10f, 2);
+            ApplyGhostDesignStats(songaksi, "songaksi", "손각시", 84f, 2f, 10f, 5, 0.10f, 2);
 
             SetupGhostPrefab(EnemyPrefabPath, mongdal, "ghost_1-Sheet", EnemyAnimFolder + "/Mongdal");
             Enemy eggPrefab = SetupGhostPrefab(Ghost2PrefabPath, egg, "ghost_2-Sheet", EnemyAnimFolder + "/Egg");

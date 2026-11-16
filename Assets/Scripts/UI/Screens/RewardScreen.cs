@@ -41,6 +41,13 @@ namespace CheonMyeong.UI.Screens
 
         private bool pendingRetryReload;
 
+        // 261114 - 두 플레이어 칸 그림(pl1/pl2)에 실제 캐릭터(대기 모션). P1 = 방장, 없는 자리는 그림 · 글 모두 비운다(대기실과 같은 기준).
+        private readonly Image[] playerImages = new Image[2];
+        private readonly CheonMyeong.Player.PlayerCharacter[] shownCharacters = new CheonMyeong.Player.PlayerCharacter[2];
+        private readonly string[] shownIds = new string[2];
+        private float playerAnimTime;
+        private bool playersDirty = true;
+
         private bool sceneEventsSubscribed;
 
         private void Awake()
@@ -57,6 +64,15 @@ namespace CheonMyeong.UI.Screens
             if (player1StatsText == null) player1StatsText = FindChildText("Player1StatsText");
             if (player2StatsText == null) player2StatsText = FindChildText("Player2StatsText");
 
+            for (int i = 0; i < 2; i++)
+            {
+                Transform image = transform.Find("pl" + (i + 1));
+                if (image != null)
+                {
+                    image.TryGetComponent(out playerImages[i]);
+                }
+            }
+
             if (retryButton != null)
             {
                 retryButton.onClick.AddListener(OnRetryPressed);
@@ -70,6 +86,9 @@ namespace CheonMyeong.UI.Screens
         private void OnEnable()
         {
             SubscribeSceneEvents();
+            playersDirty = true;
+            cachedP1Hash = int.MinValue;
+            cachedP2Hash = int.MinValue;
 
             if (resultTitleText != null && string.IsNullOrEmpty(resultTitleText.text))
             {
@@ -122,6 +141,12 @@ namespace CheonMyeong.UI.Screens
         {
             pendingRetryReload = false;
             UIFlowManager.Instance.ShowScreen(UIFlowManager.Lobby);
+            // 261110 - 세션 · 네트워크까지 정리(안 하면 로비에서 방을 다시 못 만듦). 씬도 SessionManager가 내린다.
+            if (SessionManager.Instance != null)
+            {
+                _ = SessionManager.Instance.LeaveAsync();
+                return;
+            }
             UnloadCurrentGameplayScene();
         }
 
@@ -166,6 +191,38 @@ namespace CheonMyeong.UI.Screens
             RefreshSummary();
             RefreshPlayer(player1StatsText, 0, ref cachedP1Hash);
             RefreshPlayer(player2StatsText, 1, ref cachedP2Hash);
+            RefreshPlayerImages();
+        }
+
+        private void RefreshPlayerImages()
+        {
+            playerAnimTime += Time.unscaledDeltaTime;
+            for (int slot = 0; slot < 2; slot++)
+            {
+                Image image = playerImages[slot];
+                if (image == null)
+                {
+                    continue;
+                }
+                CheonMyeong.Player.PlayerCharacter pc = CheonMyeong.Player.PlayerCharacter.FindBySlot(slot);
+                CharacterCatalogSO.CharacterEntry entry = pc != null ? pc.Entry : null;
+                string id = entry != null ? entry.characterId : null;
+                if (playersDirty || pc != shownCharacters[slot] || id != shownIds[slot])
+                {
+                    shownCharacters[slot] = pc;
+                    shownIds[slot] = id;
+                    image.enabled = entry != null;
+                }
+                if (entry != null && entry.lobbyIdleFrames != null && entry.lobbyIdleFrames.Length > 0)
+                {
+                    Sprite frame = entry.lobbyIdleFrames[(int)(playerAnimTime * 10f) % entry.lobbyIdleFrames.Length];
+                    if (image.sprite != frame)
+                    {
+                        image.sprite = frame;
+                    }
+                }
+            }
+            playersDirty = false;
         }
 
         private void RefreshSummary()
@@ -208,14 +265,16 @@ namespace CheonMyeong.UI.Screens
             }
 
             PlayerProgress progress = null;
-            if (index < PlayerHealth.ActivePlayers.Count && PlayerHealth.ActivePlayers[index] != null)
+            CheonMyeong.Player.PlayerCharacter pc = CheonMyeong.Player.PlayerCharacter.FindBySlot(index);
+            if (pc != null)
             {
-                PlayerHealth.ActivePlayers[index].TryGetComponent(out progress);
+                pc.TryGetComponent(out progress);
             }
+            string name = pc != null && pc.Entry != null ? pc.Entry.displayName : string.Empty;
 
             int kills = progress != null ? progress.RunKills : -1;
             int gold = progress != null ? progress.RunGold : -1;
-            int hash = Hash(kills, gold);
+            int hash = Hash(Hash(kills, gold), name.GetHashCode());
             if (hash == cachedHash)
             {
                 return;
@@ -223,8 +282,8 @@ namespace CheonMyeong.UI.Screens
             cachedHash = hash;
 
             slot.text = progress != null
-                ? $"PLAYER{index + 1}\n처치 수 {kills} / 획득 엽전 {gold}"
-                : $"PLAYER{index + 1}\n(참가 안 함)";
+                ? $"PLAYER{index + 1} · {name}\n처치 수 {kills} / 획득 엽전 {gold}"
+                : string.Empty;
         }
 
         // params 배열을 쓰면 매 프레임 배열 할당(GC)이 생겨서 고정 개수로 둔다.

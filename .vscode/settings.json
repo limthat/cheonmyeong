@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "cheonmyeong.slnx"
+    "dotnet.defaultSolution": "CM.slnx"
 }

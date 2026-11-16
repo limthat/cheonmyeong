@@ -1,7 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using CheonMyeong.Data;
+using CheonMyeong.UI;
+using Unity.Netcode;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CheonMyeong.Networking
 {
@@ -20,7 +24,14 @@ namespace CheonMyeong.Networking
     {
         [SerializeField] private int maxPlayers = 4; // 인원수 미정 - 임시값
 
+        private const float ShutdownWaitSeconds = 3f;
+
         private ISession currentSession;
+        private NetworkManager subscribedManager;
+        private bool leaving;
+
+        /// <summary>261110 추가 - 나가기(ESC 메뉴 · 결과 화면)에서 세션을 정리하려고 찾는다.</summary>
+        public static SessionManager Instance { get; private set; }
 
         /// <summary>참가 코드. 세션이 없으면 null - WaitRoomScreen이 매 프레임 읽어서 표시한다.</summary>
         public string JoinCode => currentSession?.Code;
@@ -28,8 +39,151 @@ namespace CheonMyeong.Networking
         /// <summary>호스트/참가 작업이 진행 중인지 - UI가 중복 클릭을 막는 데 쓸 수 있다.</summary>
         public bool IsBusy { get; private set; }
 
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Debug.LogWarning("[CheonMyeong] SessionManager가 씬에 두 개 이상 있습니다 - 하나만 남기고 제거하세요.");
+            }
+            Instance = this;
+        }
+
+        private void Start()
+        {
+            subscribedManager = NetworkManager.Singleton;
+            if (subscribedManager != null)
+            {
+                subscribedManager.OnClientStopped += HandleClientStopped;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (subscribedManager != null)
+            {
+                subscribedManager.OnClientStopped -= HandleClientStopped;
+                subscribedManager = null;
+            }
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
+        /// <summary>
+        /// 261110 추가 - "나가기"로 로비에 돌아갈 때 호출. 이전엔 Gameplay 씬만 내리고 세션 · NetworkManager가 그대로 살아 있어서
+        /// 로비 → 출정 → 방 만들기에서 HostAsync가 실패했다(이미 호스트로 돌고 있음).
+        /// 순서: 세션 나가기(ISession.LeaveAsync - Relay 네트워크면 NetworkManager도 멈춘다) → 아직 돌면 Shutdown →
+        /// 멈출 때까지 대기 → 남은 Gameplay 씬을 이 PC에서 내린다. 호스트가 나가면 동료는 끊김 처리(HandleClientStopped)로 로비에 온다.
+        /// </summary>
+        public async Task LeaveAsync()
+        {
+            if (leaving)
+            {
+                return;
+            }
+            leaving = true;
+            IsBusy = true;
+            try
+            {
+                ISession session = currentSession;
+                currentSession = null;
+                if (session != null)
+                {
+                    try
+                    {
+                        await session.LeaveAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning($"[CheonMyeong] 세션 나가기(LeaveAsync) 중 오류: {e.Message}");
+                    }
+                }
+                await ShutdownNetworkAsync();
+                UnloadGameplaySceneLocally();
+            }
+            finally
+            {
+                leaving = false;
+                IsBusy = false;
+            }
+        }
+
+        private static async Task ShutdownNetworkAsync()
+        {
+            NetworkManager manager = NetworkManager.Singleton;
+            if (manager == null)
+            {
+                return;
+            }
+            if (manager.IsListening && !manager.ShutdownInProgress)
+            {
+                manager.Shutdown();
+            }
+            float deadline = Time.realtimeSinceStartup + ShutdownWaitSeconds;
+            while (manager != null && (manager.ShutdownInProgress || manager.IsListening) && Time.realtimeSinceStartup < deadline)
+            {
+                await Task.Yield();
+            }
+        }
+
+        /// <summary>네트워크가 멈춘 뒤 남아 있는 Gameplay 씬(NGO가 로드한 추가 씬)을 이 PC에서 내린다.</summary>
+        private static void UnloadGameplaySceneLocally()
+        {
+            string sceneName = CurrentRun.SelectedMap != null ? CurrentRun.SelectedMap.gameplaySceneName : null;
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                return;
+            }
+            Scene scene = SceneManager.GetSceneByName(sceneName);
+            if (scene.isLoaded)
+            {
+                SceneManager.UnloadSceneAsync(scene);
+            }
+        }
+
+        /// <summary>
+        /// 내가 나가기를 누르지 않았는데 네트워크가 멈췄다(호스트가 나감 · 연결 끊김) - 세션을 정리하고 로비로.
+        /// 방 만들기/참가 화면(ChoiceMap)에서 참가에 실패한 경우는 화면을 그대로 둔다.
+        /// </summary>
+        private void HandleClientStopped(bool wasHost)
+        {
+            if (leaving)
+            {
+                return;
+            }
+            _ = HandleUnexpectedStopAsync();
+        }
+
+        private async Task HandleUnexpectedStopAsync()
+        {
+            await LeaveAsync();
+            UIFlowManager flow = UIFlowManager.Instance;
+            if (flow == null)
+            {
+                return;
+            }
+            string screen = flow.CurrentScreen;
+            if (screen != UIFlowManager.Lobby && screen != UIFlowManager.ChoiceMap)
+            {
+                flow.ShowScreen(UIFlowManager.Lobby);
+            }
+        }
+
+        /// <summary>이전 판의 세션 · 네트워크가 남아 있으면 먼저 정리한다(방 만들기 · 참가 실패 방지).</summary>
+        private async Task LeaveStaleAsync()
+        {
+            NetworkManager manager = NetworkManager.Singleton;
+            bool networkRunning = manager != null && (manager.IsListening || manager.ShutdownInProgress);
+            if (currentSession != null || networkRunning)
+            {
+                await LeaveAsync();
+            }
+        }
+
         public async Task HostAsync()
         {
+            await LeaveStaleAsync();
             IsBusy = true;
             try
             {
@@ -48,6 +202,7 @@ namespace CheonMyeong.Networking
 
         public async Task JoinAsync(string code)
         {
+            await LeaveStaleAsync();
             IsBusy = true;
             try
             {

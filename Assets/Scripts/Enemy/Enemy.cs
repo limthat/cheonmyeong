@@ -64,6 +64,18 @@ namespace CheonMyeong.Enemies
         /// <summary>스폰돼 있는 모든 Enemy. 분리(Separation) 계산용 - 서버에서만 읽는다.</summary>
         private static readonly List<Enemy> ActiveEnemies = new List<Enemy>();
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            ActiveEnemies.Clear();
+            gridBuiltAt = -1f;
+        }
+
+        // 261114 최적화 - 맞았을 때 점멸 신호. 예전엔 타격마다 RPC 한 통이었는데(광역 · 관통 · 연속 공격이면 한 틱에 수십 통),
+        // 이제 숫자만 올린다. NetworkVariable은 틱마다 마지막 값만 보내서 같은 틱의 여러 타격이 한 번으로 합쳐진다.
+        private readonly NetworkVariable<byte> hitFlashSerial = new NetworkVariable<byte>(
+            0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
         [SerializeField] private EnemyStatsSO stats;
         [SerializeField] private SpriteRenderer spriteRenderer;
 
@@ -136,8 +148,10 @@ namespace CheonMyeong.Enemies
         public override void OnNetworkSpawn()
         {
             ActiveEnemies.Add(this);
+            gridBuiltAt = -1f; // 목록이 바뀌었으니 다음 고정 프레임에 격자를 다시 만든다
 
             isDying.OnValueChanged += HandleDyingChanged;
+            hitFlashSerial.OnValueChanged += HandleHitFlashChanged;
             dyingSubscribed = true;
 
             // 풀에서 재사용될 때 이전 생애의 소멸 애니메이션이 남지 않도록 이동 루프로 되돌린다.
@@ -151,12 +165,15 @@ namespace CheonMyeong.Enemies
         public override void OnNetworkDespawn()
         {
             ActiveEnemies.Remove(this);
+            gridBuiltAt = -1f;
+            gridIndex = -1;
 
             // 풀링 때문에 이 컴포넌트는 파괴되지 않고 재사용된다 - 구독 해제를 안 하면
             // 디스폰/재스폰을 반복할 때마다 콜백이 계속 누적되는 전형적인 메모리 누수가 된다.
             if (dyingSubscribed)
             {
                 isDying.OnValueChanged -= HandleDyingChanged;
+                hitFlashSerial.OnValueChanged -= HandleHitFlashChanged;
                 dyingSubscribed = false;
             }
         }
@@ -183,6 +200,18 @@ namespace CheonMyeong.Enemies
             contactTimer = 0f;
             deathTimer = 0f;
             isDying.Value = false;
+            // 261114 - 풀에서 다시 나올 때 이전 상태 효과를 지운다.
+            serverKnockbackLeft = 0f;
+            serverStunUntil = 0f;
+            serverSlowUntil = 0f;
+            serverSlowRatio = 0f;
+            serverTauntTarget = null;
+            serverTauntUntil = 0f;
+            ServerClearBrand();
+            ServerVulnerableSource = null;
+            ServerVulnerableBonus = 0f;
+            ServerVulnerableUntil = 0f;
+            ServerBindCount = 0;
         }
 
         /// <summary>
@@ -200,6 +229,20 @@ namespace CheonMyeong.Enemies
         public static void ServerDespawnAll()
         {
             ServerAbsorbAllIntoGrudge();
+        }
+
+        /// <summary>261110 - 서버 전용. 지금 살아있는(쓰러지는 중 아닌) 원귀 위치를 buffer에 담는다 - 웨이브 끝 원한 흡수 연출용.</summary>
+        public static void ServerCollectAlivePositions(List<Vector2> buffer)
+        {
+            buffer.Clear();
+            for (int i = 0; i < ActiveEnemies.Count; i++)
+            {
+                Enemy enemy = ActiveEnemies[i];
+                if (enemy != null && enemy.IsServer && enemy.IsSpawned && !enemy.isDying.Value)
+                {
+                    buffer.Add(enemy.transform.position);
+                }
+            }
         }
 
         public static int ServerAbsorbAllIntoGrudge()
@@ -222,6 +265,45 @@ namespace CheonMyeong.Enemies
             }
             AbsorbBuffer.Clear();
             return Mathf.RoundToInt(total);
+        }
+
+        /// <summary>
+        /// 261104 - 서버 전용. 일회용 신통력 '부정 씻기'(기획서: 주변 원귀 정화, 처치로 계산).
+        /// center에서 radius 안의 살아있는 원귀를 즉시 쓰러뜨린다(영혼 · 엽전도 평소처럼 떨어짐).
+        /// reference와 다른 차원(억쇠 '정신병')에 있는 원귀는 건드리지 않는다. 억쇠는 Enemy가 아니라 대상이 아니다.
+        /// 돌려주는 값 = 쓰러뜨린 수(처치 수 집계용).
+        /// </summary>
+        public static int ServerPurifyAround(Vector2 center, float radius, GameObject reference)
+        {
+            if (radius <= 0f)
+            {
+                return 0;
+            }
+            float sqrRadius = radius * radius;
+            int kills = 0;
+            AbsorbBuffer.Clear();
+            AbsorbBuffer.AddRange(ActiveEnemies); // Die 중 목록이 바뀌어도 안전하게 복사본으로 순회
+            for (int i = 0; i < AbsorbBuffer.Count; i++)
+            {
+                Enemy enemy = AbsorbBuffer[i];
+                if (enemy == null || !enemy.IsServer || !enemy.IsSpawned || enemy.isDying.Value || enemy.stats == null)
+                {
+                    continue;
+                }
+                if (((Vector2)enemy.transform.position - center).sqrMagnitude > sqrRadius)
+                {
+                    continue;
+                }
+                if (reference != null && !Boss.DeathRealm.CanInteract(reference, enemy.gameObject))
+                {
+                    continue;
+                }
+                enemy.currentHealth = 0f;
+                enemy.Die();
+                kills++;
+            }
+            AbsorbBuffer.Clear();
+            return kills;
         }
 
         private void Update()
@@ -277,7 +359,23 @@ namespace CheonMyeong.Enemies
                 return;
             }
 
-            Transform nearestPlayer = PlayerHealth.FindNearestAlivePlayer(rb.position);
+            // 261114 - 넉백 · 기절 · 둔화 · 도발(플레이어 공격 효과).
+            if (serverKnockbackLeft > 0f)
+            {
+                serverKnockbackLeft -= Time.fixedDeltaTime;
+                float k = Mathf.Clamp01(serverKnockbackLeft / KnockbackSeconds);
+                rb.linearVelocity = serverKnockbackVelocity * k;
+                return;
+            }
+            if (Time.time < serverStunUntil)
+            {
+                rb.linearVelocity = Vector2.zero;
+                return;
+            }
+
+            Transform nearestPlayer = Time.time < serverTauntUntil && serverTauntTarget != null && serverTauntTarget.gameObject.activeInHierarchy
+                ? serverTauntTarget
+                : PlayerHealth.FindNearestAlivePlayer(rb.position);
             if (nearestPlayer == null)
             {
                 // 접속해 있는(또는 살아있는) 플레이어가 없음 - 제자리 대기.
@@ -293,7 +391,8 @@ namespace CheonMyeong.Enemies
                 chase = toTarget / distance * Mathf.Clamp01((distance - arriveStopDistance) / slowRange);
             }
 
-            Vector2 desired = Vector2.ClampMagnitude(chase + ComputeSeparation() * separationWeight, 1f) * stats.moveSpeed;
+            float slow = Time.time < serverSlowUntil ? serverSlowRatio : 0f;
+            Vector2 desired = Vector2.ClampMagnitude(chase + ComputeSeparation() * separationWeight, 1f) * (stats.moveSpeed * (1f - slow));
             rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, desired, steeringAcceleration * Time.fixedDeltaTime);
         }
 
@@ -302,30 +401,218 @@ namespace CheonMyeong.Enemies
         /// 계산한다(가까울수록 더 세게 밀림 - 261101부터 선형 가중: 반경 끝 0 ~ 완전히 겹침 1).
         /// 주변에 아무도 없으면 Vector2.zero.
         /// </summary>
+        private const float KnockbackSeconds = 0.18f;
+        private Vector2 serverKnockbackVelocity;
+        private float serverKnockbackLeft;
+        private float serverStunUntil;
+        private float serverSlowUntil;
+        private float serverSlowRatio;
+        private Transform serverTauntTarget;
+        private float serverTauntUntil;
+
+        // 261114 - 플레이어 캐릭터 효과가 원귀에 남기는 표식(서버 전용). 출처(GameObject)로 "동료가 때리면"을 가른다.
+        public GameObject ServerBrandSource { get; private set; }   // 주사 낙인(한주원)
+        public float ServerBrandUntil { get; private set; }
+        public GameObject ServerVulnerableSource { get; private set; } // "맞은 원귀, 동료 피해 +n%"
+        public float ServerVulnerableBonus { get; private set; }
+        public float ServerVulnerableUntil { get; private set; }
+        public int ServerBindCount { get; set; }                     // 결박부 5단계(3번 속박 → 기절)
+        public bool IsServerKnockedBack => serverKnockbackLeft > 0f;
+
+        public void ServerBrand(GameObject source, float seconds)
+        {
+            if (IsServer && source != null)
+            {
+                ServerBrandSource = source;
+                ServerBrandUntil = Time.time + seconds;
+            }
+        }
+
+        public void ServerClearBrand()
+        {
+            ServerBrandSource = null;
+            ServerBrandUntil = 0f;
+        }
+
+        public bool IsBrandedBy(GameObject source) => ServerBrandSource == source && Time.time < ServerBrandUntil;
+
+        public bool HasBrandFromOther(GameObject attacker) =>
+            ServerBrandSource != null && ServerBrandSource != attacker && Time.time < ServerBrandUntil;
+
+        /// <summary>source가 아닌 사람(동료)이 때리면 피해 +bonus. 더 센 쪽이 남는다.</summary>
+        public void ServerMarkVulnerable(GameObject source, float bonus, float seconds)
+        {
+            if (!IsServer || source == null)
+            {
+                return;
+            }
+            if (Time.time >= ServerVulnerableUntil || bonus >= ServerVulnerableBonus || ServerVulnerableSource == source)
+            {
+                ServerVulnerableSource = source;
+                ServerVulnerableBonus = Mathf.Max(bonus, Time.time < ServerVulnerableUntil && ServerVulnerableSource == source ? ServerVulnerableBonus : 0f);
+                ServerVulnerableUntil = Time.time + seconds;
+            }
+        }
+
+        public float VulnerableBonusFor(GameObject attacker) =>
+            ServerVulnerableSource != null && ServerVulnerableSource != attacker && Time.time < ServerVulnerableUntil ? ServerVulnerableBonus : 0f;
+
+        /// <summary>261114 - 서버 전용. direction 쪽으로 distance(칸)만큼 밀쳐낸다(0.18초 동안 감속하며).</summary>
+        public void ServerKnockback(Vector2 direction, float distance)
+        {
+            if (!IsServer || isDying.Value || distance <= 0f || direction.sqrMagnitude < 0.0001f)
+            {
+                return;
+            }
+            // 감속(선형) 이동 거리 = 초기 속도 × 시간 / 2.
+            serverKnockbackVelocity = direction.normalized * (distance * 2f / KnockbackSeconds);
+            serverKnockbackLeft = KnockbackSeconds;
+        }
+
+        /// <summary>261114 - 서버 전용. seconds 동안 못 움직인다(기절).</summary>
+        public void ServerStun(float seconds)
+        {
+            if (IsServer && seconds > 0f)
+            {
+                serverStunUntil = Mathf.Max(serverStunUntil, Time.time + seconds);
+            }
+        }
+
+        /// <summary>261114 - 서버 전용. seconds 동안 이동 속도 ratio(0~1)만큼 감소. 더 센 쪽이 남는다.</summary>
+        public void ServerSlow(float ratio, float seconds)
+        {
+            if (!IsServer || seconds <= 0f)
+            {
+                return;
+            }
+            if (Time.time >= serverSlowUntil || ratio >= serverSlowRatio)
+            {
+                serverSlowRatio = Mathf.Clamp01(ratio);
+            }
+            serverSlowUntil = Mathf.Max(serverSlowUntil, Time.time + seconds);
+        }
+
+        /// <summary>261114 - 서버 전용. seconds 동안 target을 먼저 노린다(신내림 "나를 먼저 노림").</summary>
+        public void ServerTaunt(Transform target, float seconds)
+        {
+            if (IsServer && target != null && seconds > 0f)
+            {
+                serverTauntTarget = target;
+                serverTauntUntil = Time.time + seconds;
+            }
+        }
+
+        // 261114 최적화 - 분리 계산을 "모든 원귀 × 모든 원귀"(300마리면 고정 프레임마다 9만 쌍, 쌍마다 rb.position 네이티브 호출)에서
+        // 격자(칸 크기 = 분리 반경) 이웃 9칸만 보는 방식으로 바꿨다. 위치는 고정 프레임마다 한 번만 배열에 모으고(첫 원귀가 만든다),
+        // 버킷은 계수 정렬로 채워서 할당이 없다. 결과(밀어내는 방향)는 예전과 같다.
+        private const int GridBucketCount = 1024; // 2의 거듭제곱(마스크로 나머지)
+        private static readonly int[] GridBucketStart = new int[GridBucketCount + 1];
+        private static readonly int[] GridBucketFill = new int[GridBucketCount];
+        private static Vector2[] gridPositions = new Vector2[256];
+        private static int[] gridSorted = new int[256];
+        private static float gridBuiltAt = -1f;
+        private static float gridCellSize = 1f;
+        private int gridIndex = -1;
+
+        private static int GridBucket(int cx, int cy)
+        {
+            unchecked
+            {
+                return (cx * 73856093 ^ cy * 19349663) & (GridBucketCount - 1);
+            }
+        }
+
+        private void EnsureSeparationGrid()
+        {
+            if (gridBuiltAt == Time.fixedTime && gridIndex >= 0)
+            {
+                return;
+            }
+            gridBuiltAt = Time.fixedTime;
+            gridCellSize = Mathf.Max(0.1f, separationRadius);
+            int n = ActiveEnemies.Count;
+            if (gridPositions.Length < n)
+            {
+                int size = Mathf.NextPowerOfTwo(n);
+                gridPositions = new Vector2[size];
+                gridSorted = new int[size];
+            }
+            System.Array.Clear(GridBucketStart, 0, GridBucketStart.Length);
+            float inv = 1f / gridCellSize;
+            for (int i = 0; i < n; i++)
+            {
+                Enemy e = ActiveEnemies[i];
+                Vector2 pos = e.rb.position;
+                gridPositions[i] = pos;
+                e.gridIndex = i;
+                GridBucketStart[GridBucket(Mathf.FloorToInt(pos.x * inv), Mathf.FloorToInt(pos.y * inv)) + 1]++;
+            }
+            for (int b = 0; b < GridBucketCount; b++)
+            {
+                GridBucketStart[b + 1] += GridBucketStart[b];
+                GridBucketFill[b] = GridBucketStart[b];
+            }
+            for (int i = 0; i < n; i++)
+            {
+                Vector2 pos = gridPositions[i];
+                int bucket = GridBucket(Mathf.FloorToInt(pos.x * inv), Mathf.FloorToInt(pos.y * inv));
+                gridSorted[GridBucketFill[bucket]++] = i;
+            }
+        }
+
         private Vector2 ComputeSeparation()
         {
+            EnsureSeparationGrid();
+            Vector2 self = gridPositions[gridIndex];
             Vector2 push = Vector2.zero;
             int neighborCount = 0;
             float radiusSqr = separationRadius * separationRadius;
+            float inv = 1f / gridCellSize;
+            int cx = Mathf.FloorToInt(self.x * inv);
+            int cy = Mathf.FloorToInt(self.y * inv);
+            int visited0 = -1, visited1 = -1, visited2 = -1, visited3 = -1, visited4 = -1, visited5 = -1, visited6 = -1, visited7 = -1;
+            int visitedCount = 0;
 
-            for (int i = 0; i < ActiveEnemies.Count; i++)
+            for (int dy = -1; dy <= 1; dy++)
             {
-                Enemy other = ActiveEnemies[i];
-                if (other == null || other == this)
+                for (int dx = -1; dx <= 1; dx++)
                 {
-                    continue;
+                    int bucket = GridBucket(cx + dx, cy + dy);
+                    // 서로 다른 칸이 같은 버킷으로 해시되면 두 번 세지 않게 건너뛴다.
+                    if (bucket == visited0 || bucket == visited1 || bucket == visited2 || bucket == visited3
+                        || bucket == visited4 || bucket == visited5 || bucket == visited6 || bucket == visited7)
+                    {
+                        continue;
+                    }
+                    switch (visitedCount++)
+                    {
+                        case 0: visited0 = bucket; break;
+                        case 1: visited1 = bucket; break;
+                        case 2: visited2 = bucket; break;
+                        case 3: visited3 = bucket; break;
+                        case 4: visited4 = bucket; break;
+                        case 5: visited5 = bucket; break;
+                        case 6: visited6 = bucket; break;
+                        case 7: visited7 = bucket; break;
+                    }
+                    for (int k = GridBucketStart[bucket]; k < GridBucketStart[bucket + 1]; k++)
+                    {
+                        int other = gridSorted[k];
+                        if (other == gridIndex)
+                        {
+                            continue;
+                        }
+                        Vector2 diff = self - gridPositions[other];
+                        float sqrDist = diff.sqrMagnitude;
+                        if (sqrDist >= radiusSqr || sqrDist < 0.0001f)
+                        {
+                            continue;
+                        }
+                        float dist = Mathf.Sqrt(sqrDist);
+                        push += diff / dist * (1f - dist / separationRadius);
+                        neighborCount++;
+                    }
                 }
-
-                Vector2 diff = rb.position - other.rb.position;
-                float sqrDist = diff.sqrMagnitude;
-                if (sqrDist >= radiusSqr || sqrDist < 0.0001f)
-                {
-                    continue;
-                }
-
-                float dist = Mathf.Sqrt(sqrDist);
-                push += diff / dist * (1f - dist / separationRadius);
-                neighborCount++;
             }
 
             return neighborCount > 0 ? push / neighborCount : Vector2.zero;
@@ -345,7 +632,10 @@ namespace CheonMyeong.Enemies
             currentHealth -= amount;
 
             // 맞았다는 사실 자체는 점멸로 - 죽는 타격이어도 일단 한 번은 번쩍이게 둔다.
-            PlayHitFlashRpc();
+            unchecked
+            {
+                hitFlashSerial.Value++;
+            }
 
             if (currentHealth <= 0f)
             {
@@ -431,11 +721,8 @@ namespace CheonMyeong.Enemies
             }
         }
 
-        /// <summary>서버만 호출. ClientsAndHost로 보내서 호스트 자신을 포함해 접속한 모든
-        /// 클라이언트에서 즉시(호스트는 동기적으로, 원격 클라이언트는 프레임 끝에) 점멸이
-        /// 시작된다.</summary>
-        [Rpc(SendTo.ClientsAndHost)]
-        private void PlayHitFlashRpc()
+        /// <summary>hitFlashSerial이 바뀌면(서버는 값을 쓰는 즉시, 참가자는 다음 네트워크 틱에) 점멸 시작.</summary>
+        private void HandleHitFlashChanged(byte previous, byte current)
         {
             HandleHitFlashTriggered();
         }
