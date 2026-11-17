@@ -84,7 +84,7 @@ namespace CheonMyeong.Input
         /// <summary>바꿀 수 없는 키(ESC · 방향키 · F1~F12 등).</summary>
         public static bool IsReserved(Key key)
         {
-            if (key == Key.None || key == Key.Escape || key == Key.IMESelected)
+            if (key == Key.None || key == Key.Escape)
             {
                 return true;
             }

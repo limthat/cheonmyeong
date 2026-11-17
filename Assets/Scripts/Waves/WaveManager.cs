@@ -299,7 +299,7 @@ namespace CheonMyeong.Waves
         /// </summary>
         private void HandleDebugSkipKeys()
         {
-            if (!Application.isEditor && !Debug.isDebugBuild)
+            if (!DevYeopjeonCheat.CheatsEnabled)
             {
                 return;
             }
@@ -313,6 +313,7 @@ namespace CheonMyeong.Waves
                 debugTimerScaleIndex = (debugTimerScaleIndex + 1) % DebugTimerScales.Length;
                 debugTimerScale = DebugTimerScales[debugTimerScaleIndex];
                 Debug.Log($"[CheonMyeong] 웨이브 · 대기 시간 {debugTimerScale:0}배속 (F1)");
+                DevYeopjeonCheat.Notify($"웨이브 시간 {debugTimerScale:0}배속");
                 RefreshDebugOverlay();
             }
             if (keyboard.f6Key.wasPressedThisFrame && PartyProgress.Instance != null)
@@ -321,11 +322,13 @@ namespace CheonMyeong.Waves
                 int levels = shift ? 5 : 1;
                 PartyProgress.Instance.ServerDebugLevelUp(levels);
                 Debug.Log($"[CheonMyeong] (테스트) 즉시 레벨업 +{levels} (F6)");
+                DevYeopjeonCheat.Notify($"레벨업 +{levels}");
             }
             if (keyboard.f7Key.wasPressedThisFrame)
             {
                 PlayerHealth.DebugGodMode = !PlayerHealth.DebugGodMode;
                 Debug.Log($"[CheonMyeong] (테스트) 무적 {(PlayerHealth.DebugGodMode ? "켬" : "끔")} (F7)");
+                DevYeopjeonCheat.Notify(PlayerHealth.DebugGodMode ? "무적 켬" : "무적 끔");
                 RefreshDebugOverlay();
             }
             if (keyboard.f2Key.wasPressedThisFrame)
@@ -362,8 +365,14 @@ namespace CheonMyeong.Waves
             {
                 return;
             }
-            GUI.Label(new Rect(8f, 8f, 400f, 24f), debugOverlayText);
+            if (debugOverlayStyle == null)
+            {
+                debugOverlayStyle = new GUIStyle(GUI.skin.label) { font = GameFontSet.Get(FontRole.Body) };
+            }
+            GUI.Label(new Rect(8f, 8f, 400f, 24f), debugOverlayText, debugOverlayStyle);
         }
+
+        private GUIStyle debugOverlayStyle;
 
         /// <summary>
         /// 261110 테스트용(서버 전용) - F2. 남은 시간을 0으로 만들어 평소 흐름 그대로 넘긴다:
@@ -378,6 +387,7 @@ namespace CheonMyeong.Waves
             }
             timer = 0f;
             Debug.Log("[CheonMyeong] (테스트) 지금 단계를 바로 끝냅니다 (F2).");
+            DevYeopjeonCheat.Notify("지금 단계 끝");
         }
 
         /// <summary>
@@ -435,6 +445,7 @@ namespace CheonMyeong.Waves
                 StartWave(waveNumber);
             }
             Debug.Log(toFinal ? "[CheonMyeong] (테스트) 최종전으로 이동." : $"[CheonMyeong] (테스트) {waveNumber}웨이브로 이동.");
+            DevYeopjeonCheat.Notify(toFinal ? "최종전으로 이동" : waveNumber + "웨이브로 이동");
         }
 
         /// <summary>261101 - 마지막 웨이브 뒤 억쇠 최종전 시작(원귀 소환 없음 - IsWaveRunning이 false라 EnemySpawner가 멈춘다).</summary>

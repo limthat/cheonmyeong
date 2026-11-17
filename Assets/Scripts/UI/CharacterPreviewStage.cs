@@ -45,6 +45,8 @@ namespace CheonMyeong.UI
         [SerializeField] private Button passiveTab;
         [SerializeField] private Sprite[] dummyFrames;
         [SerializeField, Min(1f)] private float dummyFps = 8f;
+        [Tooltip("261117 - 영웅 모집 미리보기의 대기 모션 속도 배율(로비 대기 속도 기준, 1 = 같음). 로비 걷기/대기에는 영향 없음.")]
+        [SerializeField, Range(0.1f, 1f)] private float idleSpeedScale = 0.6f;
         [Tooltip("261114 - 베기 이펙트 원본은 왼쪽을 향해 그려져 있다(인게임 PlayerAttackEffect도 오른쪽 조준 시 뒤집음). 미리보기는 오른쪽 허수아비를 베니 좌우를 뒤집는다.")]
         [SerializeField] private bool mirrorSlash = true;
         [Tooltip("261116 - 캐릭터 그림도 원본이 왼쪽을 본다. 오른쪽 허수아비(원귀)를 보도록 좌우를 뒤집는다.")]
@@ -210,7 +212,7 @@ namespace CheonMyeong.UI
                 Sprite[] idle = entry.lobbyIdleFrames;
                 if (idle != null && idle.Length > 0)
                 {
-                    characterImage.sprite = idle[(int)(cycleTime * entry.lobbyIdleFps) % idle.Length];
+                    characterImage.sprite = idle[(int)(cycleTime * entry.lobbyIdleFps * idleSpeedScale) % idle.Length];
                 }
                 return;
             }

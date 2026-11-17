@@ -249,9 +249,9 @@ namespace CheonMyeong.UI
             Text text = go.GetComponent<Text>();
             text.font = styleSource != null && styleSource.font != null
                 ? styleSource.font
-                : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                : GameFontSet.Get(FontRole.Body);
             text.color = styleSource != null ? styleSource.color : Color.white;
-            text.fontSize = 13;
+            text.fontSize = 12;
             text.alignment = TextAnchor.MiddleCenter;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;

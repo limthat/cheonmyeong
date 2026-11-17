@@ -51,7 +51,7 @@ namespace CheonMyeong.UI
 
         private void Build()
         {
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            Font font = GameFontSet.Get(FontRole.Body);
             var root = (RectTransform)transform;
             root.anchorMin = new Vector2(0.5f, 1f);
             root.anchorMax = new Vector2(0.5f, 1f);

@@ -57,16 +57,10 @@ namespace CheonMyeong.UI.Screens
         // 노드 테 바깥 못 자리(아트 Frame-Sheet_7~11: 150 칸에 보이는 테 반폭 51).
         private const float PegRadius = 55f;
 
-        // 근접 = 금줄(짚), 원거리 = 오방색 끈(청 · 적 · 황 · 백 · 흑).
+        // 261117 - 실은 전부 금줄(짚). 오방끈은 안 쓴다.
         private static readonly Color32[] StrawPalette =
         {
             new Color32(201, 160, 74, 255), new Color32(139, 101, 44, 255), new Color32(230, 200, 120, 255)
-        };
-
-        private static readonly Color32[] ObangPalette =
-        {
-            new Color32(16, 54, 150, 255), new Color32(178, 18, 24, 255), new Color32(232, 168, 0, 255),
-            new Color32(255, 255, 255, 255), new Color32(0, 0, 0, 255)
         };
 
         private static readonly string[] SlotTitles =
@@ -154,8 +148,7 @@ namespace CheonMyeong.UI.Screens
             titleText = FindDeepComponent<Text>(transform, "TitleText");
             previewStage = GetComponentInChildren<CharacterPreviewStage>(true);
             heroImage = FindDeepComponent<Image>(transform, "HeroImage");
-            Text sample = previewDescText != null ? previewDescText : FindDeepComponent<Text>(transform, "PreviewDesc");
-            font = sample != null ? sample.font : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            font = GameFontSet.Get(FontRole.Body);
 
             BindRoster();
             BuildRecruitInfo();
@@ -350,9 +343,9 @@ namespace CheonMyeong.UI.Screens
                 return;
             }
             // 오른쪽 두루마리 종이 안(아래 청 · 홍 줄 y≈141~155 바로 위)에 위에서부터 능력치 → 보유 엽전 → 확정 버튼(아트 좌표 1920×1080).
-            heroInfoText = CreateText(panel, "HeroInfo", new Vector2(1318f, ScrollContentBottom + 96f), new Vector2(470f, 130f), 19, TextAnchor.UpperLeft);
-            walletText = CreateText(panel, "Wallet", new Vector2(1318f, ScrollContentBottom + 64f), new Vector2(470f, 28f), 18, TextAnchor.MiddleCenter);
-            // 261116 - 왼쪽 선택하기 / 사용 중 · 오른쪽 레벨업(영력 수련, 기획서 v0.9.9 7장). 두루마리 가운데(x 1553) 기준 좌우 대칭.
+            heroInfoText = CreateText(panel, "HeroInfo", new Vector2(1318f, ScrollContentBottom + 100f), new Vector2(470f, 140f), 18, TextAnchor.UpperLeft);
+            walletText = CreateText(panel, "Wallet", new Vector2(1318f, ScrollContentBottom + 66f), new Vector2(470f, 30f), 21, TextAnchor.MiddleCenter);
+            // 261116 - 왼쪽 선택하기 / 사용 중 · 오른쪽 영력(영력 수련, 기획서 v0.9.9 7장). 두루마리 가운데(x 1553) 기준 좌우 대칭.
             Button template = FindDeepComponent<Button>(panel, "AttackTab");
             confirmButton = CreateButton(panel, template, "ConfirmButton", new Vector2(1343f, ScrollContentBottom), new Vector2(200f, 60f), out confirmLabel);
             if (confirmButton != null)
@@ -439,7 +432,7 @@ namespace CheonMyeong.UI.Screens
             }
             if (levelUpLabel != null)
             {
-                levelUpLabel.text = maxLevel ? "최대 레벨" : "레벨업";
+                levelUpLabel.text = maxLevel ? "영력 최대" : "영력";
                 levelUpLabel.color = owned ? Red : DisabledLabel;
             }
         }
@@ -556,22 +549,30 @@ namespace CheonMyeong.UI.Screens
             wrapArt.transform.SetAsLastSibling();
 
             // 오른쪽 상세 두루마리 - 영웅 화면과 같은 두루마리 그림을 복제해서 쓴다.
+            // 261117 - 노드 판(x 560~1360)과 겹치지 않게 오른쪽에 붙인다(값은 DetailScroll* 상수).
             Transform scrollSource = transform.Find("RecruitPanel/DescScroll");
             if (scrollSource != null)
             {
                 GameObject scroll = Instantiate(scrollSource.gameObject, container, false);
                 scroll.name = "NodeDetailScroll";
                 scroll.SetActive(true);
+                var scrollRect = (RectTransform)scroll.transform;
+                scrollRect.anchorMin = Vector2.zero;
+                scrollRect.anchorMax = Vector2.zero;
+                scrollRect.pivot = Vector2.zero;
+                scrollRect.anchoredPosition = new Vector2(DetailScrollX, 15f);
+                scrollRect.sizeDelta = new Vector2(DetailScrollWidth, 1080f);
                 if (scroll.TryGetComponent(out Image scrollImage))
                 {
                     scrollImage.raycastTarget = false;
                 }
             }
-            nodeTitleText = CreateText(container, "NodeTitle", new Vector2(1318f, 815f), new Vector2(470f, 135f), 26, TextAnchor.UpperLeft);
-            nodeBodyText = CreateText(container, "NodeBody", new Vector2(1318f, ScrollContentBottom + 96f), new Vector2(470f, 545f), 21, TextAnchor.UpperLeft);
-            walletTextTree = CreateText(container, "Wallet", new Vector2(1318f, ScrollContentBottom + 64f), new Vector2(470f, 28f), 18, TextAnchor.MiddleCenter);
+            nodeTitleText = CreateText(container, "NodeTitle", new Vector2(DetailTextX, 800f), new Vector2(DetailTextWidth, 150f), 30, TextAnchor.UpperLeft);
+            nodeBodyText = CreateText(container, "NodeBody", new Vector2(DetailTextX, ScrollContentBottom + 100f), new Vector2(DetailTextWidth, 530f), 24, TextAnchor.UpperLeft);
+            walletTextTree = CreateText(container, "Wallet", new Vector2(DetailTextX, ScrollContentBottom + 66f), new Vector2(DetailTextWidth, 30f), 21, TextAnchor.MiddleCenter);
             Button template = FindDeepComponent<Button>(transform, "AttackTab");
-            openNodeButton = CreateButton(container, template, "OpenNodeButton", new Vector2(1388f, ScrollContentBottom), new Vector2(330f, 60f), out openNodeLabel);
+            openNodeButton = CreateButton(container, template, "OpenNodeButton",
+                new Vector2(DetailTextX + (DetailTextWidth - 300f) * 0.5f, ScrollContentBottom), new Vector2(300f, 60f), out openNodeLabel);
             if (openNodeButton != null)
             {
                 openNodeButton.onClick.AddListener(OnOpenNodeClicked);
@@ -579,6 +580,13 @@ namespace CheonMyeong.UI.Screens
         }
 
         private Text walletTextTree;
+
+        // 신내림 상세 두루마리(Frame-2ver-Sheet_14 / 256): 축대 x 37~219, 종이(검은 테 안) x 55~201.
+        // 폭 760 → 축대 x≈1372~1912(노드 판 1360 · 화면 1920 안), 종이 x≈1425~1859. 글자는 종이 양옆 30씩 띄운다.
+        private const float DetailScrollX = 1262f;
+        private const float DetailScrollWidth = 760f;
+        private const float DetailTextX = 1455f;
+        private const float DetailTextWidth = 374f;
 
         private int FirstInterestingSlot()
         {
@@ -648,7 +656,7 @@ namespace CheonMyeong.UI.Screens
                 builder.Clear();
                 builder.Append("<b>나</b>\n").Append(selected.selfEffect).Append("\n\n");
                 builder.Append("<b>동료</b>\n").Append(string.IsNullOrEmpty(selected.allyEffect) ? "-" : selected.allyEffect).Append("\n\n");
-                builder.Append("<b>필요 엽전</b>  ").Append(selected.cost.ToString("N0")).Append("\n\n<size=17>");
+                builder.Append("<b>필요 엽전</b>  ").Append(selected.cost.ToString("N0")).Append("\n\n<size=18>");
                 switch (selectedState)
                 {
                     case CharacterProgressStore.NodeState.Open:
@@ -733,10 +741,9 @@ namespace CheonMyeong.UI.Screens
             }
             artCharacterId = entry.characterId;
             artMask = mask;
-            bool ranged = entry.stats != null && entry.stats.IsProjectile;
-            Color32[] palette = ranged ? ObangPalette : StrawPalette;
-            linkArt.SetState(nodeArtStates, palette, !ranged, wind);
-            wrapArt.SetState(nodeArtStates, palette, !ranged, wind);
+            // 261117 - 근접 · 원거리 모두 금줄로 통일(오방끈 안 씀).
+            linkArt.SetState(nodeArtStates, StrawPalette, true, wind);
+            wrapArt.SetState(nodeArtStates, StrawPalette, true, wind);
             wrapArt.SetSelected(selectedSlot);
         }
 
@@ -849,7 +856,7 @@ namespace CheonMyeong.UI.Screens
             if (label != null)
             {
                 label.fontSize = 24;
-                label.fontStyle = FontStyle.Bold;
+                GameFontSet.Apply(label, FontRole.Body, true);
                 label.color = Red;
                 label.alignment = TextAnchor.MiddleCenter;
                 // 261116 - 글자가 버튼 테두리 선(Btn-Sheet 안쪽 선: 가로 18 · 세로 15)에 닿지 않게 안쪽으로, 길면 줄여서 맞춘다.

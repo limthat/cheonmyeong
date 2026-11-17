@@ -365,7 +365,8 @@ namespace CheonMyeong.UI.Screens
             cachedGrudge = grudgeValue;
             int stage = PartyProgress.Instance != null ? PartyProgress.Instance.GetGrudgeStage(grudgeValue) : 0;
             string stageName = stage >= 0 && stage < GrudgeStageNames.Length ? GrudgeStageNames[stage] : "?";
-            grudgeText.text = $"원한 {grudgeValue} · {stageName}";
+            // 261117 - 원한 수치를 크게 · 굵게(한눈에 보이게).
+            grudgeText.text = $"원한 <size=36>{grudgeValue}</size> · {stageName}";
         }
 
         /// <summary>재화(엽전) 시스템이 생기면 호출할 자리.</summary>

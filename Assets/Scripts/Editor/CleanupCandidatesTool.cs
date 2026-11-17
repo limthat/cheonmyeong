@@ -25,13 +25,31 @@ namespace CheonMyeong.EditorTools
         private const string TrashFolder = "Assets/_ToDelete";
         private const string MainScenePath = "Assets/Scenes/SampleScene.unity";
 
-        // 게임은 Unity 기본 폰트(LegacyRuntime)만 쓴다 - Suhgung 폰트 60개(약 200MB)는 어디서도 참조 안 함.
+        // 261117 글꼴은 Assets/Fonts의 Galmuri11 · Galmuri11 Bold만 쓴다.
         // 씬 템플릿 둘은 "새 씬" 창에서만 쓰는 에디터 전용 파일. (261115 커서 그림은 이제 UICanvas/CursorStyle이 씀 - 목록에서 뺌)
         private static readonly string[] AssetCandidates =
         {
             "Assets/font",
             "Assets/Settings/Lit2DSceneTemplate.scenetemplate",
             "Assets/Settings/Scenes/URP2DSceneTemplate.unity",
+            "Assets/TextMesh Pro/Fonts/Galmuri-v2.40.4",
+            "Assets/TextMesh Pro/Fonts/Pretendard-1.3.9",
+            // 261117 2차 - 글꼴을 전부 Galmuri11로 바꿔 Pretendard는 안 씀.
+            "Assets/Fonts/Pretendard-Regular.ttf",
+            "Assets/Fonts/Pretendard-Bold.ttf",
+            "Assets/Fonts/Pretendard-LICENSE.txt",
+        };
+
+        // 261117 글꼴 - 받은 묶음에서 게임이 쓰는 3개(+ 라이선스)만 Assets/Fonts 로 먼저 빼고, 나머지 묶음 폴더는 위 목록대로 _ToDelete 로.
+        // MoveAsset이라 GUID가 그대로여서 씬 · Resources/GameFonts.asset 참조는 끊기지 않는다.
+        private const string FontFolder = "Assets/Fonts";
+        private static readonly string[,] KeptFonts =
+        {
+            { "Assets/TextMesh Pro/Fonts/Galmuri-v2.40.4/Galmuri11-Bold.ttf", FontFolder + "/Galmuri11-Bold.ttf" },
+            { "Assets/TextMesh Pro/Fonts/Galmuri-v2.40.4/LICENSE.txt", FontFolder + "/Galmuri-LICENSE.txt" },
+            { "Assets/TextMesh Pro/Fonts/Pretendard-1.3.9/public/static/alternative/Pretendard-Regular.ttf", FontFolder + "/Pretendard-Regular.ttf" },
+            { "Assets/TextMesh Pro/Fonts/Pretendard-1.3.9/public/static/alternative/Pretendard-Bold.ttf", FontFolder + "/Pretendard-Bold.ttf" },
+            { "Assets/TextMesh Pro/Fonts/Pretendard-1.3.9/LICENSE.txt", FontFolder + "/Pretendard-LICENSE.txt" },
         };
 
         private static readonly string[] HierarchyCandidates =
@@ -88,6 +106,7 @@ namespace CheonMyeong.EditorTools
                 Debug.LogWarning(log.ToString());
                 return;
             }
+            KeepFonts(apply, log);
             int movedAssets = RunAssets(apply, log);
             log.AppendLine($"요약: 하이어라키 {movedObjects}개 · 에셋 {movedAssets}개 {(apply ? "옮김" : "옮길 예정")}");
             Debug.Log(log.ToString());
@@ -286,6 +305,54 @@ namespace CheonMyeong.EditorTools
             return path;
         }
 
+        // ───────── 글꼴 ─────────
+
+        private static bool IsKeptFont(string path)
+        {
+            for (int i = 0; i < KeptFonts.GetLength(0); i++)
+            {
+                if (KeptFonts[i, 0] == path)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static void KeepFonts(bool apply, StringBuilder log)
+        {
+            log.AppendLine("── 쓰는 글꼴 → " + FontFolder + " ──");
+            for (int i = 0; i < KeptFonts.GetLength(0); i++)
+            {
+                string from = KeptFonts[i, 0];
+                string to = KeptFonts[i, 1];
+                if (!File.Exists(from))
+                {
+                    log.AppendLine($"  건너뜀 {from} - 없음(이미 옮김)");
+                    continue;
+                }
+                if (File.Exists(to))
+                {
+                    log.AppendLine($"  건너뜀 {from} - {to} 가 이미 있음");
+                    continue;
+                }
+                log.AppendLine($"  {(apply ? "옮김" : "옮길 것")} {from} → {to}");
+                if (!apply)
+                {
+                    continue;
+                }
+                if (!AssetDatabase.IsValidFolder(FontFolder))
+                {
+                    AssetDatabase.CreateFolder("Assets", "Fonts");
+                }
+                string error = AssetDatabase.MoveAsset(from, to);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    log.AppendLine($"    실패: {error}");
+                }
+            }
+        }
+
         // ───────── 에셋 ─────────
 
         private static int RunAssets(bool apply, StringBuilder log)
@@ -300,7 +367,7 @@ namespace CheonMyeong.EditorTools
                     foreach (string guid in AssetDatabase.FindAssets(string.Empty, new[] { root }))
                     {
                         string file = AssetDatabase.GUIDToAssetPath(guid);
-                        if (!AssetDatabase.IsValidFolder(file))
+                        if (!AssetDatabase.IsValidFolder(file) && !IsKeptFont(file))
                         {
                             candidateFiles[file] = root;
                         }
@@ -326,6 +393,22 @@ namespace CheonMyeong.EditorTools
                 if (file.EndsWith(".cs") || file.Contains("/Resources/") || file.Contains("/Editor/"))
                 {
                     Block(file, "스크립트 · Resources · Editor 폴더 파일은 대상에서 제외");
+                }
+            }
+
+            // 0) 쓰는 글꼴이 아직 묶음 폴더 안에 있으면(옮기기 실패 · 미리보기) 그 폴더는 통째로 옮기지 않는다 - 실행 때만 해당.
+            if (apply)
+            {
+                for (int i = 0; i < KeptFonts.GetLength(0); i++)
+                {
+                    string kept = KeptFonts[i, 0];
+                    foreach (string root in AssetCandidates)
+                    {
+                        if (File.Exists(kept) && kept.StartsWith(root + "/") && !blockedRoots.ContainsKey(root))
+                        {
+                            blockedRoots[root] = "쓰는 글꼴이 아직 안에 있음: " + kept;
+                        }
+                    }
                 }
             }
 

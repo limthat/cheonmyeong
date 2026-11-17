@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using CheonMyeong.Progression;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,7 +40,7 @@ namespace CheonMyeong.UI.Screens
         [SerializeField] private AugmentIcon[] augmentIcons = Array.Empty<AugmentIcon>();
 
         private const string TitleLabel = "레벨업! 신통력을 고르세요";
-        private const string ReadyButtonDefaultLabel = "✓ 준비 완료";
+        private const string ReadyButtonDefaultLabel = "준비 완료";
         private const string ReadyButtonWaitingLabel = "대기 중... (동료를 기다리는 중)";
         private const int StarCount = 5;
         private const float SelectedScale = 1.04f;
@@ -59,7 +58,7 @@ namespace CheonMyeong.UI.Screens
             public Image Icon;
             public Image[] Stars;
             public Button RerollButton;
-            public TMP_Text RerollCount;
+            public Text RerollCount;
         }
 
         private readonly List<CardView> cards = new List<CardView>();
@@ -181,13 +180,8 @@ namespace CheonMyeong.UI.Screens
                     ColorBlock colors = view.RerollButton.colors;
                     colors.disabledColor = RerollDisabledColor;
                     view.RerollButton.colors = colors;
-                    view.RerollCount = view.RerollButton.GetComponentInChildren<TMP_Text>(true);
-                    if (view.RerollCount != null)
-                    {
-                        view.RerollCount.alignment = TextAlignmentOptions.BottomRight;
-                        view.RerollCount.fontSize = 22f;
-                        view.RerollCount.margin = new Vector4(0f, 0f, 8f, 4f);
-                    }
+                    // 261117 - 리롤 개수 글자를 TMP(한글 없는 기본 글꼴)에서 일반 Text(Pretendard Bold)로 바꿈. 위치 · 크기는 씬에 있음.
+                    view.RerollCount = view.RerollButton.GetComponentInChildren<Text>(true);
                     perCardReroll = true;
                 }
                 cards.Add(view);

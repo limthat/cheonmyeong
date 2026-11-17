@@ -21,8 +21,7 @@ namespace CheonMyeong.UI
         [Tooltip("이 거리(캔버스 단위) 안에 들어오면 건물이 하이라이트되고 상호작용 키로 열 수 있다.")]
         [SerializeField] private float interactRadius = 170f;
 
-        [Tooltip("상호작용 키.")]
-        [SerializeField] private Key interactKey = Key.E;
+        // 261116 - 상호작용 키는 설정 > 조작에서 바꾼다(KeyBindings, 기본 E). 예전 interactKey 칸은 지웠다.
 
         private LobbyBuilding nearest;
         private int lastAvatarSiblingIndex = -1;

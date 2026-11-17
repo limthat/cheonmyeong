@@ -254,7 +254,8 @@ namespace CheonMyeong.UI.Screens
             string rewardText = cleared ? $"+{reward}(각자)" : "없음";
             string timeLabel = cleared ? "봉인 시간" : "버틴 시간";
             runSummaryText.text = $"{mapName} · {wave}/{totalWaves} 웨이브\n" +
-                                  $"최종 원한: {grudge} ({stageName}) / 클리어 보상: {rewardText} / {timeLabel}: {seconds / 60:00}:{seconds % 60:00}";
+                                  $"최종 원한: {grudge} ({stageName}) · {timeLabel}: {seconds / 60:00}:{seconds % 60:00}\n" +
+                                  $"클리어 보상: {rewardText}";
         }
 
         private static void RefreshPlayer(Text slot, int index, ref int cachedHash)

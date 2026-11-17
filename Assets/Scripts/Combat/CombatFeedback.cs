@@ -196,7 +196,7 @@ namespace CheonMyeong.Combat
 
         private void Build()
         {
-            font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            font = CheonMyeong.UI.GameFontSet.Get(CheonMyeong.UI.FontRole.Title);
 
             var sparkGo = new GameObject("HitSparks");
             sparkGo.transform.SetParent(transform, false);
@@ -333,7 +333,7 @@ namespace CheonMyeong.Combat
             text.characterSize = 1f;
             text.anchor = TextAnchor.LowerCenter;
             text.alignment = TextAlignment.Center;
-            text.fontStyle = FontStyle.Bold;
+            text.fontStyle = FontStyle.Normal;
             var renderer = go.GetComponent<MeshRenderer>();
             renderer.sharedMaterial = font.material;
             renderer.sortingOrder = SortingOrder + 1;

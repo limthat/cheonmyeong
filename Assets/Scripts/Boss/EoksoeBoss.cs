@@ -323,7 +323,9 @@ namespace CheonMyeong.Boss
             }
             if (healthBar != null)
             {
-                Destroy(healthBar.gameObject);
+                // 261117 - 씬의 아트 틀(BossBarFrame)을 쓰는 경우 틀째 지우면 다음 보스(최종전)가 틀 없는 임시 바로 나왔다 - 붙인 것만 걷는다.
+                healthBar.Release();
+                healthBar = null;
             }
             if (markRing != null)
             {
@@ -2046,7 +2048,7 @@ namespace CheonMyeong.Boss
 
         private Transform CreateWarnIcon()
         {
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            Font font = CheonMyeong.UI.GameFontSet.Get(CheonMyeong.UI.FontRole.Title);
             var root = new GameObject("BossWarnIcon").transform;
             root.SetParent(transform, false);
             CreateWarnText(root, font, new Color(0.1f, 0f, 0f, 1f), new Vector3(0.04f, -0.04f, 0f), 1100);
@@ -2064,7 +2066,7 @@ namespace CheonMyeong.Boss
             text.text = "!";
             text.fontSize = 64;
             text.characterSize = 0.1f;
-            text.fontStyle = FontStyle.Bold;
+            text.fontStyle = FontStyle.Normal;
             text.anchor = TextAnchor.LowerCenter;
             text.alignment = TextAlignment.Center;
             text.color = color;

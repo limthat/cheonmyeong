@@ -25,24 +25,34 @@ namespace CheonMyeong.Boss
         private float chipRatio = 1f;
         private float chipTimer;
         private int lastBarIndex = -1;
+        private bool fromFrame;
+        private bool released;
+        private RectTransform frameInner;
+        private RectTransform frameLabels;
 
         // 261114 - 틀 그림(Bar-Sheet_10)에서 빈 칸 위 · 아래로 보이는 나무 두께(원본 픽셀). 글자를 이만큼 띄운다.
         private const float FrameWoodPixels = 9f;
 
         public static BossHealthBarView Create(Transform hudRoot)
         {
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            Font font = CheonMyeong.UI.GameFontSet.Get(CheonMyeong.UI.FontRole.Title);
 
             // 261114 - 아트 보스 바 틀(HUD의 BossBarFrame, Bar-Sheet_10 + 위 덮개 Overlay)이 있으면 그 틀 안쪽 칸을 채운다.
             Transform template = FindDeep(hudRoot, "BossBarFrame");
             if (template is RectTransform frameRoot && frameRoot.TryGetComponent(out Image frameImage))
             {
+                if (frameRoot.TryGetComponent(out BossHealthBarView existing) && !existing.released)
+                {
+                    return existing;
+                }
                 return CreateFromFrame(frameRoot, frameImage, font);
             }
 
-            RectTransform root = NewRect(hudRoot, "BossHealthBar", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f));
-            root.sizeDelta = new Vector2(760f, 30f);
-            root.anchoredPosition = new Vector2(0f, -222f);
+            // 261117 - 틀이 없을 때의 임시 바도 아트 틀과 같은 자리(왼쪽 위 플레이어 체력 바 아래)에 둔다.
+            RectTransform root = NewRect(hudRoot, "BossHealthBar", new Vector2(0f, 1f), new Vector2(0f, 1f));
+            root.pivot = new Vector2(0f, 1f);
+            root.sizeDelta = new Vector2(475f, 24f);
+            root.anchoredPosition = new Vector2(24f, -250f);
             var view = root.gameObject.AddComponent<BossHealthBarView>();
 
             Image frame = AddImage(root, new Color(0.05f, 0.03f, 0.05f, 0.9f));
@@ -81,6 +91,7 @@ namespace CheonMyeong.Boss
         private static BossHealthBarView CreateFromFrame(RectTransform root, Image frameImage, Font font)
         {
             var view = root.gameObject.AddComponent<BossHealthBarView>();
+            view.fromFrame = true;
             frameImage.raycastTarget = false;
             Transform overlay = root.Find("Overlay");
 
@@ -89,6 +100,7 @@ namespace CheonMyeong.Boss
             Vector4 hole = root.TryGetComponent(out CheonMyeong.UI.SlicedHole marker) ? marker.holePixels : Vector4.zero;
             CheonMyeong.UI.SlicedHole.Fit(frameImage, inner, hole);
             AddImage(inner, new Color(0.18f, 0.06f, 0.08f, 1f));
+            view.frameInner = inner;
             view.chip = NewRect(inner, "Chip", Vector2.zero, Vector2.one);
             AddImage(view.chip, new Color(1f, 0.85f, 0.6f, 0.9f));
             view.fill = NewRect(inner, "Fill", Vector2.zero, Vector2.one);
@@ -109,6 +121,7 @@ namespace CheonMyeong.Boss
             RectTransform labels = NewRect(root, "Labels", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f));
             labels.sizeDelta = root.rect.size * scale;
             labels.localScale = Vector3.one / scale;
+            view.frameLabels = labels;
             RectTransform area = NewRect(labels, "Area", Vector2.zero, Vector2.one);
             area.offsetMin = inner.offsetMin * scale;
             area.offsetMax = inner.offsetMax * scale;
@@ -209,6 +222,30 @@ namespace CheonMyeong.Boss
             }
         }
 
+        /// <summary>
+        /// 261117 - 보스가 사라질 때. 씬 틀을 쓰는 경우 틀(BossBarFrame)은 남기고 이 바가 붙인 칸 · 글자 · 컴포넌트만 걷어
+        /// 다음 보스가 같은 틀을 다시 쓸 수 있게 한다. 임시 바면 통째로 지운다.
+        /// </summary>
+        public void Release()
+        {
+            released = true;
+            if (!fromFrame)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            if (frameInner != null)
+            {
+                Destroy(frameInner.gameObject);
+            }
+            if (frameLabels != null)
+            {
+                Destroy(frameLabels.gameObject);
+            }
+            gameObject.SetActive(false);
+            Destroy(this);
+        }
+
         public void SetVisible(bool visible)
         {
             if (gameObject.activeSelf != visible)
@@ -245,7 +282,7 @@ namespace CheonMyeong.Boss
             text.fontSize = size;
             text.alignment = anchor;
             text.color = new Color(1f, 0.95f, 0.85f, 1f);
-            text.fontStyle = FontStyle.Bold;
+            text.fontStyle = FontStyle.Normal;
             text.raycastTarget = false;
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
