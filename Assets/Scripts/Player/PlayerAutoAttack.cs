@@ -337,7 +337,8 @@ namespace CheonMyeong.Player
             for (int i = 0; i < hitCount; i++)
             {
                 // 261101 - 억쇠 '정신병' 차원 안/밖이 다르면 대상이 아니다.
-                if (Boss.DeathRealm.CanInteract(gameObject, hitBuffer[i].gameObject))
+                if (Boss.DeathRealm.CanInteract(gameObject, hitBuffer[i].gameObject)
+                    && !(stats != null && stats.IsProjectile && Enemy.IsHiddenFromRanged(hitBuffer[i]))) // 261119 - 원거리는 잠긴 물귀신을 인식 못 함
                 {
                     return true;
                 }
@@ -580,6 +581,10 @@ namespace CheonMyeong.Player
             if (damageable is PlayerHealth)
             {
                 return false; // 아군 피해 없음
+            }
+            if (isProjectile && Enemy.IsHiddenFromRanged(col))
+            {
+                return false; // 261119 - 웅덩이에 잠긴 물귀신은 원거리 공격에 안 맞는다(근접은 맞음)
             }
             Enemy enemy = damageable as Enemy;
             bool wasAlive = enemy == null || !enemy.IsDying;

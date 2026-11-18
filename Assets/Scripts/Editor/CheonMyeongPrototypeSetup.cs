@@ -29,7 +29,7 @@ namespace CheonMyeong.EditorTools
     /// 수동으로 Inspector에서 드래그&드롭 하는 반복 작업을 줄이기 위한 용도이며,
     /// 플레이어 빌드에는 포함되지 않는다(Editor 폴더 하위).
     /// </summary>
-    public static class CheonMyeongPrototypeSetup
+    public static partial class CheonMyeongPrototypeSetup
     {
         private const string DataFolder = "Assets/Data";
         private const string CharactersFolder = DataFolder + "/Characters";

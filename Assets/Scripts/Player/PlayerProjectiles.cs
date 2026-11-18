@@ -298,7 +298,8 @@ namespace CheonMyeong.Player
             for (int i = 0; i < n; i++)
             {
                 Collider2D col = buffer[i];
-                if (!Boss.DeathRealm.CanInteract(gameObject, col.gameObject) || !col.TryGetComponent(out IDamageable _))
+                if (!Boss.DeathRealm.CanInteract(gameObject, col.gameObject) || !col.TryGetComponent(out IDamageable _)
+                    || Enemies.Enemy.IsHiddenFromRanged(col)) // 261119 - 잠긴 물귀신은 자동 조준 대상이 아님
                 {
                     continue;
                 }

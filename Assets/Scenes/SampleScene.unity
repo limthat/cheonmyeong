@@ -4774,8 +4774,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.1, y: 30}
-  m_SizeDelta: {x: -44.2, y: -44}
+  m_AnchoredPosition: {x: 21.4, y: 30}
+  m_SizeDelta: {x: 18.8, y: -44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &237506772
 MonoBehaviour:
@@ -4801,8 +4801,8 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 87eeb9d909b2a794cbdcc9aaf4d218cd, type: 3}
     m_FontSize: 24
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 10
+    m_BestFit: 1
+    m_MinSize: 18
     m_MaxSize: 24
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -11064,6 +11064,7 @@ MonoBehaviour:
   lookAheadTime: 0.12
   fixedZ: -10
   gameplayOrthographicSize: 7.8125
+  playerScreenY: 0.17
 --- !u!222 &519754549
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32297,7 +32298,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\uB808\uBCA8\uC5C5! \uC99D\uAC15\uC744 \uACE0\uB974\uC138\uC694"
+  m_Text: "\uB808\uBCA8\uC5C5! \uC2E0\uD1B5\uB825\uC744 \uACE0\uB974\uC138\uC694"
 --- !u!222 &1444480445
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33997,7 +33998,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -690.96, y: 265.6}
+  m_AnchoredPosition: {x: -34, y: 234.6}
   m_SizeDelta: {x: 222.76, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1509685517
@@ -35346,7 +35347,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "[E]  \uC2A4\uD0AC\uD2B8\uB9AC"
+  m_Text: "[E]  \uC2E0\uB0B4\uB9BC"
 --- !u!222 &1562296407
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -49150,8 +49151,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.1, y: 30}
-  m_SizeDelta: {x: -44.2, y: -44}
+  m_AnchoredPosition: {x: 21.4, y: 30}
+  m_SizeDelta: {x: 18.8, y: -44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2134756626
 MonoBehaviour:
@@ -49177,8 +49178,8 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 87eeb9d909b2a794cbdcc9aaf4d218cd, type: 3}
     m_FontSize: 24
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 10
+    m_BestFit: 1
+    m_MinSize: 18
     m_MaxSize: 24
     m_Alignment: 3
     m_AlignByGeometry: 0

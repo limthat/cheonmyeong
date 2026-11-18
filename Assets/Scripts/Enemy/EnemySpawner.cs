@@ -120,6 +120,7 @@ namespace CheonMyeong.Enemies
                 patternSpawnedThisWave = 0;
                 patternEventsFired = 0;
                 pendingSpawns.Clear();
+                BuildWaveBag(wave);
             }
 
             WaveConfigSO config = waveManager.Config;
@@ -138,8 +139,14 @@ namespace CheonMyeong.Enemies
             int spawnedThisFrame = 0;
             while (trickleSpawnedThisWave < trickleTarget && spawnedThisFrame < MaxSpawnPerFrame)
             {
-                if (TotalActiveCount() >= wave.maxAliveEnemies || !SpawnOne(PickPoolForWave(wave)))
+                if (TotalActiveCount() >= wave.maxAliveEnemies)
                 {
+                    break;
+                }
+                EnemyPool drawn = DrawFromBag(wave);
+                if (!SpawnOne(drawn))
+                {
+                    ReturnToBag(drawn);
                     break;
                 }
                 trickleSpawnedThisWave++;
@@ -222,7 +229,7 @@ namespace CheonMyeong.Enemies
                         {
                             pos = PickSpawnPosition(center);
                         }
-                        Enqueue(PickPoolForWave(wave), pos);
+                        Enqueue(DrawFromBagOrPick(wave), pos);
                     }
                     break;
 
@@ -233,7 +240,7 @@ namespace CheonMyeong.Enemies
                     float half = (amount - 1) * lineSpacing * 0.5f;
                     for (int i = 0; i < amount; i++)
                     {
-                        Enqueue(PickPoolForWave(wave), ClampToMap(lineCenter + side * (i * lineSpacing - half)));
+                        Enqueue(DrawFromBagOrPick(wave), ClampToMap(lineCenter + side * (i * lineSpacing - half)));
                     }
                     break;
                 }
@@ -241,10 +248,11 @@ namespace CheonMyeong.Enemies
                 default:
                 {
                     Vector2 clusterCenter = center + dir * (radius + clusterSpread);
-                    EnemyPool pool = PickPoolForWave(wave);
+                    EnemyPool pool = DrawFromBagOrPick(wave);
                     for (int i = 0; i < amount; i++)
                     {
-                        Enqueue(pool, ClampToMap(clusterCenter + Random.insideUnitCircle * clusterSpread));
+                        // 무리는 같은 종류로 - 정해진 수 안에서 같은 종류를 먼저 꺼내고, 다 썼으면 다른 종류.
+                        Enqueue(i == 0 ? pool : DrawSameOrPick(wave, pool), ClampToMap(clusterCenter + Random.insideUnitCircle * clusterSpread));
                     }
                     break;
                 }
@@ -313,8 +321,10 @@ namespace CheonMyeong.Enemies
             {
                 return spawnRadius;
             }
-            float halfHeight = cam.orthographicSize;
-            float halfWidth = halfHeight * cam.aspect;
+            float halfWidth = cam.orthographicSize * cam.aspect;
+            // 261119 - 카메라가 플레이어보다 위에 있으면(PlayerCameraRig.playerScreenY) 위쪽 화면 끝이 그만큼 멀다.
+            float offset = PlayerCameraRig.Instance != null ? Mathf.Abs(PlayerCameraRig.Instance.VerticalOffset) : 0f;
+            float halfHeight = cam.orthographicSize + offset;
             return Mathf.Max(spawnRadius, Mathf.Sqrt(halfWidth * halfWidth + halfHeight * halfHeight) + spawnScreenMargin);
         }
 
@@ -415,7 +425,7 @@ namespace CheonMyeong.Enemies
             {
                 for (int i = 0; i < spawns.Count; i++)
                 {
-                    if (spawns[i] != null && spawns[i].weight > 0 && FindPool(spawns[i].enemy) != null)
+                    if (spawns[i] != null && spawns[i].weight > 0 && !AtMaxAlive(spawns[i].enemy) && FindPool(spawns[i].enemy) != null)
                     {
                         totalWeight += spawns[i].weight;
                     }
@@ -431,7 +441,7 @@ namespace CheonMyeong.Enemies
             for (int i = 0; i < spawns.Count; i++)
             {
                 WaveSpawnEntry entry = spawns[i];
-                if (entry == null || entry.weight <= 0)
+                if (entry == null || entry.weight <= 0 || AtMaxAlive(entry.enemy))
                 {
                     continue;
                 }
@@ -448,6 +458,134 @@ namespace CheonMyeong.Enemies
             }
             return PickAnyPool();
         }
+
+        // 261119 - 웨이브별 원귀 구성 고정("매 판 난이도가 같아야" - 예섭). 웨이브가 시작될 때 enemyCount를 가중치 비율대로
+        // 정확한 마릿수로 나눠 주머니에 넣고 섞은 뒤, 소환할 때마다 하나씩 꺼낸다(뽑을 때마다 확률로 고르면 판마다 중형 수가 들쭉날쭉).
+        // 순서 · 위치는 매번 다르고, 종류별 총 마릿수만 매 판 같다. 비율 → 마릿수는 최대 나머지 방식(합이 enemyCount와 정확히 같게).
+        private readonly List<EnemyPool> waveBag = new List<EnemyPool>(1024);
+        private readonly List<int> bagCounts = new List<int>(8);
+        private readonly List<float> bagRemainders = new List<float>(8);
+
+        private void BuildWaveBag(WaveDefinition wave)
+        {
+            waveBag.Clear();
+            List<WaveSpawnEntry> spawns = wave.spawns;
+            if (spawns == null || wave.enemyCount <= 0)
+            {
+                return;
+            }
+            int totalWeight = 0;
+            for (int i = 0; i < spawns.Count; i++)
+            {
+                if (spawns[i] != null && spawns[i].weight > 0 && FindPool(spawns[i].enemy) != null)
+                {
+                    totalWeight += spawns[i].weight;
+                }
+            }
+            if (totalWeight <= 0)
+            {
+                return;
+            }
+            bagCounts.Clear();
+            bagRemainders.Clear();
+            int assigned = 0;
+            for (int i = 0; i < spawns.Count; i++)
+            {
+                bool valid = spawns[i] != null && spawns[i].weight > 0 && FindPool(spawns[i].enemy) != null;
+                float exact = valid ? (float)wave.enemyCount * spawns[i].weight / totalWeight : 0f;
+                int floor = Mathf.FloorToInt(exact);
+                bagCounts.Add(floor);
+                bagRemainders.Add(valid ? exact - floor : -1f);
+                assigned += floor;
+            }
+            for (int left = wave.enemyCount - assigned; left > 0; left--)
+            {
+                int best = -1;
+                for (int i = 0; i < bagRemainders.Count; i++)
+                {
+                    if (bagRemainders[i] >= 0f && (best < 0 || bagRemainders[i] > bagRemainders[best]))
+                    {
+                        best = i;
+                    }
+                }
+                if (best < 0)
+                {
+                    break;
+                }
+                bagCounts[best]++;
+                bagRemainders[best] = -1f;
+            }
+            for (int i = 0; i < spawns.Count; i++)
+            {
+                EnemyPool pool = bagCounts[i] > 0 ? FindPool(spawns[i].enemy) : null;
+                for (int n = 0; n < bagCounts[i]; n++)
+                {
+                    waveBag.Add(pool);
+                }
+            }
+            for (int i = waveBag.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (waveBag[i], waveBag[j]) = (waveBag[j], waveBag[i]);
+            }
+        }
+
+        /// <summary>주머니에서 하나 꺼낸다(동시 최대 수에 걸린 종류는 건너뜀). 주머니가 비었으면 예전처럼 비율로 뽑는다. 전부 막혔으면 null.</summary>
+        private EnemyPool DrawFromBag(WaveDefinition wave)
+        {
+            if (waveBag.Count == 0)
+            {
+                return PickPoolForWave(wave);
+            }
+            for (int i = waveBag.Count - 1; i >= 0; i--)
+            {
+                EnemyPool pool = waveBag[i];
+                if (pool != null && AtMaxAlive(pool.PrefabStats))
+                {
+                    continue;
+                }
+                waveBag[i] = waveBag[waveBag.Count - 1];
+                waveBag.RemoveAt(waveBag.Count - 1);
+                return pool;
+            }
+            return null;
+        }
+
+        private EnemyPool DrawFromBagOrPick(WaveDefinition wave)
+        {
+            EnemyPool pool = DrawFromBag(wave);
+            return pool != null ? pool : PickPoolForWave(wave);
+        }
+
+        private EnemyPool DrawSameOrPick(WaveDefinition wave, EnemyPool same)
+        {
+            if (same != null && !AtMaxAlive(same.PrefabStats))
+            {
+                for (int i = waveBag.Count - 1; i >= 0; i--)
+                {
+                    if (waveBag[i] == same)
+                    {
+                        waveBag[i] = waveBag[waveBag.Count - 1];
+                        waveBag.RemoveAt(waveBag.Count - 1);
+                        return same;
+                    }
+                }
+            }
+            return DrawFromBagOrPick(wave);
+        }
+
+        /// <summary>소환에 실패하면 꺼낸 것을 주머니에 되돌린다(정해진 수 유지).</summary>
+        private void ReturnToBag(EnemyPool pool)
+        {
+            if (pool != null)
+            {
+                waveBag.Insert(Random.Range(0, waveBag.Count + 1), pool);
+            }
+        }
+
+        /// <summary>261119 - 동시 최대 수(EnemyStatsSO.maxAlive, 물귀신 6)에 닿았으면 이번엔 그 종류를 뽑지 않는다.</summary>
+        private static bool AtMaxAlive(EnemyStatsSO enemy) =>
+            enemy != null && enemy.maxAlive > 0 && Enemy.ServerAliveCount(enemy) >= enemy.maxAlive;
 
         private EnemyPool PickPoolByIndexWeights()
         {

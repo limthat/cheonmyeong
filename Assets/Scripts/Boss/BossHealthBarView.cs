@@ -7,7 +7,8 @@ namespace CheonMyeong.Boss
     /// 261101 추가 - 화면 위 보스 체력 바. 인게임 HUD 화면 안에 실행 중에 직접 만든다(에디터 빌드 메뉴 없이도 동작).
     /// - 칸(최종전 3칸 × 8,400): 지금 깎이는 칸만 바로 보여주고, 남은 칸 수는 오른쪽에 "×N"으로 표시.
     /// - 피해 잔상: 맞으면 빨간 바는 바로 줄고, 뒤의 밝은 바가 잠깐 멈췄다가 따라 줄어든다(요즘 보스 체력 바의 흔한 연출).
-    /// - 분신 체력: 정신병 차원이 열려 있으면 아래에 작은 보라색 바를 하나 더 보인다.
+    /// - 261119 겹 체력(로스트아크식): 칸마다 색이 다르고, 지금 칸이 줄어든 자리 뒤로 다음 칸 색이 보인다. 마지막 칸은 어두운 바탕.
+    /// - 분신 체력: 261119 - 정신병 차원이 열려 있으면 본 체력 바 위를 보라색 분신 바로 덮어 보인다.
     /// 바 길이는 Image 대신 RectTransform 앵커로 조절해서 스프라이트 없이도 정확히 줄어든다.
     /// </summary>
     public class BossHealthBarView : MonoBehaviour
@@ -29,6 +30,69 @@ namespace CheonMyeong.Boss
         private bool released;
         private RectTransform frameInner;
         private RectTransform frameLabels;
+        private Image backImage;
+        private Image fillImage;
+        private int shownColorIndex = -1;
+
+        // 261119 - 바 아래에 보스가 있으면 바를 반투명(30%)하게 - 바가 보스를 가리지 않게.
+        private const float CoveredAlpha = 0.3f;
+        private const float FadeSpeed = 4f; // 초당 알파 변화
+        private CanvasGroup group;
+        private bool bossBoundsValid;
+        private Bounds bossBounds;
+        private static readonly Vector3[] Corners = new Vector3[4];
+
+        /// <summary>261119 - 보스 몸의 월드 경계(Refresh 전에 매 프레임).</summary>
+        public void SetBossBounds(bool valid, Bounds bounds)
+        {
+            bossBoundsValid = valid;
+            bossBounds = bounds;
+        }
+
+        private void UpdateCoverFade()
+        {
+            if (group == null && !TryGetComponent(out group))
+            {
+                group = gameObject.AddComponent<CanvasGroup>();
+                group.blocksRaycasts = false;
+                group.interactable = false;
+            }
+            float target = IsBossUnderBar() ? CoveredAlpha : 1f;
+            if (!Mathf.Approximately(group.alpha, target))
+            {
+                group.alpha = Mathf.MoveTowards(group.alpha, target, FadeSpeed * Time.unscaledDeltaTime);
+            }
+        }
+
+        /// <summary>바(화면 오버레이 캔버스 = 월드 좌표가 곧 화면 픽셀)와 보스의 화면 위치가 겹치는지.</summary>
+        private bool IsBossUnderBar()
+        {
+            Camera cam = Camera.main;
+            if (!bossBoundsValid || cam == null)
+            {
+                return false;
+            }
+            Canvas canvas = GetComponentInParent<Canvas>();
+            Camera uiCamera = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
+            ((RectTransform)transform).GetWorldCorners(Corners);
+            Vector2 barMin = RectTransformUtility.WorldToScreenPoint(uiCamera, Corners[0]);
+            Vector2 barMax = RectTransformUtility.WorldToScreenPoint(uiCamera, Corners[2]);
+            Vector2 bossMin = cam.WorldToScreenPoint(bossBounds.min);
+            Vector2 bossMax = cam.WorldToScreenPoint(bossBounds.max);
+            return bossMax.x >= barMin.x && bossMin.x <= barMax.x && bossMax.y >= barMin.y && bossMin.y <= barMax.y;
+        }
+
+        // 261119 - 칸 색(위에서부터 깎이는 순서, 마지막이 적). 오방색 청 → 황 → 적, 칸이 더 많으면 앞에서 되풀이.
+        private static readonly Color[] LayerColors =
+        {
+            new Color(0.78f, 0.10f, 0.12f, 1f), // 마지막 칸(×1) 적
+            new Color(0.86f, 0.60f, 0.12f, 1f), // ×2 황
+            new Color(0.20f, 0.45f, 0.82f, 1f), // ×3 청
+        };
+        private static readonly Color EmptyBackColor = new Color(0.18f, 0.06f, 0.08f, 1f);
+        private static readonly Color CloneColor = new Color(0.6f, 0.35f, 0.85f, 1f);
+
+        private static Color LayerColor(int barIndex) => LayerColors[Mathf.Abs(barIndex) % LayerColors.Length];
 
         // 261114 - 틀 그림(Bar-Sheet_10)에서 빈 칸 위 · 아래로 보이는 나무 두께(원본 픽셀). 글자를 이만큼 띄운다.
         private const float FrameWoodPixels = 9f;
@@ -60,12 +124,7 @@ namespace CheonMyeong.Boss
             RectTransform inner = NewRect(root, "Inner", Vector2.zero, Vector2.one);
             inner.offsetMin = new Vector2(3f, 3f);
             inner.offsetMax = new Vector2(-3f, -3f);
-            AddImage(inner, new Color(0.18f, 0.06f, 0.08f, 1f));
-
-            view.chip = NewRect(inner, "Chip", Vector2.zero, Vector2.one);
-            AddImage(view.chip, new Color(1f, 0.85f, 0.6f, 0.9f));
-            view.fill = NewRect(inner, "Fill", Vector2.zero, Vector2.one);
-            AddImage(view.fill, new Color(0.78f, 0.1f, 0.12f, 1f));
+            view.BuildLayers(inner);
 
             view.nameText = AddText(NewRect(root, "Name", new Vector2(0f, 1f), new Vector2(1f, 1f)), font, 20, TextAnchor.LowerCenter);
             ((RectTransform)view.nameText.transform).offsetMin = new Vector2(0f, 2f);
@@ -74,18 +133,23 @@ namespace CheonMyeong.Boss
             ((RectTransform)view.barsText.transform).offsetMin = new Vector2(10f, 0f);
             ((RectTransform)view.barsText.transform).offsetMax = new Vector2(70f, 0f);
 
-            view.cloneRoot = NewRect(root, "Clone", new Vector2(0.25f, 0f), new Vector2(0.75f, 0f));
-            view.cloneRoot.offsetMin = new Vector2(0f, -22f);
-            view.cloneRoot.offsetMax = new Vector2(0f, -8f);
-            AddImage(view.cloneRoot, new Color(0.08f, 0.04f, 0.1f, 0.9f));
-            view.cloneFill = NewRect(view.cloneRoot, "Fill", Vector2.zero, Vector2.one);
-            view.cloneFill.offsetMin = new Vector2(2f, 2f);
-            view.cloneFill.offsetMax = new Vector2(-2f, -2f);
-            AddImage(view.cloneFill, new Color(0.6f, 0.35f, 0.85f, 1f));
-            view.cloneRoot.gameObject.SetActive(false);
-
             root.gameObject.SetActive(false);
             return view;
+        }
+
+        /// <summary>261119 - 칸 안쪽: 바탕(다음 칸 색) · 잔상 · 지금 칸 · 분신 덮개(보라).</summary>
+        private void BuildLayers(RectTransform inner)
+        {
+            backImage = AddImage(inner, EmptyBackColor);
+            chip = NewRect(inner, "Chip", Vector2.zero, Vector2.one);
+            AddImage(chip, new Color(1f, 0.85f, 0.6f, 0.9f));
+            fill = NewRect(inner, "Fill", Vector2.zero, Vector2.one);
+            fillImage = AddImage(fill, LayerColor(0));
+            cloneRoot = NewRect(inner, "Clone", Vector2.zero, Vector2.one);
+            AddImage(cloneRoot, new Color(0.10f, 0.05f, 0.14f, 1f));
+            cloneFill = NewRect(cloneRoot, "Fill", Vector2.zero, Vector2.one);
+            AddImage(cloneFill, CloneColor);
+            cloneRoot.gameObject.SetActive(false);
         }
 
         private static BossHealthBarView CreateFromFrame(RectTransform root, Image frameImage, Font font)
@@ -99,12 +163,8 @@ namespace CheonMyeong.Boss
             RectTransform inner = NewRect(root, "Inner", Vector2.zero, Vector2.one);
             Vector4 hole = root.TryGetComponent(out CheonMyeong.UI.SlicedHole marker) ? marker.holePixels : Vector4.zero;
             CheonMyeong.UI.SlicedHole.Fit(frameImage, inner, hole);
-            AddImage(inner, new Color(0.18f, 0.06f, 0.08f, 1f));
             view.frameInner = inner;
-            view.chip = NewRect(inner, "Chip", Vector2.zero, Vector2.one);
-            AddImage(view.chip, new Color(1f, 0.85f, 0.6f, 0.9f));
-            view.fill = NewRect(inner, "Fill", Vector2.zero, Vector2.one);
-            AddImage(view.fill, new Color(0.78f, 0.1f, 0.12f, 1f));
+            view.BuildLayers(inner);
             // 261114 - 덮개(Bar-Sheet_11)는 칸 왼쪽을 막아서 바가 덜 차 보였다 - 켜져 있을 때만 쓴다(씬에선 꺼둠).
             if (overlay != null && overlay.gameObject.activeSelf)
             {
@@ -137,16 +197,6 @@ namespace CheonMyeong.Boss
             ((RectTransform)view.barsText.transform).offsetMin = new Vector2(rightEnd + 8f, -20f);
             ((RectTransform)view.barsText.transform).offsetMax = new Vector2(rightEnd + 80f, 20f);
 
-            view.cloneRoot = NewRect(area, "Clone", new Vector2(0.25f, 0f), new Vector2(0.75f, 0f));
-            view.cloneRoot.offsetMin = new Vector2(0f, -woodAbove - 18f);
-            view.cloneRoot.offsetMax = new Vector2(0f, -woodAbove - 4f);
-            AddImage(view.cloneRoot, new Color(0.08f, 0.04f, 0.1f, 0.9f));
-            view.cloneFill = NewRect(view.cloneRoot, "Fill", Vector2.zero, Vector2.one);
-            view.cloneFill.offsetMin = new Vector2(2f, 2f);
-            view.cloneFill.offsetMax = new Vector2(-2f, -2f);
-            AddImage(view.cloneFill, new Color(0.6f, 0.35f, 0.85f, 1f));
-            view.cloneRoot.gameObject.SetActive(false);
-
             root.gameObject.SetActive(false);
             return view;
         }
@@ -173,6 +223,7 @@ namespace CheonMyeong.Boss
         public void Refresh(string title, float health, float maxHealth, int bars, bool cloneVisible, float cloneRatio)
         {
             bars = Mathf.Max(1, bars);
+            UpdateCoverFade();
             float perBar = maxHealth / bars;
             int barIndex = health <= 0f ? 0 : Mathf.Clamp(Mathf.CeilToInt(health / perBar) - 1, 0, bars - 1);
             float ratio = perBar > 0f ? Mathf.Clamp01((health - barIndex * perBar) / perBar) : 0f;
@@ -202,6 +253,13 @@ namespace CheonMyeong.Boss
 
             fill.anchorMax = new Vector2(shownRatio, 1f);
             chip.anchorMax = new Vector2(chipRatio, 1f);
+            if (shownColorIndex != barIndex && fillImage != null)
+            {
+                // 지금 칸 색 + 그 뒤로 보이는 다음 칸 색(마지막 칸이면 어두운 바탕).
+                shownColorIndex = barIndex;
+                fillImage.color = LayerColor(barIndex);
+                backImage.color = barIndex > 0 ? LayerColor(barIndex - 1) : EmptyBackColor;
+            }
             if (nameText.text != title)
             {
                 nameText.text = title;
@@ -242,6 +300,10 @@ namespace CheonMyeong.Boss
             {
                 Destroy(frameLabels.gameObject);
             }
+            if (group != null)
+            {
+                group.alpha = 1f; // 다음 보스가 같은 틀을 쓸 때 투명한 채로 시작하지 않게
+            }
             gameObject.SetActive(false);
             Destroy(this);
         }
@@ -252,6 +314,7 @@ namespace CheonMyeong.Boss
             {
                 gameObject.SetActive(visible);
                 lastBarIndex = -1;
+                shownColorIndex = -1;
             }
         }
 

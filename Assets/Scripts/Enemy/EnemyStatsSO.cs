@@ -2,6 +2,15 @@ using UnityEngine;
 
 namespace CheonMyeong.Data
 {
+    /// <summary>261119 - 중형 원귀 스킬(기획서 v1.1 8-4 ~ 8-6). 일반 원귀는 None.</summary>
+    public enum EliteSkill : byte
+    {
+        None,
+        Charge,    // 아귀: 허기 돌진
+        Submerge,  // 물귀신: 웅덩이 은신
+        Throw,     // 역귀: 호리병 던지기 · 독
+    }
+
     /// <summary>
     /// 적 스탯 데이터. CharacterStatsSO와 같은 패턴 - 수치는 전부 미정이라
     /// 플레이스홀더 값만 넣어뒀다. 밸런스 확정 전까지 이 값들로 테스트한다.
@@ -45,5 +54,37 @@ namespace CheonMyeong.Data
         [Tooltip("웨이브가 끝날 때 이 원귀가 살아남아 있으면 쌓이는 원한 양. 기획서 5-3: \"남은 원귀 1마리 =\n" +
                  "원한 1\" - 기본 1. 보스처럼 원한 집계에서 빼야 하는 몹은 0.")]
         public float grudgeWeight = 1f;
+
+        [Header("261119 - 중형 원귀 스킬 (기획서 v1.1 · [스탯] 「중형 원귀」 시트, 1칸 = 1유닛)")]
+        public EliteSkill skill = EliteSkill.None;
+        [Tooltip("이 종류가 동시에 살아 있을 수 있는 최대 수(0 = 제한 없음). 물귀신 6(기획서 제안).")]
+        [Min(0)] public int maxAlive;
+
+        [Tooltip("아귀: 이 거리 안에 플레이어가 들어오면 돌진 준비.")]
+        public float chargeDetectRange = 3f;
+        public float chargeDistance = 3f;
+        public float chargeWindup = 0.8f;
+        [Tooltip("돌진에 걸리는 시간(초) - 기획서에 없음(제안).")]
+        public float chargeSeconds = 0.3f;
+        public float chargeDamage = 18f;
+        public float chargeKnockback = 1f;
+        public float chargeWallStun = 1f;
+        public float chargeCooldown = 30f;
+        [Tooltip("등장 후 첫 돌진까지 대기(초). 기획서 제안: 0(바로 가능).")]
+        public float chargeFirstCooldown;
+
+        [Tooltip("물귀신: 플레이어가 이 안에 오면 솟아오른다.")]
+        public float surfaceRange = 2.5f;
+        [Tooltip("물귀신: 플레이어가 이 밖으로 나가면 다시 잠긴다(기획서 제안 4칸).")]
+        public float submergeRange = 4f;
+
+        [Tooltip("역귀: 이 안이면 멈춰서 호리병을 던진다.")]
+        public float throwRange = 6f;
+        public float throwCooldown = 5f;
+        public float throwWindup = 0.8f;
+        [Tooltip("호리병 속도(유닛/초). 기획서 제안 360(새 단위) ÷ 60 = 6.")]
+        public float throwSpeed = 6f;
+        public float poisonDamage = 1f;
+        public int poisonTicks = 5;
     }
 }

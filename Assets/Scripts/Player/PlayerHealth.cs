@@ -197,8 +197,10 @@ namespace CheonMyeong.Player
             if (!isDead.Value)
             {
                 ServerTickRegen();
+                ServerTickPoison();
                 return;
             }
+            poisonTicksLeft = 0;
             if (WaveManager.Instance != null)
             {
                 return;
@@ -300,6 +302,7 @@ namespace CheonMyeong.Player
                 return;
             }
             respawnTimer = 0f;
+            poisonTicksLeft = 0;
             currentHealth.Value = MaxHealth;
             isDead.Value = false;
         }
@@ -475,7 +478,50 @@ namespace CheonMyeong.Player
             return AliveScratchBuffer[Random.Range(0, AliveScratchBuffer.Count)];
         }
 
+        // 261119 - 역귀 독(기획서 v1.1 8-6): 1초마다 poisonDamage씩 남은 틱 수만큼. 다시 맞으면 쌓지 않고 틱 수만 다시 채운다.
+        private int poisonTicksLeft;
+        private float poisonDamage;
+        private float poisonTimer;
+
+        public bool IsPoisoned => poisonTicksLeft > 0;
+
+        /// <summary>261119 - 서버 전용. 독(중첩 없음, 남은 시간만 갱신). 첫 틱은 1초 뒤.</summary>
+        public void ServerApplyPoison(float damagePerTick, int ticks)
+        {
+            if (!IsServer || isDead.Value || damagePerTick <= 0f || ticks <= 0)
+            {
+                return;
+            }
+            if (poisonTicksLeft <= 0)
+            {
+                poisonTimer = 1f;
+            }
+            poisonTicksLeft = ticks;
+            poisonDamage = damagePerTick;
+        }
+
+        private void ServerTickPoison()
+        {
+            if (poisonTicksLeft <= 0 || (PartyProgress.Instance != null && PartyProgress.Instance.IsPaused))
+            {
+                return;
+            }
+            poisonTimer -= Time.deltaTime;
+            if (poisonTimer > 0f)
+            {
+                return;
+            }
+            poisonTimer += 1f;
+            poisonTicksLeft--;
+            ApplyDamage(poisonDamage, false); // 독 틱은 호신부를 쓰지 않는다
+        }
+
         public void TakeDamage(float amount)
+        {
+            ApplyDamage(amount, true);
+        }
+
+        private void ApplyDamage(float amount, bool useFilter)
         {
             // 피해 적용은 서버만 - 적 쪽도 서버에서만 공격 판정을 하게 될 예정이라
             // 보통 서버에서만 호출되지만, 혹시 몰라 한 번 더 막는다.
@@ -492,7 +538,7 @@ namespace CheonMyeong.Player
             }
             // 261114 - 고유 패시브 · 신내림의 받는 피해 증감(서버가 매 프레임 정하는 배율). 호신부 등이 막으면 0.
             amount *= Mathf.Max(0f, DamageTakenScale);
-            if (ServerDamageFilter != null && !ServerDamageFilter(amount))
+            if (useFilter && ServerDamageFilter != null && !ServerDamageFilter(amount))
             {
                 return;
             }

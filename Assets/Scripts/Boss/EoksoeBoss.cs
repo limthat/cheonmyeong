@@ -1751,7 +1751,48 @@ namespace CheonMyeong.Boss
             string title = stats != null ? stats.displayName : "억쇠";
             title += encounter.Value == (byte)BossEncounter.Final ? " · 최종전" : " · 예행연습";
             float cloneRatio = cloneMaxHealth.Value > 0f ? cloneHealth.Value / cloneMaxHealth.Value : 0f;
+            healthBar.SetBossBounds(TryGetBodyBounds(out Bounds body), body);
             healthBar.Refresh(title, health.Value, maxHealth.Value, bars.Value, realmActive.Value, cloneRatio);
+        }
+
+        // 261119 - 체력 바가 보스를 가리는지 볼 때 쓰는 "실제로 그려진 부분" 경계. 스프라이트(Tight 메시)마다 한 번만 계산해 둔다.
+        private static readonly Dictionary<Sprite, Rect> VisibleRectCache = new Dictionary<Sprite, Rect>();
+        private static readonly Sprite[] OneSprite = new Sprite[1];
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetVisibleRectCache()
+        {
+            VisibleRectCache.Clear();
+            OneSprite[0] = null;
+        }
+
+        /// <summary>261119 - 보스 몸(지금 프레임의 그려진 부분)의 월드 경계. 안 보이면 false.</summary>
+        private bool TryGetBodyBounds(out Bounds bounds)
+        {
+            bounds = default;
+            if (bodyRenderer == null || !bodyRenderer.enabled || bodyRenderer.sprite == null)
+            {
+                return false;
+            }
+            Sprite sprite = bodyRenderer.sprite;
+            if (!VisibleRectCache.TryGetValue(sprite, out Rect local))
+            {
+                OneSprite[0] = sprite;
+                local = SpriteVisibleBounds.Of(OneSprite);
+                OneSprite[0] = null;
+                VisibleRectCache[sprite] = local;
+            }
+            if (bodyRenderer.flipX)
+            {
+                local = Rect.MinMaxRect(-local.xMax, local.yMin, -local.xMin, local.yMax);
+            }
+            Transform t = bodyRenderer.transform;
+            Vector3 a = t.TransformPoint(new Vector3(local.xMin, local.yMin, 0f));
+            Vector3 b = t.TransformPoint(new Vector3(local.xMax, local.yMax, 0f));
+            bounds = new Bounds((a + b) * 0.5f, Vector3.zero);
+            bounds.Encapsulate(a);
+            bounds.Encapsulate(b);
+            return true;
         }
 
         private void UpdateCoinViews()

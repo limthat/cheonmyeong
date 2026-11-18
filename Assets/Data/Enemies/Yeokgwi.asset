@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ec8c72a2955cd40bbd510f919a70c8, type: 3}
+  m_Name: Yeokgwi
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Data.EnemyStatsSO
+  enemyId: yeokgwi
+  displayName: "\uC5ED\uADC0"
+  maxHealth: 180
+  moveSpeed: 1.8333334
+  contactDamage: 8
+  contactDamageInterval: 1
+  hitFlashBlinkCount: 2
+  hitFlashBlinkInterval: 0.08
+  deathStaggerDuration: 0.8
+  goldReward: 1
+  goldDropChance: 0.24
+  expReward: 5
+  grudgeWeight: 1
+  skill: 3
+  maxAlive: 0
+  chargeDetectRange: 3
+  chargeDistance: 3
+  chargeWindup: 0.8
+  chargeSeconds: 0.3
+  chargeDamage: 18
+  chargeKnockback: 1
+  chargeWallStun: 1
+  chargeCooldown: 30
+  chargeFirstCooldown: 0
+  surfaceRange: 2.5
+  submergeRange: 4
+  throwRange: 6
+  throwCooldown: 5
+  throwWindup: 0.8
+  throwSpeed: 6
+  poisonDamage: 1
+  poisonTicks: 5

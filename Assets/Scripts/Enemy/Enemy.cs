@@ -68,6 +68,7 @@ namespace CheonMyeong.Enemies
         private static void ResetStatics()
         {
             ActiveEnemies.Clear();
+            AliveByStats.Clear();
             gridBuiltAt = -1f;
         }
 
@@ -132,8 +133,24 @@ namespace CheonMyeong.Enemies
 
         private bool dyingSubscribed;
 
+        // 261119 - 중형 원귀 스킬(없으면 일반 원귀).
+        private EliteEnemy elite;
+
+        // 261119 - 종류별로 지금 스폰돼 있는 수(서버). 동시 최대 수(EnemyStatsSO.maxAlive, 물귀신 6)에 쓴다.
+        private static readonly Dictionary<EnemyStatsSO, int> AliveByStats = new Dictionary<EnemyStatsSO, int>();
+        private bool countedAlive;
+
+        /// <summary>261119 - 서버 전용. 이 종류가 지금 몇 마리 스폰돼 있는지.</summary>
+        public static int ServerAliveCount(EnemyStatsSO statsKey) =>
+            statsKey != null && AliveByStats.TryGetValue(statsKey, out int n) ? n : 0;
+
+        /// <summary>261119 - 물귀신이 웅덩이에 잠겨 있으면 원거리 공격 · 자동 조준 대상이 아니다.</summary>
+        public static bool IsHiddenFromRanged(Collider2D col) =>
+            col != null && col.TryGetComponent(out EliteEnemy e) && e.HiddenFromRanged;
+
         private void Awake()
         {
+            TryGetComponent(out elite);
             rb = GetComponent<Rigidbody2D>();
             rb.gravityScale = 0f;
             rb.freezeRotation = true;
@@ -148,6 +165,11 @@ namespace CheonMyeong.Enemies
         public override void OnNetworkSpawn()
         {
             ActiveEnemies.Add(this);
+            if (IsServer && stats != null)
+            {
+                AliveByStats[stats] = ServerAliveCount(stats) + 1;
+                countedAlive = true;
+            }
             gridBuiltAt = -1f; // 목록이 바뀌었으니 다음 고정 프레임에 격자를 다시 만든다
 
             isDying.OnValueChanged += HandleDyingChanged;
@@ -165,6 +187,11 @@ namespace CheonMyeong.Enemies
         public override void OnNetworkDespawn()
         {
             ActiveEnemies.Remove(this);
+            if (countedAlive && stats != null)
+            {
+                AliveByStats[stats] = Mathf.Max(0, ServerAliveCount(stats) - 1);
+            }
+            countedAlive = false;
             gridBuiltAt = -1f;
             gridIndex = -1;
 
@@ -216,6 +243,10 @@ namespace CheonMyeong.Enemies
             ServerJointUntil = 0f;
             ServerLastHitter = null;
             ServerLastHitTime = -999f;
+            if (elite != null)
+            {
+                elite.ServerReset();
+            }
         }
 
         /// <summary>
@@ -380,6 +411,11 @@ namespace CheonMyeong.Enemies
             Transform nearestPlayer = Time.time < serverTauntUntil && serverTauntTarget != null && serverTauntTarget.gameObject.activeInHierarchy
                 ? serverTauntTarget
                 : PlayerHealth.FindNearestAlivePlayer(rb.position);
+            // 261119 - 중형 원귀 스킬(돌진 · 던지기 중엔 스킬이 이동을 정한다).
+            if (elite != null && elite.ServerFixedStep(nearestPlayer, Time.fixedDeltaTime))
+            {
+                return;
+            }
             if (nearestPlayer == null)
             {
                 // 접속해 있는(또는 살아있는) 플레이어가 없음 - 제자리 대기.
@@ -679,10 +715,18 @@ namespace CheonMyeong.Enemies
             {
                 return;
             }
+            if (elite != null && !elite.CanContact)
+            {
+                return; // 261119 - 물귀신은 웅덩이에서 나와 있을 때만 공격
+            }
 
             float damageMultiplier = WaveManager.Instance != null ? WaveManager.Instance.CurrentDamageMultiplier : 1f;
             damageable.TakeDamage(stats.contactDamage * damageMultiplier);
             contactTimer = stats.contactDamageInterval;
+            if (elite != null)
+            {
+                elite.ServerOnContactHit();
+            }
         }
 
         /// <summary>

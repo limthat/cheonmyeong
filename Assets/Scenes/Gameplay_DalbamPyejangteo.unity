@@ -393,6 +393,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &344842947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 344842949}
+  - component: {fileID: 344842948}
+  m_Layer: 0
+  m_Name: EnemyPool_Mulgwisin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &344842948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344842947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c8fc6c9771b0e745826a05342b8eafe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Enemies.EnemyPool
+  defaultCapacity: 32
+  maxSize: 256
+  enemyPrefab: {fileID: 7517379496250255438, guid: 128f9ff7dd0002748bd2896715a56848, type: 3}
+--- !u!4 &344842949
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344842947}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &421093252
 GameObject:
   m_ObjectHideFlags: 0
@@ -531,6 +578,9 @@ MonoBehaviour:
   - {fileID: 1224551628}
   - {fileID: 90040792}
   - {fileID: 1827699019}
+  - {fileID: 1018352847}
+  - {fileID: 344842948}
+  - {fileID: 797440363}
   spawnRadius: 10
   spawnScreenMargin: 1
   clusterSpread: 1.5
@@ -7764,6 +7814,53 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &797440362
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 797440364}
+  - component: {fileID: 797440363}
+  m_Layer: 0
+  m_Name: EnemyPool_Yeokgwi
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &797440363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797440362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c8fc6c9771b0e745826a05342b8eafe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Enemies.EnemyPool
+  defaultCapacity: 32
+  maxSize: 256
+  enemyPrefab: {fileID: 7517379496250255438, guid: 0de08b8889ef5b84a97f11b046aaf943, type: 3}
+--- !u!4 &797440364
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797440362}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &919385453
 GameObject:
   m_ObjectHideFlags: 0
@@ -7857,6 +7954,53 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 66540052}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1018352846
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1018352848}
+  - component: {fileID: 1018352847}
+  m_Layer: 0
+  m_Name: EnemyPool_Agwi
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1018352847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1018352846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c8fc6c9771b0e745826a05342b8eafe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Enemies.EnemyPool
+  defaultCapacity: 32
+  maxSize: 256
+  enemyPrefab: {fileID: 7517379496250255438, guid: ac493bb71caf0744196619c1ed5a3397, type: 3}
+--- !u!4 &1018352848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1018352846}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1224551627
 GameObject:
@@ -24246,3 +24390,6 @@ SceneRoots:
   - {fileID: 588273004}
   - {fileID: 652758040}
   - {fileID: 421093253}
+  - {fileID: 1018352848}
+  - {fileID: 344842949}
+  - {fileID: 797440364}

@@ -49,6 +49,23 @@ namespace CheonMyeong.Player
                  "적용한다 - 타이틀 화면은 같은 카메라로 원래 크기 그대로 보인다. 0 이하면 바꾸지 않는다.")]
         [SerializeField] private float gameplayOrthographicSize = 7.8125f;
 
+        [Tooltip("261119 - 따라가는 플레이어가 화면 세로 어디에 오게 할지(0 = 맨 아래, 0.5 = 정중앙). 위쪽 HUD(원한 · 억쇠 체력바)가\n" +
+                 "가리는 만큼 플레이어를 아래(경험치 바 바로 위)에 두어 앞쪽(위)이 더 보이게 한다. 맵 끝에서는 맵 밖이 안 보이게 하는 제한이 우선.")]
+        [Range(0.1f, 0.5f)] [SerializeField] private float playerScreenY = 0.17f;
+
+        /// <summary>261119 - 카메라 중심이 플레이어보다 위로 가는 거리(유닛). 소환 거리 계산에도 쓴다.</summary>
+        public float VerticalOffset
+        {
+            get
+            {
+                if (rigCamera == null && !TryGetComponent(out rigCamera))
+                {
+                    rigCamera = Camera.main;
+                }
+                return rigCamera != null && rigCamera.orthographic ? (0.5f - playerScreenY) * 2f * rigCamera.orthographicSize : 0f;
+            }
+        }
+
         private Camera rigCamera;
         private Transform followTarget;
         private Rigidbody2D followTargetBody;
@@ -149,7 +166,7 @@ namespace CheonMyeong.Player
                 return;
             }
 
-            Vector3 rawTargetPos = new Vector3(followTarget.position.x, followTarget.position.y, fixedZ);
+            Vector3 rawTargetPos = new Vector3(followTarget.position.x, followTarget.position.y + VerticalOffset, fixedZ);
             Vector3 targetPos = rawTargetPos;
             if (followTargetBody != null && lookAheadTime > 0f)
             {

@@ -1,0 +1,1104 @@
+fileFormatVersion: 2
+guid: 577e15dcd5942504fa3c1072af9bb727
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -968658761180114707
+    second: MULGWISIN-Sheet_0
+  - first:
+      213: -9075635139479989646
+    second: MULGWISIN-Sheet_1
+  - first:
+      213: 6216172615323168462
+    second: MULGWISIN-Sheet_2
+  - first:
+      213: -6566332807617248474
+    second: MULGWISIN-Sheet_3
+  - first:
+      213: 6437950820380655212
+    second: MULGWISIN-Sheet_4
+  - first:
+      213: -3175703552411580843
+    second: MULGWISIN-Sheet_5
+  - first:
+      213: 2078318659069315316
+    second: MULGWISIN-Sheet_6
+  - first:
+      213: 7095763084756744433
+    second: MULGWISIN-Sheet_7
+  - first:
+      213: -3669996569326819435
+    second: MULGWISIN-Sheet_8
+  - first:
+      213: -8257821966469539507
+    second: MULGWISIN-Sheet_9
+  - first:
+      213: 484370073625312360
+    second: MULGWISIN-Sheet_10
+  - first:
+      213: 1964332081374369817
+    second: MULGWISIN-Sheet_11
+  - first:
+      213: -3422111680888960683
+    second: MULGWISIN-Sheet_12
+  - first:
+      213: 5920712948029896382
+    second: MULGWISIN-Sheet_13
+  - first:
+      213: -4611238003865150862
+    second: MULGWISIN-Sheet_14
+  - first:
+      213: 2260607528602866007
+    second: MULGWISIN-Sheet_15
+  - first:
+      213: -218058301976941427
+    second: MULGWISIN-Sheet_16
+  - first:
+      213: -4871395121384858433
+    second: MULGWISIN-Sheet_17
+  - first:
+      213: -6403328058880382156
+    second: MULGWISIN-Sheet_18
+  - first:
+      213: -2655902243141573553
+    second: MULGWISIN-Sheet_19
+  - first:
+      213: -5926987977498036149
+    second: MULGWISIN-Sheet_20
+  - first:
+      213: -186921280402576344
+    second: MULGWISIN-Sheet_21
+  - first:
+      213: 2188611973991313903
+    second: MULGWISIN-Sheet_22
+  - first:
+      213: -9089637746773754980
+    second: MULGWISIN-Sheet_23
+  - first:
+      213: 1705614561529780376
+    second: MULGWISIN-Sheet_24
+  - first:
+      213: -3845054299121786158
+    second: MULGWISIN-Sheet_25
+  - first:
+      213: 525629654184284850
+    second: MULGWISIN-Sheet_26
+  - first:
+      213: -6300405159165196452
+    second: MULGWISIN-Sheet_27
+  - first:
+      213: 355700395622918532
+    second: MULGWISIN-Sheet_28
+  - first:
+      213: -958941869474417243
+    second: MULGWISIN-Sheet_29
+  - first:
+      213: -6133841049046757034
+    second: MULGWISIN-Sheet_30
+  - first:
+      213: 4445885085074823951
+    second: MULGWISIN-Sheet_31
+  - first:
+      213: -143929151822179263
+    second: MULGWISIN-Sheet_32
+  - first:
+      213: -6244124911252770263
+    second: MULGWISIN-Sheet_33
+  - first:
+      213: -2987599388920740175
+    second: MULGWISIN-Sheet_34
+  - first:
+      213: 3572503110330475915
+    second: MULGWISIN-Sheet_35
+  - first:
+      213: 6063650024726053794
+    second: MULGWISIN-Sheet_36
+  - first:
+      213: -767421566841196205
+    second: MULGWISIN-Sheet_37
+  - first:
+      213: 5103381733728454123
+    second: MULGWISIN-Sheet_38
+  - first:
+      213: 6765185708904483574
+    second: MULGWISIN-Sheet_39
+  - first:
+      213: 414777140860727972
+    second: MULGWISIN-Sheet_40
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e02e5d05b840114a9fb0c391a9b9e65
+      internalID: -968658761180114707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0df26eb993125446a069770da457c05
+      internalID: -9075635139479989646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2af248f56a238814ebff4f2671af28e8
+      internalID: 6216172615323168462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcbdd2031ce416f45be1ff82f47e1ae9
+      internalID: -6566332807617248474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 998f48e28a5b6114cbf77dfa6475ebed
+      internalID: 6437950820380655212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e80df096b7c37442b750837873cb782
+      internalID: -3175703552411580843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 879d48bca5157ec468084537068421af
+      internalID: 2078318659069315316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea7a20f87eca4a54294f6574e68300e3
+      internalID: 7095763084756744433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e12c6fbfda186e4fbc37296fc19d499
+      internalID: -3669996569326819435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8db909afa3ab53649ae95ccb39e4718d
+      internalID: -8257821966469539507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb8d9f5c8f6e9b64a95a5411455e0df5
+      internalID: 484370073625312360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71e575b4a64fb4a42ab3b58ebef67197
+      internalID: 1964332081374369817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39c42406db0e3f3458229edb169daf58
+      internalID: -3422111680888960683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d43ab71cda8b5554ca27aa195189a097
+      internalID: 5920712948029896382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38fcc4e95543eba49a8966257b6845eb
+      internalID: -4611238003865150862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22eecd5708e075e4da7a78296bc9a5a7
+      internalID: 2260607528602866007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa07465f53cbd2a40a5baedc8de40287
+      internalID: -218058301976941427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f87ddd90e6dda40498f141b34aeffab9
+      internalID: -4871395121384858433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bb2fee7b4e595a489bee2e8995ae4cf
+      internalID: -6403328058880382156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51416547bfca5fd4ab73778ab2318909
+      internalID: -2655902243141573553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ead4efe0a1f1c244da106ca2c994a5a3
+      internalID: -5926987977498036149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4265229cc3751e84db67a1c325741759
+      internalID: -186921280402576344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57a84d04f5a275243a74df6c5cd70fac
+      internalID: 2188611973991313903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3a5af5f6b2eda14c97b42133bdea913
+      internalID: -9089637746773754980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a4a8724ac56a5141b6e0b5eb1e178e7
+      internalID: 1705614561529780376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0818b1fb433ae2e44b966b82b76cdffe
+      internalID: -3845054299121786158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2abe58a133bc5354abcf3a9f76b1697f
+      internalID: 525629654184284850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b8cff79d26252b429636b779943f3b1
+      internalID: -6300405159165196452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8506200a5f6614748a546539571d01f8
+      internalID: 355700395622918532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ade0109178268c4b9c1a528192e6486
+      internalID: -958941869474417243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_30
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d350b4c440242247bad4a63cc497ecd
+      internalID: -6133841049046757034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_31
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d756b3dff3535284fb4769c28873d060
+      internalID: 4445885085074823951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_32
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0adea8eb842d924e90e739c2f2aa3ab
+      internalID: -143929151822179263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_33
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33d14d521b32d254b916b9f2d9c2038a
+      internalID: -6244124911252770263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_34
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2beb95b9178da04d8310f21c0b91db6
+      internalID: -2987599388920740175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_35
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1c469d51176b444c9b180235fc74122
+      internalID: 3572503110330475915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MULGWISIN-Sheet_36
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8df51df1fca15754c9043a6a9e171fa4
+      internalID: 6063650024726053794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: aca7dbd4f551e7f49ba87368de81c5b3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      MULGWISIN-Sheet_0: -968658761180114707
+      MULGWISIN-Sheet_1: -9075635139479989646
+      MULGWISIN-Sheet_10: 484370073625312360
+      MULGWISIN-Sheet_11: 1964332081374369817
+      MULGWISIN-Sheet_12: -3422111680888960683
+      MULGWISIN-Sheet_13: 5920712948029896382
+      MULGWISIN-Sheet_14: -4611238003865150862
+      MULGWISIN-Sheet_15: 2260607528602866007
+      MULGWISIN-Sheet_16: -218058301976941427
+      MULGWISIN-Sheet_17: -4871395121384858433
+      MULGWISIN-Sheet_18: -6403328058880382156
+      MULGWISIN-Sheet_19: -2655902243141573553
+      MULGWISIN-Sheet_2: 6216172615323168462
+      MULGWISIN-Sheet_20: -5926987977498036149
+      MULGWISIN-Sheet_21: -186921280402576344
+      MULGWISIN-Sheet_22: 2188611973991313903
+      MULGWISIN-Sheet_23: -9089637746773754980
+      MULGWISIN-Sheet_24: 1705614561529780376
+      MULGWISIN-Sheet_25: -3845054299121786158
+      MULGWISIN-Sheet_26: 525629654184284850
+      MULGWISIN-Sheet_27: -6300405159165196452
+      MULGWISIN-Sheet_28: 355700395622918532
+      MULGWISIN-Sheet_29: -958941869474417243
+      MULGWISIN-Sheet_3: -6566332807617248474
+      MULGWISIN-Sheet_30: -6133841049046757034
+      MULGWISIN-Sheet_31: 4445885085074823951
+      MULGWISIN-Sheet_32: -143929151822179263
+      MULGWISIN-Sheet_33: -6244124911252770263
+      MULGWISIN-Sheet_34: -2987599388920740175
+      MULGWISIN-Sheet_35: 3572503110330475915
+      MULGWISIN-Sheet_36: 6063650024726053794
+      MULGWISIN-Sheet_4: 6437950820380655212
+      MULGWISIN-Sheet_5: -3175703552411580843
+      MULGWISIN-Sheet_6: 2078318659069315316
+      MULGWISIN-Sheet_7: 7095763084756744433
+      MULGWISIN-Sheet_8: -3669996569326819435
+      MULGWISIN-Sheet_9: -8257821966469539507
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
