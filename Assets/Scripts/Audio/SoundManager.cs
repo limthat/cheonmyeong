@@ -234,7 +234,7 @@ namespace CheonMyeong.Audio
                 voice.BaseVolume = cue.volume * (1f - Random.value * cue.volumeJitter) * distanceGain;
                 voice.StartedAt = now;
                 voice.Generation++;
-                float delay = r * cue.repeatInterval;
+                float delay = cue.startDelay + r * cue.repeatInterval;
                 voice.BusyUntil = now + delay + 0.1f;
                 src.volume = voice.BaseVolume * BusVolume(cue.bus) * (fromAlly ? allyScale : 1f);
                 // SetScheduledEndTime(길이 자르기)은 예약 재생(PlayScheduled)에만 걸리므로 첫 소리도 지금 시각으로 예약한다.

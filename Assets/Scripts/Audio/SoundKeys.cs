@@ -32,6 +32,8 @@ namespace CheonMyeong.Audio
         public const string CardReroll = "grow.card_reroll";
         public const string PickupSoul = "grow.pickup_soul";
         public const string PickupCoin = "grow.pickup_coin";
+        public const string PickupSoulMid = "grow.pickup_soul_mid";
+        public const string PickupSoulBig = "grow.pickup_soul_big";
 
         // 전투
         public const string Hit = "combat.hit";
@@ -53,9 +55,15 @@ namespace CheonMyeong.Audio
         public const string BossMental = "boss.mental";
         public const string BossGrab = "boss.grab";
         public const string BossDie = "boss.die";
+        public const string BossSwing = "boss.swing";
+
+        // 결과(사운드 기획서: 봉인 성공 = SFX_Bell_Rise, 실패 = SFX_Grudge)
+        public const string ResultWin = "result.win";
+        public const string ResultLose = "result.lose";
 
         // UI
         public const string UiClick = "ui.click";
+        public const string UiHover = "ui.hover";
         public const string UiBack = "ui.back";
         public const string UiOpen = "ui.open";
         public const string UiError = "ui.error";
@@ -93,10 +101,11 @@ namespace CheonMyeong.Audio
         {
             BgmTitle, BgmLobby, BgmWaveEarly, BgmWaveLate, BgmBoss, BgmFinal, BgmVictory, BgmDefeat,
             WaveStart, WaveGong, FinalBattleStart, WaveAbsorb, GrudgeRise,
-            LevelUp, CardShow, CardPick, CardBurn, CardReroll, PickupSoul, PickupCoin,
+            LevelUp, CardShow, CardPick, CardBurn, CardReroll, PickupSoul, PickupSoulMid, PickupSoulBig, PickupCoin,
             Hit, HitCrit, EnemyDie, PlayerHurt, PlayerDown, PlayerRevive,
-            BossAppear, BossDrum, BossWarn, BossWarp, BossDimension, BossSeal, BossSlam, BossSummon, BossMental, BossGrab, BossDie,
-            UiClick, UiBack, UiOpen, UiError, UiNotice, UiGateOpen, OutgameUpgrade,
+            BossAppear, BossDrum, BossWarn, BossWarp, BossDimension, BossSeal, BossSlam, BossSummon, BossMental, BossGrab, BossDie, BossSwing,
+            ResultWin, ResultLose,
+            UiClick, UiHover, UiBack, UiOpen, UiError, UiNotice, UiGateOpen, OutgameUpgrade,
             AttackPrefix + "hayoung", AttackPrefix + "hanjuwon", AttackPrefix + "parkgyuhyeok", AttackPrefix + "leeara",
             AttackPrefix + "choihwanjo", AttackPrefix + "sinjihyeon", AttackPrefix + "imhun", AttackPrefix + "simyeore",
         };

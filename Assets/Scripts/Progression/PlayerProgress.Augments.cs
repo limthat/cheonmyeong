@@ -34,7 +34,6 @@ namespace CheonMyeong.Progression
 
         private static readonly List<AugmentOffer> CandidateBuffer = new List<AugmentOffer>();
         private static readonly List<AugmentOffer> OneTimeBuffer = new List<AugmentOffer>();
-        private static readonly List<AugmentOffer> InfiniteBuffer = new List<AugmentOffer>();
 
         /// <summary>칸 · 무한 스탯이 바뀔 때(모든 화면).</summary>
         public event Action AugmentsChanged;
@@ -142,52 +141,89 @@ namespace CheonMyeong.Progression
                         continue;
                     }
                     float v = entry.ValueAt(slot.Level);
+                    bool max = slot.Level >= catalog.maxLevel;
                     switch (slot.Augment)
                     {
                         case AugmentId.MaxHealth: m.MaxHealthBonus += v / 100f; break;
                         case AugmentId.MoveSpeed: m.MoveSpeedBonus += v / 100f; break;
-                        case AugmentId.Regen: m.RegenPerSecond += v; break;
-                        case AugmentId.Armor: m.Armor += v; break;
+                        case AugmentId.Regen: m.RegenPercent += v / 100f; break;
+                        case AugmentId.Armor: m.ShieldBonus += Mathf.RoundToInt(v); break;
                         case AugmentId.AttackPower: m.AttackBonus += v / 100f; break;
+                        case AugmentId.Lifesteal: m.Lifesteal += v / 100f; break;
                         case AugmentId.AttackSpeed: m.AttackSpeedBonus += v / 100f; break;
                         case AugmentId.MeleeRange: m.MeleeRangeBonus += v; break;
+                        case AugmentId.Area: m.AreaBonus += v / 100f; break;
+                        case AugmentId.ProjectileCount:
+                            m.ExtraProjectiles += Mathf.RoundToInt(v);
+                            // 흩날림: Lv2 · Lv4 공격력 +5%(칼춤과 같은 규칙)
+                            if (slot.Level >= 2) m.AttackBonus += catalog.multiSwingAttackBonusPerStep;
+                            if (slot.Level >= 4) m.AttackBonus += catalog.multiSwingAttackBonusPerStep;
+                            break;
+                        case AugmentId.PickupRange: m.PickupRangeBonus += v / 100f; break;
+                        case AugmentId.Knockback: m.KnockbackBonus += v; break;
+                        case AugmentId.Growth: m.GrowthBonus += v / 100f; break;
+                        case AugmentId.Curse:
+                            m.MaxHealthBonus -= v / 100f;
+                            m.CurseDamageTaken += CurseTable.DamageTaken[Mathf.Clamp(slot.Level - 1, 0, CurseTable.DamageTaken.Length - 1)];
+                            if (CurseTable.TryGet(slot.Level, slot.Variant, out CurseReward r))
+                            {
+                                m.AttackBonus += r.Attack;
+                                m.AttackSpeedBonus += r.AttackSpeed;
+                                m.RegenPercent += r.Regen;
+                                m.Lifesteal += r.Lifesteal;
+                                m.CritChanceBonus += r.Crit;
+                                m.CritDamageBonus += r.CritDamage;
+                                m.CritMultiplierFloor = Mathf.Max(m.CritMultiplierFloor, r.CritFloor);
+                                m.GrowthBonus += r.Growth;
+                                m.GoldGainBonus += r.Gold;
+                                m.PurifyBonus += r.Purify;
+                                m.MeleeRangeBonus += r.MeleeRange;
+                                m.RangedRangeBonus += r.RangedRange;
+                                m.ShieldBonus += r.Shield;
+                                m.CritAlways |= r.CritAlways;
+                                m.ShieldFillToMax |= r.ShieldFill;
+                                if (r.ShieldRecharge > 0f) m.ShieldRechargeSeconds = r.ShieldRecharge;
+                            }
+                            break;
+                        case AugmentId.Reroll:
+                            if (max) m.CardBonus += 1; // 네 번째 산가지
+                            break;
                         case AugmentId.CritChance: m.CritChanceBonus += v / 100f; break;
+                        case AugmentId.CritDamage: m.CritDamageBonus += v / 100f; break;
                         case AugmentId.MultiSwing:
                             m.ExtraSwings += Mathf.RoundToInt(v);
                             if (slot.Level >= 2) m.AttackBonus += catalog.multiSwingAttackBonusPerStep;
                             if (slot.Level >= 4) m.AttackBonus += catalog.multiSwingAttackBonusPerStep;
+                            if (max) m.LastSwingBonus = 0.5f; // 마지막 춤사위
                             break;
+                        case AugmentId.GoldGain: m.GoldGainBonus += v / 100f; break;
+                        case AugmentId.Cleanse: m.PurifyBonus += v / 100f; break;
                         case AugmentId.HayoungWideSlash: m.ArcBonus += v / 100f; break;
                         case AugmentId.ProjectileSpeed: m.ProjectileSpeedBonus += v / 100f; break;
-                        case AugmentId.ProjectileCount: m.ExtraProjectiles += Mathf.RoundToInt(v); break;
                         case AugmentId.HayoungFollowUpSlash: m.FollowUpSlashRatio = v / 100f; break;
-                    }
-                }
-            }
-            if (augmentStacks != null)
-            {
-                for (int i = 0; i < augmentStacks.Count; i++)
-                {
-                    AugmentStack stack = augmentStacks[i];
-                    AugmentEntry entry = catalog.Find(stack.Augment);
-                    if (entry == null)
-                    {
-                        continue;
-                    }
-                    float v = entry.ValueAt(1) * stack.Count / 100f;
-                    switch (stack.Augment)
-                    {
-                        case AugmentId.InfiniteAttack: m.AttackBonus += v; break;
-                        case AugmentId.InfiniteAttackSpeed: m.AttackSpeedBonus += v; break;
-                        case AugmentId.InfiniteCrit: m.CritChanceBonus += v; break;
-                        case AugmentId.InfiniteMaxHealth: m.MaxHealthBonus += v; break;
-                        case AugmentId.InfiniteMoveSpeed: m.MoveSpeedBonus += Mathf.Min(v, catalog.infiniteMoveSpeedCap); break;
                     }
                 }
             }
             modifiers = m;
             augmentVersion++;
             AugmentsChanged?.Invoke();
+        }
+
+        /// <summary>261118 - 이 칸의 저주(원귀와의 거래) 보상 설명(HUD · 카드용). 없으면 빈 문자열.</summary>
+        public string CurseRewardText
+        {
+            get
+            {
+                for (int i = 0; i < SlotCount; i++)
+                {
+                    AugmentSlot slot = augmentSlots[i];
+                    if (slot.Augment == AugmentId.Curse && CurseTable.TryGet(slot.Level, slot.Variant, out CurseReward r))
+                    {
+                        return r.Text;
+                    }
+                }
+                return string.Empty;
+            }
         }
 
         /// <summary>이 칸의 신통력 단계(없으면 0).</summary>
@@ -260,25 +296,14 @@ namespace CheonMyeong.Progression
             {
                 RemoveById(CandidateBuffer, augmentOffers[i].Id);
                 RemoveById(OneTimeBuffer, augmentOffers[i].Id);
-                RemoveById(InfiniteBuffer, augmentOffers[i].Id);
             }
-            AugmentOffer replacement;
-            if (allMaxed)
-            {
-                bool wantInfinite = UnityEngine.Random.value < Catalog.infiniteShareWhenMaxed;
-                if (!TryTakeRandom(wantInfinite ? InfiniteBuffer : OneTimeBuffer, out replacement)
-                    && !TryTakeRandom(wantInfinite ? OneTimeBuffer : InfiniteBuffer, out replacement))
-                {
-                    return false;
-                }
-            }
-            else
+            if (!allMaxed)
             {
                 CandidateBuffer.AddRange(OneTimeBuffer);
-                if (!TryTakeRandom(CandidateBuffer, out replacement))
-                {
-                    return false;
-                }
+            }
+            if (!TryTakeRandom(allMaxed ? OneTimeBuffer : CandidateBuffer, out AugmentOffer replacement))
+            {
+                return false;
             }
             rerollTickets.Value--;
             augmentOffers[index] = replacement;
@@ -356,59 +381,58 @@ namespace CheonMyeong.Progression
             }
 
             float previousMax = playerHealth != null ? playerHealth.MaxHealth : 0f;
-            switch (entry.kind)
+            if (entry.Leveled)
             {
-                case AugmentKind.Common:
-                case AugmentKind.Exclusive:
+                // 기획서: 이미 가진 신통력이면 그 칸이 한 단계 오르고, 새 신통력은 빈 칸에 1단계로(왼쪽부터).
+                int index = -1;
+                for (int i = 0; i < augmentSlots.Count; i++)
                 {
-                    // 기획서: 이미 가진 신통력이면 그 칸이 한 단계 오르고, 새 신통력은 빈 칸에 1단계로(왼쪽부터).
-                    int index = -1;
-                    for (int i = 0; i < augmentSlots.Count; i++)
+                    if (augmentSlots[i].Augment == id)
                     {
-                        if (augmentSlots[i].Augment == id)
-                        {
-                            index = i;
-                            break;
-                        }
+                        index = i;
+                        break;
                     }
-                    if (index >= 0)
-                    {
-                        AugmentSlot slot = augmentSlots[index];
-                        slot.Level = (byte)Mathf.Min(catalog.maxLevel, slot.Level + 1);
-                        augmentSlots[index] = slot;
-                    }
-                    else if (augmentSlots.Count < catalog.maxSlots)
-                    {
-                        augmentSlots.Add(new AugmentSlot { Id = (byte)id, Level = 1 });
-                    }
-                    break;
                 }
-                case AugmentKind.Infinite:
+                AugmentSlot slot;
+                if (index >= 0)
                 {
-                    int index = -1;
-                    for (int i = 0; i < augmentStacks.Count; i++)
-                    {
-                        if (augmentStacks[i].Augment == id)
-                        {
-                            index = i;
-                            break;
-                        }
-                    }
-                    if (index >= 0)
-                    {
-                        AugmentStack stack = augmentStacks[index];
-                        stack.Count++;
-                        augmentStacks[index] = stack;
-                    }
-                    else
-                    {
-                        augmentStacks.Add(new AugmentStack { Id = (byte)id, Count = 1 });
-                    }
-                    break;
+                    slot = augmentSlots[index];
+                    slot.Level = (byte)Mathf.Min(catalog.maxLevel, slot.Level + 1);
                 }
-                case AugmentKind.OneTime:
-                    ServerExecuteOneTime(entry);
-                    break;
+                else if (augmentSlots.Count < catalog.maxSlots)
+                {
+                    slot = new AugmentSlot { Id = (byte)id, Level = 1 };
+                }
+                else
+                {
+                    return;
+                }
+                if (id == AugmentId.Curse)
+                {
+                    // 원귀와의 거래: 단계가 오를 때마다 그 단계 보상 중 1개를 완전 랜덤으로(이전 보상은 사라짐).
+                    CurseReward[] row = CurseTable.Rewards[Mathf.Clamp(slot.Level - 1, 0, CurseTable.Rewards.Length - 1)];
+                    slot.Variant = (byte)UnityEngine.Random.Range(0, row.Length);
+                    if (row[slot.Variant].Rerolls > 0)
+                    {
+                        ServerAddRerollTickets(row[slot.Variant].Rerolls);
+                    }
+                }
+                else if (id == AugmentId.Reroll)
+                {
+                    ServerAddRerollTickets(1); // 산통 흔들기: 누적 +n회 = 고를 때마다 1회
+                }
+                if (index >= 0)
+                {
+                    augmentSlots[index] = slot;
+                }
+                else
+                {
+                    augmentSlots.Add(slot);
+                }
+            }
+            else if (entry.kind == AugmentKind.OneTime)
+            {
+                ServerExecuteOneTime(entry);
             }
 
             RecomputeModifiers();
@@ -418,12 +442,25 @@ namespace CheonMyeong.Progression
             }
         }
 
-        /// <summary>일회용 - 칸을 차지하지 않고 고르는 순간 효과(기획서).</summary>
+        /// <summary>일회용 - 칸을 차지하지 않고 고르는 순간 효과(기획서 v0.9.9 일회용 15종).</summary>
         private void ServerExecuteOneTime(AugmentEntry entry)
         {
             float value = entry.ValueAt(1);
+            TryGetComponent(out CharacterKit kit);
             switch (entry.id)
             {
+                case AugmentId.RiceBall:
+                case AugmentId.Cheongsim:
+                case AugmentId.HerbalTea:
+                    if (playerHealth != null)
+                    {
+                        playerHealth.ServerHealByRatio(value / 100f);
+                    }
+                    if (kit != null)
+                    {
+                        kit.ServerApplyOneTime(entry.id); // 청심환 무적 · 약탕 둔화
+                    }
+                    break;
                 case AugmentId.Prayer:
                     for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
                     {
@@ -434,33 +471,59 @@ namespace CheonMyeong.Progression
                         }
                     }
                     break;
-                case AugmentId.SoulHarvest:
-                    if (playerHealth != null)
-                    {
-                        LootPickup.ServerPullAllExpTo(playerHealth);
-                    }
-                    break;
                 case AugmentId.CoinPouch:
                     AddGold(Mathf.RoundToInt(value));
                     break;
-                case AugmentId.Purify:
-                {
-                    int kills = Enemy.ServerPurifyAround(transform.position, value, gameObject);
-                    for (int i = 0; i < kills; i++)
+                case AugmentId.CoinBundle:
+                    AddGold(Mathf.RoundToInt(value));
+                    if (PartyProgress.Instance != null)
                     {
-                        ServerAddKill();
+                        PartyProgress.Instance.ServerAddGrudge(10);
                     }
                     break;
-                }
+                case AugmentId.SoulHandful:
+                    if (PartyProgress.Instance != null)
+                    {
+                        PartyProgress.Instance.ServerAddExpRatioOfNext(value / 100f);
+                    }
+                    break;
+                case AugmentId.SoulJar:
+                    if (playerHealth != null)
+                    {
+                        playerHealth.ServerLoseCurrentHealthRatio(value / 100f);
+                    }
+                    if (PartyProgress.Instance != null)
+                    {
+                        PartyProgress.Instance.ServerDebugLevelUp(1);
+                    }
+                    break;
+                case AugmentId.HolyWater:
+                    if (PartyProgress.Instance != null)
+                    {
+                        PartyProgress.Instance.ServerReduceGrudge(Mathf.RoundToInt(value));
+                    }
+                    break;
+                case AugmentId.Yut:
+                    ServerAddRerollTickets(Mathf.RoundToInt(value));
+                    break;
+                case AugmentId.HoneyCake:
+                case AugmentId.Talisman:
+                case AugmentId.TalismanBundle:
+                case AugmentId.Makgeolli:
+                case AugmentId.StrawShoes:
+                    if (kit != null)
+                    {
+                        kit.ServerApplyOneTime(entry.id);
+                    }
+                    break;
             }
         }
 
         /// <summary>
-        /// 기획서 카드 규칙:
-        /// - 6칸이 차기 전: 공통 · 전용 · 일회용이 섞여 나온다(가진 신통력은 다음 단계로).
-        /// - 6칸이 차면: 가진 신통력의 다음 단계와 일회용만.
-        /// - 6칸 전부 5단계: 무한 스탯 70% · 일회용 30%.
-        /// 종류 사이 비율은 기획서에 없어서 후보마다 같은 확률로 뽑는다. 한 번에 같은 카드는 두 장 안 나온다.
+        /// 기획서 v0.9.9 카드 규칙:
+        /// - 모든 신통력(공통 · 협동 · 일회용 · 내 캐릭터 전용)을 한 덱에 섞어 같은 확률로 3장(산통 흔들기 5단계면 4장).
+        /// - 이미 5단계 · 무기 종류가 안 맞는 · 조건이 안 맞는 카드는 빠진다.
+        /// - 6칸이 차면 가진 신통력의 다음 단계와 일회용만, 전부 5단계면 일회용만. 한 번에 같은 카드는 두 장 안 나온다.
         /// </summary>
         private void ServerRollOffers()
         {
@@ -468,31 +531,20 @@ namespace CheonMyeong.Progression
             bool allMaxed = ServerBuildCandidates();
 
             augmentOffers.Clear();
-            int cards = Mathf.Max(1, catalog.cardsPerChoice);
-            if (allMaxed)
+            int cards = Mathf.Max(1, catalog.cardsPerChoice + modifiers.CardBonus);
+            if (!allMaxed)
             {
-                for (int c = 0; c < cards; c++)
-                {
-                    bool wantInfinite = UnityEngine.Random.value < catalog.infiniteShareWhenMaxed;
-                    if (!TakeRandomInto(wantInfinite ? InfiniteBuffer : OneTimeBuffer))
-                    {
-                        TakeRandomInto(wantInfinite ? OneTimeBuffer : InfiniteBuffer);
-                    }
-                }
-                return;
+                CandidateBuffer.AddRange(OneTimeBuffer);
             }
-
-            // 칸이 차기 전에도, 찬 뒤에도 일회용은 같이 섞여 나온다.
-            CandidateBuffer.AddRange(OneTimeBuffer);
-            OneTimeBuffer.Clear();
+            List<AugmentOffer> pool = allMaxed ? OneTimeBuffer : CandidateBuffer;
             for (int c = 0; c < cards; c++)
             {
-                TakeRandomInto(CandidateBuffer);
+                TakeRandomInto(pool);
             }
         }
 
         /// <summary>
-        /// 카드 후보를 종류별 버퍼(CandidateBuffer · OneTimeBuffer · InfiniteBuffer)에 채운다. 6칸 전부 5단계면 true.
+        /// 카드 후보를 종류별 버퍼(CandidateBuffer = 칸 차지하는 카드 · OneTimeBuffer = 일회용)에 채운다. 6칸 전부 5단계면 true.
         /// </summary>
         private bool ServerBuildCandidates()
         {
@@ -500,10 +552,13 @@ namespace CheonMyeong.Progression
             CharacterStatsSO stats = playerHealth != null ? playerHealth.Stats : null;
             bool isRanged = stats != null && stats.isRanged;
             string characterId = stats != null ? stats.characterId : null;
+            bool hasTeammate = PlayerCharacter.FindTeammate(gameObject) != null;
+            bool lowHealth = playerHealth != null && playerHealth.MaxHealth > 0f
+                             && playerHealth.CurrentHealth / playerHealth.MaxHealth <= catalog.healCardHealthRatio;
+            int grudge = PartyProgress.Instance != null ? PartyProgress.Instance.Grudge : 0;
 
             CandidateBuffer.Clear();
             OneTimeBuffer.Clear();
-            InfiniteBuffer.Clear();
 
             bool slotsFull = augmentSlots.Count >= catalog.maxSlots;
             bool allMaxed = slotsFull;
@@ -522,39 +577,45 @@ namespace CheonMyeong.Progression
                 {
                     continue;
                 }
-                switch (entry.kind)
+                if (entry.kind == AugmentKind.OneTime)
                 {
-                    case AugmentKind.OneTime:
-                        OneTimeBuffer.Add(new AugmentOffer { Id = (byte)entry.id, Level = 1 });
-                        break;
-                    case AugmentKind.Infinite:
-                        InfiniteBuffer.Add(new AugmentOffer { Id = (byte)entry.id, Level = 1 });
-                        break;
-                    case AugmentKind.Common:
-                    case AugmentKind.Exclusive:
+                    if (IsHealCard(entry.id) && !lowHealth)
                     {
-                        if (!IsEligible(entry, isRanged, characterId))
-                        {
-                            break;
-                        }
-                        int owned = LevelOf(entry.id);
-                        if (owned > 0)
-                        {
-                            if (owned < catalog.maxLevel)
-                            {
-                                CandidateBuffer.Add(new AugmentOffer { Id = (byte)entry.id, Level = (byte)(owned + 1) });
-                            }
-                        }
-                        else if (!slotsFull)
-                        {
-                            CandidateBuffer.Add(new AugmentOffer { Id = (byte)entry.id, Level = 1 });
-                        }
-                        break;
+                        continue; // 회복 카드는 체력 70% 이하일 때만
                     }
+                    if (entry.id == AugmentId.HolyWater && grudge < catalog.holyWaterMinGrudge)
+                    {
+                        continue; // 정화수는 원한 5 이상일 때만
+                    }
+                    OneTimeBuffer.Add(new AugmentOffer { Id = (byte)entry.id, Level = 1 });
+                    continue;
+                }
+                if (!entry.Leveled || !IsEligible(entry, isRanged, characterId))
+                {
+                    continue;
+                }
+                if (entry.kind == AugmentKind.Coop && !hasTeammate)
+                {
+                    continue; // 혼자면 협동 카드는 조건이 안 맞음
+                }
+                int owned = LevelOf(entry.id);
+                if (owned > 0)
+                {
+                    if (owned < catalog.maxLevel)
+                    {
+                        CandidateBuffer.Add(new AugmentOffer { Id = (byte)entry.id, Level = (byte)(owned + 1) });
+                    }
+                }
+                else if (!slotsFull)
+                {
+                    CandidateBuffer.Add(new AugmentOffer { Id = (byte)entry.id, Level = 1 });
                 }
             }
             return allMaxed;
         }
+
+        private static bool IsHealCard(AugmentId id) =>
+            id == AugmentId.RiceBall || id == AugmentId.HerbalTea || id == AugmentId.Prayer || id == AugmentId.HoneyCake || id == AugmentId.Cheongsim;
 
         /// <summary>목록에서 하나를 무작위로 꺼내(목록에서 빠짐) 카드로 넣는다. 비었으면 false.</summary>
         private bool TakeRandomInto(List<AugmentOffer> source)

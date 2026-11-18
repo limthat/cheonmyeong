@@ -163,6 +163,26 @@ namespace CheonMyeong.Progression
             grudge.Value += amount;
         }
 
+        /// <summary>261118 - 서버 전용. 일회용 정화수(원한 -20). 0 아래로는 안 내려간다.</summary>
+        public void ServerReduceGrudge(int amount)
+        {
+            if (!IsServer || amount <= 0)
+            {
+                return;
+            }
+            grudge.Value = Mathf.Max(0, grudge.Value - amount);
+        }
+
+        /// <summary>261118 - 서버 전용. 일회용 영혼 한 줌: 다음 레벨까지 필요한 영혼의 ratio만큼 채운다(공유 경험치).</summary>
+        public void ServerAddExpRatioOfNext(float ratio)
+        {
+            if (!IsServer || ratio <= 0f || IsMaxLevel)
+            {
+                return;
+            }
+            AddExp(Mathf.Max(1, Mathf.RoundToInt(ExpRequiredForNextLevel(level.Value) * ratio)));
+        }
+
         public int GetGrudgeStage(int grudgeValue)
         {
             int stage = 0;

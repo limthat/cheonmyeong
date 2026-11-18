@@ -118,6 +118,7 @@ namespace CheonMyeong.Player
             {
                 health.ServerDamageFilter = ServerShieldFilter;
                 health.ServerDamaged += HandleServerDamaged;
+                health.ServerHealed += HandleServerHealed;
             }
         }
 
@@ -130,6 +131,7 @@ namespace CheonMyeong.Player
             if (health != null)
             {
                 health.ServerDamaged -= HandleServerDamaged;
+                health.ServerHealed -= HandleServerHealed;
                 if (health.ServerDamageFilter == ServerShieldFilter)
                 {
                     health.ServerDamageFilter = null;
@@ -181,6 +183,7 @@ namespace CheonMyeong.Player
                 OwnerInputUpdate();
             }
             UpdateClientFx(Time.deltaTime);
+            UpdateRopeVisual();
             if (!IsServer || !IsSpawned || attack == null || attack.Stats == null)
             {
                 return;
@@ -199,11 +202,17 @@ namespace CheonMyeong.Player
             }
 
             DetectWaveStart();
+            WatchPartyAugments();
             float dt = Paused ? 0f : Time.deltaTime;
             if (dt > 0f && InCombat && Alive)
             {
                 TickShield(dt);
                 TickHero(dt);
+                TickAugments(dt);
+            }
+            else if (dt > 0f)
+            {
+                augClock += dt; // 웨이브 사이에도 일회용 지속 시간은 흐른다(일시정지 중만 멈춤)
             }
 
             self = default;
@@ -213,6 +222,11 @@ namespace CheonMyeong.Player
             {
                 ComputeNodes(ref self, ref aura);
                 ComputeHero(ref self, ref aura, ref active);
+                ComputeAugments(ref self);
+            }
+            else if (ropeShown.Value)
+            {
+                ropeShown.Value = false; // 쓰러지면 금줄도 꺼진다
             }
             AllyAura = aura;
             total = self;
@@ -248,14 +262,17 @@ namespace CheonMyeong.Player
             {
                 OnRunStart();
             }
+            talismanExtra = 0;
             shieldCharges.Value = (byte)ShieldMaxCount();
             shieldTimer = 0f;
             OnWaveStart();
+            AugmentsOnWaveStart();
         }
 
         private void OnRunStart()
         {
             ResetHeroState();
+            ResetAugmentState();
             soulCarry = 0f;
             // 신내림 관문: 전용 신통력 둘 중 하나를 Lv1로 들고 시작(기획서 - 고르는 방식이 없어 무작위).
             if (Has(CharacterCatalogSO.SinnaerimSlot.Gate) && progress != null)
@@ -273,7 +290,7 @@ namespace CheonMyeong.Player
             CharacterStatsSO stats = attack.Stats;
             AugmentModifiers mods = progress != null ? progress.Modifiers : default;
             attack.ExtraAttackSpeed = total.AttackSpeed;
-            attack.RangeBonus = total.Range + stats.attackRange * total.RangeRatio;
+            attack.RangeBonus = total.Range + stats.attackRange * total.RangeRatio + (stats.isRanged ? mods.RangedRangeBonus : 0f);
             attack.AreaBonus = total.Area;
             attack.MeleePierceBonus = total.Pierce;
             if (movement != null)
@@ -300,6 +317,8 @@ namespace CheonMyeong.Player
                 projectiles.ExtraProjectiles = mods.ExtraProjectiles;
                 projectiles.ExtraPierce = total.Pierce;
                 projectiles.KnockbackScale = total.KnockbackScale;
+                projectiles.KnockbackBonus = mods.KnockbackBonus; // 물렀거라
+                projectiles.SizeScale = mods.AreaBonus;           // 너울(원거리 투사체 크기)
                 projectiles.ExtraTargets = HeroExtraTargets();
                 projectiles.TargetBias = HeroTargetBias();
                 int returning = heroId == "leeara" ? Lv(AugmentId.AraReturningKnife) : 0;
@@ -386,9 +405,9 @@ namespace CheonMyeong.Player
 
         private int ShieldMaxCount()
         {
-            int fromAugment = 0;
+            int fromAugment = AugmentShieldBonus(); // 261118 - 호신부 신통력 · 저주 보상
             int count = self.Shield + (teammateKit != null ? teammateKit.AllyAura.Shield : 0) + fromAugment + HeroExtraShield();
-            return Mathf.Clamp(count, 0, ShieldMax);
+            return Mathf.Clamp(count, 0, ShieldMax) + talismanExtra; // 부적 한 장: 최대치를 넘긴 몫(이번 웨이브만)
         }
 
         private void TickShield(float dt)
@@ -404,7 +423,7 @@ namespace CheonMyeong.Player
                 return;
             }
             shieldTimer += dt;
-            if (shieldTimer >= ShieldRechargeSeconds)
+            if (shieldTimer >= ShieldRechargeNow())
             {
                 shieldTimer = 0f;
                 shieldCharges.Value++;
@@ -413,8 +432,20 @@ namespace CheonMyeong.Player
 
         private bool ServerShieldFilter(float amount)
         {
-            if (shieldCharges.Value == 0 || amount <= 0f)
+            if (amount <= 0f)
             {
+                return true;
+            }
+            if (shieldCharges.Value == 0)
+            {
+                // 261118 - 등 맡기기 5단계 「액땜」: 내가 쓰러질 공격을 동료가 자기 호신부로 대신 막는다(웨이브당 1회).
+                if (health != null && amount >= health.CurrentHealth && teammateKit != null && teammateKit.CoopOn
+                    && teammateKit.TryAegisForTeammate())
+                {
+                    LastShieldBlockTime = Time.time;
+                    health.ServerInvulnerableUntil = Time.time + ShieldInvulnerableSeconds;
+                    return false;
+                }
                 return true;
             }
             shieldCharges.Value--;
@@ -424,6 +455,7 @@ namespace CheonMyeong.Player
                 health.ServerInvulnerableUntil = Time.time + ShieldInvulnerableSeconds;
             }
             OnShieldBlocked();
+            AugmentsOnShieldBlocked();
             return false;
         }
 
@@ -453,12 +485,14 @@ namespace CheonMyeong.Player
             {
                 hit.Damage *= 1f + total.BossDamage;
             }
+            AugmentsModifyOutgoing(ref hit);
             HeroModifyOutgoing(ref hit);
         }
 
         public void OnHitLanded(in OutgoingHit hit, bool killed)
         {
             HeroOnHitLanded(in hit, killed);
+            AugmentsOnHitLanded(in hit, killed);
         }
 
         private void PopBrand(ref OutgoingHit hit)

@@ -130,10 +130,59 @@ namespace CheonMyeong.UI.Screens
             }
             for (int i = 0; i < cardsContainer.childCount; i++)
             {
-                Transform root = cardsContainer.GetChild(i);
+                BindCard(cardsContainer.GetChild(i));
+            }
+            cardHomePositions = new Vector2[cards.Count];
+            for (int i = 0; i < cards.Count; i++)
+            {
+                cardHomePositions[i] = ((RectTransform)cards[i].Root).anchoredPosition;
+            }
+        }
+
+        private Vector2[] cardHomePositions;
+        private int laidOutCount = -1;
+
+        /// <summary>
+        /// 261118 - 산통 흔들기 5단계 「네 번째 산가지」: 부적이 4장이면 마지막 부적을 복제해 늘리고, 원래 3장 간격 그대로 가운데 맞춰 다시 놓는다.
+        /// </summary>
+        private void EnsureCardLayout(int count)
+        {
+            if (cards.Count == 0 || cardHomePositions == null || cardHomePositions.Length == 0)
+            {
+                return;
+            }
+            while (cards.Count < count)
+            {
+                Transform source = cards[cards.Count - 1].Root;
+                Transform copy = Instantiate(source.gameObject, source.parent, false).transform;
+                copy.name = source.name + "_" + cards.Count;
+                BindCard(copy);
+            }
+            int shown = Mathf.Max(cardHomePositions.Length, count);
+            if (shown == laidOutCount)
+            {
+                return;
+            }
+            laidOutCount = shown;
+            int home = cardHomePositions.Length;
+            float spacing = home > 1 ? (cardHomePositions[home - 1].x - cardHomePositions[0].x) / (home - 1) : 360f;
+            float center = (cardHomePositions[0].x + cardHomePositions[home - 1].x) * 0.5f;
+            float y = cardHomePositions[0].y;
+            for (int i = 0; i < cards.Count; i++)
+            {
+                var rect = (RectTransform)cards[i].Root;
+                rect.anchoredPosition = shown <= home && i < home
+                    ? cardHomePositions[i]
+                    : new Vector2(center + (i - (shown - 1) * 0.5f) * spacing, y);
+            }
+        }
+
+        private void BindCard(Transform root)
+        {
+            {
                 if (!root.TryGetComponent(out Button button) || !root.TryGetComponent(out Image background))
                 {
-                    continue;
+                    return;
                 }
                 var view = new CardView
                 {
@@ -293,6 +342,7 @@ namespace CheonMyeong.UI.Screens
         private void FillCards(PlayerProgress me)
         {
             AugmentCatalogSO catalog = PlayerProgress.Catalog;
+            EnsureCardLayout(me.OfferCount);
             for (int i = 0; i < cards.Count; i++)
             {
                 CardView card = cards[i];
@@ -318,13 +368,15 @@ namespace CheonMyeong.UI.Screens
                 return;
             }
 
+            // 261118 - 기획서 v0.9.9: 머리 칸 색으로 종류 구분(공통 황 · 전용 적 · 일회용 청 · 협동 백). 부적 그림에 머리 칸이 따로 없어서
+            // 이름 앞 꼬리표 색으로 대신한다. 백은 노란 한지 위에서 안 보여서 HUD 협동 칸과 같은 남색.
             string tag;
             switch (entry.kind)
             {
-                case AugmentKind.Exclusive: tag = "[전용]"; break;
-                case AugmentKind.OneTime: tag = "[일회용]"; break;
-                case AugmentKind.Infinite: tag = "[무한]"; break;
-                default: tag = "[공통]"; break;
+                case AugmentKind.Exclusive: tag = "<color=#A8281E>[전용]</color>"; break;
+                case AugmentKind.OneTime: tag = "<color=#1E4E8C>[일회용]</color>"; break;
+                case AugmentKind.Coop: tag = "<color=#2B3A78>[협동]</color>"; break;
+                default: tag = "<color=#9A6A00>[공통]</color>"; break;
             }
             if (card.Icon != null)
             {
@@ -334,7 +386,7 @@ namespace CheonMyeong.UI.Screens
                 card.Icon.gameObject.SetActive(icon != null);
             }
 
-            bool leveled = entry.kind == AugmentKind.Common || entry.kind == AugmentKind.Exclusive;
+            bool leveled = entry.Leveled;
             bool showStars = leveled && card.Stars != null && starFilled != null;
 
             if (card.Stars != null)

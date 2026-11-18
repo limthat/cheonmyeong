@@ -1,3 +1,5 @@
+using CheonMyeong.Player;
+using CheonMyeong.Progression;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -5,25 +7,51 @@ using UnityEngine.UI;
 namespace CheonMyeong.UI.Screens
 {
     /// <summary>
-    /// MAP_STORY(스토리 컷신) 화면 - 상단 일러스트 자리 + 하단 대사창. 와이어프레임엔
-    /// "두 명 모두 눌러야 넘어감" / "Space 길게 눌러 건너뛰기 0/2"가 있지만, 이건 두
-    /// 플레이어의 입력을 서버가 모아서 판정하는 협동 로직이 필요하고 아직 네트워크
-    /// 쪽(RPC 기반 동기화)이 없다 - 그래서 지금은 로컬 전용 "계속하기" 버튼으로
-    /// 임시 대체한다(실제 컷신 콘텐츠/대사 데이터도 아직 없음). 공동 스킵 시스템이
-    /// 생기면 이 버튼 로직만 교체하면 된다.
+    /// MAP_STORY(스토리 컷신) 화면 - 상단 일러스트 자리 + 하단 대사창.
+    /// 261118 - 기획서 v0.9.9 12장 "Space 길게 눌러 건너뛰기 (둘 다 눌러야 넘어감)":
+    /// Space를 HoldSeconds 동안 누르고 있으면(또는 버튼을 누르면) 서버에 알리고, 접속한 사람 전원이 누르고 있으면
+    /// 모두 함께 인게임으로 넘어간다(PartyProgress.Story). 손을 떼면 취소. 네트워크가 없으면 혼자 바로 넘어간다.
+    /// 스토리 보관함에서 다시 보기로 열었을 때는 혼자 보는 것이라 Space(짧게) · 버튼으로 바로 보관함으로 돌아간다.
     /// </summary>
     public class MapStoryScreen : MonoBehaviour
     {
+        private const float HoldSeconds = 1f;
+        private const string ContinueLabel = "건너뛰기 (Space)";
+        private const string WaitingLabel = "기다리는 중…";
+        private const string ReplayLabel = "돌아가기 (Space)";
+
         [SerializeField] private Text speakerNameText;
         [SerializeField] private Text dialogueText;
         [SerializeField] private Text skipHintText;
         [SerializeField] private Button continueButton;
 
+        /// <summary>스토리 보관함이 다시 보기로 열 때 true로 두고 이 화면을 연다.</summary>
+        public static bool ReplayFromStorage { get; set; }
+
+        private Text continueLabel;
+        private float holdTime;
+        private bool keyHolding;
+        private bool buttonHolding;
+        private bool sentHold;
+        private int seenSerial = -1;
+        private int shownHolders = -1;
+        private int shownPlayers = -1;
+        private bool shownWaiting;
+
         private void Awake()
         {
             if (continueButton != null)
             {
-                continueButton.onClick.AddListener(() => UIFlowManager.Instance.ShowScreen(UIFlowManager.InGame));
+                continueLabel = continueButton.GetComponentInChildren<Text>(true);
+                continueButton.onClick.AddListener(HandleContinueClicked);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (continueButton != null)
+            {
+                continueButton.onClick.RemoveListener(HandleContinueClicked);
             }
         }
 
@@ -38,19 +66,135 @@ namespace CheonMyeong.UI.Screens
             {
                 dialogueText.text = "한 맺힌 것들이 이렇게나 많은데… 오늘 밤도 배가 부르겠구나.";
             }
-            if (skipHintText != null)
+            holdTime = 0f;
+            keyHolding = false;
+            buttonHolding = false;
+            sentHold = false;
+            seenSerial = -1;
+            RefreshTexts(true);
+        }
+
+        private void OnDisable()
+        {
+            SendHold(false);
+            ReplayFromStorage = false;
+        }
+
+        private void HandleContinueClicked()
+        {
+            if (ReplayFromStorage)
             {
-                skipHintText.text = "두 명 모두 눌러야 넘어감 · Space 길게 눌러 건너뛰기 0/2 (임시: 아래 버튼으로 대체)";
+                UIFlowManager.Instance.ShowScreen(UIFlowManager.StoryStorage);
+                return;
             }
+            buttonHolding = !buttonHolding; // 버튼은 누를 때마다 건너뛰기 / 취소
         }
 
         private void Update()
         {
-            // 실제 "Space 길게 누르기 + 둘 다 입력" 판정은 네트워크 동기화가 필요해
-            // 아직 없음 - 로컬 Space 단축키만 continueButton과 동일하게 동작시켜둔다.
-            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+            Keyboard keyboard = Keyboard.current;
+
+            if (ReplayFromStorage)
+            {
+                if (keyboard != null && keyboard.spaceKey.wasPressedThisFrame)
+                {
+                    UIFlowManager.Instance.ShowScreen(UIFlowManager.StoryStorage);
+                }
+                return;
+            }
+
+            if (keyboard != null && keyboard.spaceKey.isPressed)
+            {
+                holdTime += Time.unscaledDeltaTime;
+                if (holdTime >= HoldSeconds)
+                {
+                    keyHolding = true;
+                }
+            }
+            else
+            {
+                holdTime = 0f;
+                keyHolding = false;
+            }
+
+            bool wantSkip = keyHolding || buttonHolding;
+            PartyProgress party = PartyProgress.Instance;
+            if (party == null || !party.IsSpawned)
+            {
+                // 네트워크 없이(혼자 · 에디터 테스트) 열렸으면 바로 넘어간다.
+                if (wantSkip)
+                {
+                    UIFlowManager.Instance.ShowScreen(UIFlowManager.InGame);
+                }
+                return;
+            }
+
+            if (seenSerial < 0)
+            {
+                seenSerial = party.StorySkipSerial;
+            }
+            else if (party.StorySkipSerial != seenSerial)
             {
                 UIFlowManager.Instance.ShowScreen(UIFlowManager.InGame);
+                return;
+            }
+
+            SendHold(wantSkip);
+            RefreshTexts(false);
+        }
+
+        private void SendHold(bool holding)
+        {
+            if (holding == sentHold)
+            {
+                return;
+            }
+            sentHold = holding;
+            PartyProgress party = PartyProgress.Instance;
+            if (party != null && party.IsSpawned)
+            {
+                party.SetStorySkipHold(holding);
+            }
+        }
+
+        private void RefreshTexts(bool force)
+        {
+            if (ReplayFromStorage)
+            {
+                if (force)
+                {
+                    if (skipHintText != null)
+                    {
+                        skipHintText.text = "다시 보기 · Space로 돌아가기";
+                    }
+                    if (continueLabel != null)
+                    {
+                        continueLabel.text = ReplayLabel;
+                    }
+                }
+                return;
+            }
+            PartyProgress party = PartyProgress.Instance;
+            int holders = party != null && party.IsSpawned ? party.StorySkipHolders : (sentHold ? 1 : 0);
+            int players = Mathf.Max(1, PlayerHealth.ActivePlayers.Count);
+            if (force || holders != shownHolders || players != shownPlayers)
+            {
+                shownHolders = holders;
+                shownPlayers = players;
+                if (skipHintText != null)
+                {
+                    skipHintText.text = players > 1
+                        ? "Space 길게 눌러 건너뛰기 " + holders + "/" + players + " · 둘 다 눌러야 넘어감"
+                        : "Space 길게 눌러 건너뛰기";
+                }
+            }
+            if (force || sentHold != shownWaiting)
+            {
+                shownWaiting = sentHold;
+                if (continueLabel != null)
+                {
+                    continueLabel.text = sentHold ? WaitingLabel : ContinueLabel;
+                }
             }
         }
     }

@@ -277,6 +277,7 @@ namespace CheonMyeong.Boss
             Instance = this;
             visible.OnValueChanged += HandleVisibleChanged;
             realmActive.OnValueChanged += HandleRealmChanged;
+            animState.OnValueChanged += HandleAnimSound;
             ApplyVisible(visible.Value);
             if (IsServer)
             {
@@ -288,6 +289,7 @@ namespace CheonMyeong.Boss
         {
             visible.OnValueChanged -= HandleVisibleChanged;
             realmActive.OnValueChanged -= HandleRealmChanged;
+            animState.OnValueChanged -= HandleAnimSound;
             SetRealmVisual(false);
             CheonMyeong.Audio.GameAudio.Stop(realmAmbience);
             realmAmbience = default;
@@ -1452,7 +1454,9 @@ namespace CheonMyeong.Boss
             }
             EnsureFxBounds();
             float impact = ImpactScale();
-            CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.BossSlam, origin);
+            // 261117 사운드 기획서 5장: 휘두르기는 SFX_BS_Whoosh, 내리꽂기 · 착지 · 등장은 SFX_BS_Impact.
+            bool swing = kind == (byte)ImpactKind.Swing || kind == (byte)ImpactKind.CloneSwing;
+            CheonMyeong.Audio.GameAudio.PlayAt(swing ? CheonMyeong.Audio.SoundKeys.BossSwing : CheonMyeong.Audio.SoundKeys.BossSlam, origin);
             switch ((ImpactKind)kind)
             {
                 case ImpactKind.Swing:
@@ -1486,6 +1490,15 @@ namespace CheonMyeong.Boss
                     PlayGroundBurst(origin, radius, 10f, -30, Color.white);
                     PlayerCameraRig.Shake(0.25f * impact, 0.5f + 0.2f * impact);
                     break;
+            }
+        }
+
+        /// <summary>261117 - 잡기 동작이 시작될 때 전원에서 잡는 소리(SFX_BS_Grab).</summary>
+        private void HandleAnimSound(byte previous, byte current)
+        {
+            if (current == (byte)BossAnim.Grab && previous != (byte)BossAnim.Grab)
+            {
+                CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.BossGrab, transform.position);
             }
         }
 

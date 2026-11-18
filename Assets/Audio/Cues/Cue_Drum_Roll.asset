@@ -24,7 +24,7 @@ MonoBehaviour:
   priority: 20
   repeatCount: 6
   repeatInterval: 0.14
-  maxDuration: 1.0
+  maxDuration: 0.0
   positional: 0
   hearRange: 16
   stereoSpread: 0.6

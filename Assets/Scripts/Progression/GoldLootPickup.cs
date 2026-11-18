@@ -8,11 +8,16 @@ namespace CheonMyeong.Progression
     /// </summary>
     public class GoldLootPickup : LootPickup
     {
+        protected override string PickupSoundKey(int rewardAmount)
+        {
+            return CheonMyeong.Audio.SoundKeys.PickupCoin;
+        }
+
         protected override void ApplyReward(PlayerProgress progress, int rewardAmount)
         {
             if (progress != null)
             {
-                progress.AddGold(rewardAmount);
+                progress.AddGold(progress.ServerScaleGoldGain(rewardAmount)); // 261118 - 복주머니 · 저주 보상(엽전 획득 %)
             }
         }
 

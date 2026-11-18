@@ -46,6 +46,18 @@ namespace CheonMyeong.Progression
             }
         }
 
+        // 261117 - 영혼 크기별로 같은 방울 소리를 높이만 달리 낸다(작을수록 높게, 사운드 기획서 5장 SFX_Soul).
+        protected override string PickupSoundKey(int rewardAmount)
+        {
+            int big = tierMinAmounts != null && tierMinAmounts.Length > 2 ? tierMinAmounts[2] : 5;
+            int mid = tierMinAmounts != null && tierMinAmounts.Length > 1 ? tierMinAmounts[1] : 2;
+            if (rewardAmount >= big)
+            {
+                return CheonMyeong.Audio.SoundKeys.PickupSoulBig;
+            }
+            return rewardAmount >= mid ? CheonMyeong.Audio.SoundKeys.PickupSoulMid : CheonMyeong.Audio.SoundKeys.PickupSoul;
+        }
+
         protected override void ApplyReward(PlayerProgress progress, int rewardAmount)
         {
             // 261114 - 신내림 "내가 주운 영혼 +5%"(공유 경험치에 더 들어감). 소수점은 캐릭터마다 모아뒀다 정수로.

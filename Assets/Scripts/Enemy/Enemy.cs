@@ -212,6 +212,10 @@ namespace CheonMyeong.Enemies
             ServerVulnerableBonus = 0f;
             ServerVulnerableUntil = 0f;
             ServerBindCount = 0;
+            ServerExposedUntil = 0f;
+            ServerJointUntil = 0f;
+            ServerLastHitter = null;
+            ServerLastHitTime = -999f;
         }
 
         /// <summary>
@@ -417,6 +421,11 @@ namespace CheonMyeong.Enemies
         public float ServerVulnerableBonus { get; private set; }
         public float ServerVulnerableUntil { get; private set; }
         public int ServerBindCount { get; set; }                     // 결박부 5단계(3번 속박 → 기절)
+        // 261118 - 공통 · 협동 신통력 표식(서버 전용).
+        public float ServerExposedUntil { get; set; }                // 매의 눈 5단계 「급살」: 누가 때려도 +10%
+        public float ServerJointUntil { get; set; }                  // 짝패 5단계 「합공」: 받는 피해 +20%
+        public GameObject ServerLastHitter { get; set; }             // 합공 판정용(마지막으로 때린 플레이어)
+        public float ServerLastHitTime { get; set; } = -999f;
         public bool IsServerKnockedBack => serverKnockbackLeft > 0f;
 
         public void ServerBrand(GameObject source, float seconds)

@@ -1276,6 +1276,7 @@ namespace CheonMyeong.Player
 
         public override void OnDestroy()
         {
+            DestroyAugmentFx();
             for (int i = 0; i < fx.Length; i++)
             {
                 if (fx[i].Renderer != null)

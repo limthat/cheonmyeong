@@ -78,6 +78,7 @@ namespace CheonMyeong.Progression
 
         public override void OnNetworkDespawn()
         {
+            PlayPickupSoundIfCollected();
             ActiveLoot.Remove(this);
             harvestTarget = null;
             // 풀링으로 재사용되는 컴포넌트라 해제 안 하면 재스폰마다 콜백이 쌓인다.
@@ -88,6 +89,37 @@ namespace CheonMyeong.Progression
         {
             ApplyVisual(current);
         }
+
+        // 261117 - 줍는 소리. 수거는 서버에서만 일어나서 따로 RPC를 보내지 않고, 사라지는 순간 플레이어 바로 옆이면
+        // 주운 것으로 본다(참가자는 위치 보간이 조금 늦어 여유 거리를 둔다). 웨이브 끝 일괄 흡수 · 판 정리 때는 서버가 끈다.
+        private const float PickupSoundRange = 1.5f;
+        private static bool silentDespawn;
+
+        private void PlayPickupSoundIfCollected()
+        {
+            if (silentDespawn)
+            {
+                return;
+            }
+            PlayerHealth nearest = PlayerHealth.FindNearestAlivePlayerHealth(transform.position);
+            if (nearest == null)
+            {
+                return;
+            }
+            Vector2 position = transform.position;
+            if (((Vector2)nearest.transform.position - position).sqrMagnitude > PickupSoundRange * PickupSoundRange)
+            {
+                return;
+            }
+            string key = PickupSoundKey(visualAmount.Value);
+            if (key != null)
+            {
+                CheonMyeong.Audio.GameAudio.PlayAt(key, position, !nearest.IsOwner);
+            }
+        }
+
+        /// <summary>줍는 소리 이름(종류 · 크기별). null이면 소리 없음.</summary>
+        protected abstract string PickupSoundKey(int rewardAmount);
 
         /// <summary>보상 양에 따라 모양을 바꾸고 싶은 종류(영혼)만 오버라이드한다.</summary>
         protected virtual void ApplyVisual(int rewardAmount)
@@ -114,15 +146,23 @@ namespace CheonMyeong.Progression
             pendingSplitGold = 0;
             AbsorbBuffer.Clear();
             AbsorbBuffer.AddRange(ActiveLoot);
-            for (int i = 0; i < AbsorbBuffer.Count; i++)
+            silentDespawn = true;
+            try
             {
-                LootPickup loot = AbsorbBuffer[i];
-                if (loot == null || !loot.IsSpawned)
+                for (int i = 0; i < AbsorbBuffer.Count; i++)
                 {
-                    continue;
+                    LootPickup loot = AbsorbBuffer[i];
+                    if (loot == null || !loot.IsSpawned)
+                    {
+                        continue;
+                    }
+                    loot.AbsorbAtWaveEnd(loot.amount);
+                    loot.NetworkObject.Despawn();
                 }
-                loot.AbsorbAtWaveEnd(loot.amount);
-                loot.NetworkObject.Despawn();
+            }
+            finally
+            {
+                silentDespawn = false;
             }
             AbsorbBuffer.Clear();
 
@@ -147,13 +187,21 @@ namespace CheonMyeong.Progression
         {
             AbsorbBuffer.Clear();
             AbsorbBuffer.AddRange(ActiveLoot);
-            for (int i = 0; i < AbsorbBuffer.Count; i++)
+            silentDespawn = true;
+            try
             {
-                LootPickup loot = AbsorbBuffer[i];
-                if (loot != null && loot.IsSpawned)
+                for (int i = 0; i < AbsorbBuffer.Count; i++)
                 {
-                    loot.NetworkObject.Despawn();
+                    LootPickup loot = AbsorbBuffer[i];
+                    if (loot != null && loot.IsSpawned)
+                    {
+                        loot.NetworkObject.Despawn();
+                    }
                 }
+            }
+            finally
+            {
+                silentDespawn = false;
             }
             AbsorbBuffer.Clear();
         }

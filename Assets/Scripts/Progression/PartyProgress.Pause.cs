@@ -126,6 +126,7 @@ namespace CheonMyeong.Progression
             {
                 ServerCheckAllPicked();
             }
+            ServerCheckStorySkip(); // 261118 - 동료가 나가면 남은 사람만 눌러도 건너뛴다
         }
 
         private readonly List<ulong> staleViewIds = new List<ulong>(4);

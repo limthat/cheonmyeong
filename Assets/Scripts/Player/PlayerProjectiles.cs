@@ -127,6 +127,8 @@ namespace CheonMyeong.Player
         public int ExtraPierce { get; set; }
         /// <summary>넉백 추가(칸).</summary>
         public float KnockbackBonus { get; set; }
+        /// <summary>261118 - 투사체 크기 배율 추가(너울: 원거리 투사체 크기 +%).</summary>
+        public float SizeScale { get; set; }
         /// <summary>넉백 배율 추가(비율, 심여레 패시브 · 신내림).</summary>
         public float KnockbackScale { get; set; }
         /// <summary>돌아오는 신칼: 0보다 크면 끝까지 간 뒤 돌아오며 이 배율로 한 번 더 때린다.</summary>
@@ -217,8 +219,8 @@ namespace CheonMyeong.Player
                 DamageScale = 1f,
                 Knockback = (stats.knockback + KnockbackBonus) * (1f + KnockbackScale),
                 HomingDegreesPerSecond = stats.homingDegreesPerSecond,
-                Radius = stats.projectileRadius,
-                Scale = stats.projectileScale,
+                Radius = stats.projectileRadius * (1f + SizeScale),
+                Scale = stats.projectileScale * (1f + SizeScale),
                 Spin = stats.projectileSpinDegreesPerSecond,
                 Returns = ReturnDamageScale > 0f,
                 ReturnDamageScale = ReturnDamageScale,

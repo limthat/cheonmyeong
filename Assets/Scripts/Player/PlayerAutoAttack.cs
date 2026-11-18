@@ -152,7 +152,7 @@ namespace CheonMyeong.Player
                     return 0f;
                 }
                 float range = stats.attackRange + (stats.isRanged || stats.IsProjectile ? 0f : Mods.MeleeRangeBonus) + RangeBonus;
-                return range * stats.attackAwarenessRangeMultiplier * (1f + AreaBonus);
+                return range * stats.attackAwarenessRangeMultiplier * (1f + AreaBonus + Mods.AreaBonus) * AreaBurst;
             }
         }
 
@@ -368,6 +368,12 @@ namespace CheonMyeong.Player
             Vector2 origin = transform.position;
             Vector2 aimDir = (Vector2)networkAimPosition.Value - origin;
 
+            // 261118 - 기본 공격 횟수(신명 · 큰 물결 등 "n번째 공격마다").
+            if (kit != null)
+            {
+                kit.ServerOnBasicAttack();
+            }
+
             // 261114 - 캐릭터 고유 공격 바꾸기(하영 검기 · 박규혁 당파 · 신지현 만월 · 심여레 회오리 등).
             if (kit != null && kit.ServerTryOverrideAttack(aimDir))
             {
@@ -407,7 +413,8 @@ namespace CheonMyeong.Player
                 {
                     extraSwingsRemaining--;
                     extraSwingTimer = PlayerProgress.Catalog.multiSwingInterval;
-                    ResolveHit(lockedAimDir, 1f);
+                    // 261118 - 칼춤 5단계 「마지막 춤사위」: 연속 공격의 마지막 휘두르기 피해 +50%.
+                    ResolveHit(lockedAimDir, extraSwingsRemaining == 0 ? 1f + Mods.LastSwingBonus : 1f);
                 }
             }
             if (followUpTimer >= 0f)
@@ -514,6 +521,9 @@ namespace CheonMyeong.Player
         /// <summary>261114 - 근접 공격 범위 배율 추가(유격 "공격 범위 +10%").</summary>
         public float AreaBonus { get; set; }
 
+        /// <summary>261118 - 서버 전용. 이번 공격 범위 배율(너울 5단계 「큰 물결」 5번째 공격마다 2배). 평소 1.</summary>
+        public float AreaBurst { get; set; } = 1f;
+
         /// <summary>261114 - 서버 전용. 근접 판정을 원하는 방향 · 배율로 한 번 더(당파 옆 갈래 · 만월 · 일섬 등).</summary>
         public void ServerResolveMelee(Vector2 aimDir, float damageScale) => ResolveHit(aimDir, damageScale);
 
@@ -585,12 +595,13 @@ namespace CheonMyeong.Player
                 Enemy = enemy,
                 Damage = BaseAttackPower * (1f + mods.AttackBonus) * damageScale,
                 CritChance = Mathf.Clamp01(stats.critChance + mods.CritChanceBonus),
-                CritMultiplier = stats.critMultiplier,
+                // 261118 - 벽력(치명타 피해 +) · 저주 보상(치명 피해 2.0 · 치명 100% 고정)
+                CritMultiplier = Mathf.Max(stats.critMultiplier + mods.CritDamageBonus, mods.CritMultiplierFloor),
                 Knockback = knockback,
                 Direction = direction,
                 Distance = Vector2.Distance(transform.position, col.transform.position),
                 IsProjectile = isProjectile,
-                ForceCrit = ForceNextCrit,
+                ForceCrit = ForceNextCrit || mods.CritAlways,
                 HitIndex = NextHitIndex,
                 Tag = NextHitTag,
             };

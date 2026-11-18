@@ -70,6 +70,7 @@ namespace CheonMyeong.Progression
             runGold.Value = 0;
             runKills.Value = 0;
             rerollTickets.Value = 0;
+            goldCarry = 0f;
             ServerResetAugments();
         }
 
@@ -138,6 +139,22 @@ namespace CheonMyeong.Progression
             {
                 settledRunGold = 0;
             }
+        }
+
+        private float goldCarry;
+
+        /// <summary>261118 - 서버 전용. 주운 엽전에 엽전 획득 %(복주머니 · 저주 보상)를 붙인다. 소수점은 모아뒀다 정수로.</summary>
+        public int ServerScaleGoldGain(int amount)
+        {
+            float bonus = Modifiers.GoldGainBonus;
+            if (amount <= 0 || Mathf.Approximately(bonus, 0f))
+            {
+                return amount;
+            }
+            goldCarry += amount * bonus;
+            int extra = goldCarry >= 0f ? Mathf.FloorToInt(goldCarry) : Mathf.CeilToInt(goldCarry);
+            goldCarry -= extra;
+            return Mathf.Max(0, amount + extra);
         }
 
         /// <summary>서버 전용 - LootPickup(Gold)이 수거될 때 호출한다.</summary>

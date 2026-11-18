@@ -631,10 +631,21 @@ namespace CheonMyeong.Waves
             int absorbedGrudge = Enemy.ServerAbsorbAllIntoGrudge();
             if (PartyProgress.Instance != null)
             {
-                PartyProgress.Instance.ServerAddGrudge(absorbedGrudge);
+                PartyProgress.Instance.ServerAddGrudge(ApplyPurify(absorbedGrudge));
             }
 
             LootPickup.ServerAbsorbAllAtWaveEnd();
+
+            // 261118 - 복주머니 5단계 「덤」: 웨이브를 끝까지 살아남으면 엽전 +5.
+            for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
+            {
+                PlayerHealth player = PlayerHealth.ActivePlayers[i];
+                if (player != null && !player.IsDead && player.TryGetComponent(out PlayerProgress progress)
+                    && progress.LevelOf(AugmentId.GoldGain) >= PlayerProgress.Catalog.maxLevel)
+                {
+                    progress.AddGold(5);
+                }
+            }
 
             if (hasNextWave)
             {
@@ -651,6 +662,29 @@ namespace CheonMyeong.Waves
             }
 
             ServerWaveEnded?.Invoke(currentWave.Value);
+        }
+
+        /// <summary>
+        /// 261118 - 씻김굿(원한 정화 %): 웨이브 끝에 남은 원귀로 쌓이는 원한을 줄인다. 두 사람 값을 더한다(저주 보상 -10%는 늘림).
+        /// 0% 미만 · 90% 초과는 자른다(제안 상한).
+        /// </summary>
+        private static int ApplyPurify(int grudge)
+        {
+            if (grudge <= 0)
+            {
+                return grudge;
+            }
+            float purify = 0f;
+            for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
+            {
+                PlayerHealth player = PlayerHealth.ActivePlayers[i];
+                if (player != null && player.TryGetComponent(out PlayerProgress progress))
+                {
+                    purify += progress.Modifiers.PurifyBonus;
+                }
+            }
+            purify = Mathf.Clamp(purify, -1f, 0.9f);
+            return Mathf.Max(0, Mathf.RoundToInt(grudge * (1f - purify)));
         }
 
         private const int MaxAbsorbOrbs = 48;
@@ -806,9 +840,11 @@ namespace CheonMyeong.Waves
                     break;
                 case PhaseCleared:
                     CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.BossSeal);
+                    CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.ResultWin);
                     CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmVictory);
                     break;
                 case PhaseFailed:
+                    CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.ResultLose);
                     CheonMyeong.Audio.GameAudio.PlayBgm(CheonMyeong.Audio.SoundKeys.BgmDefeat);
                     break;
             }

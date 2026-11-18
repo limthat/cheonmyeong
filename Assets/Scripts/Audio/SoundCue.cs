@@ -45,6 +45,8 @@ namespace CheonMyeong.Audio
         [Header("반복 (한 파일 여러 쓰임 - 사운드 기획서 1장)")]
         [Tooltip("한 번 부를 때 몇 번 울릴지(예: 북 3타 = 3). 1 = 한 번.")]
         [Range(1, 8)] public int repeatCount = 1;
+        [Tooltip("261117 - 부른 뒤 이만큼(초) 있다가 울린다(예: 봉인 비명이 끝날 즈음 성공 방울).")]
+        [Min(0f)] public float startDelay;
         [Tooltip("반복 사이 간격(초).")]
         [Min(0.02f)] public float repeatInterval = 0.3f;
         [Tooltip("이 길이(초)에서 끊는다(0 = 끝까지). 파일 뒤 무음 · 긴 꼬리를 잘라 쓸 때.")]

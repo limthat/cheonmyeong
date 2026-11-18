@@ -26,7 +26,9 @@ namespace CheonMyeong.UI
         private const string StarPrefix = "Star_";
         private const int StarCount = 5;
 
-        private static readonly Color ExclusiveRingColor = new Color(0.55f, 0.75f, 1f, 1f);
+        // 261118 - 기획서 v0.9.9: 칸 테두리 색 = 공통(금색 · 그림 그대로) · 협동(남색) · 전용(캐릭터 색 - 기획서에 캐릭터별 색 표가 없어 부적 머리 칸과 같은 적색).
+        private static readonly Color ExclusiveRingColor = new Color(0.86f, 0.33f, 0.27f, 1f);
+        private static readonly Color CoopRingColor = new Color(0.36f, 0.45f, 0.86f, 1f);
 
         private PlayerProgress owner;
         private Text[] dotTexts;
@@ -195,9 +197,12 @@ namespace CheonMyeong.UI
                     icons[i].sprite = icon;
                     icons[i].enabled = icon != null;
                 }
-                if (rings[i] != null && !useStars)
+                if (rings[i] != null)
                 {
-                    rings[i].color = entry != null && entry.kind == AugmentKind.Exclusive ? ExclusiveRingColor : ringDefaultColors[i];
+                    rings[i].color = entry == null ? ringDefaultColors[i]
+                        : entry.kind == AugmentKind.Exclusive ? ExclusiveRingColor
+                        : entry.kind == AugmentKind.Coop ? CoopRingColor
+                        : ringDefaultColors[i];
                 }
             }
         }

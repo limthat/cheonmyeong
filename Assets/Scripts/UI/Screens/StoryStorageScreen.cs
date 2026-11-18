@@ -45,7 +45,9 @@ namespace CheonMyeong.UI.Screens
                 return;
             }
 
-            Debug.Log("[CheonMyeong] 제1화 · 억쇠 컷신 다시보기 - 뷰어는 아직 미구현.");
+            // 261118 - 기획서 12장 "본 컷신 다시 보기": 스토리 컷신 화면을 다시 보기 모드로 연다(Space · 버튼으로 보관함 복귀).
+            MapStoryScreen.ReplayFromStorage = true;
+            UIFlowManager.Instance.ShowScreen(UIFlowManager.MapStory);
         }
     }
 }

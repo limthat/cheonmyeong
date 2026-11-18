@@ -129,7 +129,21 @@ namespace CheonMyeong.Player
 
         /// <summary>드랍 아이템(골드/경험치)이 자동으로 끌려오기 시작하는 반경(유닛) -
         /// LootPickup.cs가 서버에서 이 값으로 자석 판정을 한다(261013 추가).</summary>
-        public float MagnetRadius => stats != null ? stats.magnetRadius : 0f;
+        /// 261118 - 넋 부르기(획득 범위 %): 기본 자석이 0이라 % 기준이 없어서 AugmentCatalogSO.pickupRangeBase(칸)에 곱한다.
+        public float MagnetRadius
+        {
+            get
+            {
+                float baseRadius = stats != null ? stats.magnetRadius : 0f;
+                float bonus = progress != null ? progress.Modifiers.PickupRangeBonus : 0f;
+                if (bonus <= 0f)
+                {
+                    return baseRadius;
+                }
+                float reference = baseRadius > 0f ? baseRadius : PlayerProgress.Catalog.pickupRangeBase;
+                return baseRadius + reference * bonus;
+            }
+        }
 
         public override void OnNetworkSpawn()
         {
@@ -225,7 +239,8 @@ namespace CheonMyeong.Player
 
         private void ServerTickRegen()
         {
-            float perSecond = (progress != null ? progress.Modifiers.RegenPerSecond : 0f) + MaxHealth * ExtraRegenPercent;
+            // 261118 - 숨 고르기도 최대 체력 %/초(기획서 v0.9.9). 5단계 깊은 숨 · 꿀떡은 CharacterKit이 ExtraRegenPercent로 더한다.
+            float perSecond = MaxHealth * ((progress != null ? progress.Modifiers.RegenPercent : 0f) + ExtraRegenPercent);
             perSecond *= HealingScale;
             if (perSecond <= 0f || (PartyProgress.Instance != null && PartyProgress.Instance.IsPaused))
             {
@@ -241,7 +256,9 @@ namespace CheonMyeong.Player
             float max = MaxHealth;
             if (currentHealth.Value < max)
             {
+                float before = currentHealth.Value;
                 currentHealth.Value = Mathf.Min(max, currentHealth.Value + regenBuffer);
+                RaiseHealed(currentHealth.Value - before);
             }
             regenBuffer = 0f;
         }
@@ -296,7 +313,9 @@ namespace CheonMyeong.Player
             {
                 return;
             }
+            float before = currentHealth.Value;
             currentHealth.Value = Mathf.Min(MaxHealth, currentHealth.Value + MaxHealth * ratio * HealingScale);
+            RaiseHealed(currentHealth.Value - before);
         }
 
         /// <summary>261114 - 서버 전용. 고정량 회복(씻김 · 넋 흡수 등).</summary>
@@ -306,7 +325,44 @@ namespace CheonMyeong.Player
             {
                 return;
             }
+            float before = currentHealth.Value;
             currentHealth.Value = Mathf.Min(MaxHealth, currentHealth.Value + amount * HealingScale);
+            RaiseHealed(currentHealth.Value - before);
+        }
+
+        /// <summary>261118 - 서버 전용. 실제로 회복된 양(한솥밥이 동료에게 나눈다). 나눠 받은 회복은 다시 나누지 않는다.</summary>
+        public event System.Action<float> ServerHealed;
+
+        private bool sharingHeal;
+
+        /// <summary>261118 - 서버 전용. 한솥밥으로 받은 회복(ServerHealed를 다시 부르지 않음).</summary>
+        public void ServerHealShared(float amount)
+        {
+            if (!IsServer || isDead.Value || amount <= 0f)
+            {
+                return;
+            }
+            sharingHeal = true;
+            ServerHealAmount(amount);
+            sharingHeal = false;
+        }
+
+        private void RaiseHealed(float healed)
+        {
+            if (healed > 0f && !sharingHeal)
+            {
+                ServerHealed?.Invoke(healed);
+            }
+        }
+
+        /// <summary>261118 - 서버 전용. 현재 체력의 ratio만큼 잃는다(영혼 단지 대가 - 쓰러지지는 않는다).</summary>
+        public void ServerLoseCurrentHealthRatio(float ratio)
+        {
+            if (!IsServer || isDead.Value || ratio <= 0f)
+            {
+                return;
+            }
+            currentHealth.Value = Mathf.Max(1f, currentHealth.Value * (1f - Mathf.Clamp01(ratio)));
         }
 
         public bool IsDeadServerSafe => isDead.Value;
@@ -428,12 +484,7 @@ namespace CheonMyeong.Player
                 return;
             }
 
-            // 261104 - 신통력 '방어력': 받는 피해에서 고정 수치만큼 뺀다(최소 1).
-            float armor = progress != null ? progress.Modifiers.Armor : 0f;
-            if (armor > 0f && amount > 0f)
-            {
-                amount = Mathf.Max(Mathf.Min(1f, amount), amount - armor);
-            }
+            // 261118 - 옛 '방어'(고정 수치 감소)는 기획서 v0.9.6에서 호신부(횟수제, CharacterKit)로 바뀌어 삭제.
 
             if (Time.time < ServerInvulnerableUntil)
             {
