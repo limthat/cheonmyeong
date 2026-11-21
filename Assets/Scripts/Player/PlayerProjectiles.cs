@@ -377,6 +377,11 @@ namespace CheonMyeong.Player
                     EndShot(i);
                     continue;
                 }
+                if (CheonMyeong.Maps.MapObstacles.BlocksProjectile(s.Position))
+                {
+                    EndShot(i); // 261121 - 딱딱한 물체에 막힘(물 · 구덩이는 지나감)
+                    continue;
+                }
                 if (!s.Returning && s.RangeLeft <= 0f)
                 {
                     if (s.P.Returns)

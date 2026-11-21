@@ -61,6 +61,12 @@ namespace CheonMyeong.Enemies
             {
                 Physics2D.IgnoreLayerCollision(enemyLayer, mapLayer, true);
             }
+            // 261121 - 160 맵의 딱딱한 물체(MapSolid)도 같은 이유로 판정을 끈다. 원귀는 MapFlowField(길찾기 + Steer)로 돌아간다.
+            int solidLayer = LayerMask.NameToLayer(CheonMyeong.Maps.MapObstacles.SolidLayerName);
+            if (solidLayer != -1)
+            {
+                Physics2D.IgnoreLayerCollision(enemyLayer, solidLayer, true);
+            }
         }
 
         /// <summary>

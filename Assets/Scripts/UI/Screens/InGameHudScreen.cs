@@ -87,6 +87,8 @@ namespace CheonMyeong.UI.Screens
             public float MaxHealth = float.MinValue;
             public bool PassiveOn;
             public int Shields;
+            public int ShieldCapacity = -1;
+            public int PipCharges = -1;
         }
 
         private void Awake()
@@ -114,6 +116,7 @@ namespace CheonMyeong.UI.Screens
                     }
                 }
             }
+            BarsAwake(); // 261121 - 기획서 v1.2 바 색 규칙(JuiceAwake가 채움 색을 기억하기 전에)
             JuiceAwake();
         }
 
@@ -143,7 +146,7 @@ namespace CheonMyeong.UI.Screens
             {
                 // SetWaveStatus와 같은 포맷("WAVE 현재/전체 mm:ss") - 아직 웨이브 매니저가
                 // 없으니 0/0 00:00으로 시작.
-                waveTimerText.text = "WAVE 0/0 00:00";
+                waveTimerText.text = "웨이브 0/0 00:00";
             }
             if (levelText != null)
             {
@@ -265,6 +268,8 @@ namespace CheonMyeong.UI.Screens
         {
             UpdateHealthSlot(p1HealthText, p1HealthFillImage, 0, p1Cache);
             UpdateHealthSlot(p2HealthText, p2HealthFillImage, 1, p2Cache);
+            UpdateShieldPips(0, p1Cache);
+            UpdateShieldPips(1, p2Cache);
             JuiceUpdate();
         }
 
@@ -301,13 +306,13 @@ namespace CheonMyeong.UI.Screens
                 int next = currentWave + 1;
                 waveTimerText.text = totalWaves > 0 && next > totalWaves
                     ? $"최종전까지 {minutes:00}:{seconds:00}"
-                    : $"다음 WAVE {next}/{totalWaves}까지 {minutes:00}:{seconds:00}";
+                    : $"다음 웨이브 {next}/{totalWaves}까지 {minutes:00}:{seconds:00}";
                 return;
             }
             // 261101 - 마지막 웨이브 뒤 억쇠 최종전(WaveManager가 currentWave = totalWaves + 1로 보낸다).
             waveTimerText.text = totalWaves > 0 && currentWave > totalWaves
                 ? $"최종전 {minutes:00}:{seconds:00}"
-                : $"WAVE {currentWave}/{totalWaves} {minutes:00}:{seconds:00}";
+                : $"웨이브 {currentWave}/{totalWaves} {minutes:00}:{seconds:00}"; // 261121 - 기획서 v1.2: 영어 임시 글자 → 한글
         }
 
         /// <summary>경험치/레벨 시스템이 생기면 호출할 자리.</summary>
@@ -428,8 +433,7 @@ namespace CheonMyeong.UI.Screens
             slot.text = isDead
                 ? $"P{playerIndex + 1} 쓰러짐 · 다음 웨이브에 부활"
                 : $"P{playerIndex + 1} 체력 {health:0}/{maxHealth:0}"
-                  + (shields > 0 ? $" · 호신부 {shields}" : string.Empty)
-                  + (passiveOn ? $" · [{kit.PassiveName}]" : string.Empty);
+                  + (passiveOn ? $" · [{kit.PassiveName}]" : string.Empty); // 261121 - 호신부는 글자 대신 바 위 네모 칸(InGameHudScreen.Bars)
 
             if (fillImage != null)
             {

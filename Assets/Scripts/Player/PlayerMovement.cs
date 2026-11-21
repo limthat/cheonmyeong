@@ -134,6 +134,25 @@ namespace CheonMyeong.Player
             serverBossSlow = Mathf.Clamp(serverBossSlow + Mathf.Max(0f, amount), 0f, Mathf.Clamp01(cap));
         }
 
+        // 261121 - 잠깐 걸리는 감속(어린 억쇠 빗자루 비행 먼지 줄 -20%). 매 스텝 다시 걸어 주는 동안만 유지된다.
+        private float serverTimedSlow;
+        private float serverTimedSlowUntil;
+
+        /// <summary>261121 - 서버 전용. seconds 동안 이동 속도 -ratio(겹치면 큰 쪽). 금 나와라 뚝딱 감속과는 따로 곱해진다.</summary>
+        public void ServerSlowFor(float ratio, float seconds)
+        {
+            if (!IsServer || ratio <= 0f || seconds <= 0f)
+            {
+                return;
+            }
+            if (Time.time >= serverTimedSlowUntil)
+            {
+                serverTimedSlow = 0f;
+            }
+            serverTimedSlow = Mathf.Max(serverTimedSlow, Mathf.Clamp01(ratio));
+            serverTimedSlowUntil = Mathf.Max(serverTimedSlowUntil, Time.time + seconds);
+        }
+
         /// <summary>서버 전용 - 보스전이 끝나면 감속 · 제압 · 잡힘을 모두 푼다.</summary>
         public void ServerClearBossSlow()
         {
@@ -142,6 +161,8 @@ namespace CheonMyeong.Player
                 return;
             }
             serverBossSlow = 0f;
+            serverTimedSlow = 0f;
+            serverTimedSlowUntil = 0f;
             serverHeld = false;
             serverSuppressUntil = 0f;
             networkSuppressed.Value = false;
@@ -246,7 +267,8 @@ namespace CheonMyeong.Player
 
             // 261104 - 신통력 이동 속도(기준값 대비 %, 무한 이동 속도는 최대 20%).
             float speedBonus = progress != null ? progress.Modifiers.MoveSpeedBonus : 0f;
-            rb.linearVelocity = move * (stats.moveSpeed * (1f + speedBonus + ExtraMoveSpeed) * (1f - serverBossSlow));
+            float timedSlow = Time.time < serverTimedSlowUntil ? serverTimedSlow : 0f;
+            rb.linearVelocity = move * (stats.moveSpeed * (1f + speedBonus + ExtraMoveSpeed) * (1f - serverBossSlow) * (1f - timedSlow));
         }
     }
 }

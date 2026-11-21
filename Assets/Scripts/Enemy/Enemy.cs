@@ -107,6 +107,9 @@ namespace CheonMyeong.Enemies
         [Tooltip("속도가 바뀔 수 있는 최대 가속도(유닛/초²). 클수록 반응이 빠르고, 작을수록 부드럽다.")]
         [SerializeField] private float steeringAcceleration = 20f;
 
+        private const float PitBodyRadius = 0.25f;
+        private const float FlowDirectChaseDistance = 1.5f;
+
         private Rigidbody2D rb;
         private float currentHealth;
         private float contactTimer;
@@ -243,10 +246,56 @@ namespace CheonMyeong.Enemies
             ServerJointUntil = 0f;
             ServerLastHitter = null;
             ServerLastHitTime = -999f;
+            ServerSummonedByBoss = false;
             if (elite != null)
             {
                 elite.ServerReset();
             }
+        }
+
+        /// <summary>
+        /// 261121 - 억쇠 '원귀 부르기'로 나온 원귀(서버). 영혼 · 엽전을 떨어뜨리지 않고, 보스전이 끝나면 같이 사라진다(기획서 v1.1).
+        /// 풀에서 다시 나올 때 ServerInitialize가 false로 되돌린다.
+        /// </summary>
+        public bool ServerSummonedByBoss { get; set; }
+
+        /// <summary>261121 - 서버 전용. 보스가 불러낸 원귀를 결과 처리(원한 · 드랍) 없이 전부 치운다.</summary>
+        public static void ServerDespawnSummoned()
+        {
+            AbsorbBuffer.Clear();
+            AbsorbBuffer.AddRange(ActiveEnemies);
+            for (int i = 0; i < AbsorbBuffer.Count; i++)
+            {
+                Enemy enemy = AbsorbBuffer[i];
+                if (enemy != null && enemy.IsServer && enemy.IsSpawned && enemy.ServerSummonedByBoss)
+                {
+                    enemy.NetworkObject.Despawn();
+                }
+            }
+            AbsorbBuffer.Clear();
+        }
+
+        /// <summary>
+        /// 261121 - 서버 전용. 땅 꺼짐 구덩이(area)에 있던 원귀는 같이 떨어져 사라진다(기획서 v1.2) - 처치가 아니라 드랍 · 원한 없음.
+        /// 돌려주는 값 = 사라진 수.
+        /// </summary>
+        public static int ServerRemoveInArea(Rect area)
+        {
+            int removed = 0;
+            AbsorbBuffer.Clear();
+            AbsorbBuffer.AddRange(ActiveEnemies);
+            for (int i = 0; i < AbsorbBuffer.Count; i++)
+            {
+                Enemy enemy = AbsorbBuffer[i];
+                if (enemy == null || !enemy.IsServer || !enemy.IsSpawned || enemy.rb == null || !area.Contains(enemy.rb.position))
+                {
+                    continue;
+                }
+                enemy.NetworkObject.Despawn();
+                removed++;
+            }
+            AbsorbBuffer.Clear();
+            return removed;
         }
 
         /// <summary>
@@ -428,12 +477,30 @@ namespace CheonMyeong.Enemies
             if (distance > arriveStopDistance)
             {
                 float slowRange = Mathf.Max(0.0001f, arriveSlowDistance - arriveStopDistance);
-                chase = toTarget / distance * Mathf.Clamp01((distance - arriveStopDistance) / slowRange);
+                Vector2 chaseDirection = toTarget / distance;
+                // 261121 - 160 맵: 멀면 길찾기(집 · 물 · 울타리를 돌아서), 가까우면 바로 쫓는다.
+                Maps.MapFlowField field = Maps.MapFlowField.Instance;
+                if (field != null && distance > FlowDirectChaseDistance && field.TryGetDirection(rb.position, out Vector2 flowDirection))
+                {
+                    chaseDirection = flowDirection;
+                }
+                chase = chaseDirection * Mathf.Clamp01((distance - arriveStopDistance) / slowRange);
             }
 
             float slow = Time.time < serverSlowUntil ? serverSlowRatio : 0f;
             Vector2 desired = Vector2.ClampMagnitude(chase + ComputeSeparation() * separationWeight, 1f) * (stats.moveSpeed * (1f - slow));
-            rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, desired, steeringAcceleration * Time.fixedDeltaTime);
+            Vector2 velocity = Vector2.MoveTowards(rb.linearVelocity, desired, steeringAcceleration * Time.fixedDeltaTime);
+            // 261121 - 땅 꺼짐 구덩이는 원귀도 못 지나간다(원귀는 Map 레이어와 충돌을 꺼 둬서 속도로 막는다).
+            Maps.MapFlowField obstacleField = Maps.MapFlowField.Instance;
+            if (obstacleField != null)
+            {
+                velocity = obstacleField.Steer(rb.position, velocity, Time.fixedDeltaTime); // 막힌 칸(물 · 물체 · 구덩이)에 안 들어감
+            }
+            else if (Boss.BossPitField.Count > 0)
+            {
+                velocity = Boss.BossPitField.Steer(rb.position, velocity, PitBodyRadius, Time.fixedDeltaTime);
+            }
+            rb.linearVelocity = velocity;
         }
 
         /// <summary>
@@ -750,9 +817,9 @@ namespace CheonMyeong.Enemies
         /// </summary>
         private void SpawnDrops()
         {
-            if (LootSpawner.Instance == null)
+            if (LootSpawner.Instance == null || ServerSummonedByBoss)
             {
-                return;
+                return; // 261121 - 억쇠가 불러낸 원귀는 영혼 · 엽전 없음
             }
 
             // 261027 수정 - 기획서 5-10: 영혼은 100%, 엽전은 원귀별 확률(goldDropChance)로.
@@ -812,7 +879,9 @@ namespace CheonMyeong.Enemies
             // 261116 - 퇴마 소리(모든 화면, 위치 소리 - 폭주 방지는 SoundCue MaxInstances · MinInterval).
             if (currentValue && !previousValue)
             {
-                CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.EnemyDie, transform.position);
+                // 261121 - 중형 원귀는 퇴마 소리를 낮게(사운드 기획서 v1.2).
+                CheonMyeong.Audio.GameAudio.PlayAt(elite != null ? CheonMyeong.Audio.SoundKeys.EliteExorcise : CheonMyeong.Audio.SoundKeys.EnemyDie,
+                    transform.position);
             }
 
             if (currentValue && animator != null && animator.runtimeAnimatorController != null)

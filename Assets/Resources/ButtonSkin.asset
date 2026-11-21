@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13275066543a41ca9bbcceb3c695ab97, type: 3}
+  m_Name: ButtonSkin
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.UI.ButtonSkinSet
+  buttons:
+  - {fileID: 7624842204370414184, guid: 690348933dee07144bc7354a76817fa2, type: 3}
+  - {fileID: -6333570804957121749, guid: 690348933dee07144bc7354a76817fa2, type: 3}
+  - {fileID: 5182237156494572077, guid: 690348933dee07144bc7354a76817fa2, type: 3}
+  - {fileID: 1970787870649289689, guid: 690348933dee07144bc7354a76817fa2, type: 3}
+  - {fileID: 4517250737905374660, guid: 690348933dee07144bc7354a76817fa2, type: 3}
+  - {fileID: 864798403705426364, guid: 690348933dee07144bc7354a76817fa2, type: 3}
+  - {fileID: 2896996034020620449, guid: 690348933dee07144bc7354a76817fa2, type: 3}
+  sliderTrack: {fileID: -8646264257031599339, guid: 5f85371524b843f4391912b4e9226529, type: 3}
+  sliderKnob: {fileID: 1558044085, guid: 6808df36642d23a4c81413ca109fabc3, type: 3}

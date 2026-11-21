@@ -33,6 +33,12 @@ namespace CheonMyeong.Boss
         private Image backImage;
         private Image fillImage;
         private int shownColorIndex = -1;
+        // 261121 - 어린 억쇠: 같은 틀 자리에 머리 + 빗자루 그림(Bar-Sheet_12)으로 바꿔 쓰고, 1칸 바는 황(기획서 v1.2).
+        private Image frameImageRef;
+        private Sprite originalFrameSprite;
+        private bool frameSpriteSwapped;
+        private bool hasSingleBarColor;
+        private Color singleBarColor;
 
         // 261119 - 바 아래에 보스가 있으면 바를 반투명(30%)하게 - 바가 보스를 가리지 않게.
         private const float CoveredAlpha = 0.3f;
@@ -99,7 +105,27 @@ namespace CheonMyeong.Boss
 
         public static BossHealthBarView Create(Transform hudRoot)
         {
+            return Create(hudRoot, null, Vector4.zero, null);
+        }
+
+        /// <summary>
+        /// 261121 - frameSprite가 있으면 씬 틀(BossBarFrame)의 그림을 잠시 바꿔 쓰고(빈 칸 여백 = hole, 원본 픽셀 왼 · 아래 · 오른 · 위),
+        /// singleColor가 있으면 1칸 바를 그 색으로 칠한다. Release 때 원래 그림으로 되돌린다.
+        /// </summary>
+        public static BossHealthBarView Create(Transform hudRoot, Sprite frameSprite, Vector4 hole, Color? singleColor)
+        {
             Font font = CheonMyeong.UI.GameFontSet.Get(CheonMyeong.UI.FontRole.Title);
+            BossHealthBarView created = CreateInternal(hudRoot, font, frameSprite, hole);
+            if (created != null && singleColor.HasValue)
+            {
+                created.hasSingleBarColor = true;
+                created.singleBarColor = singleColor.Value;
+            }
+            return created;
+        }
+
+        private static BossHealthBarView CreateInternal(Transform hudRoot, Font font, Sprite frameSprite, Vector4 holeOverride)
+        {
 
             // 261114 - 아트 보스 바 틀(HUD의 BossBarFrame, Bar-Sheet_10 + 위 덮개 Overlay)이 있으면 그 틀 안쪽 칸을 채운다.
             Transform template = FindDeep(hudRoot, "BossBarFrame");
@@ -109,7 +135,17 @@ namespace CheonMyeong.Boss
                 {
                     return existing;
                 }
-                return CreateFromFrame(frameRoot, frameImage, font);
+                Sprite original = frameImage.sprite;
+                bool swapped = frameSprite != null && frameSprite != original;
+                if (swapped)
+                {
+                    frameImage.sprite = frameSprite;
+                }
+                BossHealthBarView fromFrameView = CreateFromFrame(frameRoot, frameImage, font, swapped ? holeOverride : (Vector4?)null);
+                fromFrameView.frameImageRef = frameImage;
+                fromFrameView.originalFrameSprite = original;
+                fromFrameView.frameSpriteSwapped = swapped;
+                return fromFrameView;
             }
 
             // 261117 - 틀이 없을 때의 임시 바도 아트 틀과 같은 자리(왼쪽 위 플레이어 체력 바 아래)에 둔다.
@@ -152,7 +188,7 @@ namespace CheonMyeong.Boss
             cloneRoot.gameObject.SetActive(false);
         }
 
-        private static BossHealthBarView CreateFromFrame(RectTransform root, Image frameImage, Font font)
+        private static BossHealthBarView CreateFromFrame(RectTransform root, Image frameImage, Font font, Vector4? holeOverride)
         {
             var view = root.gameObject.AddComponent<BossHealthBarView>();
             view.fromFrame = true;
@@ -161,7 +197,7 @@ namespace CheonMyeong.Boss
 
             // 261114 - 틀의 실제 빈 칸(SlicedHole 여백)에 꽉 맞춘다. 없으면 9분할 테두리 기준.
             RectTransform inner = NewRect(root, "Inner", Vector2.zero, Vector2.one);
-            Vector4 hole = root.TryGetComponent(out CheonMyeong.UI.SlicedHole marker) ? marker.holePixels : Vector4.zero;
+            Vector4 hole = holeOverride ?? (root.TryGetComponent(out CheonMyeong.UI.SlicedHole marker) ? marker.holePixels : Vector4.zero);
             CheonMyeong.UI.SlicedHole.Fit(frameImage, inner, hole);
             view.frameInner = inner;
             view.BuildLayers(inner);
@@ -257,7 +293,7 @@ namespace CheonMyeong.Boss
             {
                 // 지금 칸 색 + 그 뒤로 보이는 다음 칸 색(마지막 칸이면 어두운 바탕).
                 shownColorIndex = barIndex;
-                fillImage.color = LayerColor(barIndex);
+                fillImage.color = bars == 1 && hasSingleBarColor ? singleBarColor : LayerColor(barIndex);
                 backImage.color = barIndex > 0 ? LayerColor(barIndex - 1) : EmptyBackColor;
             }
             if (nameText.text != title)
@@ -303,6 +339,10 @@ namespace CheonMyeong.Boss
             if (group != null)
             {
                 group.alpha = 1f; // 다음 보스가 같은 틀을 쓸 때 투명한 채로 시작하지 않게
+            }
+            if (frameSpriteSwapped && frameImageRef != null)
+            {
+                frameImageRef.sprite = originalFrameSprite; // 261121 - 어린 억쇠 틀 → 억쇠 틀로 되돌림
             }
             gameObject.SetActive(false);
             Destroy(this);

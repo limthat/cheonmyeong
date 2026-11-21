@@ -39,17 +39,17 @@ TextureImporter:
       213: 7136807906081813345
     second: Bar-Sheet_11
   - first:
-      213: 210372805930810257
-    second: Bar-Sheet_12
-  - first:
-      213: 5711137009880368571
-    second: Bar-Sheet_13
-  - first:
       213: -8371495908281656562
     second: Bar-Sheet_14
   - first:
       213: -450185823417758617
     second: Bar-Sheet_15
+  - first:
+      213: 1151405100944829047
+    second: Bar-Sheet_12
+  - first:
+      213: 1718048342203863194
+    second: Bar-Sheet_13
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -421,6 +421,50 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Bar-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 52, y: 28, z: 40, w: 30}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acdc3da106217b020000000000000000
+      internalID: 1151405100944829047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bar-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 52, y: 28, z: 40, w: 30}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d28aa7090c47316f0000000000000000
+      internalID: 1718048342203863194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -449,6 +493,8 @@ TextureImporter:
       Bar-Sheet_7: -1321408875296876390
       Bar-Sheet_8: -3326988774213733486
       Bar-Sheet_9: 3991553541084360133
+      Bar-Sheet_12: 1151405100944829047
+      Bar-Sheet_13: 1718048342203863194
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

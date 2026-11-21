@@ -129,3 +129,31 @@ MonoBehaviour:
     cue: {fileID: 11400000, guid: 1b388b36d0f24f45bd367270a401c22f, type: 2}
   - key: ui.hover
     cue: {fileID: 11400000, guid: 60198803bdb74c0e9f9b6062255e6aee, type: 2}
+  - key: boss.quake_impact
+    cue: {fileID: 11400000, guid: da7edc03eca1473699a0bad393690602, type: 2}
+  - key: boss.quake_drum
+    cue: {fileID: 11400000, guid: fe03d22dae9a4e1f90f60fb6857574e5, type: 2}
+  - key: boss.quake_grudge
+    cue: {fileID: 11400000, guid: dd188d2515ca492594bfc12ac50bf099, type: 2}
+  - key: kid.laugh
+    cue: {fileID: 11400000, guid: 8dbb6ae58cfb47379b4a3f9510f6bc47, type: 2}
+  - key: kid.swing
+    cue: {fileID: 11400000, guid: 7c4295a2b60c4c9980b0986f92eba808, type: 2}
+  - key: kid.impact
+    cue: {fileID: 11400000, guid: 07c788c16dc245dfa15ec2aeb02435e1, type: 2}
+  - key: kid.fly
+    cue: {fileID: 11400000, guid: 1190a37c1b5846fd84ec06a3048d4502, type: 2}
+  - key: kid.spin
+    cue: {fileID: 11400000, guid: 160e9bd37c074440bf41c71b86377f75, type: 2}
+  - key: elite.charge_warn
+    cue: {fileID: 11400000, guid: 8f8c817b2e2c43b497da6fdce0d875c3, type: 2}
+  - key: elite.splash
+    cue: {fileID: 11400000, guid: dc797fff09724ecaa9a804c6b5b512a5, type: 2}
+  - key: elite.splash_reverse
+    cue: {fileID: 11400000, guid: 19d096b9983645279c09852933e55821, type: 2}
+  - key: elite.throw
+    cue: {fileID: 11400000, guid: fea5f437d36c4b8da0db936b10e408a1, type: 2}
+  - key: elite.poison_tick
+    cue: {fileID: 11400000, guid: 89ea99bc7a3143c69c1d3e3133b2acae, type: 2}
+  - key: elite.exorcise
+    cue: {fileID: 11400000, guid: a244077d712d4e9580fede90d2d13ecb, type: 2}

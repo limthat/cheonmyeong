@@ -65,6 +65,8 @@ namespace CheonMyeong.UI
         private void Awake()
         {
             Instance = this;
+            // 261121 - 기획서 v1.2 버튼 규칙(먹 글씨 · 흰 테두리 호버 · 1px 뜸/눌림 · 비활성 회색)을 Btn 4종 버튼에 입힌다.
+            CheonMyeong.UI.HanjiButtonSkin.ApplyAll(screensRoot != null ? screensRoot : transform);
 
             screensById.Clear();
             if (screensRoot != null)

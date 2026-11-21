@@ -283,7 +283,7 @@ namespace CheonMyeong.UI.Screens
             cachedHash = hash;
 
             slot.text = progress != null
-                ? $"PLAYER{index + 1} · {name}\n처치 수 {kills} / 획득 엽전 {gold}"
+                ? $"플레이어 {index + 1} · {name}\n처치 수 {kills} / 획득 엽전 {gold}"
                 : string.Empty;
         }
 

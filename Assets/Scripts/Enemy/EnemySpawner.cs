@@ -53,6 +53,22 @@ namespace CheonMyeong.Enemies
         private float timer;
         private float serverRunningElapsed;
 
+        /// <summary>261121 - 씬의 소환기(억쇠 '원귀 부르기'가 쓴다).</summary>
+        public static EnemySpawner Instance { get; private set; }
+
+        private void Awake()
+        {
+            Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
         private const int MaxSpawnPerFrame = 10;
         private int trackedWave;
         private int trickleSpawnedThisWave;
@@ -85,6 +101,8 @@ namespace CheonMyeong.Enemies
             {
                 return;
             }
+
+            ProcessSummonQueue();
 
             WaveManager waveManager = WaveManager.Instance;
             if (waveManager != null)
@@ -214,6 +232,29 @@ namespace CheonMyeong.Enemies
             Vector2 center = target.position;
             float radius = EffectiveSpawnRadius();
             SpawnPatternType pattern = PickPattern(config);
+            MapBounds gateBounds = MapBounds.Instance;
+            if (gateBounds != null && gateBounds.HasGateSpawns)
+            {
+                // 261121 - 문에서 나오는 맵: 둘러싸기(Ring)는 문 3곳에 나눠서, 줄 · 무리는 한 문에서 한꺼번에.
+                int gate = Random.Range(0, gateBounds.GateCount);
+                EnemyPool same = null;
+                for (int i = 0; i < amount; i++)
+                {
+                    int g = pattern == SpawnPatternType.Ring ? (gate + i) % gateBounds.GateCount : gate;
+                    EnemyPool pool;
+                    if (pattern == SpawnPatternType.Cluster)
+                    {
+                        pool = same == null ? DrawFromBagOrPick(wave) : DrawSameOrPick(wave, same);
+                        same = same != null ? same : pool;
+                    }
+                    else
+                    {
+                        pool = DrawFromBagOrPick(wave);
+                    }
+                    Enqueue(pool, gateBounds.RandomGatePoint(g));
+                }
+                return;
+            }
             float angle = PickOpenAngle(center, radius);
             Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
             MapBounds bounds = MapBounds.Instance;
@@ -387,6 +428,183 @@ namespace CheonMyeong.Enemies
                 }
             }
             return total;
+        }
+
+        // ───────── 261121 억쇠 '원귀 부르기' ─────────
+
+        private const int SummonMaxAlive = 300; // 기획서: 동시에 화면에 있는 원귀 최대 300마리
+
+        private readonly Queue<PendingSpawn> summonQueue = new Queue<PendingSpawn>();
+        private readonly List<EnemyPool> summonBag = new List<EnemyPool>(128);
+        private readonly List<EnemyPool> summonPools = new List<EnemyPool>(8);
+        private readonly List<int> summonWeights = new List<int>(8);
+
+        /// <summary>
+        /// 서버 전용 - center 둘레 radius 원 위에 count마리를 솟아나게 한다(기획서 v1.1 원귀 부르기). 일반 3종은 1웨이브 비율,
+        /// 중형은 아귀 · 역귀만(물귀신 제외) eliteRatio만큼. 마릿수는 매번 같게 정확히 나눈다(웨이브 주머니와 같은 방식).
+        /// 불려 나온 원귀는 ServerSummonedByBoss = true(드랍 없음 · 보스전 끝나면 사라짐). 돌려주는 값 = 대기열에 넣은 수.
+        /// </summary>
+        public int ServerQueueBossSummon(Vector2 center, float radius, int count, float eliteRatio, float angleOffset)
+        {
+            if (!IsServerRunning() || !HasAnyPool() || count <= 0)
+            {
+                return 0;
+            }
+            summonBag.Clear();
+            int eliteCount = Mathf.Clamp(Mathf.RoundToInt(count * Mathf.Clamp01(eliteRatio)), 0, count);
+            AddSummonKind(false, count - eliteCount);
+            AddSummonKind(true, eliteCount);
+            if (summonBag.Count == 0)
+            {
+                return 0;
+            }
+            for (int i = summonBag.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (summonBag[i], summonBag[j]) = (summonBag[j], summonBag[i]);
+            }
+            for (int i = 0; i < summonBag.Count; i++)
+            {
+                float a = angleOffset + Mathf.PI * 2f * i / summonBag.Count;
+                Vector2 pos = center + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * radius;
+                pos = Boss.BossPitField.PushOut(ClampToMap(pos), 0.3f);
+                summonQueue.Enqueue(new PendingSpawn { Pool = summonBag[i], Position = pos });
+            }
+            int queued = summonBag.Count;
+            summonBag.Clear();
+            return queued;
+        }
+
+        /// <summary>서버 전용 - 아직 안 나온 부르기 대기열을 버린다(보스전 끝).</summary>
+        public void ServerClearBossSummons()
+        {
+            summonQueue.Clear();
+        }
+
+        private void ProcessSummonQueue()
+        {
+            int spawned = 0;
+            while (summonQueue.Count > 0 && spawned < MaxSpawnPerFrame && TotalActiveCount() < SummonMaxAlive)
+            {
+                PendingSpawn next = summonQueue.Dequeue();
+                if (next.Pool == null)
+                {
+                    continue;
+                }
+                Enemy enemy = next.Pool.GetAndSpawn(next.Position);
+                if (enemy != null)
+                {
+                    enemy.ServerSummonedByBoss = true;
+                }
+                spawned++;
+            }
+        }
+
+        /// <summary>종류(일반/중형)별 풀과 가중치를 모아 amount마리를 최대 나머지 방식으로 정확히 나눠 summonBag에 넣는다.</summary>
+        private void AddSummonKind(bool elite, int amount)
+        {
+            if (amount <= 0)
+            {
+                return;
+            }
+            summonPools.Clear();
+            summonWeights.Clear();
+            WaveConfigSO config = WaveManager.Instance != null ? WaveManager.Instance.Config : null;
+            for (int i = 0; i < pools.Length; i++)
+            {
+                EnemyPool pool = pools[i];
+                EnemyStatsSO stats = pool != null ? pool.PrefabStats : null;
+                if (stats == null || summonPools.Contains(pool))
+                {
+                    continue;
+                }
+                bool isElite = stats.skill != EliteSkill.None;
+                if (isElite != elite || stats.skill == EliteSkill.Submerge)
+                {
+                    continue; // 물귀신은 숨어 버려 보스전이 늘어지므로 부르지 않는다(기획서 v1.1)
+                }
+                int weight = SummonWeightFromConfig(config, stats, elite);
+                if (weight <= 0)
+                {
+                    continue;
+                }
+                summonPools.Add(pool);
+                summonWeights.Add(weight);
+            }
+            if (summonPools.Count == 0)
+            {
+                return;
+            }
+            int total = 0;
+            for (int i = 0; i < summonWeights.Count; i++)
+            {
+                total += summonWeights[i];
+            }
+            int given = 0;
+            bagRemainders.Clear();
+            bagCounts.Clear();
+            for (int i = 0; i < summonPools.Count; i++)
+            {
+                float exact = (float)amount * summonWeights[i] / total;
+                int whole = Mathf.FloorToInt(exact);
+                bagCounts.Add(whole);
+                bagRemainders.Add(exact - whole);
+                given += whole;
+            }
+            while (given < amount)
+            {
+                int best = 0;
+                for (int i = 1; i < bagRemainders.Count; i++)
+                {
+                    if (bagRemainders[i] > bagRemainders[best])
+                    {
+                        best = i;
+                    }
+                }
+                bagCounts[best]++;
+                bagRemainders[best] = -1f;
+                given++;
+            }
+            for (int i = 0; i < summonPools.Count; i++)
+            {
+                for (int n = 0; n < bagCounts[i]; n++)
+                {
+                    summonBag.Add(summonPools[i]);
+                }
+            }
+            bagCounts.Clear();
+            bagRemainders.Clear();
+        }
+
+        /// <summary>
+        /// 웨이브 구성의 비율을 그대로 쓴다 - 일반은 1웨이브(몽달귀 60 · 달걀귀신 30 · 손각시 10), 중형은 그 원귀가 나오는 웨이브 중
+        /// 가장 큰 가중치(아귀 40 · 역귀 30). 구성에 없는 원귀(옛 중형 등)는 0 = 부르지 않는다. 구성이 아예 없으면 균등.
+        /// </summary>
+        private static int SummonWeightFromConfig(WaveConfigSO config, EnemyStatsSO stats, bool elite)
+        {
+            if (config == null || config.WaveCount == 0)
+            {
+                return 1;
+            }
+            int best = 0;
+            int lastWave = elite ? config.WaveCount : 1;
+            for (int w = 1; w <= lastWave; w++)
+            {
+                WaveDefinition wave = config.GetWave(w);
+                if (wave == null || wave.spawns == null)
+                {
+                    continue;
+                }
+                for (int i = 0; i < wave.spawns.Count; i++)
+                {
+                    WaveSpawnEntry entry = wave.spawns[i];
+                    if (entry != null && entry.enemy == stats)
+                    {
+                        best = Mathf.Max(best, entry.weight);
+                    }
+                }
+            }
+            return best;
         }
 
         private EnemyPool FindPool(EnemyStatsSO stats)
@@ -681,6 +899,10 @@ namespace CheonMyeong.Enemies
         private Vector2 PickSpawnPosition(Vector2 center)
         {
             MapBounds bounds = MapBounds.Instance;
+            if (bounds != null && bounds.HasGateSpawns)
+            {
+                return bounds.RandomGatePoint(); // 261121 - 160 맵: 원귀는 무너진 문 3곳에서 밀려 들어온다(맵 배치 문서 v1.5)
+            }
             Vector2 candidate = center;
             for (int i = 0; i < SpawnPositionTries; i++)
             {

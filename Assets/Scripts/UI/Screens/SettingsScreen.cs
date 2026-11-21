@@ -21,10 +21,13 @@ namespace CheonMyeong.UI.Screens
     /// </summary>
     public class SettingsScreen : MonoBehaviour
     {
+        // 261121 - 기획서 v1.2 버튼 규칙: 글씨는 늘 먹(#080710), 고른 칸은 흰 테두리 그림(Btn 2 = 호버 · 선택용) + 황(#E7BA41) 밑줄.
         private static readonly Color ChoiceOn = Color.white;
-        private static readonly Color ChoiceOff = new Color(0.92f, 0.88f, 0.78f, 1f);
-        private static readonly Color LabelOn = new Color(0.16f, 0.1f, 0.06f, 1f);
-        private static readonly Color LabelOff = new Color(0.45f, 0.38f, 0.3f, 1f);
+        private static readonly Color ChoiceOff = Color.white;
+        private static readonly Color LabelOn = new Color32(0x08, 0x07, 0x10, 0xFF);
+        private static readonly Color LabelOff = new Color32(0x08, 0x07, 0x10, 0xFF);
+        private static readonly Color SelectedLine = new Color32(0xE7, 0xBA, 0x41, 0xFF);
+        private static readonly Color SliderFill = new Color32(0x2D, 0x51, 0x8B, 0xFF); // 청 - 영혼 바와 같은 색
 
         private static readonly string[] TabNames = { "Display", "Sound", "Control", "Etc" };
 
@@ -35,6 +38,8 @@ namespace CheonMyeong.UI.Screens
             public Image[] Images;
             public Text[] Labels;
             public GameObject[] Underlines;
+            public Sprite[] NormalSprites;
+            public Sprite[] SelectedSprites;
 
             public void Show(int selected, bool interactable = true)
             {
@@ -49,6 +54,11 @@ namespace CheonMyeong.UI.Screens
                     if (Images[i] != null)
                     {
                         Images[i].color = on ? ChoiceOn : ChoiceOff;
+                        Sprite sprite = on ? SelectedSprites[i] : NormalSprites[i];
+                        if (sprite != null && Images[i].sprite != sprite)
+                        {
+                            Images[i].sprite = sprite;
+                        }
                     }
                     if (Labels[i] != null)
                     {
@@ -433,6 +443,7 @@ namespace CheonMyeong.UI.Screens
             };
             if (result.Slider != null)
             {
+                ApplySliderSkin(result.Slider);
                 result.Slider.minValue = 0f;
                 result.Slider.maxValue = 1f;
                 result.Slider.onValueChanged.AddListener(v =>
@@ -442,6 +453,66 @@ namespace CheonMyeong.UI.Screens
                 });
             }
             return result;
+        }
+
+        /// <summary>
+        /// 261121 - 기획서 v1.2 "설정 슬라이더(재사용)": 막대 · 채움은 Bar의 xp 바, 손잡이는 황금 엽전. 막대(Track)에 xp 바 그림(9분할),
+        /// 채움은 그 안쪽 칸만 청으로, 금테(Gold)는 끈다. 씬 배치는 그대로 두고 그림 · 색만 바꾼다.
+        /// </summary>
+        private static void ApplySliderSkin(Slider slider)
+        {
+            CheonMyeong.UI.ButtonSkinSet skin = CheonMyeong.UI.ButtonSkinSet.Load();
+            if (skin == null || skin.sliderTrack == null)
+            {
+                return;
+            }
+            Transform track = FindDeep(slider.transform, "Track");
+            if (track != null && track.TryGetComponent(out Image trackImage))
+            {
+                const float artScale = 1.5f; // 그림 1px = 1.5 UI px (HUD 영혼 바는 2배)
+                RectTransform trackRect = trackImage.rectTransform;
+                trackImage.sprite = skin.sliderTrack;
+                trackImage.type = Image.Type.Sliced;
+                trackImage.color = Color.white;
+                trackImage.raycastTarget = false;
+                trackRect.SetAsFirstSibling(); // 채움 · 손잡이 뒤에 그려지게
+                trackImage.pixelsPerUnitMultiplier = 1f / (artScale * Mathf.Max(0.0001f, trackImage.pixelsPerUnit));
+                // xp 바 칸(128×64)은 위아래가 투명이라, 막대가 보이게 높이를 그림 칸 높이에 맞춰 늘린다(가운데 기준).
+                float wanted = skin.sliderTrack.rect.height * artScale;
+                float grow = (wanted - trackRect.rect.height) * 0.5f;
+                trackRect.offsetMin -= new Vector2(0f, grow);
+                trackRect.offsetMax += new Vector2(0f, grow);
+                // 채움 영역 = 막대 그림의 안쪽 칸(9분할 테두리 안).
+                if (slider.fillRect != null && slider.fillRect.parent is RectTransform fillArea)
+                {
+                    Vector4 border = skin.sliderTrack.border * artScale;
+                    fillArea.anchorMin = trackRect.anchorMin;
+                    fillArea.anchorMax = trackRect.anchorMax;
+                    fillArea.pivot = trackRect.pivot;
+                    fillArea.offsetMin = trackRect.offsetMin + new Vector2(border.x, border.y);
+                    fillArea.offsetMax = trackRect.offsetMax - new Vector2(border.z, border.w);
+                }
+            }
+            if (slider.fillRect != null && slider.fillRect.TryGetComponent(out Image fillImage))
+            {
+                fillImage.sprite = null;
+                fillImage.type = Image.Type.Simple;
+                fillImage.color = SliderFill;
+            }
+            Transform gold = FindDeep(slider.transform, "Gold");
+            if (gold != null)
+            {
+                gold.gameObject.SetActive(false);
+            }
+            if (slider.TryGetComponent(out Image background))
+            {
+                background.enabled = false; // 막대 그림이 테두리까지 그리므로 뒤 검은 판은 안 쓴다
+            }
+            if (slider.handleRect != null && skin.sliderKnob != null && slider.handleRect.TryGetComponent(out Image knob))
+            {
+                knob.sprite = skin.sliderKnob;
+                knob.preserveAspect = true;
+            }
         }
 
         private static Button BindButton(Transform root, string path, UnityEngine.Events.UnityAction action)
@@ -484,7 +555,10 @@ namespace CheonMyeong.UI.Screens
                 Images = new Image[buttons.Count],
                 Labels = new Text[buttons.Count],
                 Underlines = new GameObject[buttons.Count],
+                NormalSprites = new Sprite[buttons.Count],
+                SelectedSprites = new Sprite[buttons.Count],
             };
+            CheonMyeong.UI.ButtonSkinSet skin = CheonMyeong.UI.ButtonSkinSet.Load();
             for (int i = 0; i < buttons.Count; i++)
             {
                 if (buttons[i] == null)
@@ -496,6 +570,16 @@ namespace CheonMyeong.UI.Screens
                 choice.Labels[i] = FindComponent<Text>(t, "Label");
                 Transform underline = FindDeep(t, "Underline");
                 choice.Underlines[i] = underline != null ? underline.gameObject : null;
+                if (underline != null && underline.TryGetComponent(out Graphic line))
+                {
+                    line.color = SelectedLine;
+                }
+                int kind = skin != null && choice.Images[i] != null ? skin.KindOf(choice.Images[i].sprite) : -1;
+                if (kind >= 0)
+                {
+                    choice.NormalSprites[i] = skin.Normal(kind);
+                    choice.SelectedSprites[i] = skin.Hover(kind);
+                }
             }
             return choice;
         }

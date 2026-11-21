@@ -18,10 +18,12 @@ namespace CheonMyeong.EditorTools
 
         private static readonly Dictionary<string, string[]> FileToCues = new Dictionary<string, string[]>
         {
-            { "SFX_HIT", new[] { "Cue_HIT", "Cue_HIT_Crit" } },
-            { "SFX_BS_Impact", new[] { "Cue_BS_Impact" } },
-            { "SFX_BS_Warn", new[] { "Cue_BS_Warn" } },
-            { "SFX_BS_Whoosh", new[] { "Cue_BS_Whoosh" } },
+            { "SFX_HIT", new[] { "Cue_HIT", "Cue_HIT_Crit", "Cue_Poison_Tick" } },
+            { "SFX_BS_Impact", new[] { "Cue_BS_Impact", "Cue_Quake_Impact", "Cue_Kid_Impact" } },
+            { "SFX_BS_Warn", new[] { "Cue_BS_Warn", "Cue_Elite_ChargeWarn" } },
+            { "SFX_BS_Whoosh", new[] { "Cue_BS_Whoosh", "Cue_Kid_Swing", "Cue_Kid_Fly", "Cue_Kid_Spin" } },
+            // 261121 - 사운드 기획서 v1.2: 물귀신 물소리(새로 뽑는 파일 하나). 들어갈 때는 같은 파일을 거꾸로(Cue reverse).
+            { "SFX_EN_Splash", new[] { "Cue_Elite_Splash", "Cue_Elite_Splash_Reverse" } },
             { "SFX_BS_Grab", new[] { "Cue_BS_Grab" } },
             { "SFX_Coin", new[] { "Cue_Coin" } },
             { "SFX_Soul", new[] { "Cue_Soul_S", "Cue_Soul_M", "Cue_Soul_L" } },

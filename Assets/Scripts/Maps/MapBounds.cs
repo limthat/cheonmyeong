@@ -32,7 +32,87 @@ namespace CheonMyeong.Maps
         [Tooltip("cameraAreaSource가 없을 때 쓰는 카메라 범위(월드 좌표). 크기가 0이면 제한 없음.")]
         [SerializeField] private Rect cameraArea;
 
+        [Header("보스 터 (261121 · 기획서 v1.2 땅 꺼짐 구덩이 규칙)")]
+        [Tooltip("박석 마당(보스 터) 범위(월드). 크기가 0이면 cameraArea(맵 전체)를 보스 터로 본다.")]
+        [SerializeField] private Rect bossPlaza;
+        [Tooltip("보스가 나타나는 곳(월드). useBossSpawnPoint가 꺼져 있으면 보스 터 한가운데.")]
+        [SerializeField] private Vector2 bossSpawnPoint;
+        [SerializeField] private bool useBossSpawnPoint;
+        [Tooltip("당산나무 줄기 중심(월드) - 구덩이 금지 원의 중심. hasBossTree가 꺼져 있으면 쓰지 않는다.")]
+        [SerializeField] private Vector2 bossTreeCenter;
+        [SerializeField] private bool hasBossTree;
+        [Tooltip("구덩이 금지 반지름(칸) - 나무 중심에서.")]
+        [SerializeField] private float pitTreeClearRadius = 3f;
+        [Tooltip("구덩이 금지 띠(칸) - 박석 마당 테두리에서 안쪽으로.")]
+        [SerializeField] private float pitEdgeBand = 4f;
+        [Tooltip("구덩이 금지 구역(월드) - 마당으로 들어오는 디딤돌 십자길 입구.")]
+        [SerializeField] private Rect[] pitForbiddenAreas = new Rect[0];
+
+        [Header("원귀 생성 문 (261121 · 맵 배치 문서 v1.5)")]
+        [Tooltip("원귀가 밀려 들어오는 곳(월드) - 무너진 문 3곳(북 · 서 · 동) 앞 흙길. 비어 있으면 예전처럼 화면 밖 둘레에서 나온다.")]
+        [SerializeField] private Rect[] enemyGateAreas = new Rect[0];
+
         public Rect PlayableArea => playableArea;
+
+        /// <summary>261121 - 무너진 문 쪽에서 원귀가 나오는 맵인지.</summary>
+        public bool HasGateSpawns => enemyGateAreas != null && enemyGateAreas.Length > 0;
+        public int GateCount => enemyGateAreas != null ? enemyGateAreas.Length : 0;
+
+        /// <summary>261121 - gate번째 문 앞(음수면 아무 문) 범위 안 무작위 지점.</summary>
+        public Vector2 RandomGatePoint(int gate = -1)
+        {
+            if (!HasGateSpawns)
+            {
+                return playableArea.center;
+            }
+            int index = gate >= 0 ? gate % enemyGateAreas.Length : Random.Range(0, enemyGateAreas.Length);
+            Rect r = enemyGateAreas[index];
+            return new Vector2(Random.Range(r.xMin, r.xMax), Random.Range(r.yMin, r.yMax));
+        }
+
+        /// <summary>261121 - 박석 마당(보스 터). 따로 정하지 않았으면 카메라 범위(맵 전체), 그것도 없으면 플레이 영역.</summary>
+        public Rect BossPlaza => bossPlaza.width > 0f && bossPlaza.height > 0f ? bossPlaza
+            : (cameraArea.width > 0f ? cameraArea : playableArea);
+
+        /// <summary>261121 - 보스가 나타나는 곳.</summary>
+        public Vector2 BossSpawnPoint => useBossSpawnPoint ? bossSpawnPoint : BossPlaza.center;
+
+        /// <summary>
+        /// 261121 - 기획서 v1.2 "구덩이 규칙": 박석 마당 테두리 안쪽 4칸 띠 · 십자길 입구 · 당산나무 반지름 3칸 안에는 구덩이를
+        /// 만들지 않는다. 구덩이(한 변 size 칸, 가운데 center)가 금지 구역에 걸리면 false.
+        /// </summary>
+        public bool CanPlacePit(Vector2 center, float size)
+        {
+            float half = size * 0.5f;
+            Rect plaza = BossPlaza;
+            Rect allowed = Rect.MinMaxRect(plaza.xMin + pitEdgeBand, plaza.yMin + pitEdgeBand, plaza.xMax - pitEdgeBand, plaza.yMax - pitEdgeBand);
+            if (center.x - half < allowed.xMin || center.x + half > allowed.xMax || center.y - half < allowed.yMin || center.y + half > allowed.yMax)
+            {
+                return false;
+            }
+            var pit = new Rect(center.x - half, center.y - half, size, size);
+            if (hasBossTree)
+            {
+                // 사각 구덩이에서 나무 중심까지 가장 가까운 거리.
+                float dx = Mathf.Max(pit.xMin - bossTreeCenter.x, 0f, bossTreeCenter.x - pit.xMax);
+                float dy = Mathf.Max(pit.yMin - bossTreeCenter.y, 0f, bossTreeCenter.y - pit.yMax);
+                if (dx * dx + dy * dy < pitTreeClearRadius * pitTreeClearRadius)
+                {
+                    return false;
+                }
+            }
+            if (pitForbiddenAreas != null)
+            {
+                for (int i = 0; i < pitForbiddenAreas.Length; i++)
+                {
+                    if (pitForbiddenAreas[i].Overlaps(pit))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
 
         /// <summary>카메라가 보여줄 수 있는 맵 전체 범위(월드). 크기가 0이면 제한 없음.</summary>
         public Rect CameraArea => cameraArea;
@@ -103,6 +183,12 @@ namespace CheonMyeong.Maps
             Gizmos.DrawWireCube(cameraArea.center, cameraArea.size);
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(startPoint, 0.5f);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(BossPlaza.center, BossPlaza.size);
+            if (hasBossTree)
+            {
+                Gizmos.DrawWireSphere(bossTreeCenter, pitTreeClearRadius);
+            }
         }
     }
 }

@@ -240,6 +240,11 @@ namespace CheonMyeong.Waves
             }
 
             // 중간 보스를 시간 안에 못 쓰러뜨림 - 물러나고 결과(원한)는 이벤트에서 처리.
+            EorinEoksoeBoss kidBoss = EorinEoksoeBoss.Instance;
+            if (kidBoss != null && kidBoss.IsEngaged)
+            {
+                kidBoss.ServerTimeUp(); // 261121 - 5웨이브는 어린 억쇠(기획서 v1.1)
+            }
             EoksoeBoss midBoss = EoksoeBoss.Instance;
             if (midBoss != null && midBoss.IsEngaged && midBoss.Encounter == BossEncounter.Mid)
             {
@@ -419,10 +424,7 @@ namespace CheonMyeong.Waves
                 return;
             }
 
-            if (EoksoeBoss.Instance != null)
-            {
-                EoksoeBoss.Instance.ServerForceHide();
-            }
+            HideAllBosses();
             Enemy.ServerDespawnAll();
             LootPickup.ServerDespawnAll();
             for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
@@ -481,8 +483,25 @@ namespace CheonMyeong.Waves
                 return;
             }
 
+            // 261121 - 5웨이브 결과 수치: 어린 억쇠로 싸웠으면 그 에셋, 억쇠가 대신 나왔으면 억쇠 에셋(기획서 값은 둘 다 같다).
+            int rerolls, gold, soul, failGrudge;
+            KidBossStatsSO kidStats = midBossWasKid && EorinEoksoeBoss.Instance != null ? EorinEoksoeBoss.Instance.Stats : null;
             BossStatsSO bossStats = EoksoeBoss.Instance != null ? EoksoeBoss.Instance.Stats : null;
-            if (bossStats == null)
+            if (kidStats != null)
+            {
+                rerolls = kidStats.defeatRerollTickets;
+                gold = kidStats.defeatGold;
+                soul = kidStats.defeatSoul;
+                failGrudge = kidStats.failGrudge;
+            }
+            else if (bossStats != null)
+            {
+                rerolls = bossStats.midDefeatRerollTickets;
+                gold = bossStats.midDefeatGold;
+                soul = bossStats.midDefeatSoul;
+                failGrudge = bossStats.midFailGrudge;
+            }
+            else
             {
                 return;
             }
@@ -491,24 +510,37 @@ namespace CheonMyeong.Waves
             {
                 if (PartyProgress.Instance != null)
                 {
-                    PartyProgress.Instance.ServerAddGrudge(bossStats.midFailGrudge);
+                    PartyProgress.Instance.ServerAddGrudge(failGrudge);
                 }
                 return;
             }
 
-            // 기획서 9장: 격퇴 보상 - 각자 리롤권 1장 · 엽전 +20, 영혼 125(공유).
+            // 기획서 9-1: 쫓아내면 각자 리롤권 1장 · 엽전 +20, 영혼 125(공유).
             for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
             {
                 PlayerHealth player = PlayerHealth.ActivePlayers[i];
                 if (player != null && player.TryGetComponent(out PlayerProgress progress))
                 {
-                    progress.ServerAddRerollTickets(bossStats.midDefeatRerollTickets);
-                    progress.AddGold(bossStats.midDefeatGold);
+                    progress.ServerAddRerollTickets(rerolls);
+                    progress.AddGold(gold);
                 }
             }
-            if (PartyProgress.Instance != null && bossStats.midDefeatSoul > 0)
+            if (PartyProgress.Instance != null && soul > 0)
             {
-                PartyProgress.Instance.AddExp(bossStats.midDefeatSoul);
+                PartyProgress.Instance.AddExp(soul);
+            }
+        }
+
+        /// <summary>261121 - 억쇠 · 어린 억쇠를 결과 처리 없이 치운다.</summary>
+        private static void HideAllBosses()
+        {
+            if (EoksoeBoss.Instance != null)
+            {
+                EoksoeBoss.Instance.ServerForceHide();
+            }
+            if (EorinEoksoeBoss.Instance != null)
+            {
+                EorinEoksoeBoss.Instance.ServerForceHide();
             }
         }
 
@@ -519,10 +551,7 @@ namespace CheonMyeong.Waves
 
         private void BeginPreparation()
         {
-            if (EoksoeBoss.Instance != null)
-            {
-                EoksoeBoss.Instance.ServerForceHide(); // 261101 - 이전 판 보스 정리
-            }
+            HideAllBosses(); // 261101 - 이전 판 보스 정리
 
             // 261027 추가 - 이전 판에서 살아남은 원귀/드랍 정리("다시 하기" 하자마자 맞아 죽던 문제).
             Enemy.ServerDespawnAll();
@@ -587,6 +616,9 @@ namespace CheonMyeong.Waves
             }
         }
 
+        // 261121 - 이번 5웨이브에 어린 억쇠가 나왔는지(결과 수치 에셋 고르기용, 서버).
+        private bool midBossWasKid;
+
         private void StartWave(int waveNumber)
         {
             currentWave.Value = waveNumber;
@@ -597,16 +629,24 @@ namespace CheonMyeong.Waves
             SyncRemainingSeconds();
             ServerWaveStarted?.Invoke(waveNumber);
 
-            // 261101 - 억쇠 중간 보스(기획서 9장: 5웨이브, 작은 모습 · 체력 3,300).
+            // 261121 - 5웨이브 중간 보스 = 어린 억쇠(기획서 v1.1 · 9-1, 체력 3,000). 씬에 없으면 예전처럼 작은 억쇠로 대신.
             if (definition != null && definition.boss == BossEncounter.Mid)
             {
-                if (EoksoeBoss.Instance != null)
+                midBossWasKid = false;
+                if (EorinEoksoeBoss.Instance != null && EorinEoksoeBoss.Instance.Stats != null)
                 {
+                    midBossWasKid = true;
+                    EorinEoksoeBoss.Instance.ServerBeginEncounter();
+                }
+                else if (EoksoeBoss.Instance != null)
+                {
+                    Debug.LogWarning("[CheonMyeong] 씬에 어린 억쇠가 없어 억쇠가 5웨이브에 대신 나옵니다 - " +
+                                     "'CheonMyeong/Setup/Create Eorin Eoksoe Boss (어린 억쇠)'를 실행하세요.");
                     EoksoeBoss.Instance.ServerBeginEncounter(BossEncounter.Mid);
                 }
                 else
                 {
-                    Debug.LogError("[CheonMyeong] 보스 웨이브인데 씬에 억쇠가 없습니다 - 'CheonMyeong/Setup/Create Eoksoe Boss'를 실행하세요.");
+                    Debug.LogError("[CheonMyeong] 보스 웨이브인데 씬에 보스가 없습니다 - 'CheonMyeong/Setup/Create Eorin Eoksoe Boss (어린 억쇠)'를 실행하세요.");
                 }
             }
         }
@@ -716,10 +756,7 @@ namespace CheonMyeong.Waves
                 return; // 최종전 결과 이벤트와 시간 초과가 겹쳐도 한 번만
             }
             // 261101 - 남은 보스는 결과 처리 없이 치운다(이미 끝났으면 아무것도 안 함).
-            if (EoksoeBoss.Instance != null)
-            {
-                EoksoeBoss.Instance.ServerForceHide();
-            }
+            HideAllBosses();
 
             // 261027 추가 - 판이 끝나면 남은 원귀/드랍을 바로 치운다. 씬을 언로드해도 스폰된 NetworkObject는
             // 활성 씬으로 옮겨져 살아남아서, 다시 하기 때 새 판으로 그대로 넘어왔다.

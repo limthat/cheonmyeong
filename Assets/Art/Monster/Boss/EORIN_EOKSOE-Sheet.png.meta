@@ -1,0 +1,1806 @@
+fileFormatVersion: 2
+guid: da807e44c56bb584e8b5a2b8d7d22b26
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8858914539855438582
+    second: EORIN_EOKSOE-Sheet_0
+  - first:
+      213: -3002929177454124087
+    second: EORIN_EOKSOE-Sheet_1
+  - first:
+      213: 6221864231447122754
+    second: EORIN_EOKSOE-Sheet_2
+  - first:
+      213: 8775404172519130901
+    second: EORIN_EOKSOE-Sheet_3
+  - first:
+      213: 1817337778271017032
+    second: EORIN_EOKSOE-Sheet_4
+  - first:
+      213: 1847222936259826598
+    second: EORIN_EOKSOE-Sheet_5
+  - first:
+      213: -2497558986477335803
+    second: EORIN_EOKSOE-Sheet_6
+  - first:
+      213: -289152103540636959
+    second: EORIN_EOKSOE-Sheet_7
+  - first:
+      213: 8755011265928991203
+    second: EORIN_EOKSOE-Sheet_8
+  - first:
+      213: -5698136073558356591
+    second: EORIN_EOKSOE-Sheet_9
+  - first:
+      213: -1191173777520821934
+    second: EORIN_EOKSOE-Sheet_10
+  - first:
+      213: -1571313881741174493
+    second: EORIN_EOKSOE-Sheet_11
+  - first:
+      213: 7263271333911980807
+    second: EORIN_EOKSOE-Sheet_12
+  - first:
+      213: 9127952234109057458
+    second: EORIN_EOKSOE-Sheet_13
+  - first:
+      213: 1935142434524785499
+    second: EORIN_EOKSOE-Sheet_14
+  - first:
+      213: 6551165660443287638
+    second: EORIN_EOKSOE-Sheet_15
+  - first:
+      213: 2500274156678968552
+    second: EORIN_EOKSOE-Sheet_16
+  - first:
+      213: 4596587099030695929
+    second: EORIN_EOKSOE-Sheet_17
+  - first:
+      213: 4946901625328110049
+    second: EORIN_EOKSOE-Sheet_18
+  - first:
+      213: 1934495223152509798
+    second: EORIN_EOKSOE-Sheet_19
+  - first:
+      213: -3998578023742396012
+    second: EORIN_EOKSOE-Sheet_20
+  - first:
+      213: -5601711581931159183
+    second: EORIN_EOKSOE-Sheet_21
+  - first:
+      213: -4639543486439972702
+    second: EORIN_EOKSOE-Sheet_22
+  - first:
+      213: -5340537923394316793
+    second: EORIN_EOKSOE-Sheet_23
+  - first:
+      213: -6745242815343117572
+    second: EORIN_EOKSOE-Sheet_24
+  - first:
+      213: 139164251657352702
+    second: EORIN_EOKSOE-Sheet_25
+  - first:
+      213: -4120260215537838224
+    second: EORIN_EOKSOE-Sheet_26
+  - first:
+      213: 2719155025302600591
+    second: EORIN_EOKSOE-Sheet_27
+  - first:
+      213: 6253199277167178593
+    second: EORIN_EOKSOE-Sheet_28
+  - first:
+      213: 1994514718441981225
+    second: EORIN_EOKSOE-Sheet_29
+  - first:
+      213: 3931454618002887789
+    second: EORIN_EOKSOE-Sheet_30
+  - first:
+      213: -8493685477581155899
+    second: EORIN_EOKSOE-Sheet_31
+  - first:
+      213: 3057853824838627159
+    second: EORIN_EOKSOE-Sheet_32
+  - first:
+      213: -5044849844655691181
+    second: EORIN_EOKSOE-Sheet_33
+  - first:
+      213: 4374042225567095055
+    second: EORIN_EOKSOE-Sheet_34
+  - first:
+      213: -4747215793062118202
+    second: EORIN_EOKSOE-Sheet_35
+  - first:
+      213: 3233138252208171814
+    second: EORIN_EOKSOE-Sheet_36
+  - first:
+      213: 6411373257620185210
+    second: EORIN_EOKSOE-Sheet_37
+  - first:
+      213: 3943369081966566849
+    second: EORIN_EOKSOE-Sheet_38
+  - first:
+      213: -4771300626804100334
+    second: EORIN_EOKSOE-Sheet_39
+  - first:
+      213: -995953760880438026
+    second: EORIN_EOKSOE-Sheet_40
+  - first:
+      213: 5755706353964399791
+    second: EORIN_EOKSOE-Sheet_41
+  - first:
+      213: -4300399234755538864
+    second: EORIN_EOKSOE-Sheet_42
+  - first:
+      213: -8854329247791300379
+    second: EORIN_EOKSOE-Sheet_43
+  - first:
+      213: 4274338761839825940
+    second: EORIN_EOKSOE-Sheet_44
+  - first:
+      213: -7601896029836462257
+    second: EORIN_EOKSOE-Sheet_45
+  - first:
+      213: -1470634040751130642
+    second: EORIN_EOKSOE-Sheet_46
+  - first:
+      213: -5747182712800112896
+    second: EORIN_EOKSOE-Sheet_47
+  - first:
+      213: 4211064337086629329
+    second: EORIN_EOKSOE-Sheet_48
+  - first:
+      213: 6497992529977297898
+    second: EORIN_EOKSOE-Sheet_49
+  - first:
+      213: 9179770725738778144
+    second: EORIN_EOKSOE-Sheet_50
+  - first:
+      213: -7605408128426576737
+    second: EORIN_EOKSOE-Sheet_51
+  - first:
+      213: 3731551567149590107
+    second: EORIN_EOKSOE-Sheet_52
+  - first:
+      213: -3290492895168661679
+    second: EORIN_EOKSOE-Sheet_53
+  - first:
+      213: 1804661682863259115
+    second: EORIN_EOKSOE-Sheet_54
+  - first:
+      213: -871590854917551620
+    second: EORIN_EOKSOE-Sheet_55
+  - first:
+      213: 7582759664524888252
+    second: EORIN_EOKSOE-Sheet_56
+  - first:
+      213: 2931518109377555250
+    second: EORIN_EOKSOE-Sheet_57
+  - first:
+      213: -4571862043805430928
+    second: EORIN_EOKSOE-Sheet_58
+  - first:
+      213: 6116857519779088710
+    second: EORIN_EOKSOE-Sheet_59
+  - first:
+      213: -3520950274653587548
+    second: EORIN_EOKSOE-Sheet_60
+  - first:
+      213: 6260076374643122048
+    second: EORIN_EOKSOE-Sheet_61
+  - first:
+      213: 3977654663608287300
+    second: EORIN_EOKSOE-Sheet_62
+  - first:
+      213: 2151821443686637363
+    second: EORIN_EOKSOE-Sheet_63
+  - first:
+      213: 7216726918623222158
+    second: EORIN_EOKSOE-Sheet_64
+  - first:
+      213: -2435355156949821999
+    second: EORIN_EOKSOE-Sheet_65
+  - first:
+      213: 8361904745685879851
+    second: EORIN_EOKSOE-Sheet_66
+  - first:
+      213: -8404683037604809771
+    second: EORIN_EOKSOE-Sheet_67
+  - first:
+      213: 2426125277669693909
+    second: EORIN_EOKSOE-Sheet_68
+  - first:
+      213: -8327072156944458781
+    second: EORIN_EOKSOE-Sheet_69
+  - first:
+      213: 5735415667050712289
+    second: EORIN_EOKSOE-Sheet_70
+  - first:
+      213: 3885344693388565114
+    second: EORIN_EOKSOE-Sheet_71
+  - first:
+      213: 3055818017828841479
+    second: EORIN_EOKSOE-Sheet_72
+  - first:
+      213: -4162125061752859778
+    second: EORIN_EOKSOE-Sheet_73
+  - first:
+      213: 5907147017160758679
+    second: EORIN_EOKSOE-Sheet_74
+  - first:
+      213: -3686794015937381413
+    second: EORIN_EOKSOE-Sheet_75
+  - first:
+      213: 3761090029342034382
+    second: EORIN_EOKSOE-Sheet_76
+  - first:
+      213: -1090644928362833091
+    second: EORIN_EOKSOE-Sheet_77
+  - first:
+      213: 1078286474487713362
+    second: EORIN_EOKSOE-Sheet_78
+  - first:
+      213: -623145417679185916
+    second: EORIN_EOKSOE-Sheet_79
+  - first:
+      213: -4912719598399838005
+    second: EORIN_EOKSOE-Sheet_80
+  - first:
+      213: -4052264630403755074
+    second: EORIN_EOKSOE-Sheet_81
+  - first:
+      213: 5695366613890241040
+    second: EORIN_EOKSOE-Sheet_82
+  - first:
+      213: 1746582072466373747
+    second: EORIN_EOKSOE-Sheet_83
+  - first:
+      213: 2300584388380108800
+    second: EORIN_EOKSOE-Sheet_84
+  - first:
+      213: 252929911588770340
+    second: EORIN_EOKSOE-Sheet_85
+  - first:
+      213: -3840622151395895689
+    second: EORIN_EOKSOE-Sheet_86
+  - first:
+      213: -3687094547890328056
+    second: EORIN_EOKSOE-Sheet_87
+  - first:
+      213: 229266058859533082
+    second: EORIN_EOKSOE-Sheet_88
+  - first:
+      213: -3570098940008144900
+    second: EORIN_EOKSOE-Sheet_89
+  - first:
+      213: -5599533782613876871
+    second: EORIN_EOKSOE-Sheet_90
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1152
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d932c443ea79774bbfb9772a6e1e7f9
+      internalID: 8858914539855438582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 1152
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fc63887d9d98f64cbf7671f1fc4e6e9
+      internalID: -3002929177454124087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 1152
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bfb1340487e73a45bc07b7f4b0c6116
+      internalID: 6221864231447122754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 1152
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1a79f36c1451b34f88e2d21a8f02ba2
+      internalID: 8775404172519130901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 1152
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24ce6b954c2e7d64a8d1a6d7ba06fe5c
+      internalID: 1817337778271017032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 1152
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2450103c5999eeb4499891f147b3fd01
+      internalID: 1847222936259826598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 1152
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9dff9899ec606ce48b30cf4a1c22e76e
+      internalID: -2497558986477335803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1024
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02dc4150a3a37184e9837311bceb72d8
+      internalID: -289152103540636959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 1024
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8e57427091325948901862c528fc41a
+      internalID: 8755011265928991203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 1024
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f49f59907b94a304cbdb68cb4c67c470
+      internalID: -5698136073558356591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 1024
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7831af96af4efb479339bcb05044312
+      internalID: -1191173777520821934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 1024
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2ad18a50e3be4247ae906996e5f1d9e
+      internalID: -1571313881741174493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 1024
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 779c7fcfa0cb9a6428b7e5d7baed0bb7
+      internalID: 7263271333911980807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 1024
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7dab99ce71714b2468d83723f2d2a38b
+      internalID: 9127952234109057458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 896
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6c6aae23156c364a9f2a8f07e1dc9fd
+      internalID: 1935142434524785499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 896
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 699df28788364684fafc25c41669a686
+      internalID: 6551165660443287638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 896
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9feaba25ffed84e41a4bf2bdcdc3bc6c
+      internalID: 2500274156678968552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 896
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d087a42b2e31c946a06d08f85eb9fda
+      internalID: 4596587099030695929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 896
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c55e46c8cf28bfb40ba8f9299c060c89
+      internalID: 4946901625328110049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 896
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8982dc96b7b326840a33490a042e4947
+      internalID: 1934495223152509798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 768
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2000e033ff805d43aa447e85d4e5cab
+      internalID: -3998578023742396012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 768
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f2b9f3cbdb55f647a4a79b0d9e0cda8
+      internalID: -5601711581931159183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 768
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b8955c05d64d72479359106a84c9ad1
+      internalID: -4639543486439972702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 768
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f9dceb3c3dd1a042b0c9eca45c592e0
+      internalID: -5340537923394316793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 768
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18c0d4264d6b3ad498071a9e96aeefce
+      internalID: -6745242815343117572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 768
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73229896d17bb554582137c01a308140
+      internalID: 139164251657352702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 768
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88c7ca8b28580574cbc88936136f5a61
+      internalID: -4120260215537838224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 640
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16cad1156381e6149968d05c6a253daf
+      internalID: 2719155025302600591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 640
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4b2aab69c4526e429e82d5f19294c1c
+      internalID: 6253199277167178593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 640
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef86e0d1aff9b6b4f9a9a76b1f9f5cb3
+      internalID: 1994514718441981225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_30
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 640
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21239c457634d85449711d84b512ed56
+      internalID: 3931454618002887789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_31
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44a0affd353e83741822c5ba2250386f
+      internalID: -8493685477581155899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_32
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76d3b943c0ebb4f4dbb0e761295b7a88
+      internalID: 3057853824838627159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_33
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68add5143b68408408d161bbb86a065f
+      internalID: -5044849844655691181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_34
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c16b682332bda048afb0771d6805348
+      internalID: 4374042225567095055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_35
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fc3c728ea8b5364b9526acd1f028fa0
+      internalID: -4747215793062118202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_36
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 512
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4d6a8494ed7e2942beeabae820bf2ea
+      internalID: 3233138252208171814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_37
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78876d6e18a3472498e2d5cdef89efa0
+      internalID: 6411373257620185210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_38
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0dfbb4e39a6c0641a557cbcf3766f2d
+      internalID: 3943369081966566849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_39
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60a11f54ce244114f9ea218e37711697
+      internalID: -4771300626804100334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_40
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36a73a9868be6b142bdb4a3cd2fe866e
+      internalID: -995953760880438026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_41
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f283f37059db02f45b4fb7bf429e092e
+      internalID: 5755706353964399791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_42
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8aacaeb8272c9e459c8f4b8bf278660
+      internalID: -4300399234755538864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_43
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 192c91f8bc82a534c97394af31ffc3ae
+      internalID: -8854329247791300379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_44
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef9a96e6fbacfe847a500a75af06e1fe
+      internalID: 4274338761839825940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_45
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f100638d212ab28429a09db85c02310f
+      internalID: -7601896029836462257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_46
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ee19a7c36491e946ad53321ffa524aa
+      internalID: -1470634040751130642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_47
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3cbfcab1463706e40ae9d6e4761c2d00
+      internalID: -5747182712800112896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_48
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b58ec0d33a58d49478ee63fb5cc5197f
+      internalID: 4211064337086629329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_49
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b2a1a194a4344644a97284192d68d39
+      internalID: 6497992529977297898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_50
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1eafc8a5d6aaea647a8ba8d39a2c62c2
+      internalID: 9179770725738778144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_51
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e23ee8f459f356745a7c936472e76d86
+      internalID: -7605408128426576737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_52
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56114012244220c4f8b8d76fd6692011
+      internalID: 3731551567149590107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_53
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9d7f5d9eb9f9fa498260bd702e06cbe
+      internalID: -3290492895168661679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_54
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbf455efc7efbb74dbb1d1cbd5ceef96
+      internalID: 1804661682863259115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_55
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc22125b36258f44b96593060d920b3e
+      internalID: -871590854917551620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_56
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a287cba8ecdce5740b2700943f33dbbd
+      internalID: 7582759664524888252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_57
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 006821b69ec79f744b970f3e1d57fa3f
+      internalID: 2931518109377555250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_58
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0121622aabaa8c7448fdbc964fb9323d
+      internalID: -4571862043805430928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_59
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a77b6c713ef2ad4488279aa883cb596
+      internalID: 6116857519779088710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EORIN_EOKSOE-Sheet_60
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1a389c8d8cd1db40a1033548c949be6
+      internalID: -3520950274653587548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 726207d2fa952bc40a49d670137cfd5c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      EORIN_EOKSOE-Sheet_0: 8858914539855438582
+      EORIN_EOKSOE-Sheet_1: -3002929177454124087
+      EORIN_EOKSOE-Sheet_10: -1191173777520821934
+      EORIN_EOKSOE-Sheet_11: -1571313881741174493
+      EORIN_EOKSOE-Sheet_12: 7263271333911980807
+      EORIN_EOKSOE-Sheet_13: 9127952234109057458
+      EORIN_EOKSOE-Sheet_14: 1935142434524785499
+      EORIN_EOKSOE-Sheet_15: 6551165660443287638
+      EORIN_EOKSOE-Sheet_16: 2500274156678968552
+      EORIN_EOKSOE-Sheet_17: 4596587099030695929
+      EORIN_EOKSOE-Sheet_18: 4946901625328110049
+      EORIN_EOKSOE-Sheet_19: 1934495223152509798
+      EORIN_EOKSOE-Sheet_2: 6221864231447122754
+      EORIN_EOKSOE-Sheet_20: -3998578023742396012
+      EORIN_EOKSOE-Sheet_21: -5601711581931159183
+      EORIN_EOKSOE-Sheet_22: -4639543486439972702
+      EORIN_EOKSOE-Sheet_23: -5340537923394316793
+      EORIN_EOKSOE-Sheet_24: -6745242815343117572
+      EORIN_EOKSOE-Sheet_25: 139164251657352702
+      EORIN_EOKSOE-Sheet_26: -4120260215537838224
+      EORIN_EOKSOE-Sheet_27: 2719155025302600591
+      EORIN_EOKSOE-Sheet_28: 6253199277167178593
+      EORIN_EOKSOE-Sheet_29: 1994514718441981225
+      EORIN_EOKSOE-Sheet_3: 8775404172519130901
+      EORIN_EOKSOE-Sheet_30: 3931454618002887789
+      EORIN_EOKSOE-Sheet_31: -8493685477581155899
+      EORIN_EOKSOE-Sheet_32: 3057853824838627159
+      EORIN_EOKSOE-Sheet_33: -5044849844655691181
+      EORIN_EOKSOE-Sheet_34: 4374042225567095055
+      EORIN_EOKSOE-Sheet_35: -4747215793062118202
+      EORIN_EOKSOE-Sheet_36: 3233138252208171814
+      EORIN_EOKSOE-Sheet_37: 6411373257620185210
+      EORIN_EOKSOE-Sheet_38: 3943369081966566849
+      EORIN_EOKSOE-Sheet_39: -4771300626804100334
+      EORIN_EOKSOE-Sheet_4: 1817337778271017032
+      EORIN_EOKSOE-Sheet_40: -995953760880438026
+      EORIN_EOKSOE-Sheet_41: 5755706353964399791
+      EORIN_EOKSOE-Sheet_42: -4300399234755538864
+      EORIN_EOKSOE-Sheet_43: -8854329247791300379
+      EORIN_EOKSOE-Sheet_44: 4274338761839825940
+      EORIN_EOKSOE-Sheet_45: -7601896029836462257
+      EORIN_EOKSOE-Sheet_46: -1470634040751130642
+      EORIN_EOKSOE-Sheet_47: -5747182712800112896
+      EORIN_EOKSOE-Sheet_48: 4211064337086629329
+      EORIN_EOKSOE-Sheet_49: 6497992529977297898
+      EORIN_EOKSOE-Sheet_5: 1847222936259826598
+      EORIN_EOKSOE-Sheet_50: 9179770725738778144
+      EORIN_EOKSOE-Sheet_51: -7605408128426576737
+      EORIN_EOKSOE-Sheet_52: 3731551567149590107
+      EORIN_EOKSOE-Sheet_53: -3290492895168661679
+      EORIN_EOKSOE-Sheet_54: 1804661682863259115
+      EORIN_EOKSOE-Sheet_55: -871590854917551620
+      EORIN_EOKSOE-Sheet_56: 7582759664524888252
+      EORIN_EOKSOE-Sheet_57: 2931518109377555250
+      EORIN_EOKSOE-Sheet_58: -4571862043805430928
+      EORIN_EOKSOE-Sheet_59: 6116857519779088710
+      EORIN_EOKSOE-Sheet_6: -2497558986477335803
+      EORIN_EOKSOE-Sheet_60: -3520950274653587548
+      EORIN_EOKSOE-Sheet_7: -289152103540636959
+      EORIN_EOKSOE-Sheet_8: 8755011265928991203
+      EORIN_EOKSOE-Sheet_9: -5698136073558356591
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -56,6 +56,21 @@ namespace CheonMyeong.Audio
         public const string BossGrab = "boss.grab";
         public const string BossDie = "boss.die";
         public const string BossSwing = "boss.swing";
+        // 261121 - 사운드 기획서 v1.2 "새 원귀 · 보스 소리(재활용)": 새 파일 없이 있는 소리를 피치 · 길이만 바꿔 쓴다.
+        public const string BossQuakeImpact = "boss.quake_impact"; // 땅 꺼짐 내리침 - SFX_BS_Impact 크게
+        public const string BossQuakeDrum = "boss.quake_drum";     // 땅 꺼짐 내리침 - SFX_Drum 1타
+        public const string BossQuakeGrudge = "boss.quake_grudge"; // 땅 꺼짐 구덩이 - SFX_Grudge 낮게
+        public const string KidLaugh = "kid.laugh";                // 어린 억쇠 등장 · 도망 - SFX_BS_Laugh +5반음
+        public const string KidSwing = "kid.swing";                // 어린 억쇠 휘두르기 · 배지기 - SFX_BS_Whoosh 높게
+        public const string KidImpact = "kid.impact";              // 어린 억쇠 내던지기 - SFX_BS_Impact 작게
+        public const string KidFly = "kid.fly";                    // 빗자루 비행 - SFX_BS_Whoosh 반복
+        public const string KidSpin = "kid.spin";                  // 빗자루 회오리 - SFX_BS_Whoosh 3번 겹쳐서
+        public const string EliteChargeWarn = "elite.charge_warn"; // 아귀 돌진 - SFX_BS_Warn 짧게(0.4초) · 높게
+        public const string EliteSplash = "elite.splash";          // 물귀신 나옴 - SFX_EN_Splash
+        public const string EliteSplashReverse = "elite.splash_reverse"; // 물귀신 들어감 - SFX_EN_Splash 거꾸로
+        public const string EliteThrow = "elite.throw";            // 역귀 호리병 - SFX_ATK_Throw 낮게
+        public const string ElitePoisonTick = "elite.poison_tick"; // 독 틱 - SFX_HIT 아주 작게 · 낮게
+        public const string EliteExorcise = "elite.exorcise";      // 중형 퇴마 - SFX_EN_Exorcise 낮게
 
         // 결과(사운드 기획서: 봉인 성공 = SFX_Bell_Rise, 실패 = SFX_Grudge)
         public const string ResultWin = "result.win";
@@ -104,6 +119,8 @@ namespace CheonMyeong.Audio
             LevelUp, CardShow, CardPick, CardBurn, CardReroll, PickupSoul, PickupSoulMid, PickupSoulBig, PickupCoin,
             Hit, HitCrit, EnemyDie, PlayerHurt, PlayerDown, PlayerRevive,
             BossAppear, BossDrum, BossWarn, BossWarp, BossDimension, BossSeal, BossSlam, BossSummon, BossMental, BossGrab, BossDie, BossSwing,
+            BossQuakeImpact, BossQuakeDrum, BossQuakeGrudge, KidLaugh, KidSwing, KidImpact, KidFly, KidSpin,
+            EliteChargeWarn, EliteSplash, EliteSplashReverse, EliteThrow, ElitePoisonTick, EliteExorcise,
             ResultWin, ResultLose,
             UiClick, UiHover, UiBack, UiOpen, UiError, UiNotice, UiGateOpen, OutgameUpgrade,
             AttackPrefix + "hayoung", AttackPrefix + "hanjuwon", AttackPrefix + "parkgyuhyeok", AttackPrefix + "leeara",

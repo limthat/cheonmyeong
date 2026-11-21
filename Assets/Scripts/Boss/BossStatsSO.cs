@@ -16,11 +16,11 @@ namespace CheonMyeong.Boss
         [Header("기본")]
         public string displayName = "억쇠";
 
-        [Tooltip("5웨이브 중간 보스 체력 - 기획서 3,300(1칸).")]
-        [Min(1f)] public float midMaxHealth = 3300f;
+        [Tooltip("5웨이브 중간 보스 체력(억쇠가 대신 나올 때만) - 기획서 v1.1 3,000(1칸). 5웨이브는 어린 억쇠(KidBossStatsSO)가 맡는다.")]
+        [Min(1f)] public float midMaxHealth = 3000f;
 
-        [Tooltip("최종전 칸당 체력 - 기획서 8,400 × 3칸 = 25,200.")]
-        [Min(1f)] public float finalHealthPerBar = 8400f;
+        [Tooltip("최종전 칸당 체력 - 기획서 v1.1 8,000 × 3칸 = 24,000.")]
+        [Min(1f)] public float finalHealthPerBar = 8000f;
         [Min(1)] public int finalBars = 3;
 
         [Tooltip("크기 배율 - 중간 보스는 작은 모습(1), 최종전은 2배(기획서).")]
@@ -35,6 +35,12 @@ namespace CheonMyeong.Boss
 
         [Tooltip("등장 연출 시간(초).")]
         [Min(0f)] public float appearSeconds = 1.2f;
+
+        [Header("원한 단계별 기본 스펙 (261122 예섭 요청 · 제안값)")]
+        [Tooltip("체력 배율(맑음 · 짙음 · 한 · 폭주) - 보스전 시작 때의 단계로 정한다. 분신 체력도 이 체력 기준이라 같이 오른다.")]
+        public float[] healthByStage = { 1f, 1.15f, 1.3f, 1.5f };
+        [Tooltip("이동 속도 배율 - 지금 단계로 계속 바뀐다.")]
+        public float[] moveSpeedByStage = { 1f, 1.05f, 1.1f, 1.2f };
 
         [Header("통통 뛰는 이동(연출) - 외다리라 걷기 대신 콩콩 뛴다(예섭)")]
         [Min(0f)] public float hopHeight = 0.35f;
@@ -140,11 +146,49 @@ namespace CheonMyeong.Boss
         [Min(0f)] public float mentalFirstCooldown = 10f;
         [Tooltip("261102 전조 - 시전 시작부터 차원이 열릴 때까지(초). MENTAL 모션을 이 시간에 맞춰 늘리고, 머리 위 '!' + 대상 발밑 표식이 이 동안 보인다.")]
         [Min(0.2f)] public float mentalWindupSeconds = 1.5f;
-        [Tooltip("쿨타임(초) - 예섭 기획: 지속시간이 끝난 뒤부터 돈다.")]
-        public float[] mentalCooldown = { 140f, 110f, 80f, 30f };
+        [Tooltip("쿨타임(초) - 예섭 기획: 지속시간이 끝난 뒤부터 돈다. [스탯] 엑셀 84/66/48/18 (×0.6, 26.10.28).")]
+        public float[] mentalCooldown = { 84f, 66f, 48f, 18f };
         [Min(0.1f)] public float mentalDuration = 8f;
         [Tooltip("차원 반지름(유닛) - 끌려간 사람과 분신이 이 원 밖으로 못 나간다 - 미정.")]
         [Min(1f)] public float mentalRealmRadius = 4.5f;
+
+        [Header("원귀 부르기 (최종전만) - 기획서 v1.1 · [스탯] 엑셀")]
+        [Tooltip("불러내는 원귀 수(마리).")]
+        public int[] summonCount = { 20, 30, 45, 80 };
+        [Tooltip("중형 섞임 비율(아귀 · 역귀만, 물귀신 제외).")]
+        public float[] summonEliteRatio = { 0f, 0f, 0.2f, 0.3f };
+        [Tooltip("쿨타임(초).")]
+        public float[] summonCooldown = { 30f, 26f, 22f, 15f };
+        [Tooltip("첫 쿨타임(초) - 미정.")]
+        [Min(0f)] public float summonFirstCooldown = 20f;
+        [Tooltip("보스 둘레 원 반지름(칸) - 기획서 6칸.")]
+        [Min(1f)] public float summonRingRadius = 6f;
+        [Tooltip("MENTAL로 땅을 짚은 뒤 MENTAL_IDLE로 멈춰 있는 시간(초) - 기획서 1.2초.")]
+        [Min(0f)] public float summonHoldSeconds = 1.2f;
+
+        [Header("땅 꺼짐 (최종전만) - 기획서 v1.2 · [스탯] 엑셀")]
+        [Tooltip("예고 시간(초) - QUAKE 71번 장에서 이만큼 멈춘다.")]
+        public float[] quakeTelegraphSeconds = { 1.5f, 1.4f, 1.3f, 1f };
+        [Tooltip("바깥 원 피해(HP) - 기획서 값 그대로(최종전 피해 배율 안 곱함).")]
+        public float[] quakeDamage = { 40f, 50f, 60f, 80f };
+        [Tooltip("연속 횟수.")]
+        public int[] quakeChain = { 1, 1, 2, 3 };
+        [Tooltip("쿨타임(초).")]
+        public float[] quakeCooldown = { 20f, 17f, 14f, 10f };
+        [Tooltip("첫 쿨타임(초) - 미정.")]
+        [Min(0f)] public float quakeFirstCooldown = 25f;
+        [Tooltip("가운데 즉사 원 반지름(칸).")]
+        [Min(0.1f)] public float quakeInnerRadius = 1.5f;
+        [Tooltip("바깥 원 반지름(칸).")]
+        [Min(0.1f)] public float quakeOuterRadius = 4f;
+        [Tooltip("바깥 원에 맞으면 밀려나는 거리(칸).")]
+        [Min(0f)] public float quakeKnockbackTiles = 2f;
+        [Tooltip("노림 - '원귀 부르기 직후에 자주 쓴다': 부르기가 끝났을 때 남은 쿨타임이 이 값(초) 이하면 바로 쓴다 - 제안.")]
+        [Min(0f)] public float quakeComboWindow = 5f;
+        [Tooltip("구덩이 한 변(칸) - 3×3칸.")]
+        [Min(1f)] public float pitSize = 3f;
+        [Tooltip("남는 구덩이 최대 수 - 넘으면 가장 오래된 것부터 메워진다.")]
+        [Min(1)] public int pitMax = 6;
 
         [Header("5웨이브 중간 보스 결과 - 기획서")]
         [Min(0)] public int midDefeatRerollTickets = 1;

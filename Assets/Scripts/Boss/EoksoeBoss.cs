@@ -30,6 +30,7 @@ namespace CheonMyeong.Boss
         Hold,
         Slam,
         Die,
+        Quake, // 261121 - 땅 꺼짐(기획서 v1.2, 시트 맨 아래 줄 · 125ms)
     }
 
     /// <summary>금 나와라 뚝딱으로 뿌린 엽전 하나(서버가 쓰고 전원이 읽는다).</summary>
@@ -78,8 +79,14 @@ namespace CheonMyeong.Boss
         /// <summary>서버 전용 - 보스전이 끝났을 때(종류, 격퇴했는지). WaveManager가 결과를 처리한다.</summary>
         public static event Action<BossEncounter, bool> ServerEncounterEnded;
 
+        /// <summary>261121 - 어린 억쇠(5웨이브)도 같은 결과 이벤트로 알린다(WaveManager는 이 이벤트 하나만 듣는다).</summary>
+        internal static void RaiseEncounterEnded(BossEncounter kind, bool defeated)
+        {
+            ServerEncounterEnded?.Invoke(kind, defeated);
+        }
+
         private static readonly string[] AnimStateNames =
-            { "IDLE", "WALK", "SUMMON", "ATK", "MENTAL", "MENTAL_IDLE", "GRAB", "HOLD", "SLAM", "DIE" };
+            { "IDLE", "WALK", "SUMMON", "ATK", "MENTAL", "MENTAL_IDLE", "GRAB", "HOLD", "SLAM", "DIE", "QUAKE" };
 
         private static readonly int[] AnimStateHashes = BuildHashes();
 
@@ -87,12 +94,18 @@ namespace CheonMyeong.Boss
         private const float SummonSeconds = 7 * FrameSeconds;
         private const float MentalCastSeconds = 7 * FrameSeconds;
         private const float GrabSeconds = 9 * FrameSeconds;
-        private const float GrabCheckSeconds = 6 * FrameSeconds;  // 잡기 판정 프레임 45 (39~47 중 7번째)
+        private const float GrabCheckSeconds = 6 * FrameSeconds;  // 잡기 판정 프레임 44 (38~46 중 7번째) - 기획서 v1.2
         private const float SlamSeconds = 6 * FrameSeconds;
-        private const float SlamHitSeconds = 3 * FrameSeconds;    // 피해 · 놓기 프레임 55 (52~57 중 4번째)
-        private const float AtkHitFrameTime = 4 * FrameSeconds;   // 타격 판정 프레임 24 (20~25 중 5번째)
+        private const float SlamHitSeconds = 3 * FrameSeconds;    // 피해 · 놓기 프레임 54 (51~56 중 4번째)
+        private const float AtkHitFrameTime = 3 * FrameSeconds;   // 타격 판정 프레임 23 (20~24 중 4번째, ATK 5장) - 기획서 v1.2
         private const float DieSeconds = 9 * FrameSeconds;
+        // 261121 - 땅 꺼짐 QUAKE 66~74 (9장 · 125ms): 71(6번째)에서 예고 시간만큼 멈춤 → 72 내리침 → 73 피해 · 구덩이 · SLAM_FX → 74 → IDLE.
+        private const float QuakeFrameSeconds = 0.125f;
+        private const float QuakeFreezeClipTime = 5.5f * QuakeFrameSeconds; // 71번 장 한가운데에서 멈춘다
+        private const float QuakeHitClipTime = 7f * QuakeFrameSeconds;      // 73번 장이 시작되는 순간
+        private const float QuakeClipLength = 9f * QuakeFrameSeconds;
         private const float TieDistanceEpsilon = 0.05f;
+        private const float MentalRecoverSeconds = 0.6f; // 차원을 연 뒤 짚은 자세로 멈춰 있는 시간 - 그 뒤 바깥 사람을 쫓는다
 
         [SerializeField] private BossStatsSO stats;
         [SerializeField] private Transform visualRoot;
@@ -109,8 +122,10 @@ namespace CheonMyeong.Boss
 
         [Tooltip("261102 - Eoksoe_FX-Sheet 윗줄(초승달 베기, 왼쪽을 향해 그려짐).")]
         [SerializeField] private Sprite[] slashFxFrames;
-        [Tooltip("261102 - Eoksoe_FX-Sheet 아랫줄(땅 터짐).")]
+        [Tooltip("261102 - Eoksoe_FX-Sheet 둘째 줄(땅 터짐 SLAM_FX).")]
         [SerializeField] private Sprite[] burstFxFrames;
+        [Tooltip("261121 - Eoksoe_FX-Sheet 셋째 줄 QUAKE_PIT(땅 꺼짐 구덩이 그림 1장).")]
+        [SerializeField] private Sprite pitSprite;
 
         [Tooltip("Visual(그림)의 기본 위치 - 발이 이 오브젝트 위치(바닥)에 오도록 빌더가 계산해 넣는다.")]
         [SerializeField] private Vector2 visualBaseOffset;
@@ -122,6 +137,10 @@ namespace CheonMyeong.Boss
         private readonly NetworkVariable<byte> bars = new NetworkVariable<byte>(1);
         private readonly NetworkVariable<byte> animState = new NetworkVariable<byte>();
         private readonly NetworkVariable<int> animSerial = new NetworkVariable<int>();
+        // 261121 - 재생 속도(전조 시간에 맞춰 늘린 모션). 같은 MENTAL이라도 정신병(늘림)과 원귀 부르기(원래 속도)가 달라 서버가 정해 보낸다.
+        private readonly NetworkVariable<float> animSpeed = new NetworkVariable<float>(1f);
+        // 261121 - 땅 꺼짐 예고 시간(QUAKE 71번 장에서 멈추는 시간).
+        private readonly NetworkVariable<float> quakeHold = new NetworkVariable<float>();
         private readonly NetworkVariable<bool> faceRight = new NetworkVariable<bool>();
         private readonly NetworkVariable<bool> visible = new NetworkVariable<bool>();
         // 시간 안에 못 잡았을 때: 쓰러지는 대신 통통 뛰며 흐려져 물러난다(격퇴와 화면상 구분).
@@ -138,6 +157,8 @@ namespace CheonMyeong.Boss
         private readonly NetworkVariable<float> cloneMaxHealth = new NetworkVariable<float>(1f);
 
         private NetworkList<BossCoinState> coins;
+        // 261121 - 땅 꺼짐 구덩이 가운데 좌표(오래된 것부터). BossPitField가 모든 화면에서 같은 구덩이를 만든다.
+        private NetworkList<Vector2> pitCenters;
 
         public BossEncounter Encounter => (BossEncounter)encounter.Value;
         public bool IsEngaged => encounter.Value != (byte)BossEncounter.None;
@@ -152,6 +173,7 @@ namespace CheonMyeong.Boss
             Slam,
             Land,
             Appear,
+            Quake,
         }
 
         private enum ServerState
@@ -168,6 +190,9 @@ namespace CheonMyeong.Boss
             Slamming,
             Leaping,
             Dying,
+            Calling,   // 261121 - 원귀 부르기: MENTAL(땅 짚기)
+            CallHold,  //            MENTAL_IDLE 1.2초(보스 멈춤)
+            Quaking,   // 261121 - 땅 꺼짐
         }
 
         private enum CloneState
@@ -188,6 +213,12 @@ namespace CheonMyeong.Boss
         private float grabCooldownLeft;
         private float mentalCooldownLeft;
         private float leapCooldownLeft;
+        private float summonCooldownLeft;
+        private float quakeCooldownLeft;
+        private int quakeChainLeft;
+        private Vector2 quakeCenter;
+        private float quakeHitTime;
+        private float quakeEndTime;
         private float hopClock;
         private Vector2 leapFrom;
         private Vector2 leapTo;
@@ -213,6 +244,7 @@ namespace CheonMyeong.Boss
 
         // ---------- 클라이언트 연출 상태 ----------
         private int playedAnimSerial = -1;
+        private float animPlayStartTime;
         private float hopPhase;
         private float squashTimer;
         private float leapVisualStart = -1f;
@@ -242,6 +274,7 @@ namespace CheonMyeong.Boss
         private SpriteRenderer realmDarkness;
         private readonly List<SpriteRenderer> realmBoosted = new List<SpriteRenderer>();
         private readonly List<int> realmBoostedOrders = new List<int>();
+        private readonly List<int> realmBoostedLayers = new List<int>();
         private readonly List<SpriteRenderer> realmFaded = new List<SpriteRenderer>();
         private readonly List<SpriteRenderer> coinRenderers = new List<SpriteRenderer>();
         private Transform coinRoot;
@@ -266,6 +299,7 @@ namespace CheonMyeong.Boss
             rb.freezeRotation = true;
             rb.interpolation = RigidbodyInterpolation2D.Interpolate;
             coins = new NetworkList<BossCoinState>();
+            pitCenters = new NetworkList<Vector2>();
             if (shadowRenderer != null && shadowRenderer.sprite == null)
             {
                 shadowRenderer.sprite = GetSoftCircleSprite(); // 빌더가 그림자 그림을 못 넣었을 때 대비
@@ -278,6 +312,8 @@ namespace CheonMyeong.Boss
             visible.OnValueChanged += HandleVisibleChanged;
             realmActive.OnValueChanged += HandleRealmChanged;
             animState.OnValueChanged += HandleAnimSound;
+            pitCenters.OnListChanged += HandlePitsChanged;
+            RebuildPits();
             ApplyVisible(visible.Value);
             if (IsServer)
             {
@@ -290,6 +326,8 @@ namespace CheonMyeong.Boss
             visible.OnValueChanged -= HandleVisibleChanged;
             realmActive.OnValueChanged -= HandleRealmChanged;
             animState.OnValueChanged -= HandleAnimSound;
+            pitCenters.OnListChanged -= HandlePitsChanged;
+            BossPitField.Clear();
             SetRealmVisual(false);
             CheonMyeong.Audio.GameAudio.Stop(realmAmbience);
             realmAmbience = default;
@@ -323,6 +361,25 @@ namespace CheonMyeong.Boss
             {
                 Destroy(realmDarkness.gameObject);
             }
+            if (playerFlame != null)
+            {
+                Destroy(playerFlame.gameObject);
+            }
+            if (cloneFlame != null)
+            {
+                Destroy(cloneFlame.gameObject);
+            }
+            // 261122 - 차원 막 텍스처는 실행 중에 만든 것이라 직접 해제(메모리 누수 방지).
+            if (realmMaskSprite != null)
+            {
+                Destroy(realmMaskSprite);
+                realmMaskSprite = null;
+            }
+            if (realmMaskTexture != null)
+            {
+                Destroy(realmMaskTexture);
+                realmMaskTexture = null;
+            }
             if (healthBar != null)
             {
                 // 261117 - 씬의 아트 틀(BossBarFrame)을 쓰는 경우 틀째 지우면 다음 보스(최종전)가 틀 없는 임시 바로 나왔다 - 붙인 것만 걷는다.
@@ -354,12 +411,14 @@ namespace CheonMyeong.Boss
             transform.localScale = new Vector3(scale, scale, 1f);
 
             float total = kind == BossEncounter.Final ? stats.finalHealthPerBar * stats.finalBars : stats.midMaxHealth;
+            stage = CurrentStage();
+            total *= BossStatsSO.Pick(stats.healthByStage, stage); // 261122 - 원한이 짙을수록 단단하게(시작 순간 단계로 고정)
             maxHealth.Value = total;
             health.Value = total;
             bars.Value = (byte)(kind == BossEncounter.Final ? Mathf.Max(1, stats.finalBars) : 1);
 
             MapBounds bounds = MapBounds.Instance;
-            Vector2 spawn = bounds != null && bounds.CameraArea.width > 0f ? bounds.CameraArea.center : Vector2.zero;
+            Vector2 spawn = bounds != null ? bounds.BossSpawnPoint : Vector2.zero; // 261121 - 박석 마당(보스 터)
             rb.position = spawn;
             transform.position = spawn;
             if (TryGetComponent(out Unity.Netcode.Components.NetworkTransform networkTransform))
@@ -372,6 +431,8 @@ namespace CheonMyeong.Boss
             leapCooldownLeft = 1f;
             grabCooldownLeft = stats.grabFirstCooldown;
             mentalCooldownLeft = stats.mentalFirstCooldown;
+            summonCooldownLeft = stats.summonFirstCooldown;
+            quakeCooldownLeft = stats.quakeFirstCooldown;
             visible.Value = true;
             SetState(ServerState.Appearing, BossAnim.Idle);
             ImpactRpc(spawn, Vector2.down, (byte)ImpactKind.Appear, 2.5f * scale, 360f);
@@ -490,10 +551,10 @@ namespace CheonMyeong.Boss
                     UpdateMentalCast();
                     break;
                 case ServerState.MentalHold:
+                    // 261122 - 예섭 요청: 차원이 열려 있는 동안 진짜 억쇠는 바깥 사람과 1대1로 계속 싸운다(짚은 자세는 잠깐만).
                     rb.linearVelocity = Vector2.zero;
-                    if (!realmActive.Value)
+                    if (!realmActive.Value || stateTime >= MentalRecoverSeconds)
                     {
-                        mentalCooldownLeft = BossStatsSO.Pick(stats.mentalCooldown, stage);
                         SetState(ServerState.Chasing, BossAnim.Idle);
                     }
                     break;
@@ -508,6 +569,13 @@ namespace CheonMyeong.Boss
                     break;
                 case ServerState.Leaping:
                     UpdateLeaping();
+                    break;
+                case ServerState.Calling:
+                case ServerState.CallHold:
+                    UpdateCalling();
+                    break;
+                case ServerState.Quaking:
+                    UpdateQuaking();
                     break;
                 case ServerState.Dying:
                     rb.linearVelocity = Vector2.zero;
@@ -525,6 +593,11 @@ namespace CheonMyeong.Boss
             goldCooldownLeft -= dt;
             grabCooldownLeft -= dt;
             leapCooldownLeft -= dt;
+            if (IsFinal)
+            {
+                summonCooldownLeft -= dt;
+                quakeCooldownLeft -= dt;
+            }
             if (!realmActive.Value && state != ServerState.MentalCast && state != ServerState.MentalHold)
             {
                 mentalCooldownLeft -= dt; // 지속시간이 끝난 뒤부터 돈다(예섭)
@@ -533,7 +606,7 @@ namespace CheonMyeong.Boss
 
         private void UpdateChasing()
         {
-            PlayerHealth target = PlayerHealth.FindNearestAlivePlayerHealth(rb.position);
+            PlayerHealth target = FindNearestOutsidePlayer(); // 261122 - 차원에 끌려간 사람은 쫓지 않는다(바깥에서 1대1)
             if (target == null)
             {
                 rb.linearVelocity = Vector2.zero;
@@ -557,6 +630,16 @@ namespace CheonMyeong.Boss
                     MarkTargetRpc(mental.NetworkObjectId, stats.mentalWindupSeconds);
                     return;
                 }
+            }
+            // 261121 - 최종전 추가 스킬(기획서 v1.1): 땅 꺼짐 · 원귀 부르기. 부르기 직후에 땅 꺼짐이 이어지기 쉽게 땅 꺼짐을 먼저 본다.
+            if (IsFinal && quakeCooldownLeft <= 0f && TryStartQuake(BossStatsSO.Pick(stats.quakeChain, stage)))
+            {
+                return;
+            }
+            if (IsFinal && summonCooldownLeft <= 0f)
+            {
+                StartCalling();
+                return;
             }
             if (goldCooldownLeft <= 0f)
             {
@@ -592,12 +675,49 @@ namespace CheonMyeong.Boss
             float cycle = hopClock - Mathf.Floor(hopClock);
             float air = Mathf.Clamp(stats.hopAirFraction, 0.3f, 1f);
             float speedFactor = cycle < air ? Mathf.PI * 0.5f / air * Mathf.Sin(Mathf.PI * cycle / air) : 0f;
-            rb.linearVelocity = distance > 0.0001f ? toTarget / distance * (MoveSpeed() * speedFactor) : Vector2.zero;
+            Vector2 moveDirection = distance > 0.0001f ? toTarget / distance : Vector2.zero;
+            MapFlowField field = MapFlowField.Instance;
+            if (field != null && distance > 3f && field.TryGetDirection(rb.position, out Vector2 flowDirection))
+            {
+                moveDirection = flowDirection; // 261121 - 160 맵: 마당 밖으로 쫓아갈 때 집 · 물을 돌아서
+            }
+            Vector2 velocity = moveDirection * (MoveSpeed() * speedFactor);
+            if (BossPitField.Count > 0)
+            {
+                velocity = BossPitField.Steer(rb.position, velocity, PitBodyRadius(), Time.fixedDeltaTime); // 구덩이는 보스도 못 지나간다
+            }
+            if (field != null)
+            {
+                velocity = field.Steer(rb.position, velocity, Time.fixedDeltaTime);
+            }
+            rb.linearVelocity = velocity;
             SetAnim(BossAnim.Walk);
         }
 
+        private PlayerHealth FindNearestOutsidePlayer()
+        {
+            PlayerHealth best = null;
+            float bestSqr = float.MaxValue;
+            for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
+            {
+                PlayerHealth player = PlayerHealth.ActivePlayers[i];
+                if (player == null || player.IsDead || IsRealmPlayer(player.gameObject))
+                {
+                    continue;
+                }
+                float sqr = ((Vector2)player.transform.position - rb.position).sqrMagnitude;
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    best = player;
+                }
+            }
+            return best;
+        }
+
         private bool IsFinal => encounter.Value == (byte)BossEncounter.Final;
-        private float MoveSpeed() => stats.moveSpeed * (IsFinal ? stats.finalMoveSpeedMultiplier : 1f);
+        // 261122 - 원한 단계별 이동 속도(서버는 지금 단계, 화면 연출은 단계를 몰라 1배로 근사).
+        private float MoveSpeed() => stats.moveSpeed * (IsFinal ? stats.finalMoveSpeedMultiplier : 1f) * BossStatsSO.Pick(stats.moveSpeedByStage, IsServer ? stage : 0);
         private float HopRate() => stats.hopsPerSecond * (IsFinal ? stats.finalHopRateMultiplier : 1f);
         private float DamageScale() => IsFinal ? stats.finalDamageMultiplier : 1f;
         private float ImpactScale() => IsFinal ? stats.finalImpactMultiplier : 1f;
@@ -624,6 +744,7 @@ namespace CheonMyeong.Boss
             {
                 leapTo = bounds.ClampInside(leapTo);
             }
+            leapTo = BossPitField.PushOut(leapTo, PitBodyRadius()); // 261121 - 구덩이 위로는 착지하지 않는다
 
             rb.linearVelocity = Vector2.zero;
             Face(direction.x);
@@ -820,9 +941,301 @@ namespace CheonMyeong.Boss
             }
         }
 
+        // =====================================================================
+        // 261121 원귀 부르기 (최종전 · 기획서 v1.1 · v1.2)
+        // =====================================================================
+
+        /// <summary>MENTAL로 땅을 짚고(원래 속도 7장) → 마지막 장에 보스 둘레 6칸 원 위로 원귀가 솟는다 → MENTAL_IDLE 1.2초 멈춤.</summary>
+        private void StartCalling()
+        {
+            rb.linearVelocity = Vector2.zero;
+            SetState(ServerState.Calling, BossAnim.Mental, 1f);
+            int count = BossStatsSO.Pick(stats.summonCount, stage);
+            float angleOffset = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+            callAngleOffset = angleOffset;
+            callCount = count;
+            CallRpc(rb.position, stats.summonRingRadius, Mathf.Min(count, MaxCallPillars), angleOffset, MentalCastSeconds, stats.summonHoldSeconds);
+        }
+
+        private const int MaxCallPillars = 24; // 넋 기둥은 이 수까지만 그린다(80마리여도 원 위에 고르게 24개)
+        private float callAngleOffset;
+        private int callCount;
+
+        private void UpdateCalling()
+        {
+            rb.linearVelocity = Vector2.zero;
+            if (state == ServerState.Calling)
+            {
+                if (stateTime < MentalCastSeconds)
+                {
+                    return;
+                }
+                CheonMyeong.Enemies.EnemySpawner spawner = CheonMyeong.Enemies.EnemySpawner.Instance;
+                if (spawner != null)
+                {
+                    spawner.ServerQueueBossSummon(rb.position, stats.summonRingRadius, callCount,
+                        BossStatsSO.Pick(stats.summonEliteRatio, stage), callAngleOffset);
+                }
+                SetState(ServerState.CallHold, BossAnim.MentalIdle);
+                return;
+            }
+            if (stateTime < stats.summonHoldSeconds)
+            {
+                return;
+            }
+            summonCooldownLeft = BossStatsSO.Pick(stats.summonCooldown, stage);
+            // 노림(기획서): 땅 꺼짐은 원귀 부르기 직후에 자주 쓴다 - 곧 돌아올 땅 꺼짐이면 바로 이어서.
+            if (quakeCooldownLeft <= stats.quakeComboWindow)
+            {
+                quakeCooldownLeft = 0f;
+            }
+            SetState(ServerState.Chasing, BossAnim.Idle);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void CallRpc(Vector2 center, float radius, int pillars, float angleOffset, float riseSeconds, float holdSeconds)
+        {
+            CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.BossSummon, center); // 부르는 소리 - 기획서에 따로 없어 "boss.summon" 칸 사용
+            float height = 1.6f * VisualSize();
+            for (int i = 0; i < pillars; i++)
+            {
+                float a = angleOffset + Mathf.PI * 2f * i / Mathf.Max(1, pillars);
+                BossPillarFx.Play(center + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * radius, riseSeconds, holdSeconds, height);
+            }
+        }
+
+        private void DespawnSummoned()
+        {
+            if (!IsServer)
+            {
+                return;
+            }
+            if (CheonMyeong.Enemies.EnemySpawner.Instance != null)
+            {
+                CheonMyeong.Enemies.EnemySpawner.Instance.ServerClearBossSummons();
+            }
+            CheonMyeong.Enemies.Enemy.ServerDespawnSummoned();
+        }
+
+        // =====================================================================
+        // 261121 땅 꺼짐 (최종전 · 기획서 v1.2)
+        // =====================================================================
+
+        /// <summary>
+        /// 대상 = 두 사람 중 보스에게 더 가까운 쪽(정신병 차원 안은 제외). 발밑에 붉은 원(4칸) + 가운데 진한 원(1.5칸) 예고.
+        /// QUAKE 66~71을 재생하다 71에서 예고 시간만큼 멈추고, 72 내리침 → 73에 피해 · 구덩이.
+        /// </summary>
+        private bool TryStartQuake(int chain)
+        {
+            PlayerHealth target = FindQuakeTarget();
+            if (target == null)
+            {
+                return false;
+            }
+            quakeChainLeft = Mathf.Max(1, chain) - 1;
+            BeginQuake(target);
+            return true;
+        }
+
+        private void BeginQuake(PlayerHealth target)
+        {
+            rb.linearVelocity = Vector2.zero;
+            Vector2 center = target.transform.position;
+            // 구덩이를 0.5칸 격자에 맞춘다(타일 한 장 = 0.5칸이라 QUAKE_PIT이 바닥과 어긋나 보이지 않게).
+            quakeCenter = new Vector2(Mathf.Round(center.x * 2f) * 0.5f, Mathf.Round(center.y * 2f) * 0.5f);
+            Face(quakeCenter.x - rb.position.x);
+            float hold = BossStatsSO.Pick(stats.quakeTelegraphSeconds, stage);
+            quakeHold.Value = hold;
+            quakeHitTime = QuakeHitClipTime + hold;
+            quakeEndTime = QuakeClipLength + hold;
+            SetState(ServerState.Quaking, BossAnim.Quake, 1f);
+            TelegraphRpc(quakeCenter, Vector2.right, stats.quakeOuterRadius, 360f, quakeHitTime);
+            StrongTelegraphRpc(quakeCenter, stats.quakeInnerRadius, quakeHitTime);
+            WarnRpc(quakeHitTime);
+        }
+
+        private void UpdateQuaking()
+        {
+            rb.linearVelocity = Vector2.zero;
+            if (!hitApplied && stateTime >= quakeHitTime)
+            {
+                hitApplied = true;
+                ApplyQuakeHit();
+            }
+            if (stateTime < quakeEndTime)
+            {
+                return;
+            }
+            if (quakeChainLeft > 0)
+            {
+                PlayerHealth next = FindQuakeTarget();
+                if (next != null)
+                {
+                    quakeChainLeft--;
+                    BeginQuake(next);
+                    return;
+                }
+            }
+            quakeChainLeft = 0;
+            quakeCooldownLeft = BossStatsSO.Pick(stats.quakeCooldown, stage);
+            SetState(ServerState.Chasing, BossAnim.Idle); // 뽑는 동작 없이 바로 IDLE(기획서 v1.2)
+        }
+
+        private PlayerHealth FindQuakeTarget()
+        {
+            PlayerHealth best = null;
+            float bestSqr = float.MaxValue;
+            for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
+            {
+                PlayerHealth player = PlayerHealth.ActivePlayers[i];
+                if (player == null || player.IsDead || IsRealmPlayer(player.gameObject) || IsHeld(player))
+                {
+                    continue;
+                }
+                float sqr = ((Vector2)player.transform.position - rb.position).sqrMagnitude;
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    best = player;
+                }
+            }
+            return best;
+        }
+
+        /// <summary>가운데 = 즉사(호신부 못 막음 · 무적만 막음), 바깥 = 피해 + 2칸 밀림, 가운데에 3×3칸 구덩이.</summary>
+        private void ApplyQuakeHit()
+        {
+            float inner = stats.quakeInnerRadius;
+            float outer = stats.quakeOuterRadius;
+            float damage = BossStatsSO.Pick(stats.quakeDamage, stage);
+            for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
+            {
+                PlayerHealth player = PlayerHealth.ActivePlayers[i];
+                if (player == null || player.IsDead || IsRealmPlayer(player.gameObject))
+                {
+                    continue;
+                }
+                Vector2 to = (Vector2)player.transform.position - quakeCenter;
+                float sqr = to.sqrMagnitude;
+                if (sqr <= inner * inner)
+                {
+                    player.ServerInstantKill();
+                    continue;
+                }
+                if (sqr <= outer * outer)
+                {
+                    player.TakeDamage(damage);
+                    KnockbackDistance(player, sqr > 0.0001f ? to.normalized : Vector2.up, stats.quakeKnockbackTiles);
+                }
+            }
+            ImpactRpc(quakeCenter, Vector2.down, (byte)ImpactKind.Quake, inner, 360f);
+            TryAddPit(quakeCenter);
+        }
+
+        /// <summary>구덩이 규칙(기획서 v1.2): 금지 구역이면 안 만든다. 최대 6개(넘으면 오래된 것부터 메움). 안의 원귀는 사라지고, 갇힌 사람은 빈 칸으로.</summary>
+        private void TryAddPit(Vector2 center)
+        {
+            float size = stats.pitSize;
+            MapBounds bounds = MapBounds.Instance;
+            if (bounds != null && !bounds.CanPlacePit(center, size))
+            {
+                return;
+            }
+            while (pitCenters.Count >= Mathf.Max(1, stats.pitMax))
+            {
+                pitCenters.RemoveAt(0);
+            }
+            pitCenters.Add(center);
+            RebuildPits(); // 서버는 바로 반영(목록 이벤트를 기다리지 않고 판정에 쓴다)
+
+            var area = new Rect(center.x - size * 0.5f, center.y - size * 0.5f, size, size);
+            CheonMyeong.Enemies.Enemy.ServerRemoveInArea(area);
+
+            // 구덩이 위에 서 있던 사람(밀려나지 않은 즉사 생존 - 무적 등)과 구덩이 사이에 갇힌 사람을 가장 가까운 빈 칸으로.
+            for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
+            {
+                PlayerHealth player = PlayerHealth.ActivePlayers[i];
+                if (player == null || !player.TryGetComponent(out PlayerMovement movement))
+                {
+                    continue;
+                }
+                Vector2 position = player.transform.position;
+                Vector2 outside = BossPitField.PushOut(position, PlayerPitRadius);
+                if (BossPitField.TryFindEscape(outside, PlayerPitRadius, out Vector2 escape))
+                {
+                    outside = escape;
+                }
+                if ((outside - position).sqrMagnitude > 0.0001f)
+                {
+                    movement.ServerTeleport(outside);
+                }
+            }
+            // 보스도 구덩이 안이면 밖으로.
+            Vector2 bossOut = BossPitField.PushOut(rb.position, PitBodyRadius());
+            if ((bossOut - rb.position).sqrMagnitude > 0.0001f)
+            {
+                rb.position = bossOut;
+            }
+        }
+
+        private const float PlayerPitRadius = 0.4f;
+
+        private float PitBodyRadius() => Mathf.Max(0.3f, stats.bodyRadius * scale * 0.6f);
+
+        /// <summary>밀림 거리(칸)로 밀기 - PlayerMovement 넉백은 남은 비율의 제곱으로 줄어 이동 거리 = 속도 × 시간 / 3.</summary>
+        private static void KnockbackDistance(PlayerHealth player, Vector2 direction, float tiles)
+        {
+            if (tiles <= 0f || player.IsDead || !player.TryGetComponent(out PlayerMovement movement))
+            {
+                return;
+            }
+            const float seconds = 0.25f;
+            movement.ServerKnockback(direction * (tiles * 3f / seconds), seconds);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void StrongTelegraphRpc(Vector2 center, float radius, float seconds)
+        {
+            BossTelegraph.Show(telegraphMaterial, center, Vector2.right, radius, 360f, seconds, 2.2f);
+        }
+
+        private void HandlePitsChanged(NetworkListEvent<Vector2> change)
+        {
+            RebuildPits();
+        }
+
+        private readonly List<Vector2> pitBuffer = new List<Vector2>(8);
+
+        private void RebuildPits()
+        {
+            pitBuffer.Clear();
+            if (pitCenters != null)
+            {
+                for (int i = 0; i < pitCenters.Count; i++)
+                {
+                    pitBuffer.Add(pitCenters[i]);
+                }
+            }
+            BossPitField.Rebuild(pitBuffer, stats != null ? stats.pitSize : 3f, pitSprite);
+        }
+
+        /// <summary>
+        /// QUAKE 재생(클라이언트): 71번 장 한가운데까지 재생 → 예고 시간 동안 멈춤 → 나머지. 시간을 직접 정해 주므로(Animator 속도 0)
+        /// 서버가 피해를 주는 순간(73번 장 시작)과 그림이 맞는다.
+        /// </summary>
+        private void DriveQuakeAnimation()
+        {
+            float t = Time.time - animPlayStartTime;
+            float hold = Mathf.Max(0f, quakeHold.Value);
+            float clip = t < QuakeFreezeClipTime ? t : (t < QuakeFreezeClipTime + hold ? QuakeFreezeClipTime : t - hold);
+            animator.speed = 0f;
+            animator.Play(AnimStateHashes[(int)BossAnim.Quake], 0, Mathf.Clamp(clip / QuakeClipLength, 0f, 0.999f));
+        }
+
         private void StartDying()
         {
             ReleaseHeldPlayer();
+            DespawnSummoned(); // 261121 - 불려 나온 원귀는 보스와 함께 사라진다
             if (realmActive.Value)
             {
                 EndRealm();
@@ -848,6 +1261,9 @@ namespace CheonMyeong.Boss
             ClearAllBossSlows();
             if (IsSpawned)
             {
+                DespawnSummoned();
+                pitCenters.Clear(); // 구덩이는 보스전 끝까지만
+                quakeHold.Value = 0f;
                 realmActive.Value = false;
                 coins.Clear();
                 visible.Value = false;
@@ -860,13 +1276,20 @@ namespace CheonMyeong.Boss
             stateTime = 0f;
             defeated = false;
             mentalTarget = null;
+            quakeChainLeft = 0;
         }
 
         private void SetState(ServerState next, BossAnim anim)
         {
+            SetState(next, anim, AnimSpeedFor(anim));
+        }
+
+        private void SetState(ServerState next, BossAnim anim, float speed)
+        {
             state = next;
             stateTime = 0f;
             hitApplied = false;
+            animSpeed.Value = speed;
             SetAnim(anim, true);
         }
 
@@ -875,6 +1298,10 @@ namespace CheonMyeong.Boss
             if (animState.Value == (byte)anim && !restart)
             {
                 return;
+            }
+            if (!restart)
+            {
+                animSpeed.Value = AnimSpeedFor(anim); // 상태 안에서 바뀌는 모션(걷기 ↔ 대기 등)은 기본 속도
             }
             animState.Value = (byte)anim;
             animSerial.Value++;
@@ -1282,7 +1709,7 @@ namespace CheonMyeong.Boss
                     cloneStateTime = 0f;
                     cloneHitApplied = false;
                     SetCloneAnim(BossAnim.Atk, true);
-                    TelegraphRpc(cloneServerPosition, cloneAttackDirection, reach, stats.basicArcDegrees, stats.basicWindup);
+                    RealmTelegraphRpc(cloneServerPosition, cloneAttackDirection, reach, stats.basicArcDegrees, stats.basicWindup);
                 }
                 else if (distance > reach * 0.6f)
                 {
@@ -1344,6 +1771,7 @@ namespace CheonMyeong.Boss
                 return;
             }
             realmActive.Value = false;
+            mentalCooldownLeft = BossStatsSO.Pick(stats.mentalCooldown, stage); // 쿨타임은 지속시간이 끝난 뒤부터(예섭)
             DestroyCloneHitbox();
         }
 
@@ -1387,6 +1815,14 @@ namespace CheonMyeong.Boss
         private void TelegraphRpc(Vector2 center, Vector2 direction, float radius, float arcDegrees, float seconds)
         {
             BossTelegraph.Show(telegraphMaterial, center, direction, radius, arcDegrees, seconds);
+        }
+
+        /// <summary>261122 - 분신 예고. 끌려간 본인 화면에선 막 위(RealmTop)에 그려 흐리지 않는다.</summary>
+        [Rpc(SendTo.ClientsAndHost)]
+        private void RealmTelegraphRpc(Vector2 center, Vector2 direction, float radius, float arcDegrees, float seconds)
+        {
+            int layer = realmLocalInside && TryGetRealmLayers() ? realmTopLayer : DefaultSortingLayer();
+            BossTelegraph.Show(telegraphMaterial, center, direction, radius, arcDegrees, seconds, 1f, layer);
         }
 
         /// <summary>전조 시간에 맞춰 늘린 모션의 재생 속도(판정 프레임이 전조가 끝나는 순간에 오도록).</summary>
@@ -1456,7 +1892,17 @@ namespace CheonMyeong.Boss
             float impact = ImpactScale();
             // 261117 사운드 기획서 5장: 휘두르기는 SFX_BS_Whoosh, 내리꽂기 · 착지 · 등장은 SFX_BS_Impact.
             bool swing = kind == (byte)ImpactKind.Swing || kind == (byte)ImpactKind.CloneSwing;
-            CheonMyeong.Audio.GameAudio.PlayAt(swing ? CheonMyeong.Audio.SoundKeys.BossSwing : CheonMyeong.Audio.SoundKeys.BossSlam, origin);
+            if (kind == (byte)ImpactKind.Quake)
+            {
+                // 261121 사운드 기획서 v1.2: 내리침 SFX_BS_Impact 크게 + SFX_Drum 1타 → 구덩이 SFX_Grudge 낮게.
+                CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.BossQuakeImpact, origin);
+                CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.BossQuakeDrum);
+                CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.BossQuakeGrudge, origin);
+            }
+            else
+            {
+                CheonMyeong.Audio.GameAudio.PlayAt(swing ? CheonMyeong.Audio.SoundKeys.BossSwing : CheonMyeong.Audio.SoundKeys.BossSlam, origin);
+            }
             switch ((ImpactKind)kind)
             {
                 case ImpactKind.Swing:
@@ -1489,6 +1935,12 @@ namespace CheonMyeong.Boss
                 case ImpactKind.Appear:
                     PlayGroundBurst(origin, radius, 10f, -30, Color.white);
                     PlayerCameraRig.Shake(0.25f * impact, 0.5f + 0.2f * impact);
+                    break;
+                case ImpactKind.Quake:
+                    // 기획서 v1.2: QUAKE 73번 장에 억쇠 SLAM_FX(흙 터짐)를 2배 크기로 겹쳐 재생(전용 이펙트 없음).
+                    PlayGroundBurst(origin, radius * 2f, 10f, 29, Color.white);
+                    PlayerCameraRig.Shake(0.45f * impact, 0.45f + 0.1f * impact);
+                    hitStopTimer = stats.hitStopSeconds * 1.5f * impact;
                     break;
             }
         }
@@ -1591,12 +2043,20 @@ namespace CheonMyeong.Boss
                 playedAnimSerial = animSerial.Value;
                 BossAnim anim = (BossAnim)animState.Value;
                 animator.Play(AnimStateHashes[(int)anim], 0, 0f);
-                // 공격 예고 시간에 맞춰 ATK 앞부분을 늘린다(타격 프레임이 예고가 끝나는 순간에 오도록).
-                currentAnimSpeed = AnimSpeedFor(anim);
+                // 공격 예고 시간에 맞춰 ATK 앞부분을 늘린다(타격 프레임이 예고가 끝나는 순간에 오도록) - 서버가 정한 속도.
+                currentAnimSpeed = animSpeed.Value;
+                animPlayStartTime = Time.time;
             }
             // 히트스톱: 타격 순간 보스 모션만 잠깐 멈춘다(게임 시간은 그대로 - 2인 온라인이라 전체 정지는 안 씀).
             hitStopTimer -= Time.deltaTime;
-            animator.speed = hitStopTimer > 0f ? 0f : currentAnimSpeed;
+            if ((BossAnim)animState.Value == BossAnim.Quake)
+            {
+                DriveQuakeAnimation();
+            }
+            else
+            {
+                animator.speed = hitStopTimer > 0f ? 0f : currentAnimSpeed;
+            }
 
             bodyRenderer.flipX = faceRight.Value;
             UpdateHopAndTint();
@@ -1702,6 +2162,10 @@ namespace CheonMyeong.Boss
             {
                 color.a = fadeAlpha;
             }
+            if (hideBossInRealm)
+            {
+                color.a = 0f; // 261122 - 차원 안(끌려간 본인 화면)에서는 진짜 억쇠가 원 안에 들어와도 안 보인다
+            }
             bodyRenderer.color = color;
 
             if (shadowRenderer != null)
@@ -1712,7 +2176,7 @@ namespace CheonMyeong.Boss
                 Color shadowColor = encounter.Value == (byte)BossEncounter.Final
                     ? new Color(0.45f, 0.02f, 0.05f, 0.45f + 0.15f * Mathf.Sin(Time.time * 3f)) // 원한 오라
                     : new Color(0f, 0f, 0f, 0.4f);
-                shadowColor.a *= fadeAlpha;
+                shadowColor.a *= hideBossInRealm ? 0f : fadeAlpha;
                 shadowRenderer.color = shadowColor;
             }
         }
@@ -1735,19 +2199,25 @@ namespace CheonMyeong.Boss
         private void UpdateHealthBar()
         {
             bool show = visible.Value && encounter.Value != (byte)BossEncounter.None;
+            if (!show)
+            {
+                // 261121 - 같은 씬 틀(BossBarFrame)을 어린 억쇠와 나눠 쓰므로, 숨을 때는 붙인 것을 걷어 틀을 돌려준다.
+                if (healthBar != null)
+                {
+                    healthBar.Release();
+                    healthBar = null;
+                }
+                return;
+            }
             if (healthBar == null)
             {
-                if (!show || InGameHudScreen.Instance == null)
+                if (InGameHudScreen.Instance == null)
                 {
                     return;
                 }
                 healthBar = BossHealthBarView.Create(InGameHudScreen.Instance.transform);
             }
-            healthBar.SetVisible(show);
-            if (!show)
-            {
-                return;
-            }
+            healthBar.SetVisible(true);
             string title = stats != null ? stats.displayName : "억쇠";
             title += encounter.Value == (byte)BossEncounter.Final ? " · 최종전" : " · 예행연습";
             float cloneRatio = cloneMaxHealth.Value > 0f ? cloneHealth.Value / cloneMaxHealth.Value : 0f;
@@ -1908,13 +2378,17 @@ namespace CheonMyeong.Boss
         }
 
         /// <summary>
-        /// 차원 연출. 끌려간 본인 화면: 바깥 세상을 어둡게 덮고(카메라 앞 반투명 막), 자기 자신과 분신만 막 위로 올려 그린다.
-        /// 다른 사람 화면: 차원 안 두 대상을 반투명하게 보이고 경계 원만 그린다. 위치는 그대로라 카메라 처리가 필요 없다.
+        /// 차원 연출(261122 - 예섭 요청: 모데카이저 궁극기처럼).
+        /// - 끌려간 본인 화면: 차원 원 밖은 완전히 가린다(가운데만 뚫린 불투명 막). 원 안에 들어와 있는 다른 플레이어 · 진짜 억쇠 ·
+        ///   원귀도 안 보이게 한다 - 차원 안에는 나와 분신뿐. 내 캐릭터와 분신은 막 위로 올려 그린다.
+        /// - 바깥 사람 화면: 차원 안 두 대상을 반투명하게 보이고 경계 원만 그린다(바깥에서는 진짜 억쇠와 1대1).
+        /// 위치는 그대로라 카메라 처리가 필요 없다.
         /// </summary>
         private void SetRealmVisual(bool on)
         {
             RestoreRealmRenderers();
             realmVisualOn = on;
+            realmLocalInside = false;
             if (realmRing != null)
             {
                 realmRing.gameObject.SetActive(on);
@@ -1928,14 +2402,18 @@ namespace CheonMyeong.Boss
                 return;
             }
 
+            float radius = stats != null ? stats.mentalRealmRadius : 4.5f;
             EnsureRealmRing();
-            DrawRealmRing(realmCenter.Value, stats != null ? stats.mentalRealmRadius : 4.5f);
+            DrawRealmRing(realmCenter.Value, radius);
 
             NetworkObject localPlayer = NetworkManager != null && NetworkManager.LocalClient != null ? NetworkManager.LocalClient.PlayerObject : null;
-            bool localIsInside = localPlayer != null && localPlayer.NetworkObjectId == realmPlayerId.Value;
-            if (localIsInside)
+            realmLocalInside = localPlayer != null && localPlayer.NetworkObjectId == realmPlayerId.Value;
+            // 261122 - 본인 화면에선 경계 원도 막(RealmFx) 위 RealmTop에 그린다.
+            realmRing.sortingLayerID = realmLocalInside && TryGetRealmLayers() ? realmTopLayer : DefaultSortingLayer();
+            if (realmLocalInside)
             {
                 EnsureRealmDarkness();
+                PlaceRealmDarkness(radius);
                 realmDarkness.gameObject.SetActive(true);
                 BoostRenderers(localPlayer.gameObject);
             }
@@ -1948,65 +2426,294 @@ namespace CheonMyeong.Boss
                 return;
             }
 
-            if (realmDarkness != null && realmDarkness.gameObject.activeSelf)
+            if (realmLocalInside)
             {
-                Camera cam = Camera.main;
-                if (cam != null)
+                if (realmDarkness != null)
                 {
-                    realmDarkness.transform.position = new Vector3(cam.transform.position.x, cam.transform.position.y, 0f);
-                    float h = cam.orthographicSize * 2.2f;
-                    realmDarkness.transform.localScale = new Vector3(h * cam.aspect, h, 1f);
+                    PlaceRealmDarkness(stats != null ? stats.mentalRealmRadius : 4.5f);
                 }
                 if (cloneRenderer != null)
                 {
-                    cloneRenderer.sortingOrder = 1001;
+                    if (TryGetRealmLayers())
+                    {
+                        cloneRenderer.sortingLayerID = realmTopLayer; // 순서는 몸과 같게 - 내 캐릭터와 Y정렬
+                    }
+                    else
+                    {
+                        cloneRenderer.sortingOrder = 1001;
+                    }
                 }
+                HideOutsidersInRealm();
                 return;
             }
 
-            // 바깥 사람 화면 - 차원 안 플레이어를 반투명하게(분신은 UpdateCloneView에서 이미 반투명 보라).
+            // 바깥 사람 화면 - 261122 2차(모데카이저 궁극기처럼): 차원 안 플레이어 · 분신은 본 모습을 숨기고 영혼 불로만 보인다.
+            // 영혼 불 셰이더가 없으면 예전처럼 반투명(분신은 UpdateCloneView에서 이미 반투명 보라).
+            Material flame = GetSoulFlameMaterial();
+            Transform insideTransform = null;
             realmFaded.Clear();
             if (NetworkManager != null && NetworkManager.SpawnManager != null
                 && NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(realmPlayerId.Value, out NetworkObject inside) && inside != null)
             {
+                insideTransform = inside.transform;
                 inside.GetComponentsInChildren(realmFaded);
                 for (int i = 0; i < realmFaded.Count; i++)
                 {
                     Color c = realmFaded[i].color;
-                    c.a = 0.35f;
+                    c.a = flame != null ? 0f : 0.35f;
                     realmFaded[i].color = c;
                 }
-                if (cloneRenderer != null)
+            }
+            if (cloneRenderer != null)
+            {
+                Color c = cloneRenderer.color;
+                c.a = flame != null ? 0f : c.a * 0.45f;
+                cloneRenderer.color = c;
+            }
+            if (flame != null)
+            {
+                Transform cloneTransform = cloneView != null && cloneView.activeSelf ? cloneView.transform : null;
+                float cloneScale = cloneTransform != null ? Mathf.Abs(cloneTransform.localScale.x) : 1f;
+                PlaceSoulFlame(ref playerFlame, flame, insideTransform, PlayerFlameColor, PlayerFlameSize, "RealmPlayerFlame");
+                PlaceSoulFlame(ref cloneFlame, flame, cloneTransform, CloneFlameColor, CloneFlameSize * cloneScale, "RealmCloneFlame");
+            }
+        }
+
+        // ---------- 261122 2차 - 바깥 화면 영혼 불 ----------
+        private const string SoulFlameMaterialPath = "SoulFlame"; // Assets/Resources/SoulFlame.mat
+        private const int SoulFlameSortingOrder = 50;
+        private static readonly Color PlayerFlameColor = new Color(0.35f, 0.78f, 1f, 0.95f);  // 푸른 넋
+        private static readonly Color CloneFlameColor = new Color(0.72f, 0.38f, 1f, 0.95f);   // 보랏빛 분신
+        private static readonly Vector2 PlayerFlameSize = new Vector2(0.9f, 1.35f);
+        private static readonly Vector2 CloneFlameSize = new Vector2(1.3f, 1.9f);
+        private static bool soulFlameChecked;
+        private static Material soulFlameMaterial;
+        private static Sprite soulFlameSprite;
+        private SpriteRenderer playerFlame;
+        private SpriteRenderer cloneFlame;
+
+        private static Material GetSoulFlameMaterial()
+        {
+            if (!soulFlameChecked)
+            {
+                soulFlameChecked = true;
+                soulFlameMaterial = Resources.Load<Material>(SoulFlameMaterialPath);
+                if (soulFlameMaterial != null && (soulFlameMaterial.shader == null || !soulFlameMaterial.shader.isSupported))
                 {
-                    Color c = cloneRenderer.color;
-                    c.a *= 0.45f;
-                    cloneRenderer.color = c;
+                    soulFlameMaterial = null;
+                }
+                if (soulFlameMaterial != null && soulFlameSprite == null)
+                {
+                    // 1유닛 정사각, 피벗 아래 가운데(발밑에서 불이 솟게). 텍스처는 내장 흰색이라 따로 해제할 것 없음.
+                    soulFlameSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0f), 4f);
+                    soulFlameSprite.name = "SoulFlameQuad";
+                }
+            }
+            return soulFlameMaterial;
+        }
+
+        private static void PlaceSoulFlame(ref SpriteRenderer flame, Material material, Transform target, Color color, Vector2 size, string name)
+        {
+            if (target == null)
+            {
+                if (flame != null && flame.gameObject.activeSelf)
+                {
+                    flame.gameObject.SetActive(false);
+                }
+                return;
+            }
+            if (flame == null)
+            {
+                var go = new GameObject(name);
+                flame = go.AddComponent<SpriteRenderer>();
+                flame.sprite = soulFlameSprite;
+                flame.sharedMaterial = material;
+                flame.sortingOrder = SoulFlameSortingOrder;
+            }
+            if (!flame.gameObject.activeSelf)
+            {
+                flame.gameObject.SetActive(true);
+            }
+            Vector3 p = target.position;
+            flame.transform.position = new Vector3(p.x, p.y - 0.05f, 0f);
+            flame.transform.localScale = new Vector3(size.x, size.y, 1f);
+            flame.color = color;
+        }
+
+        private void HideSoulFlames()
+        {
+            if (playerFlame != null)
+            {
+                playerFlame.gameObject.SetActive(false);
+            }
+            if (cloneFlame != null)
+            {
+                cloneFlame.gameObject.SetActive(false);
+            }
+        }
+
+        // ---------- 261122 차원 안(끌려간 본인 화면)에서 다른 것 숨기기 ----------
+
+        private bool realmLocalInside;
+        private bool hideBossInRealm;
+        private readonly List<SpriteRenderer> realmHiddenOthers = new List<SpriteRenderer>();
+        private readonly List<SpriteRenderer> realmHiddenEnemies = new List<SpriteRenderer>();
+        private readonly List<SpriteRenderer> realmEnemyScratch = new List<SpriteRenderer>();
+        private readonly List<SpriteRenderer> realmRendererBuffer = new List<SpriteRenderer>(8);
+        private readonly Collider2D[] realmOverlap = new Collider2D[256];
+        private ContactFilter2D realmEnemyFilter;
+        private bool realmFilterReady;
+
+        /// <summary>
+        /// 원 안에 있는 다른 플레이어 · 원귀를 투명하게, 진짜 억쇠도 원 안이면 투명하게(UpdateHopAndTint가 hideBossInRealm을 본다).
+        /// 원귀는 원을 드나드니 매 프레임 다시 고르고, 원 밖으로 나간 것은 되돌린다(Enemy 클래스와 겹치지 않게 색 알파만 쓴다).
+        /// </summary>
+        private void HideOutsidersInRealm()
+        {
+            Vector2 center = realmCenter.Value;
+            float radius = stats != null ? stats.mentalRealmRadius : 4.5f;
+            float radiusSqr = radius * radius;
+
+            hideBossInRealm = ((Vector2)transform.position - center).sqrMagnitude <= (radius + 1.5f * VisualSize()) * (radius + 1.5f * VisualSize());
+
+            ulong insideId = realmPlayerId.Value;
+            for (int i = 0; i < PlayerHealth.ActivePlayers.Count; i++)
+            {
+                PlayerHealth player = PlayerHealth.ActivePlayers[i];
+                if (player == null || player.NetworkObjectId == insideId)
+                {
+                    continue;
+                }
+                bool inCircle = ((Vector2)player.transform.position - center).sqrMagnitude <= radiusSqr;
+                player.GetComponentsInChildren(realmRendererBuffer);
+                for (int r = 0; r < realmRendererBuffer.Count; r++)
+                {
+                    SpriteRenderer sr = realmRendererBuffer[r];
+                    SetAlpha(sr, inCircle ? 0f : 1f);
+                    if (inCircle && !realmHiddenOthers.Contains(sr))
+                    {
+                        realmHiddenOthers.Add(sr);
+                    }
+                }
+            }
+
+            if (!realmFilterReady)
+            {
+                realmFilterReady = true;
+                realmEnemyFilter = new ContactFilter2D { useTriggers = true };
+                realmEnemyFilter.SetLayerMask(1 << gameObject.layer); // 억쇠와 같은 Enemy 레이어
+            }
+            realmEnemyScratch.Clear();
+            int count = Physics2D.OverlapCircle(center, radius, realmEnemyFilter, realmOverlap);
+            for (int i = 0; i < count; i++)
+            {
+                Collider2D col = realmOverlap[i];
+                if (col == null || col.GetComponentInParent<EoksoeBoss>() != null)
+                {
+                    continue;
+                }
+                if (col.TryGetComponent(out SpriteRenderer sr))
+                {
+                    realmEnemyScratch.Add(sr);
+                    SetAlpha(sr, 0f);
+                }
+            }
+            for (int i = realmHiddenEnemies.Count - 1; i >= 0; i--)
+            {
+                SpriteRenderer sr = realmHiddenEnemies[i];
+                if (sr == null || !realmEnemyScratch.Contains(sr))
+                {
+                    SetAlpha(sr, 1f);
+                    realmHiddenEnemies.RemoveAt(i);
+                }
+            }
+            for (int i = 0; i < realmEnemyScratch.Count; i++)
+            {
+                if (!realmHiddenEnemies.Contains(realmEnemyScratch[i]))
+                {
+                    realmHiddenEnemies.Add(realmEnemyScratch[i]);
                 }
             }
         }
 
+        private static void SetAlpha(SpriteRenderer sr, float alpha)
+        {
+            if (sr == null)
+            {
+                return;
+            }
+            Color c = sr.color;
+            if (!Mathf.Approximately(c.a, alpha))
+            {
+                c.a = alpha;
+                sr.color = c;
+            }
+        }
+
+        private void RestoreHiddenOutsiders()
+        {
+            for (int i = 0; i < realmHiddenOthers.Count; i++)
+            {
+                SetAlpha(realmHiddenOthers[i], 1f);
+            }
+            realmHiddenOthers.Clear();
+            for (int i = 0; i < realmHiddenEnemies.Count; i++)
+            {
+                SetAlpha(realmHiddenEnemies[i], 1f);
+            }
+            realmHiddenEnemies.Clear();
+            hideBossInRealm = false;
+        }
+
+        /// <summary>뚫린 막을 차원 가운데에 - 구멍 반지름 = 차원 반지름(텍스처 구멍 RealmHolePixels 칸 = 반지름).</summary>
+        private void PlaceRealmDarkness(float radius)
+        {
+            Vector2 c = realmCenter.Value;
+            realmDarkness.transform.position = new Vector3(c.x, c.y, 0f);
+            float scale = radius / RealmHolePixels;
+            realmDarkness.transform.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        /// <summary>
+        /// 내 캐릭터를 막 위로. RealmTop 정렬 레이어가 있으면 레이어만 옮긴다(순서 유지 → 분신과 Y정렬, 흐림 텍스처에도 안 찍힘).
+        /// 레이어가 없으면(설정 전 프로젝트) 예전처럼 순서 +1000.
+        /// </summary>
         private void BoostRenderers(GameObject target)
         {
             target.GetComponentsInChildren(realmBoosted);
             realmBoostedOrders.Clear();
+            realmBoostedLayers.Clear();
+            bool layers = TryGetRealmLayers();
             for (int i = 0; i < realmBoosted.Count; i++)
             {
                 realmBoostedOrders.Add(realmBoosted[i].sortingOrder);
-                realmBoosted[i].sortingOrder += 1000;
+                realmBoostedLayers.Add(realmBoosted[i].sortingLayerID);
+                if (layers)
+                {
+                    realmBoosted[i].sortingLayerID = realmTopLayer;
+                }
+                else
+                {
+                    realmBoosted[i].sortingOrder += 1000;
+                }
             }
         }
 
         private void RestoreRealmRenderers()
         {
+            RestoreHiddenOutsiders();
+            HideSoulFlames();
             for (int i = 0; i < realmBoosted.Count; i++)
             {
                 if (realmBoosted[i] != null && i < realmBoostedOrders.Count)
                 {
                     realmBoosted[i].sortingOrder = realmBoostedOrders[i];
+                    realmBoosted[i].sortingLayerID = realmBoostedLayers[i];
                 }
             }
             realmBoosted.Clear();
             realmBoostedOrders.Clear();
+            realmBoostedLayers.Clear();
 
             if (NetworkManager != null && NetworkManager.SpawnManager != null
                 && NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(realmPlayerId.Value, out NetworkObject inside) && inside != null)
@@ -2023,6 +2730,7 @@ namespace CheonMyeong.Boss
             if (cloneRenderer != null)
             {
                 cloneRenderer.sortingOrder = bodyRenderer != null ? bodyRenderer.sortingOrder : 5;
+                cloneRenderer.sortingLayerID = DefaultSortingLayer();
             }
         }
 
@@ -2053,6 +2761,12 @@ namespace CheonMyeong.Boss
             }
         }
 
+        // 261122 - 가운데만 뚫린 막: 512px 텍스처, 구멍 반지름 32px(= 차원 반지름) → 막 전체 폭은 차원 반지름의 16배라 화면을 다 덮는다.
+        private const int RealmMaskSize = 512;
+        private const float RealmHolePixels = 32f;
+        private static Texture2D realmMaskTexture;
+        private static Sprite realmMaskSprite;
+
         private void EnsureRealmDarkness()
         {
             if (realmDarkness != null)
@@ -2061,12 +2775,105 @@ namespace CheonMyeong.Boss
             }
             var go = new GameObject("EoksoeRealmDarkness");
             realmDarkness = go.AddComponent<SpriteRenderer>();
-            realmDarkness.sprite = GetSoftCircleSprite();
+            realmDarkness.sprite = GetRealmMaskSprite();
             realmDarkness.drawMode = SpriteDrawMode.Simple;
-            realmDarkness.color = new Color(0.08f, 0.02f, 0.14f, 0.82f);
-            realmDarkness.sortingOrder = 1000;
-            // 동그란 부드러운 원 대신 화면을 꽉 채우려고 단색 사각 스프라이트를 쓴다.
-            realmDarkness.sprite = GetSolidSprite();
+            realmDarkness.color = Color.white;
+            if (TryGetRealmLayers())
+            {
+                // 261122 - 셰이더 막: 원 안 = Default까지 그린 화면을 약하게 흐림, 원 밖 = 검푸른 노이즈(RealmMask.shader).
+                realmDarkness.sharedMaterial = realmMaskMaterial;
+                realmDarkness.sortingLayerID = realmFxLayer;
+                realmDarkness.sortingOrder = 0;
+            }
+            else
+            {
+                // 대체: 텍스처 색 그대로(밖 = 불투명 검푸른색, 안 = 옅은 보라) - 정렬 레이어/셰이더가 없을 때.
+                realmDarkness.sortingOrder = 1000;
+            }
+        }
+
+        // ---------- 261122 차원 막 셰이더 · 정렬 레이어 ----------
+        // RealmFx: 막(Default 다음 - Renderer2D의 Camera Sorting Layer Texture가 Default까지 찍은 화면을 읽는다).
+        // RealmTop: 차원 안 내 캐릭터 · 분신 · 분신 예고 · 경계 원(막 위, 흐림 없음).
+        private const string RealmFxLayerName = "RealmFx";
+        private const string RealmTopLayerName = "RealmTop";
+        private const string RealmMaskMaterialPath = "RealmMask"; // Assets/Resources/RealmMask.mat
+        private static bool realmLayersChecked;
+        private static int realmFxLayer;
+        private static int realmTopLayer;
+        private static Material realmMaskMaterial;
+
+        private static bool TryGetRealmLayers()
+        {
+            if (!realmLayersChecked)
+            {
+                realmLayersChecked = true;
+                int fx = SortingLayer.NameToID(RealmFxLayerName);
+                int top = SortingLayer.NameToID(RealmTopLayerName);
+                if (fx != 0 && top != 0 && SortingLayer.IsValid(fx) && SortingLayer.IsValid(top))
+                {
+                    realmFxLayer = fx;
+                    realmTopLayer = top;
+                    realmMaskMaterial = Resources.Load<Material>(RealmMaskMaterialPath);
+                    if (realmMaskMaterial != null && (realmMaskMaterial.shader == null || !realmMaskMaterial.shader.isSupported))
+                    {
+                        realmMaskMaterial = null;
+                    }
+                }
+                if (realmMaskMaterial == null)
+                {
+                    Debug.LogWarning("[EoksoeBoss] 정렬 레이어 RealmFx/RealmTop 또는 Resources/RealmMask.mat이 없어 차원 막을 단색으로 그립니다.");
+                }
+            }
+            return realmMaskMaterial != null;
+        }
+
+        private static int DefaultSortingLayer() => 0; // Default 정렬 레이어 uniqueID
+
+        private static Sprite GetRealmMaskSprite()
+        {
+            if (realmMaskSprite != null)
+            {
+                return realmMaskSprite;
+            }
+            const int size = RealmMaskSize;
+            realmMaskTexture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+            {
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+                name = "EoksoeRealmMask",
+            };
+            var outside = new Color32(4, 8, 22, 255);   // 원 밖 - 아예 안 보임(검푸른색, 셰이더가 없을 때만 쓰임)
+            var inside = new Color32(90, 40, 140, 50);  // 원 안 - 다른 차원 느낌으로 아주 옅게
+            var pixels = new Color32[size * size];
+            float half = size * 0.5f;
+            const float feather = 3f;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dx = x + 0.5f - half;
+                    float dy = y + 0.5f - half;
+                    float t = Mathf.Clamp01((Mathf.Sqrt(dx * dx + dy * dy) - RealmHolePixels) / feather + 0.5f);
+                    pixels[y * size + x] = Color32.Lerp(inside, outside, t);
+                }
+            }
+            realmMaskTexture.SetPixels32(pixels);
+            realmMaskTexture.Apply(false, true);
+            realmMaskSprite = Sprite.Create(realmMaskTexture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 1f);
+            return realmMaskSprite;
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetRealmMask()
+        {
+            realmMaskSprite = null;
+            realmMaskTexture = null;
+            realmLayersChecked = false;
+            realmMaskMaterial = null;
+            soulFlameChecked = false;
+            soulFlameMaterial = null;
+            soulFlameSprite = null;
         }
 
         private static Sprite solidSprite;

@@ -314,7 +314,13 @@ namespace CheonMyeong.Player
                 // 이때 타이머는 리셋하지 않고 0 이하로 그대로 둔다 - 그래야 적이 범위
                 // 안으로 들어오는 순간 대기 없이 바로 공격이 나간다. 이동 중 Idle/Walk는
                 // PlayerAnimator가 MoveInput만 보고 따로 판단하므로 여기선 신경 쓸 필요 없음.
-                if (HasTargetInRange(HitRadius))
+                // 261122 - 캐릭터 고유 공격이 더 멀리 닿으면(하영 검기 8칸) 인식 범위도 그만큼 늘린다.
+                float detectRadius = HitRadius;
+                if (kit != null)
+                {
+                    detectRadius = Mathf.Max(detectRadius, kit.AttackDetectRange);
+                }
+                if (HasTargetInRange(detectRadius))
                 {
                     Attack();
                     // attacksPerSecond(공식 스탯 시트 단위 - 클수록 빠름)를 타이머가 쓰는

@@ -24,7 +24,7 @@ namespace CheonMyeong.UI.Screens
     /// </summary>
     public partial class InGameHudScreen
     {
-        private const float ChipHoldSeconds = 0.4f;
+        private const float ChipHoldSeconds = 0.3f; // 261121 - 기획서 v1.2: 잔상이 0.3초 뒤 줄어듦
         private const float ChipDrainPerSecond = 0.6f;
         private const float BarShakeSeconds = 0.25f;
         private const float BarShakePixels = 6f;
@@ -32,7 +32,7 @@ namespace CheonMyeong.UI.Screens
         private const float VignetteMaxAlpha = 0.55f;
         private const float VignetteFadePerSecond = 1.4f;
         private const float BigHitRatio = 0.12f;
-        private static readonly Color ChipColor = new Color(1f, 0.93f, 0.85f, 0.9f);
+        private static readonly Color ChipColor = new Color(0.988f, 0.965f, 0.965f, 0.95f); // 백 #FCF6F6
         private static readonly Color VignetteColor = new Color(0.75f, 0.05f, 0.05f, 1f);
 
         private const float GrudgeFollowSharpness = 8f;
@@ -62,6 +62,7 @@ namespace CheonMyeong.UI.Screens
             public float HoldLeft;
             public float ShakeLeft;
             public float FlashLeft;
+            public bool LowBlinking;
         }
 
         private readonly HealthJuice[] healthJuice = { new HealthJuice(), new HealthJuice() };
@@ -298,6 +299,19 @@ namespace CheonMyeong.UI.Screens
                 juice.FlashLeft -= dt;
                 float t = Mathf.Max(0f, juice.FlashLeft / FillFlashSeconds);
                 juice.Fill.color = Color.Lerp(juice.FillColor, Color.white, t);
+                juice.LowBlinking = false;
+            }
+            else if (ratio > 0f && ratio <= LowHealthRatio)
+            {
+                // 261121 - 기획서 v1.2: 30% 이하면 천천히 깜빡.
+                float pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f / LowHealthBlinkPeriod);
+                juice.Fill.color = Color.Lerp(juice.FillColor, Color.white, 0.45f * pulse);
+                juice.LowBlinking = true;
+            }
+            else if (juice.LowBlinking)
+            {
+                juice.Fill.color = juice.FillColor;
+                juice.LowBlinking = false;
             }
         }
 
@@ -530,6 +544,7 @@ namespace CheonMyeong.UI.Screens
                 }
                 lower = upper;
             }
+            ApplyGrudgeBorders(grudgeActiveSegment); // 261121 - 넘긴 단계 칸 테두리 짙은 적(InGameHudScreen.Bars)
         }
 
         /// <summary>i번째 칸의 끝값. 마지막 칸(폭주)은 (마지막 문턱 - 그 전 문턱)만큼을 한 칸으로 본다.</summary>

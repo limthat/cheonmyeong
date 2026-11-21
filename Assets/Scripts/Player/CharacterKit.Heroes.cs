@@ -440,6 +440,16 @@ namespace CheonMyeong.Player
             return to.sqrMagnitude > 0.25f && Vector2.Dot(move.normalized, to.normalized) > 0.5f;
         }
 
+        /// <summary>261122 - 검기 베기가 날아가는 거리(칸). 기본 공격 인식 범위도 여기에 맞춘다.</summary>
+        private const float GeomgiRange = 8f;
+        private const float GeomgiPasaRange = 20f;
+
+        /// <summary>
+        /// 261122 - 기본 공격 인식 반지름 하한(0 = 없음). 하영이 검기를 배우면 베기가 8칸 날아가므로 근접 사거리가 아니라
+        /// 8칸 안에 적이 있으면 휘두른다(예섭 요청). 파사(5번째 20칸)는 가끔 나가는 한 발이라 인식은 8칸 기준.
+        /// </summary>
+        public float AttackDetectRange => heroId == Hayoung && Lv(AugmentId.HayoungGeomgi) > 0 ? GeomgiRange : 0f;
+
         private float HeroMaxHealthBonus() => heroId == Hayoung && Lv(AugmentId.HayoungGeomgi) > 0 ? -0.30f : 0f;
 
         private float HeroProjectileSpeedBonus() =>
@@ -716,7 +726,7 @@ namespace CheonMyeong.Player
                     var p = new PlayerProjectiles.ShotParams
                     {
                         Speed = 14f,
-                        Range = pasa ? 20f : 8f,
+                        Range = pasa ? GeomgiPasaRange : GeomgiRange,
                         Pierce = pasa ? -1 : hits - 1,
                         DamageScale = Val(AugmentId.HayoungGeomgi, lv) / 100f,
                         Radius = 0.7f,

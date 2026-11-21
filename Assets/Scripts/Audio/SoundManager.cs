@@ -161,6 +161,60 @@ namespace CheonMyeong.Audio
             {
                 Instance = null;
             }
+            // 261121 - 거꾸로 만든 클립은 런타임 생성 에셋이라 직접 지운다(메모리 누수 방지).
+            foreach (AudioClip clip in reversedClips.Values)
+            {
+                if (clip != null)
+                {
+                    Destroy(clip);
+                }
+            }
+            reversedClips.Clear();
+        }
+
+        private readonly System.Collections.Generic.Dictionary<AudioClip, AudioClip> reversedClips =
+            new System.Collections.Generic.Dictionary<AudioClip, AudioClip>();
+
+        /// <summary>
+        /// 261121 - 클립을 거꾸로 뒤집은 복사본(처음 한 번만 만들고 재사용). GetData는 Decompress On Load(또는 PCM) 클립에서만 되므로,
+        /// 못 읽으면 원래 클립을 그대로 쓴다.
+        /// </summary>
+        private AudioClip Reversed(AudioClip clip)
+        {
+            if (clip == null)
+            {
+                return null;
+            }
+            if (reversedClips.TryGetValue(clip, out AudioClip cached))
+            {
+                return cached != null ? cached : clip;
+            }
+            AudioClip result = null;
+            if (clip.loadType == AudioClipLoadType.DecompressOnLoad && clip.samples > 0)
+            {
+                if (clip.loadState != AudioDataLoadState.Loaded)
+                {
+                    clip.LoadAudioData();
+                }
+                int channels = Mathf.Max(1, clip.channels);
+                var data = new float[clip.samples * channels];
+                if (clip.GetData(data, 0))
+                {
+                    for (int frame = 0, last = clip.samples - 1; frame < clip.samples / 2; frame++, last--)
+                    {
+                        for (int ch = 0; ch < channels; ch++)
+                        {
+                            int a = frame * channels + ch;
+                            int b = last * channels + ch;
+                            (data[a], data[b]) = (data[b], data[a]);
+                        }
+                    }
+                    result = AudioClip.Create(clip.name + "_Reverse", clip.samples, channels, clip.frequency, false);
+                    result.SetData(data, 0);
+                }
+            }
+            reversedClips[clip] = result; // 실패도 기억(매번 다시 시도하지 않게)
+            return result != null ? result : clip;
         }
 
         // ---------------- 효과음
@@ -224,6 +278,10 @@ namespace CheonMyeong.Audio
                 StopVoice(voice);
                 AudioSource src = voice.Source;
                 src.clip = PickClip(cue, state);
+                if (cue.reverse)
+                {
+                    src.clip = Reversed(src.clip);
+                }
                 src.loop = cue.loop;
                 src.priority = cue.priority;
                 src.pitch = Random.Range(Mathf.Min(cue.pitchRange.x, cue.pitchRange.y), Mathf.Max(cue.pitchRange.x, cue.pitchRange.y));

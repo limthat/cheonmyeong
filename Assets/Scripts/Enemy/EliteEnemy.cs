@@ -82,6 +82,7 @@ namespace CheonMyeong.Enemies
         private float attackOverlayLeft;
         private bool shownDying;
         private SpriteRenderer telegraph;
+        private LineRenderer telegraphOutline; // 261122 - 테두리만 또렷하게, 안쪽은 바닥이 비치게
         private readonly SpriteRenderer[] jarViews = new SpriteRenderer[MaxJars];
         private readonly Jar[] jarFx = new Jar[MaxJars];
         private static Sprite whitePixel;
@@ -109,7 +110,7 @@ namespace CheonMyeong.Enemies
             {
                 spriteRenderer = GetComponent<SpriteRenderer>();
             }
-            mapMask = LayerMask.GetMask(MapLayerName);
+            mapMask = LayerMask.GetMask(MapLayerName, MapObstacles.SolidLayerName); // 261121 - 돌진은 딱딱한 물체에도 멈춘다
         }
 
         public override void OnNetworkSpawn()
@@ -123,11 +124,37 @@ namespace CheonMyeong.Enemies
             {
                 jarFx[i].Alive = false;
             }
+            state.OnValueChanged += HandleStateSound;
         }
 
         public override void OnNetworkDespawn()
         {
+            state.OnValueChanged -= HandleStateSound;
             HideFx();
+        }
+
+        /// <summary>
+        /// 261121 - 사운드 기획서 v1.2 「새 원귀 · 보스 소리(재활용)」: 아귀 돌진 예고 = SFX_BS_Warn 짧고 높게, 물귀신 나옴 = SFX_EN_Splash ·
+        /// 들어감 = 거꾸로, 역귀 호리병 = SFX_ATK_Throw 낮게. 상태가 바뀌는 순간 모든 화면에서(위치 소리).
+        /// </summary>
+        private void HandleStateSound(State previous, State current)
+        {
+            if (previous == current)
+            {
+                return;
+            }
+            string key = null;
+            switch (current)
+            {
+                case State.ChargeWindup: key = CheonMyeong.Audio.SoundKeys.EliteChargeWarn; break;
+                case State.Rising: key = CheonMyeong.Audio.SoundKeys.EliteSplash; break;
+                case State.Sinking: key = CheonMyeong.Audio.SoundKeys.EliteSplashReverse; break;
+                case State.Throwing: key = CheonMyeong.Audio.SoundKeys.EliteThrow; break;
+            }
+            if (key != null)
+            {
+                CheonMyeong.Audio.GameAudio.PlayAt(key, transform.position);
+            }
         }
 
         public override void OnDestroy()
@@ -296,6 +323,7 @@ namespace CheonMyeong.Enemies
                 }
                 chargeHit = true;
                 ServerOnContactHit();
+                ChargeHitRpc(player.transform.position); // 261121 - 부딪힐 때 SFX_HIT
             }
         }
 
@@ -423,6 +451,12 @@ namespace CheonMyeong.Enemies
                     jar.Alive = false;
                     continue;
                 }
+                if (MapObstacles.BlocksProjectile(jar.Position))
+                {
+                    jar.Alive = false; // 261121 - 딱딱한 물체에 막힘
+                    JarEndRpc((byte)i);
+                    continue;
+                }
                 for (int p = 0; p < PlayerHealth.ActivePlayers.Count; p++)
                 {
                     PlayerHealth player = PlayerHealth.ActivePlayers[p];
@@ -439,6 +473,12 @@ namespace CheonMyeong.Enemies
                     }
                 }
             }
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void ChargeHitRpc(Vector2 position)
+        {
+            CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.Hit, position);
         }
 
         [Rpc(SendTo.ClientsAndHost)]
@@ -599,6 +639,16 @@ namespace CheonMyeong.Enemies
                 {
                     telegraph.sharedMaterial = spriteRenderer.sharedMaterial;
                 }
+                var outline = new GameObject("Outline");
+                outline.transform.SetParent(go.transform, false);
+                telegraphOutline = outline.AddComponent<LineRenderer>();
+                telegraphOutline.useWorldSpace = true; // 부모 늘림(길이 × 1)에 선 두께가 같이 늘지 않게 월드 좌표로
+                telegraphOutline.loop = true;
+                telegraphOutline.positionCount = 4;
+                telegraphOutline.widthMultiplier = 0.09f;
+                telegraphOutline.numCornerVertices = 2;
+                telegraphOutline.sharedMaterial = telegraph.sharedMaterial;
+                telegraphOutline.sortingOrder = telegraph.sortingOrder;
             }
             Vector2 dir = chargeDir.Value;
             float length = stats.chargeDistance;
@@ -607,7 +657,21 @@ namespace CheonMyeong.Enemies
             telegraph.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
             telegraph.transform.localScale = new Vector3(length, 1f, 1f); // 폭 1칸 · 길이 3칸
             float pulse = 0.25f + 0.15f * Mathf.Sin(animTime * 20f);
-            telegraph.color = new Color(0.9f, 0.12f, 0.1f, pulse);
+            telegraph.color = new Color(0.9f, 0.12f, 0.1f, pulse * 0.35f); // 안쪽은 옅게(바닥이 비쳐 보이게)
+            if (telegraphOutline != null)
+            {
+                // 테두리는 안쪽으로 반 두께 들여서 사각형 가장자리에 맞춘다.
+                Vector2 start = transform.position;
+                var side = new Vector2(-dir.y, dir.x) * 0.455f;
+                Vector2 along = dir * 0.045f;
+                Vector2 end = start + dir * length;
+                telegraphOutline.SetPosition(0, start + along - side);
+                telegraphOutline.SetPosition(1, end - along - side);
+                telegraphOutline.SetPosition(2, end - along + side);
+                telegraphOutline.SetPosition(3, start + along + side);
+                telegraphOutline.enabled = true;
+                telegraphOutline.startColor = telegraphOutline.endColor = new Color(0.9f, 0.12f, 0.1f, 0.45f + pulse);
+            }
         }
 
         private void HideTelegraph()
@@ -615,6 +679,10 @@ namespace CheonMyeong.Enemies
             if (telegraph != null && telegraph.enabled)
             {
                 telegraph.enabled = false;
+                if (telegraphOutline != null)
+                {
+                    telegraphOutline.enabled = false;
+                }
             }
         }
 

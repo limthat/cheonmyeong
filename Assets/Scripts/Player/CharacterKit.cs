@@ -64,6 +64,10 @@ namespace CheonMyeong.Player
         private readonly NetworkVariable<byte> shieldCharges = new NetworkVariable<byte>(
             0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+        // 261121 - 호신부 최대 칸 수(HUD가 빈 칸 · 찬 칸을 그리려고). 서버가 TickShield에서 맞춘다.
+        private readonly NetworkVariable<byte> shieldCapacity = new NetworkVariable<byte>(
+            0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
         private PlayerCharacter character;
         private PlayerAutoAttack attack;
         private PlayerMovement movement;
@@ -95,6 +99,8 @@ namespace CheonMyeong.Player
 
         public bool PassiveActive => passiveActive.Value;
         public int ShieldCharges => shieldCharges.Value;
+        /// <summary>261121 - 호신부 최대 칸 수(기획서 v1.2 바 규칙: 1회 = 1칸, 쓰면 빈 칸).</summary>
+        public int ShieldCapacity => shieldCapacity.Value;
         public string PassiveName => character != null && character.Entry != null ? character.Entry.passiveName : string.Empty;
 
         private void Awake()
@@ -254,6 +260,12 @@ namespace CheonMyeong.Player
                            && (phase != lastPhase || wave != lastWave);
             lastPhase = phase;
             lastWave = wave;
+            if (phase == WaveManager.PhasePreparing)
+            {
+                // 261122 - 관문 신통력은 준비 시간부터 칸에 보이게(예전엔 1웨이브가 시작돼야 생겨서 빈 칸처럼 보였다).
+                // 접속 직후엔 신내림 값이 아직 안 왔을 수 있어 준비 동안 매 프레임 확인한다(이미 있으면 아무것도 안 함).
+                TryGrantGateAugment();
+            }
             if (!started)
             {
                 return;
@@ -274,14 +286,23 @@ namespace CheonMyeong.Player
             ResetHeroState();
             ResetAugmentState();
             soulCarry = 0f;
-            // 신내림 관문: 전용 신통력 둘 중 하나를 Lv1로 들고 시작(기획서 - 고르는 방식이 없어 무작위).
-            if (Has(CharacterCatalogSO.SinnaerimSlot.Gate) && progress != null)
+            TryGrantGateAugment(); // 준비 시간에 못 받았으면(준비 없이 바로 시작 등) 여기서
+        }
+
+        /// <summary>
+        /// 신내림 관문: 전용 신통력 둘 중 하나를 Lv1로 들고 시작(기획서 - 고르는 방식이 없어 무작위).
+        /// 이미 둘 중 하나라도 있으면 아무것도 안 한다(준비 시간 · 1웨이브 시작 두 번 불려도 한 번만 받음).
+        /// </summary>
+        private void TryGrantGateAugment()
+        {
+            if (progress == null || !Has(CharacterCatalogSO.SinnaerimSlot.Gate))
             {
-                ExclusivePair(out AugmentId a, out AugmentId b);
-                if (a != AugmentId.None && Lv(a) == 0 && Lv(b) == 0)
-                {
-                    progress.ServerGrantAugment(Random.value < 0.5f ? a : b);
-                }
+                return;
+            }
+            ExclusivePair(out AugmentId a, out AugmentId b);
+            if (a != AugmentId.None && Lv(a) == 0 && Lv(b) == 0)
+            {
+                progress.ServerGrantAugment(Random.value < 0.5f ? a : b);
             }
         }
 
@@ -413,6 +434,11 @@ namespace CheonMyeong.Player
         private void TickShield(float dt)
         {
             int max = ShieldMaxCount();
+            byte capacity = (byte)Mathf.Clamp(max, 0, 255);
+            if (shieldCapacity.Value != capacity)
+            {
+                shieldCapacity.Value = capacity;
+            }
             if (shieldCharges.Value > max)
             {
                 shieldCharges.Value = (byte)max;
@@ -517,7 +543,7 @@ namespace CheonMyeong.Player
             {
                 return false;
             }
-            if (col.GetComponentInParent<Boss.EoksoeBoss>() != null || col.GetComponent<Boss.BossCloneHitbox>() != null)
+            if (IsBoss(col))
             {
                 return true;
             }
@@ -525,7 +551,8 @@ namespace CheonMyeong.Player
         }
 
         public static bool IsBoss(Collider2D col) =>
-            col != null && (col.GetComponentInParent<Boss.EoksoeBoss>() != null || col.GetComponent<Boss.BossCloneHitbox>() != null);
+            col != null && (col.GetComponentInParent<Boss.EoksoeBoss>() != null || col.GetComponent<Boss.BossCloneHitbox>() != null
+                            || col.GetComponentInParent<Boss.EorinEoksoeBoss>() != null); // 261121 - 어린 억쇠
 
         // ───────── 영혼 ─────────
 

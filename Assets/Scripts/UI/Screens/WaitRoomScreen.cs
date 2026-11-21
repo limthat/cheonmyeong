@@ -130,7 +130,7 @@ namespace CheonMyeong.UI.Screens
             }
             if (startLabel != null)
             {
-                startLabel.text = role == 2 ? "방장이 시작하면 함께 들어갑니다" : "START";
+                startLabel.text = role == 2 ? "방장이 시작하면 함께 들어갑니다" : "출격";
             }
             if (startButton != null)
             {
@@ -192,7 +192,7 @@ namespace CheonMyeong.UI.Screens
                     if (playerLabels[slot] != null)
                     {
                         playerLabels[slot].text = entry != null
-                            ? $"PLAYER {slot + 1} · {entry.displayName}\n({(slot == 0 ? "방장" : "참가자")})"
+                            ? $"플레이어 {slot + 1} · {entry.displayName}\n({(slot == 0 ? "방장" : "참가자")})"
                             : string.Empty;
                     }
                     if (playerImages[slot] != null)

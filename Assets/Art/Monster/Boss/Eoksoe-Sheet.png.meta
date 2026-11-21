@@ -75,9 +75,6 @@ TextureImporter:
       213: -5926665923196916703
     second: Eoksoe-Sheet_23
   - first:
-      213: -152466771357882036
-    second: Eoksoe-Sheet_24
-  - first:
       213: -3070637744313424511
     second: Eoksoe-Sheet_25
   - first:
@@ -198,26 +195,32 @@ TextureImporter:
       213: 2891667409593218085
     second: Eoksoe-Sheet_64
   - first:
-      213: 5122472258540450553
+      213: -3901530752870096186
     second: Eoksoe-Sheet_65
   - first:
-      213: -4081642229956381602
+      213: 2262709763126113492
     second: Eoksoe-Sheet_66
   - first:
-      213: -1868990267197198025
+      213: -1591998119485651780
     second: Eoksoe-Sheet_67
   - first:
-      213: 2589650939860878441
+      213: 3702994549960174050
     second: Eoksoe-Sheet_68
   - first:
-      213: 5487676513444325615
+      213: 1642168616555144310
     second: Eoksoe-Sheet_69
   - first:
-      213: 4654903425736856603
+      213: 3027505196592257905
     second: Eoksoe-Sheet_70
   - first:
-      213: 7318604589231665385
+      213: 3720252050308140616
     second: Eoksoe-Sheet_71
+  - first:
+      213: -4603307316752019102
+    second: Eoksoe-Sheet_72
+  - first:
+      213: 1689622518178588209
+    second: Eoksoe-Sheet_73
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -330,7 +333,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 2304
+        y: 2560
         width: 256
         height: 256
       alignment: 0
@@ -352,7 +355,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 2304
+        y: 2560
         width: 256
         height: 256
       alignment: 0
@@ -374,7 +377,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 2304
+        y: 2560
         width: 256
         height: 256
       alignment: 0
@@ -396,7 +399,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 2304
+        y: 2560
         width: 256
         height: 256
       alignment: 0
@@ -418,7 +421,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 2304
+        y: 2560
         width: 256
         height: 256
       alignment: 0
@@ -440,7 +443,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 2304
+        y: 2560
         width: 256
         height: 256
       alignment: 0
@@ -462,7 +465,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1536
-        y: 2304
+        y: 2560
         width: 256
         height: 256
       alignment: 0
@@ -484,7 +487,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 2048
+        y: 2304
         width: 256
         height: 256
       alignment: 0
@@ -506,7 +509,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 2048
+        y: 2304
         width: 256
         height: 256
       alignment: 0
@@ -528,7 +531,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 2048
+        y: 2304
         width: 256
         height: 256
       alignment: 0
@@ -550,7 +553,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 2048
+        y: 2304
         width: 256
         height: 256
       alignment: 0
@@ -572,7 +575,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 2048
+        y: 2304
         width: 256
         height: 256
       alignment: 0
@@ -594,7 +597,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 1792
+        y: 2048
         width: 256
         height: 256
       alignment: 0
@@ -616,7 +619,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 1792
+        y: 2048
         width: 256
         height: 256
       alignment: 0
@@ -638,7 +641,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 1792
+        y: 2048
         width: 256
         height: 256
       alignment: 0
@@ -660,7 +663,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 1792
+        y: 2048
         width: 256
         height: 256
       alignment: 0
@@ -682,7 +685,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 1792
+        y: 2048
         width: 256
         height: 256
       alignment: 0
@@ -704,7 +707,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 1792
+        y: 2048
         width: 256
         height: 256
       alignment: 0
@@ -726,7 +729,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1536
-        y: 1792
+        y: 2048
         width: 256
         height: 256
       alignment: 0
@@ -748,7 +751,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 1536
+        y: 1792
         width: 256
         height: 256
       alignment: 0
@@ -770,7 +773,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 1536
+        y: 1792
         width: 256
         height: 256
       alignment: 0
@@ -792,7 +795,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 1536
+        y: 1792
         width: 256
         height: 256
       alignment: 0
@@ -814,7 +817,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 1536
+        y: 1792
         width: 256
         height: 256
       alignment: 0
@@ -836,7 +839,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 1536
+        y: 1792
         width: 256
         height: 256
       alignment: 0
@@ -854,33 +857,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Eoksoe-Sheet_24
-      rect:
-        serializedVersion: 2
-        x: 1280
-        y: 1536
-        width: 256
-        height: 256
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 96e7a8ac3b36c6e49976fa0623fc72f5
-      internalID: -152466771357882036
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Eoksoe-Sheet_25
       rect:
         serializedVersion: 2
         x: 0
-        y: 1280
+        y: 1536
         width: 256
         height: 256
       alignment: 0
@@ -902,7 +883,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 1280
+        y: 1536
         width: 256
         height: 256
       alignment: 0
@@ -924,7 +905,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 1280
+        y: 1536
         width: 256
         height: 256
       alignment: 0
@@ -946,7 +927,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 1280
+        y: 1536
         width: 256
         height: 256
       alignment: 0
@@ -968,7 +949,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 1280
+        y: 1536
         width: 256
         height: 256
       alignment: 0
@@ -990,7 +971,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 1280
+        y: 1536
         width: 256
         height: 256
       alignment: 0
@@ -1012,7 +993,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1536
-        y: 1280
+        y: 1536
         width: 256
         height: 256
       alignment: 0
@@ -1034,7 +1015,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 1024
+        y: 1280
         width: 256
         height: 256
       alignment: 0
@@ -1056,7 +1037,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 1024
+        y: 1280
         width: 256
         height: 256
       alignment: 0
@@ -1078,7 +1059,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 1024
+        y: 1280
         width: 256
         height: 256
       alignment: 0
@@ -1100,7 +1081,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 1024
+        y: 1280
         width: 256
         height: 256
       alignment: 0
@@ -1122,7 +1103,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 1024
+        y: 1280
         width: 256
         height: 256
       alignment: 0
@@ -1144,7 +1125,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 1024
+        y: 1280
         width: 256
         height: 256
       alignment: 0
@@ -1166,7 +1147,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 768
+        y: 1024
         width: 256
         height: 256
       alignment: 0
@@ -1188,7 +1169,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 768
+        y: 1024
         width: 256
         height: 256
       alignment: 0
@@ -1210,7 +1191,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 768
+        y: 1024
         width: 256
         height: 256
       alignment: 0
@@ -1232,7 +1213,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 768
+        y: 1024
         width: 256
         height: 256
       alignment: 0
@@ -1254,7 +1235,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 768
+        y: 1024
         width: 256
         height: 256
       alignment: 0
@@ -1276,7 +1257,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 768
+        y: 1024
         width: 256
         height: 256
       alignment: 0
@@ -1298,7 +1279,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1536
-        y: 768
+        y: 1024
         width: 256
         height: 256
       alignment: 0
@@ -1320,7 +1301,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1792
-        y: 768
+        y: 1024
         width: 256
         height: 256
       alignment: 0
@@ -1342,7 +1323,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 2048
-        y: 768
+        y: 1024
         width: 256
         height: 256
       alignment: 0
@@ -1364,7 +1345,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 512
+        y: 768
         width: 256
         height: 256
       alignment: 0
@@ -1386,7 +1367,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 512
+        y: 768
         width: 256
         height: 256
       alignment: 0
@@ -1408,7 +1389,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 512
+        y: 768
         width: 256
         height: 256
       alignment: 0
@@ -1430,7 +1411,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 512
+        y: 768
         width: 256
         height: 256
       alignment: 0
@@ -1452,7 +1433,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 256
+        y: 512
         width: 256
         height: 256
       alignment: 0
@@ -1474,7 +1455,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 256
+        y: 512
         width: 256
         height: 256
       alignment: 0
@@ -1496,7 +1477,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 256
+        y: 512
         width: 256
         height: 256
       alignment: 0
@@ -1518,7 +1499,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 256
+        y: 512
         width: 256
         height: 256
       alignment: 0
@@ -1540,7 +1521,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 256
+        y: 512
         width: 256
         height: 256
       alignment: 0
@@ -1562,7 +1543,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 256
+        y: 512
         width: 256
         height: 256
       alignment: 0
@@ -1584,7 +1565,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 256
         width: 256
         height: 256
       alignment: 0
@@ -1606,7 +1587,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 0
+        y: 256
         width: 256
         height: 256
       alignment: 0
@@ -1628,7 +1609,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 0
+        y: 256
         width: 256
         height: 256
       alignment: 0
@@ -1650,7 +1631,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 0
+        y: 256
         width: 256
         height: 256
       alignment: 0
@@ -1672,7 +1653,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
-        y: 0
+        y: 256
         width: 256
         height: 256
       alignment: 0
@@ -1694,7 +1675,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 0
+        y: 256
         width: 256
         height: 256
       alignment: 0
@@ -1716,7 +1697,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1536
-        y: 0
+        y: 256
         width: 256
         height: 256
       alignment: 0
@@ -1738,7 +1719,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1792
-        y: 0
+        y: 256
         width: 256
         height: 256
       alignment: 0
@@ -1751,6 +1732,204 @@ TextureImporter:
       bones: []
       spriteID: cd20e2bf9daa876468c784e08014e4e5
       internalID: 2891667409593218085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_65
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4961299298d39c2f0000000000000000
+      internalID: -3901530752870096186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_66
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f9043b6b6c3bfb80000000000000000
+      internalID: 2262709763126113492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_67
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2993cfd460e6e2d50000000000000000
+      internalID: -1591998119485651780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_68
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c130f2f412b2a2270000000000000000
+      internalID: 3702994549960174050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_69
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da41a1fb5069a9370000000000000000
+      internalID: 1642168616555144310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_70
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dec01df71b35012a0000000000000000
+      internalID: 3027505196592257905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_71
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfa4ad333c458a180000000000000000
+      internalID: 3720252050308140616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_72
+      rect:
+        serializedVersion: 2
+        x: 1792
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdbde8ee39ea0cf90000000000000000
+      internalID: -4603307316752019102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe-Sheet_73
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 920fa4c6a9c4af2f0000000000000000
+      internalID: 1689622518178588209
       vertices: []
       indices: 
       edges: []
@@ -1786,7 +1965,6 @@ TextureImporter:
       Eoksoe-Sheet_21: -630297293651854073
       Eoksoe-Sheet_22: -3919306172865388517
       Eoksoe-Sheet_23: -5926665923196916703
-      Eoksoe-Sheet_24: -152466771357882036
       Eoksoe-Sheet_25: -3070637744313424511
       Eoksoe-Sheet_26: 7735056277950780796
       Eoksoe-Sheet_27: 3656833003368591123
@@ -1834,6 +2012,15 @@ TextureImporter:
       Eoksoe-Sheet_7: -7791157307329624737
       Eoksoe-Sheet_8: 8174850634201850399
       Eoksoe-Sheet_9: 9167240216646697777
+      Eoksoe-Sheet_65: -3901530752870096186
+      Eoksoe-Sheet_66: 2262709763126113492
+      Eoksoe-Sheet_67: -1591998119485651780
+      Eoksoe-Sheet_68: 3702994549960174050
+      Eoksoe-Sheet_69: 1642168616555144310
+      Eoksoe-Sheet_70: 3027505196592257905
+      Eoksoe-Sheet_71: 3720252050308140616
+      Eoksoe-Sheet_72: -4603307316752019102
+      Eoksoe-Sheet_73: 1689622518178588209
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

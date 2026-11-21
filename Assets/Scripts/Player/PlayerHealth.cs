@@ -514,11 +514,37 @@ namespace CheonMyeong.Player
             poisonTimer += 1f;
             poisonTicksLeft--;
             ApplyDamage(poisonDamage, false); // 독 틱은 호신부를 쓰지 않는다
+            PoisonTickRpc(); // 261121 - 독 틱마다 SFX_HIT 아주 작게 · 낮게(사운드 기획서 v1.2)
         }
 
         public void TakeDamage(float amount)
         {
             ApplyDamage(amount, true);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void PoisonTickRpc()
+        {
+            CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.ElitePoisonTick, transform.position, !IsOwner);
+        }
+
+        /// <summary>
+        /// 261121 - 서버 전용. 억쇠 '땅 꺼짐' 가운데 원 = 즉사(기획서 v1.2: 호신부로 못 막음, 무적 효과만 막음).
+        /// 호신부(ServerDamageFilter) · 받는 피해 배율을 거치지 않고, 무적 시간(ServerInvulnerableUntil)과 테스트 무적만 막는다.
+        /// 돌려주는 값 = 실제로 쓰러졌는지.
+        /// </summary>
+        public bool ServerInstantKill()
+        {
+            if (!IsServer || isDead.Value || stats == null || DebugGodMode || Time.time < ServerInvulnerableUntil)
+            {
+                return false;
+            }
+            float amount = currentHealth.Value;
+            currentHealth.Value = 0f;
+            ServerDamaged?.Invoke(amount);
+            isDead.Value = true;
+            respawnTimer = temporaryRespawnDelaySeconds;
+            return true;
         }
 
         private void ApplyDamage(float amount, bool useFilter)

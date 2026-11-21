@@ -338,7 +338,7 @@ namespace CheonMyeong.EditorTools
                 // 게시판, 게시판(외곽선), 게시판 그림자, 현판, 현판(외곽선), 출진 일주문, 일주문(외곽선).
                 sortieBuilding = CreateLobbyBuilding(scene, "Building_Sortie", sheet[0], sheet[1], sheet[2], LobbySortieEntrance, LobbySortieScale, "게임 시작");
                 storyBuilding = CreateLobbyBuilding(scene, "Building_StoryStorage", sheet[6], sheet[7], sheet[8], LobbyStoryEntrance, LobbySideBuildingScale, "스토리 저장소");
-                skillBuilding = CreateLobbyBuilding(scene, "Building_SkillCharacter", sheet[3], sheet[4], sheet[5], LobbySkillEntrance, LobbySideBuildingScale, "스킬 · 캐릭터");
+                skillBuilding = CreateLobbyBuilding(scene, "Building_SkillCharacter", sheet[3], sheet[4], sheet[5], LobbySkillEntrance, LobbySideBuildingScale, "신내림");
             }
 
             RectTransform avatarRt = NewRect(scene, "LobbyAvatar", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
@@ -771,7 +771,7 @@ namespace CheonMyeong.EditorTools
                 26, TextAnchor.UpperCenter, new Vector2(0.3f, 0.65f), new Vector2(0.72f, 0.88f), Vector2.zero, Vector2.zero);
             Text previewDescText = CreateLabel(panel, "PreviewDescText", "근접·다수 | 패시브: 동료를 지키는 결계",
                 18, TextAnchor.UpperCenter, new Vector2(0.3f, 0.52f), new Vector2(0.72f, 0.64f), Vector2.zero, Vector2.zero);
-            CreateLabel(panel, "PreviewPlaceholder", "캐릭터 대기 모션 (placeholder)",
+            CreateLabel(panel, "PreviewPlaceholder", "캐릭터 대기 모션 (임시)",
                 18, TextAnchor.MiddleCenter, new Vector2(0.3f, 0.2f), new Vector2(0.72f, 0.5f), Vector2.zero, Vector2.zero);
 
             RectTransform skillTreePanel = NewRect(panel, "SkillTreeContainer", new Vector2(0.74f, 0f), new Vector2(1f, 0.88f), new Vector2(0f, 0f), new Vector2(-16f, 0f));
@@ -967,14 +967,14 @@ namespace CheonMyeong.EditorTools
 
             Button backButton = CreateButton(panel, "BackButton", "← 뒤로", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(16f, -70f), new Vector2(140f, -24f));
 
-            CreateLabel(panel, "Player1Label", "PLAYER 1 · 하영\n(방장)", 16, TextAnchor.MiddleCenter, new Vector2(0.05f, 0.4f), new Vector2(0.25f, 0.8f), Vector2.zero, Vector2.zero);
-            CreateLabel(panel, "Player2Label", "PLAYER 2 · 하영\n(준비 완료)", 16, TextAnchor.MiddleCenter, new Vector2(0.75f, 0.4f), new Vector2(0.95f, 0.8f), Vector2.zero, Vector2.zero);
+            CreateLabel(panel, "Player1Label", "플레이어 1 · 하영\n(방장)", 16, TextAnchor.MiddleCenter, new Vector2(0.05f, 0.4f), new Vector2(0.25f, 0.8f), Vector2.zero, Vector2.zero);
+            CreateLabel(panel, "Player2Label", "플레이어 2 · 하영\n(준비 완료)", 16, TextAnchor.MiddleCenter, new Vector2(0.75f, 0.4f), new Vector2(0.95f, 0.8f), Vector2.zero, Vector2.zero);
 
             RectTransform roomInfoPanel = NewRect(panel, "RoomInfoPanel", new Vector2(0.3f, 0.25f), new Vector2(0.7f, 0.85f), Vector2.zero, Vector2.zero);
             AddImage(roomInfoPanel, new Color(0.08f, 0.1f, 0.08f, 0.9f));
             CreateLabel(roomInfoPanel, "MapLabel", "선택 맵 · 달밤의 폐장터", 16, TextAnchor.UpperCenter, Vector2.zero, Vector2.one, new Vector2(0f, -32f), Vector2.zero);
             Text joinCodeText = CreateLabel(roomInfoPanel, "JoinCodeText", "초대 코드: --", 18, TextAnchor.MiddleCenter, new Vector2(0.1f, 0.4f), new Vector2(0.9f, 0.6f), Vector2.zero, Vector2.zero);
-            Button startButton = CreateButton(roomInfoPanel, "StartButton", "START (방장) / READY (참가자)", new Vector2(0.1f, 0.08f), new Vector2(0.9f, 0.3f), Vector2.zero, Vector2.zero);
+            Button startButton = CreateButton(roomInfoPanel, "StartButton", "출격 (방장) / 준비 (참가자)", new Vector2(0.1f, 0.08f), new Vector2(0.9f, 0.3f), Vector2.zero, Vector2.zero);
             // 261014 추가 - "맵 선택 안 하면 시작 안 되게, 버튼 누르면 문구 뜨게"(예섭 요청) -
             // WaitRoomScreen.OnStartPressed가 맵 미선택 시 띄울 안내 문구 자리.
             Text statusText = CreateLabel(roomInfoPanel, "StatusText", "", 14, TextAnchor.LowerCenter, new Vector2(0.05f, 0f), new Vector2(0.95f, 0.08f), Vector2.zero, Vector2.zero);
@@ -1008,7 +1008,7 @@ namespace CheonMyeong.EditorTools
         {
             RectTransform panel = CreateScreenRoot(screensRoot, UIFlowManager.MapStory, PanelColorMapStory);
 
-            CreateLabel(panel, "IllustrationPlaceholder", "컷신 일러스트 영역\n(placeholder) - 예: 당산나무 아래 억쇠 등장",
+            CreateLabel(panel, "IllustrationPlaceholder", "컷신 일러스트 영역\n(임시) - 예: 당산나무 아래 억쇠 등장",
                 18, TextAnchor.MiddleCenter, new Vector2(0.1f, 0.4f), new Vector2(0.9f, 0.9f), Vector2.zero, Vector2.zero);
 
             RectTransform dialogueBox = NewRect(panel, "DialogueBox", new Vector2(0.05f, 0.05f), new Vector2(0.95f, 0.35f), Vector2.zero, Vector2.zero);
@@ -1146,7 +1146,7 @@ namespace CheonMyeong.EditorTools
             Image p2HealthFillImage = CreateRoundedFillBar(p2Card, "P2HealthBar", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(12f, 10f), new Vector2(-12f, 42f), HudP2BarColor);
 
             RectTransform centerCard = CreateCardPanel(panel, "CenterStatusCard", new Vector2(0.28f, 1f), new Vector2(0.72f, 1f), new Vector2(0f, -184f), new Vector2(0f, -16f));
-            Text waveTimerText = CreateLabel(centerCard, "WaveTimerText", "WAVE --/-- --:--", 20, TextAnchor.UpperCenter, Vector2.zero, Vector2.one, new Vector2(8f, -40f), new Vector2(-8f, -10f));
+            Text waveTimerText = CreateLabel(centerCard, "WaveTimerText", "웨이브 --/-- --:--", 20, TextAnchor.UpperCenter, Vector2.zero, Vector2.one, new Vector2(8f, -40f), new Vector2(-8f, -10f));
             waveTimerText.color = HudTextWarmWhite;
             Text levelText = CreateLabel(centerCard, "LevelText", "Lv.-- · 영혼 공유", 14, TextAnchor.UpperCenter, Vector2.zero, Vector2.one, new Vector2(8f, -62f), new Vector2(-8f, -42f));
             levelText.color = HudTextWarmWhite;
@@ -1171,7 +1171,7 @@ namespace CheonMyeong.EditorTools
             Text goldText = CreateLabel(goldCard, "GoldText", "엽전 --", 16, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, new Vector2(8f, 2f), new Vector2(-8f, -2f));
             goldText.color = HudTextWarmWhite;
 
-            Text augmentCaption = CreateLabel(panel, "AugmentSlotsCaption", "증강 6칸 · 5단계 (증강 시스템 미정 - placeholder)",
+            Text augmentCaption = CreateLabel(panel, "AugmentSlotsCaption", "신통력 6칸 · 5단계",
                 14, TextAnchor.LowerLeft, new Vector2(0f, 0f), new Vector2(0.5f, 0.1f), new Vector2(16f, 16f), Vector2.zero);
             augmentCaption.color = HudTextWarmWhite;
 
@@ -1349,7 +1349,7 @@ namespace CheonMyeong.EditorTools
             RectTransform panel = CreateScreenRoot(screensRoot, UIFlowManager.Upgrade, PanelColorUpgrade);
 
             CreateLabel(panel, "RerollCountText", "리롤권×1", 16, TextAnchor.UpperLeft, new Vector2(0f, 1f), new Vector2(0.2f, 1f), new Vector2(16f, -24f), new Vector2(0f, -48f));
-            CreateLabel(panel, "TitleText", "레벨업! 증강을 고르세요", 28, TextAnchor.UpperCenter, new Vector2(0.25f, 1f), new Vector2(0.75f, 1f), Vector2.zero, new Vector2(0f, -56f));
+            CreateLabel(panel, "TitleText", "레벨업! 신통력을 고르세요", 28, TextAnchor.UpperCenter, new Vector2(0.25f, 1f), new Vector2(0.75f, 1f), Vector2.zero, new Vector2(0f, -56f));
             Text timerText = CreateLabel(panel, "TimerText", "제한시간 --", 16, TextAnchor.UpperRight, new Vector2(0.8f, 1f), new Vector2(1f, 1f), new Vector2(0f, -24f), new Vector2(-16f, -48f));
 
             string[] cardLabels = { "[공통] 공격력\n스탯 수치 소폭 상승", "[전용] 넓은 베기\n공격 범위 확장", "[일회용] 기도\n이번 판 한정 효과" };
@@ -1378,9 +1378,9 @@ namespace CheonMyeong.EditorTools
             CreateLabel(runPanel, "RunSummaryText", "달밤의 폐장터 · 10/10 웨이브\n최종 원한: -- / 클리어 보상: --(각자) / 봉인 시간: --:--",
                 16, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
-            CreateLabel(panel, "Player1StatsText", "PLAYER1\n처치 수 -- / 획득 엽전 --",
+            CreateLabel(panel, "Player1StatsText", "플레이어 1\n처치 수 -- / 획득 엽전 --",
                 16, TextAnchor.MiddleCenter, new Vector2(0.05f, 0.45f), new Vector2(0.28f, 0.76f), Vector2.zero, Vector2.zero);
-            CreateLabel(panel, "Player2StatsText", "PLAYER2\n처치 수 -- / 획득 엽전 --",
+            CreateLabel(panel, "Player2StatsText", "플레이어 2\n처치 수 -- / 획득 엽전 --",
                 16, TextAnchor.MiddleCenter, new Vector2(0.72f, 0.45f), new Vector2(0.95f, 0.76f), Vector2.zero, Vector2.zero);
 
             Button retryButton = CreateButton(panel, "RetryButton", "다시 하기", new Vector2(0.3f, 0.12f), new Vector2(0.48f, 0.26f), Vector2.zero, Vector2.zero);

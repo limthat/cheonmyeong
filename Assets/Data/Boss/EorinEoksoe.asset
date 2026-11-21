@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62daa035e1884f78bfd0dff4c19023fb, type: 3}
+  m_Name: EorinEoksoe
+  m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Boss.KidBossStatsSO
+  displayName: "\uC5B4\uB9B0 \uC5B5\uC1E0"
+  maxHealth: 3000
+  moveSpeed: 2.6666667
+  bodyRadius: 0.35
+  appearSeconds: 1
+  hopHeight: 0.22
+  hopsPerSecond: 3.2
+  hopAirFraction: 0.7
+  landingSquash: 0.15
+  basicRange: 1.5
+  basicArcDegrees: 120
+  basicDamage: 12
+  basicCooldown: 1.8
+  basicKnockbackTiles: 1
+  basicWindup: 0.55
+  basicRecovery: 0.3
+  grabWindupSeconds: 1
+  grabRange: 1.5
+  grabThrowMultiplier: 2
+  grabRotations: 0.5
+  grabSuppressSeconds: 2
+  grabThrowDamage: 15
+  grabCooldown: 20
+  grabFirstCooldown: 10
+  grabSecondsPerTurn: 0.6
+  grabHoldRadius: 0.55
+  flySeconds: 4
+  flyTurns: 3
+  flyWarnSeconds: 0.6
+  flyArrowWidth: 1.5
+  flyArrowLength: 6
+  flyZigzagDegrees: 35
+  flyContactDamage: 14
+  flyKnockbackTiles: 2
+  flyHitRadius: 0.6
+  dustSeconds: 2
+  dustSlow: 0.2
+  dustRadius: 0.45
+  flyRestSeconds: 1
+  flyCooldown: 18
+  flyFirstCooldown: 6
+  tornadoCount: 3
+  tornadoSpreadDegrees: 25
+  tornadoWarnSeconds: 1
+  tornadoDistance: 6
+  tornadoSpeed: 5
+  tornadoHitRadius: 0.6
+  tornadoDamage: 10
+  tornadoKnockbackTiles: 2
+  tornadoCooldown: 12
+  tornadoFirstCooldown: 4
+  defeatRerollTickets: 1
+  defeatSoul: 125
+  defeatGold: 20
+  failGrudge: 250

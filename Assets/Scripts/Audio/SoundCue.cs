@@ -60,6 +60,9 @@ namespace CheonMyeong.Audio
         [Tooltip("좌우로 나뉘는 정도(0 = 가운데 고정).")]
         [Range(0f, 1f)] public float stereoSpread = 0.6f;
 
+        [Tooltip("261121 - 거꾸로 재생(물귀신 들어갈 때 = 첨벙 거꾸로, 사운드 기획서 v1.2). 클립 Load Type이 Decompress On Load여야 한다.")]
+        public bool reverse;
+
         [Header("배경음")]
         [Tooltip("배경음 전용 - 클립들을 동시에 겹쳐 재생(층). GameAudio.SetBgmIntensity로 몇 층까지 들릴지 정한다.")]
         public bool layered;

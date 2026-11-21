@@ -15,7 +15,7 @@ TagManager:
   - 
   - Enemy
   - Map
-  - 
+  - MapSolid
   - 
   - 
   - 
@@ -40,6 +40,12 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: RealmFx
+    uniqueID: 2359038493
+    locked: 0
+  - name: RealmTop
+    uniqueID: 1190922195
     locked: 0
   m_RenderingLayers:
   - Default

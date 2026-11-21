@@ -30,9 +30,6 @@ TextureImporter:
       213: -5727141899253217639
     second: Eoksoe_FX-Sheet_8
   - first:
-      213: 4734679945089195184
-    second: Eoksoe_FX-Sheet_9
-  - first:
       213: 6686360143808273329
     second: Eoksoe_FX-Sheet_10
   - first:
@@ -41,6 +38,9 @@ TextureImporter:
   - first:
       213: -7143158552156106604
     second: Eoksoe_FX-Sheet_12
+  - first:
+      213: 2348867293499089429
+    second: Eoksoe_FX-Sheet_9
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -153,7 +153,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 128
+        y: 256
         width: 128
         height: 128
       alignment: 0
@@ -175,7 +175,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 128
+        y: 256
         width: 128
         height: 128
       alignment: 0
@@ -197,7 +197,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 384
-        y: 128
+        y: 256
         width: 128
         height: 128
       alignment: 0
@@ -219,7 +219,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 128
+        y: 256
         width: 128
         height: 128
       alignment: 0
@@ -241,7 +241,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 640
-        y: 128
+        y: 256
         width: 128
         height: 128
       alignment: 0
@@ -263,7 +263,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 128
         width: 128
         height: 128
       alignment: 0
@@ -285,7 +285,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 0
+        y: 128
         width: 128
         height: 128
       alignment: 0
@@ -307,7 +307,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 0
+        y: 128
         width: 128
         height: 128
       alignment: 0
@@ -329,7 +329,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 384
-        y: 0
+        y: 128
         width: 128
         height: 128
       alignment: 0
@@ -342,6 +342,28 @@ TextureImporter:
       bones: []
       spriteID: f0716104ddd7bbb4999e068f2e03f6eb
       internalID: -5727141899253217639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eoksoe_FX-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c04fb375f52d94440000000000000000
+      internalID: 2348867293499089429
       vertices: []
       indices: 
       edges: []
@@ -369,6 +391,7 @@ TextureImporter:
       Eoksoe_FX-Sheet_6: 1550380404163436155
       Eoksoe_FX-Sheet_7: -369121324492214071
       Eoksoe_FX-Sheet_8: -5727141899253217639
+      Eoksoe_FX-Sheet_9: 2348867293499089429
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

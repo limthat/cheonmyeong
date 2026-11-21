@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Eoksoe
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Boss.BossStatsSO
   displayName: "\uC5B5\uC1E0"
-  midMaxHealth: 3300
-  finalHealthPerBar: 8400
+  midMaxHealth: 3000
+  finalHealthPerBar: 8000
   finalBars: 3
   midScale: 1
   finalScale: 2
@@ -87,10 +87,10 @@ MonoBehaviour:
   - 1
   mentalFirstCooldown: 10
   mentalCooldown:
-  - 140
-  - 110
-  - 80
-  - 30
+  - 84
+  - 66
+  - 48
+  - 18
   mentalDuration: 8
   mentalRealmRadius: 4.5
   midDefeatRerollTickets: 1

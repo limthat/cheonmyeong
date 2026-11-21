@@ -951,13 +951,16 @@ namespace CheonMyeong.EditorTools
         private const int EoksoeFrameSize = 256;
         private const int EoksoeFxFrameSize = 128;
         private const float EoksoePixelsPerUnit = 100f; // 256px 한 칸 = 2.56유닛(캐릭터 · 원귀와 같은 PPU 100)
-        private const float EoksoeFps = 10f;            // 기획서: 전부 100ms
+        private const float EoksoeFps = 10f;            // 기획서: 전부 100ms (QUAKE만 125ms)
 
         // 시트 행 순서(위에서부터) = EoksoeBoss.AnimStateNames. 반복 재생할 상태만 true.
+        // 261121 - 기획서 v1.2: QUAKE(땅 꺼짐 9장)가 맨 아래 줄에 추가, 이 줄만 125ms(8fps).
         private static readonly string[] EoksoeRowNames =
-            { "IDLE", "WALK", "SUMMON", "ATK", "MENTAL", "MENTAL_IDLE", "GRAB", "HOLD", "SLAM", "DIE" };
+            { "IDLE", "WALK", "SUMMON", "ATK", "MENTAL", "MENTAL_IDLE", "GRAB", "HOLD", "SLAM", "DIE", "QUAKE" };
         private static readonly bool[] EoksoeRowLoops =
-            { true, true, false, false, false, true, false, true, false, false };
+            { true, true, false, false, false, true, false, true, false, false, false };
+        private static readonly float[] EoksoeRowFps =
+            { 10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f, 8f };
 
         /// <summary>
         /// 억쇠 한 번에 만들기: 시트 임포트(원본 해상도 · Point · 압축 없음) → 256칸 슬라이스 → 상태별 클립 10개 + 애니메이터 →
@@ -997,6 +1000,8 @@ namespace CheonMyeong.EditorTools
                 : new List<Sprite[]>();
             Sprite[] slashFx = fxRows.Count > 0 ? fxRows[0] : new Sprite[0];
             Sprite[] burstFx = fxRows.Count > 1 ? fxRows[1] : new Sprite[0];
+            // 261121 - 셋째 줄 QUAKE_PIT(땅 꺼짐 구덩이 1장).
+            Sprite pitSprite = fxRows.Count > 2 && fxRows[2].Length > 0 ? fxRows[2][0] : null;
 
             EnsureLayer(EnemyLayerName);
             int enemyLayer = LayerMask.NameToLayer(EnemyLayerName);
@@ -1059,6 +1064,7 @@ namespace CheonMyeong.EditorTools
                 AssignPrivateObjectArrayField(boss, "coinSprites", coinSprites);
                 AssignPrivateObjectArrayField(boss, "slashFxFrames", slashFx);
                 AssignPrivateObjectArrayField(boss, "burstFxFrames", burstFx);
+                AssignPrivateField(boss, "pitSprite", pitSprite);
                 SetSerializedVector2(boss, "visualBaseOffset", visualOffset);
                 EditorUtility.SetDirty(boss);
                 EditorUtility.SetDirty(root);
@@ -1122,7 +1128,7 @@ namespace CheonMyeong.EditorTools
 
             for (int i = 0; i < EoksoeRowNames.Length; i++)
             {
-                AnimationClip clip = CreateHeldSpriteClip($"{EoksoeAnimFolder}/{EoksoeRowNames[i]}.anim", rows[i], EoksoeFps, EoksoeRowLoops[i]);
+                AnimationClip clip = CreateHeldSpriteClip($"{EoksoeAnimFolder}/{EoksoeRowNames[i]}.anim", rows[i], EoksoeRowFps[i], EoksoeRowLoops[i]);
                 AnimatorState state = stateMachine.AddState(EoksoeRowNames[i]);
                 state.motion = clip;
                 if (i == 0)

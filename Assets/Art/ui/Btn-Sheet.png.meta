@@ -17,6 +17,12 @@ TextureImporter:
   - first:
       213: 4517250737905374660
     second: Btn-Sheet_4
+  - first:
+      213: 864798403705426364
+    second: Btn-Sheet_5
+  - first:
+      213: 2896996034020620449
+    second: Btn-Sheet_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -129,7 +135,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
+        y: 192
         width: 128
         height: 64
       alignment: 0
@@ -151,7 +157,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 128
+        y: 192
         width: 128
         height: 64
       alignment: 0
@@ -173,7 +179,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
+        y: 128
         width: 128
         height: 64
       alignment: 0
@@ -195,7 +201,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 64
+        y: 128
         width: 128
         height: 64
       alignment: 0
@@ -217,7 +223,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 64
         width: 128
         height: 64
       alignment: 0
@@ -230,6 +236,50 @@ TextureImporter:
       bones: []
       spriteID: 4c5983adc9f70be30800000000000000
       internalID: 4517250737905374660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Btn-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 22, y: 19, z: 22, w: 19}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6453d48b55463370000000000000000
+      internalID: 864798403705426364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Btn-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 22, y: 19, z: 22, w: 19}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c8fe017cf49a82b0000000000000000
+      internalID: 2896996034020620449
       vertices: []
       indices: 
       edges: []
@@ -255,6 +305,8 @@ TextureImporter:
       Btn-Sheet_2: 5182237156494572077
       Btn-Sheet_3: 1970787870649289689
       Btn-Sheet_4: 4517250737905374660
+      Btn-Sheet_5: 864798403705426364
+      Btn-Sheet_6: 2896996034020620449
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
