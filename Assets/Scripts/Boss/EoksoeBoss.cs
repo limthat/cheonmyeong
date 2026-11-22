@@ -126,6 +126,8 @@ namespace CheonMyeong.Boss
         [SerializeField] private Sprite[] burstFxFrames;
         [Tooltip("261121 - Eoksoe_FX-Sheet 셋째 줄 QUAKE_PIT(땅 꺼짐 구덩이 그림 1장).")]
         [SerializeField] private Sprite pitSprite;
+        [Tooltip("261123 - 정신병 차원 원 밖(끌려간 본인 화면) 장식용 맵 물체 그림(작은 나무 · 대나무 · 바위 등). 앞쪽일수록 자주 뽑힌다.")]
+        [SerializeField] private Sprite[] realmDecorSprites;
 
         [Tooltip("Visual(그림)의 기본 위치 - 발이 이 오브젝트 위치(바닥)에 오도록 빌더가 계산해 넣는다.")]
         [SerializeField] private Vector2 visualBaseOffset;
@@ -357,6 +359,15 @@ namespace CheonMyeong.Boss
             {
                 Destroy(realmRing.gameObject);
             }
+            if (realmRingFx != null)
+            {
+                Destroy(realmRingFx.gameObject);
+            }
+            if (realmRingMaterial != null)
+            {
+                Destroy(realmRingMaterial); // 런타임에 만든 머티리얼 사본
+            }
+            DestroyRealmDecor();
             if (realmDarkness != null)
             {
                 Destroy(realmDarkness.gameObject);
@@ -906,6 +917,7 @@ namespace CheonMyeong.Boss
                 Vector2 landing = rb.position + dir * stats.grabRange * stats.grabThrowMultiplier;
                 MapBounds bounds = MapBounds.Instance;
                 throwTo = bounds != null ? bounds.ClampInside(landing) : landing;
+                throwTo = ResolveLanding(rb.position, throwTo); // 261122 - 대숲 · 울타리 · 물체 · 구덩이 너머로 던지지 않게
                 TelegraphRpc(throwTo, Vector2.right, SlamRadius(), 360f, SlamHitSeconds);
                 SetState(ServerState.Slamming, BossAnim.Slam);
             }
@@ -1493,9 +1505,24 @@ namespace CheonMyeong.Boss
         {
             if (heldPlayer != null && heldPlayer.TryGetComponent(out PlayerMovement movement))
             {
+                // 261122 - 도는 중에 풀려나면(동료가 때림 등) 벽 · 물체 안에 낀 채로 남지 않게 가장 가까운 빈 자리로.
+                MapFlowField field = MapFlowField.Instance;
+                if (field != null)
+                {
+                    PlaceHeld(field.ResolveStuck(heldPlayer.transform.position, HeldBodyRadius));
+                }
                 movement.ServerSetHeld(false);
             }
             heldPlayer = null;
+        }
+
+        private const float HeldBodyRadius = 0.3f;
+
+        /// <summary>261122 - 던질 자리를 걸을 수 있는 곳으로(MapFlowField가 없는 옛 맵이면 그대로).</summary>
+        private static Vector2 ResolveLanding(Vector2 from, Vector2 to)
+        {
+            MapFlowField field = MapFlowField.Instance;
+            return field != null ? field.ResolveLanding(from, to, HeldBodyRadius) : to;
         }
 
         // =====================================================================
@@ -2391,7 +2418,11 @@ namespace CheonMyeong.Boss
             realmLocalInside = false;
             if (realmRing != null)
             {
-                realmRing.gameObject.SetActive(on);
+                realmRing.gameObject.SetActive(false);
+            }
+            if (realmRingFx != null)
+            {
+                realmRingFx.gameObject.SetActive(false);
             }
             if (realmDarkness != null)
             {
@@ -2403,18 +2434,34 @@ namespace CheonMyeong.Boss
             }
 
             float radius = stats != null ? stats.mentalRealmRadius : 4.5f;
-            EnsureRealmRing();
-            DrawRealmRing(realmCenter.Value, radius);
-
             NetworkObject localPlayer = NetworkManager != null && NetworkManager.LocalClient != null ? NetworkManager.LocalClient.PlayerObject : null;
             realmLocalInside = localPlayer != null && localPlayer.NetworkObjectId == realmPlayerId.Value;
-            // 261122 - 본인 화면에선 경계 원도 막(RealmFx) 위 RealmTop에 그린다.
-            realmRing.sortingLayerID = realmLocalInside && TryGetRealmLayers() ? realmTopLayer : DefaultSortingLayer();
+            bool shader = TryGetRealmLayers();
+            if (shader)
+            {
+                // 261123 - 도트 경계: 본인 화면은 막 셰이더가 경계까지 그리고, 바깥 사람 화면은 같은 셰이더의 '경계만' 사본(Default 레이어).
+                if (!realmLocalInside)
+                {
+                    EnsureRealmRingFx();
+                    PlaceRealmSprite(realmRingFx.transform, radius);
+                    realmRingFx.gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                EnsureRealmRing();
+                DrawRealmRing(realmCenter.Value, radius);
+                realmRing.gameObject.SetActive(true);
+            }
             if (realmLocalInside)
             {
                 EnsureRealmDarkness();
                 PlaceRealmDarkness(radius);
                 realmDarkness.gameObject.SetActive(true);
+                if (shader)
+                {
+                    PlaceRealmDecor(realmCenter.Value, radius);
+                }
                 BoostRenderers(localPlayer.gameObject);
             }
         }
@@ -2432,6 +2479,7 @@ namespace CheonMyeong.Boss
                 {
                     PlaceRealmDarkness(stats != null ? stats.mentalRealmRadius : 4.5f);
                 }
+                UpdateRealmFlowerGlow();
                 if (cloneRenderer != null)
                 {
                     if (TryGetRealmLayers())
@@ -2479,11 +2527,362 @@ namespace CheonMyeong.Boss
             }
         }
 
+        // ---------- 261123 - 차원 원 밖 장식(끌려간 본인 화면): 나무 · 바위 · 형형색색 꽃 ----------
+        // 261123b 예섭: 5배 많게, 크기는 캐릭터(170~180cm ≈ 0.94유닛)에 맞춰 나무는 캐릭터보다 크게, 돌도 크게, 꽃은 여러 색.
+        // 막(RealmFx 0) → 장식(RealmFx 5, Y정렬) → 회상 안개(RealmFx 20, 원 밖만) 순으로 그려 장식까지 같이 흐릿해진다.
+        // 차원 안 내 캐릭터 · 분신은 RealmTop이라 늘 그 위. 조명 없는 Sprites-Default라 2D 라이트와 무관.
+        private const int RealmDecorCount = 35;
+        private const int RealmFlowerCount = 55;
+        private const float RealmDecorInner = 0.8f;
+        private const float RealmDecorOuter = 11f;
+        private const int RealmDecorSortingOrder = 5;
+        private const int RealmFogSortingOrder = 20;
+        private const float MetersToUnits = 0.94f / 1.75f; // 캐릭터 그림(약 0.94유닛) = 175cm 기준
+        private static readonly Color RealmDecorTint = new Color(0.6f, 0.64f, 0.8f, 1f); // 261123d - 안개 낀 저녁 숲: 푸르스름하게 어둡게(꽃은 그대로 밝게)
+        private readonly List<SpriteRenderer> realmDecor = new List<SpriteRenderer>(RealmDecorCount);
+        private readonly List<SpriteRenderer> realmFlowers = new List<SpriteRenderer>(RealmFlowerCount);
+        private readonly List<SpriteRenderer> realmFlowerGlows = new List<SpriteRenderer>(RealmFlowerCount);
+        private readonly List<float> realmFlowerPhases = new List<float>(RealmFlowerCount);
+        private readonly List<Color> realmFlowerGlowColors = new List<Color>(RealmFlowerCount);
+        private readonly List<Vector2> realmDecorSpots = new List<Vector2>(RealmDecorCount + RealmFlowerCount);
+        private readonly List<float> realmDecorGaps = new List<float>(RealmDecorCount + RealmFlowerCount);
+        private Texture2D realmFlowerTexture;
+        private Sprite[] realmFlowerSprites;
+        private Texture2D realmGlowTexture;
+        private Sprite realmGlowSprite;
+        private SpriteRenderer realmFog;
+        private Material realmFogMaterial;
+        private static readonly int FogOnlyId = Shader.PropertyToID("_FogOnly");
+
+        /// <summary>
+        /// 장식 그림별 높이(미터, 최소 ~ 최대). realmDecorSprites 순서와 맞춘다 - 이름으로 고르면 그림 순서가 바뀌어도 안전하다.
+        /// 작은 나무 5~7m, 대나무 6~8m, 큰 나무 9~11m, 바위 1.2~2m, 풀포기 0.5~0.7m.
+        /// </summary>
+        private static Vector2 DecorHeightMeters(Sprite sprite)
+        {
+            string n = sprite != null ? sprite.name : string.Empty;
+            if (n.Contains("bamboo")) return new Vector2(6f, 8f);
+            if (n == "Obj_tree") return new Vector2(9f, 11f);
+            if (n.Contains("tree")) return new Vector2(5f, 7f);
+            if (n.Contains("rock")) return new Vector2(1.2f, 2f);
+            if (n.Contains("tuft")) return new Vector2(0.5f, 0.7f);
+            return new Vector2(2f, 3f);
+        }
+
+        private void PlaceRealmDecor(Vector2 center, float radius)
+        {
+            EnsureRealmDecorSprites();
+            EnsureRealmFog();
+            PlaceRealmSprite(realmFog.transform, radius);
+            realmFog.gameObject.SetActive(true);
+
+            realmDecorSpots.Clear();
+            realmDecorGaps.Clear();
+            int sortingLayer = realmFxLayer;
+            int decorKinds = realmDecorSprites != null ? realmDecorSprites.Length : 0;
+            int placed = 0;
+            for (int i = 0; i < RealmDecorCount && decorKinds > 0; i++)
+            {
+                // 앞쪽(작은 나무 · 대나무)이 더 자주 나오게: 0번부터 가중치가 줄어든다.
+                int kind = Mathf.Min(decorKinds - 1, Mathf.FloorToInt(UnityEngine.Random.value * UnityEngine.Random.value * decorKinds));
+                Sprite sprite = realmDecorSprites[kind];
+                if (sprite == null || sprite.bounds.size.y <= 0.001f)
+                {
+                    continue;
+                }
+                Vector2 meters = DecorHeightMeters(sprite);
+                float height = Mathf.Lerp(meters.x, meters.y, UnityEngine.Random.value) * MetersToUnits;
+                float scale = height / sprite.bounds.size.y;
+                float width = sprite.bounds.size.x * scale;
+                // 원 아래쪽은 위로 솟은 그림이 씨름판을 덮지 않게 높이만큼 더 띄운다. 간격 = 폭의 70%.
+                if (!TryPickRealmSpot(center, radius, Mathf.Max(0.6f, width * 0.7f), height, out Vector2 spot))
+                {
+                    continue;
+                }
+                SpriteRenderer sr = GetPooled(realmDecor, placed++, "RealmDecor");
+                sr.sprite = sprite;
+                sr.flipX = UnityEngine.Random.value < 0.5f;
+                sr.color = RealmDecorTint;
+                sr.sortingLayerID = sortingLayer;
+                sr.sortingOrder = RealmDecorSortingOrder;
+                sr.transform.position = new Vector3(spot.x, spot.y, 0f);
+                sr.transform.localScale = new Vector3(scale, scale, 1f);
+                sr.gameObject.SetActive(true);
+            }
+
+            realmFlowerPhases.Clear();
+            realmFlowerGlowColors.Clear();
+            int flowers = 0;
+            for (int i = 0; i < RealmFlowerCount; i++)
+            {
+                if (!TryPickRealmSpot(center, radius, 0.35f, 0f, out Vector2 spot))
+                {
+                    continue;
+                }
+                int variant = UnityEngine.Random.Range(0, FlowerPalettes.Length);
+                SpriteRenderer glow = GetPooled(realmFlowerGlows, flowers, "RealmFlowerGlow");
+                glow.sprite = realmGlowSprite;
+                glow.sortingLayerID = sortingLayer;
+                glow.sortingOrder = RealmDecorSortingOrder - 1;
+                glow.transform.position = new Vector3(spot.x, spot.y + 0.13f, 0f); // 꽃송이 가운데(바닥에서 약 8px)
+                glow.gameObject.SetActive(true);
+                SpriteRenderer flower = GetPooled(realmFlowers, flowers, "RealmFlower");
+                flower.sprite = realmFlowerSprites[variant];
+                flower.flipX = UnityEngine.Random.value < 0.5f;
+                flower.color = Color.white;
+                flower.sortingLayerID = sortingLayer;
+                flower.sortingOrder = RealmDecorSortingOrder;
+                flower.transform.position = new Vector3(spot.x, spot.y, 0f);
+                flower.gameObject.SetActive(true);
+                realmFlowerPhases.Add(UnityEngine.Random.value * Mathf.PI * 2f);
+                Color32 light = FlowerPalettes[variant][2];
+                realmFlowerGlowColors.Add(new Color(light.r / 255f, light.g / 255f, light.b / 255f, 1f));
+                flowers++;
+            }
+            UpdateRealmFlowerGlow();
+        }
+
+        /// <summary>
+        /// 경계 바깥 띠에서 이미 고른 자리들과 (서로의 간격 중 큰 값) 이상 떨어진 곳(최대 16번 시도).
+        /// belowPad = 원 아래쪽일수록 더 띄울 거리(키 큰 그림이 원 안을 덮지 않게).
+        /// </summary>
+        private bool TryPickRealmSpot(Vector2 center, float radius, float minGap, float belowPad, out Vector2 spot)
+        {
+            for (int attempt = 0; attempt < 16; attempt++)
+            {
+                float angle = UnityEngine.Random.value * Mathf.PI * 2f;
+                float distance = radius + Mathf.Lerp(RealmDecorInner, RealmDecorOuter, Mathf.Sqrt(UnityEngine.Random.value))
+                                 + belowPad * Mathf.Max(0f, -Mathf.Sin(angle));
+                spot = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
+                bool clear = true;
+                for (int i = 0; i < realmDecorSpots.Count && clear; i++)
+                {
+                    float gap = Mathf.Max(minGap, realmDecorGaps[i]);
+                    clear = (realmDecorSpots[i] - spot).sqrMagnitude >= gap * gap;
+                }
+                if (clear)
+                {
+                    realmDecorSpots.Add(spot);
+                    realmDecorGaps.Add(minGap);
+                    return true;
+                }
+            }
+            spot = default;
+            return false;
+        }
+
+        private SpriteRenderer GetPooled(List<SpriteRenderer> pool, int index, string name)
+        {
+            while (pool.Count <= index)
+            {
+                var go = new GameObject(name);
+                go.SetActive(false);
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sharedMaterial = telegraphMaterial; // Sprites-Default(조명 없음)
+                pool.Add(sr);
+            }
+            return pool[index];
+        }
+
+        /// <summary>회상 안개: RealmMask 사본(_FogOnly = 1)이 원 밖(짚 둘레 바깥)만 옅은 회색으로 덮는다 - 장식 위.</summary>
+        private void EnsureRealmFog()
+        {
+            if (realmFog != null)
+            {
+                return;
+            }
+            realmFogMaterial = new Material(realmMaskMaterial) { name = "RealmFogOnly" };
+            realmFogMaterial.SetFloat(FogOnlyId, 1f);
+            var go = new GameObject("EoksoeRealmFog");
+            realmFog = go.AddComponent<SpriteRenderer>();
+            realmFog.sprite = GetRealmMaskSprite();
+            realmFog.sharedMaterial = realmFogMaterial;
+            realmFog.sortingLayerID = realmFxLayer;
+            realmFog.sortingOrder = RealmFogSortingOrder;
+        }
+
+        /// <summary>꽃 빛 무리: 초당 8칸으로 끊어 천천히 숨 쉬듯(도트 애니메이션처럼). 꽃마다 색 · 박자가 다르다.</summary>
+        private void UpdateRealmFlowerGlow()
+        {
+            float t = Mathf.Floor(Time.time * 8f) / 8f;
+            for (int i = 0; i < realmFlowerGlows.Count && i < realmFlowerPhases.Count; i++)
+            {
+                SpriteRenderer glow = realmFlowerGlows[i];
+                if (glow == null || !glow.gameObject.activeSelf)
+                {
+                    continue;
+                }
+                float pulse = 0.5f + 0.5f * Mathf.Sin(t * 1.8f + realmFlowerPhases[i]);
+                Color c = realmFlowerGlowColors[i];
+                c.a = 0.18f + 0.22f * pulse;
+                glow.color = c;
+                float scale = 0.85f + 0.12f * pulse;
+                glow.transform.localScale = new Vector3(scale, scale, 1f);
+            }
+        }
+
+        private void HideRealmDecor()
+        {
+            HideAll(realmDecor);
+            HideAll(realmFlowers);
+            HideAll(realmFlowerGlows);
+            if (realmFog != null)
+            {
+                realmFog.gameObject.SetActive(false);
+            }
+        }
+
+        private static void HideAll(List<SpriteRenderer> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] != null && list[i].gameObject.activeSelf)
+                {
+                    list[i].gameObject.SetActive(false);
+                }
+            }
+        }
+
+        private void DestroyRealmDecor()
+        {
+            DestroyAll(realmDecor);
+            DestroyAll(realmFlowers);
+            DestroyAll(realmFlowerGlows);
+            if (realmFog != null) Destroy(realmFog.gameObject);
+            if (realmFogMaterial != null) Destroy(realmFogMaterial);
+            if (realmFlowerSprites != null)
+            {
+                for (int i = 0; i < realmFlowerSprites.Length; i++)
+                {
+                    if (realmFlowerSprites[i] != null) Destroy(realmFlowerSprites[i]);
+                }
+            }
+            if (realmFlowerTexture != null) Destroy(realmFlowerTexture);
+            if (realmGlowSprite != null) Destroy(realmGlowSprite);
+            if (realmGlowTexture != null) Destroy(realmGlowTexture);
+        }
+
+        private static void DestroyAll(List<SpriteRenderer> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] != null)
+                {
+                    Destroy(list[i].gameObject);
+                }
+            }
+            list.Clear();
+        }
+
+        // 꽃 팔레트 7가지: [0] 외곽선, [1] 꽃잎, [2] 밝은 꽃잎(빛 무리 색), [3] 꽃술.
+        private static readonly Color32[][] FlowerPalettes =
+        {
+            new[] { new Color32(92, 22, 32, 255), new Color32(222, 62, 72, 255), new Color32(255, 146, 146, 255), new Color32(255, 222, 120, 255) },   // 빨강
+            new[] { new Color32(112, 82, 22, 255), new Color32(242, 202, 52, 255), new Color32(255, 242, 152, 255), new Color32(200, 112, 40, 255) },  // 노랑
+            new[] { new Color32(112, 42, 82, 255), new Color32(242, 122, 182, 255), new Color32(255, 192, 226, 255), new Color32(255, 242, 202, 255) }, // 분홍
+            new[] { new Color32(62, 32, 102, 255), new Color32(152, 92, 222, 255), new Color32(206, 172, 255, 255), new Color32(255, 236, 150, 255) },  // 보라
+            new[] { new Color32(92, 92, 112, 255), new Color32(226, 229, 240, 255), new Color32(255, 255, 255, 255), new Color32(250, 210, 80, 255) },  // 하양
+            new[] { new Color32(112, 52, 22, 255), new Color32(246, 142, 52, 255), new Color32(255, 202, 132, 255), new Color32(255, 242, 182, 255) },  // 주황
+            new[] { new Color32(28, 46, 92, 255), new Color32(70, 150, 235, 255), new Color32(150, 215, 255, 255), new Color32(235, 252, 255, 255) },   // 파랑
+        };
+
+        /// <summary>
+        /// 꽃 7색(각 11×12px, 한 텍스처에 가로로) · 빛 무리(21×21px)를 한 번만 그린다(PPU 64 = 맵 물체와 같은 픽셀 크기, Point 필터).
+        /// 꽃: 꽃잎 4장 + 밝은 테 + 꽃술 + 짧은 줄기 · 잎. 빛 무리: Bayer 디더링 원(흰색, 꽃마다 색을 입힘).
+        /// </summary>
+        private void EnsureRealmDecorSprites()
+        {
+            if (realmFlowerSprites != null)
+            {
+                return;
+            }
+            // . 투명, d 외곽선, b 꽃잎, l 밝은 꽃잎, w 꽃술, g 줄기, G 잎
+            string[] rows =
+            {
+                "....ddd....",
+                "...dlbld...",
+                ".ddlbbbldd.",
+                "dlbbllwbbld",
+                "dbbllwwlbbd",
+                ".ddbwwwbdd.",
+                "..dlbbbld..",
+                "...dbbbd...",
+                "....dgd....",
+                "..GG.g.....",
+                "...GGg.GG..",
+                ".....gGG...",
+            };
+            int w = rows[0].Length;
+            int h = rows.Length;
+            int variants = FlowerPalettes.Length;
+            realmFlowerTexture = new Texture2D(w * variants, h, TextureFormat.RGBA32, false)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp,
+                name = "RealmFlowers",
+            };
+            var px = new Color32[w * variants * h];
+            var stem = new Color32(40, 92, 60, 255);
+            var leaf = new Color32(56, 120, 72, 255);
+            for (int v = 0; v < variants; v++)
+            {
+                Color32[] pal = FlowerPalettes[v];
+                for (int y = 0; y < h; y++)
+                {
+                    string row = rows[h - 1 - y]; // 텍스처는 아래 줄부터
+                    for (int x = 0; x < w; x++)
+                    {
+                        px[y * w * variants + v * w + x] = row[x] switch
+                        {
+                            'd' => pal[0],
+                            'b' => pal[1],
+                            'l' => pal[2],
+                            'w' => pal[3],
+                            'g' => stem,
+                            'G' => leaf,
+                            _ => new Color32(0, 0, 0, 0),
+                        };
+                    }
+                }
+            }
+            realmFlowerTexture.SetPixels32(px);
+            realmFlowerTexture.Apply(false, true);
+            realmFlowerSprites = new Sprite[variants];
+            for (int v = 0; v < variants; v++)
+            {
+                realmFlowerSprites[v] = Sprite.Create(realmFlowerTexture, new Rect(v * w, 0, w, h), new Vector2(0.5f, 0f), 64f);
+            }
+
+            const int g = 21;
+            int[] bayer = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
+            realmGlowTexture = new Texture2D(g, g, TextureFormat.RGBA32, false)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp,
+                name = "RealmFlowerGlow",
+            };
+            var gp = new Color32[g * g];
+            float half = (g - 1) * 0.5f;
+            for (int y = 0; y < g; y++)
+            {
+                for (int x = 0; x < g; x++)
+                {
+                    float d = Mathf.Sqrt((x - half) * (x - half) + (y - half) * (y - half)) / half; // 0 가운데 ~ 1 테두리
+                    float density = Mathf.Clamp01(1f - d) * 1.3f;
+                    float threshold = (bayer[(x & 3) + (y & 3) * 4] + 0.5f) / 16f;
+                    gp[y * g + x] = density > threshold ? new Color32(255, 255, 255, 255) : new Color32(0, 0, 0, 0);
+                }
+            }
+            realmGlowTexture.SetPixels32(gp);
+            realmGlowTexture.Apply(false, true);
+            realmGlowSprite = Sprite.Create(realmGlowTexture, new Rect(0, 0, g, g), new Vector2(0.5f, 0.5f), 64f);
+        }
+
         // ---------- 261122 2차 - 바깥 화면 영혼 불 ----------
         private const string SoulFlameMaterialPath = "SoulFlame"; // Assets/Resources/SoulFlame.mat
         private const int SoulFlameSortingOrder = 50;
-        private static readonly Color PlayerFlameColor = new Color(0.35f, 0.78f, 1f, 0.95f);  // 푸른 넋
-        private static readonly Color CloneFlameColor = new Color(0.72f, 0.38f, 1f, 0.95f);   // 보랏빛 분신
+        private static readonly Color PlayerFlameColor = new Color(0.33f, 0.72f, 0.96f, 1f);  // 푸른 넋(도트 - 알파 1로 또렷하게)
+        private static readonly Color CloneFlameColor = new Color(0.66f, 0.36f, 0.95f, 1f);   // 보랏빛 분신
         private static readonly Vector2 PlayerFlameSize = new Vector2(0.9f, 1.35f);
         private static readonly Vector2 CloneFlameSize = new Vector2(1.3f, 1.9f);
         private static bool soulFlameChecked;
@@ -2668,10 +3067,35 @@ namespace CheonMyeong.Boss
         /// <summary>뚫린 막을 차원 가운데에 - 구멍 반지름 = 차원 반지름(텍스처 구멍 RealmHolePixels 칸 = 반지름).</summary>
         private void PlaceRealmDarkness(float radius)
         {
+            PlaceRealmSprite(realmDarkness.transform, radius);
+        }
+
+        private void PlaceRealmSprite(Transform target, float radius)
+        {
             Vector2 c = realmCenter.Value;
-            realmDarkness.transform.position = new Vector3(c.x, c.y, 0f);
+            target.position = new Vector3(c.x, c.y, 0f);
             float scale = radius / RealmHolePixels;
-            realmDarkness.transform.localScale = new Vector3(scale, scale, 1f);
+            target.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        // 261123 - 바깥 사람 화면의 도트 경계 원(RealmMask 사본, _RingOnly = 1). 화면 텍스처를 안 읽어서 Default 레이어에 그린다.
+        private SpriteRenderer realmRingFx;
+        private Material realmRingMaterial;
+        private static readonly int RingOnlyId = Shader.PropertyToID("_RingOnly");
+
+        private void EnsureRealmRingFx()
+        {
+            if (realmRingFx != null)
+            {
+                return;
+            }
+            realmRingMaterial = new Material(realmMaskMaterial) { name = "RealmRingOnly" };
+            realmRingMaterial.SetFloat(RingOnlyId, 1f);
+            var go = new GameObject("EoksoeRealmRingFx");
+            realmRingFx = go.AddComponent<SpriteRenderer>();
+            realmRingFx.sprite = GetRealmMaskSprite();
+            realmRingFx.sharedMaterial = realmRingMaterial;
+            realmRingFx.sortingOrder = 1002;
         }
 
         /// <summary>
@@ -2703,6 +3127,7 @@ namespace CheonMyeong.Boss
         {
             RestoreHiddenOutsiders();
             HideSoulFlames();
+            HideRealmDecor();
             for (int i = 0; i < realmBoosted.Count; i++)
             {
                 if (realmBoosted[i] != null && i < realmBoostedOrders.Count)
@@ -2793,7 +3218,7 @@ namespace CheonMyeong.Boss
         }
 
         // ---------- 261122 차원 막 셰이더 · 정렬 레이어 ----------
-        // RealmFx: 막(Default 다음 - Renderer2D의 Camera Sorting Layer Texture가 Default까지 찍은 화면을 읽는다).
+        // RealmFx: 막(Default 다음 - 261123c 씨름터: 원 안 모래 · 원 밖 반투명 풀밭을 직접 그려 화면 텍스처는 안 읽음).
         // RealmTop: 차원 안 내 캐릭터 · 분신 · 분신 예고 · 경계 원(막 위, 흐림 없음).
         private const string RealmFxLayerName = "RealmFx";
         private const string RealmTopLayerName = "RealmTop";

@@ -178,8 +178,21 @@ namespace CheonMyeong.Boss
             return hashes;
         }
 
+        /// <summary>261122 - 크기 배율(KidBossStatsSO.sizeScale). 루트 transform에 걸어 그림 · 그림자 · 콜라이더가 같이 커진다.</summary>
+        private float Size => stats != null ? stats.sizeScale : 1f;
+
+        /// <summary>몸 반지름(월드) = 에셋 값 × 크기.</summary>
+        private float BodyRadius => stats.bodyRadius * Size;
+
+        private void ApplySize()
+        {
+            float size = Size;
+            transform.localScale = new Vector3(size, size, 1f);
+        }
+
         private void Awake()
         {
+            ApplySize();
             rb = GetComponent<Rigidbody2D>();
             rb.gravityScale = 0f;
             rb.freezeRotation = true;
@@ -193,6 +206,7 @@ namespace CheonMyeong.Boss
         public override void OnNetworkSpawn()
         {
             Instance = this;
+            ApplySize(); // 모든 화면에서 같은 에셋 값으로(서버 NetworkTransform 크기 동기화와 같은 값)
             visible.OnValueChanged += HandleVisibleChanged;
             ApplyVisible(visible.Value);
             if (IsServer)
@@ -501,7 +515,7 @@ namespace CheonMyeong.Boss
             holdAngle -= step; // 시계 방향
             holdTurned += step;
             Vector2 dir = AngleToDirection(holdAngle);
-            PlaceHeld(rb.position + dir * stats.grabHoldRadius);
+            PlaceHeld(rb.position + dir * (stats.grabHoldRadius * Size));
             Face(dir.x);
             if (holdTurned >= holdTotalDegrees)
             {
@@ -509,7 +523,8 @@ namespace CheonMyeong.Boss
                 Vector2 landing = rb.position + dir * stats.grabRange * stats.grabThrowMultiplier;
                 MapBounds bounds = MapBounds.Instance;
                 throwTo = bounds != null ? bounds.ClampInside(landing) : landing;
-                TelegraphRpc(throwTo, Vector2.right, 0.9f, 360f, SlamHitSeconds);
+                throwTo = ResolveLanding(rb.position, throwTo); // 261122 - 대숲 · 울타리 · 물체 · 구덩이 너머로 던지지 않게
+                TelegraphRpc(throwTo, Vector2.right, SlamRadius, 360f, SlamHitSeconds);
                 SetState(ServerState.Slamming, KidAnim.Slam);
             }
         }
@@ -571,7 +586,7 @@ namespace CheonMyeong.Boss
                 if (!nextLegWarned && stateTime >= takeoff - FlyWarn)
                 {
                     nextLegWarned = true;
-                    ArrowRpc(rb.position, nextFlyDirection, stats.flyArrowWidth, stats.flyArrowLength, FlyWarn);
+                    ArrowRpc(rb.position, nextFlyDirection, FlyArrowWidth, stats.flyArrowLength, FlyWarn);
                 }
                 if (stateTime >= takeoff)
                 {
@@ -616,7 +631,7 @@ namespace CheonMyeong.Boss
                 PlayerHealth target = PlayerHealth.FindNearestAlivePlayerHealth(legEnd);
                 Vector2 toward = target != null ? (Vector2)target.transform.position - legEnd : -flyDirection;
                 nextFlyDirection = PickLegDirection(toward.sqrMagnitude > 0.0001f ? toward : -flyDirection);
-                ArrowRpc(legEnd, nextFlyDirection, stats.flyArrowWidth, stats.flyArrowLength, FlyWarn);
+                ArrowRpc(legEnd, nextFlyDirection, FlyArrowWidth, stats.flyArrowLength, FlyWarn);
             }
             if (legTime >= flyLegSeconds)
             {
@@ -658,7 +673,7 @@ namespace CheonMyeong.Boss
 
         private void FlyContact()
         {
-            float radius = stats.flyHitRadius + stats.bodyRadius;
+            float radius = stats.flyHitRadius * Size + BodyRadius;
             for (int i = 0; i < PlayerHealth.ActivePlayers.Count && i < 31; i++)
             {
                 PlayerHealth player = PlayerHealth.ActivePlayers[i];
@@ -704,7 +719,7 @@ namespace CheonMyeong.Boss
             {
                 return;
             }
-            float radiusSqr = stats.dustRadius * stats.dustRadius;
+            float radiusSqr = DustRadius * DustRadius;
             for (int p = 0; p < PlayerHealth.ActivePlayers.Count; p++)
             {
                 PlayerHealth player = PlayerHealth.ActivePlayers[p];
@@ -733,7 +748,7 @@ namespace CheonMyeong.Boss
             tornadoBaseDirection = towardTarget;
             SetState(ServerState.TornadoWindup, KidAnim.Idle);
             int count = Mathf.Clamp(stats.tornadoCount, 1, MaxTornadoes);
-            float width = stats.tornadoHitRadius * 2f;
+            float width = TornadoHitRadius * 2f;
             for (int i = 0; i < count; i++)
             {
                 ArrowRpc(rb.position, TornadoDirection(i, count), width, stats.tornadoDistance, TornadoWarn);
@@ -780,7 +795,7 @@ namespace CheonMyeong.Boss
                 return;
             }
             float life = stats.tornadoDistance / Mathf.Max(0.1f, stats.tornadoSpeed);
-            float radiusSqr = stats.tornadoHitRadius * stats.tornadoHitRadius;
+            float radiusSqr = TornadoHitRadius * TornadoHitRadius;
             for (int t = tornadoes.Count - 1; t >= 0; t--)
             {
                 Tornado tornado = tornadoes[t];
@@ -890,7 +905,13 @@ namespace CheonMyeong.Boss
             }
         }
 
-        private float BasicReach() => stats.basicRange + stats.bodyRadius;
+        // 261123 - 예고 · 판정 범위도 크기(1.75배)에 맞춰 키운다(예섭: 커진 몸에 비해 가이드라인이 작음). 날아가는 거리는 그대로.
+        private float BasicReach() => stats.basicRange * Size + BodyRadius;
+        private float SlamRadius => ThrowSlamRadius * Size;
+        private float FlyArrowWidth => stats.flyArrowWidth * Size;
+        private float DustRadius => stats.dustRadius * Size;
+        private float TornadoHitRadius => stats.tornadoHitRadius * Size;
+        private const float ThrowSlamRadius = 0.9f;
 
         // 261122 - 시전 속도(예섭 요청: 빠르게) · 원한 피해 배율.
         private float CastSpeed => Mathf.Max(0.5f, stats.castSpeed);
@@ -899,7 +920,7 @@ namespace CheonMyeong.Boss
         private float FlyWarn => stats.flyWarnSeconds / CastSpeed;
         private float TornadoWarn => stats.tornadoWarnSeconds / CastSpeed;
         private float DamageScale => BossStatsSO.Pick(stats.damageByStage, stage);
-        private float GrabReach() => stats.grabRange + stats.bodyRadius;
+        private float GrabReach() => stats.grabRange * Size + BodyRadius;
 
         private static Vector2 AngleToDirection(float degrees)
         {
@@ -994,9 +1015,24 @@ namespace CheonMyeong.Boss
         {
             if (heldPlayer != null && heldPlayer.TryGetComponent(out PlayerMovement movement))
             {
+                // 261122 - 도는 중에 풀려나면(동료가 때림 등) 벽 · 물체 안에 낀 채로 남지 않게 가장 가까운 빈 자리로.
+                MapFlowField field = MapFlowField.Instance;
+                if (field != null)
+                {
+                    PlaceHeld(field.ResolveStuck(heldPlayer.transform.position, HeldBodyRadius));
+                }
                 movement.ServerSetHeld(false);
             }
             heldPlayer = null;
+        }
+
+        private const float HeldBodyRadius = 0.3f;
+
+        /// <summary>261122 - 던질 자리를 걸을 수 있는 곳으로(MapFlowField가 없는 옛 맵이면 그대로).</summary>
+        private static Vector2 ResolveLanding(Vector2 from, Vector2 to)
+        {
+            MapFlowField field = MapFlowField.Instance;
+            return field != null ? field.ResolveLanding(from, to, HeldBodyRadius) : to;
         }
 
         // =====================================================================
@@ -1058,7 +1094,7 @@ namespace CheonMyeong.Boss
         private void ThrowImpactRpc(Vector2 position)
         {
             CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.KidImpact, position);
-            PlayGroundBurst(position, 0.9f, 12f, 29, BrownTint);
+            PlayGroundBurst(position, SlamRadius, 12f, 29, BrownTint);
             PlayerCameraRig.Shake(0.15f, 0.25f);
         }
 
@@ -1082,7 +1118,7 @@ namespace CheonMyeong.Boss
             for (int i = 0; i < count; i++)
             {
                 float offset = (i - (count - 1) * 0.5f) * spreadDegrees;
-                BossProjectileFx.Play(tornadoFrames, origin + visualBaseOffset, Rotate(baseDirection, offset), speed, distance, 1f / FrameSeconds, 0.7f);
+                BossProjectileFx.Play(tornadoFrames, origin + visualBaseOffset * Size, Rotate(baseDirection, offset), speed, distance, 1f / FrameSeconds, 0.7f * Size);
             }
         }
 
@@ -1254,7 +1290,7 @@ namespace CheonMyeong.Boss
                 return;
             }
             lastClientDustPosition = position;
-            BossDustFx.Play(position, stats.dustRadius, stats.dustSeconds);
+            BossDustFx.Play(position, DustRadius, stats.dustSeconds);
         }
 
         private void UpdateHealthBar()

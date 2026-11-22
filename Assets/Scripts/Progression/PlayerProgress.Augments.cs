@@ -164,6 +164,7 @@ namespace CheonMyeong.Progression
                         case AugmentId.Growth: m.GrowthBonus += v / 100f; break;
                         case AugmentId.Curse:
                             m.MaxHealthBonus -= v / 100f;
+                            m.CurseMaxHealthLoss += v / 100f;
                             m.CurseDamageTaken += CurseTable.DamageTaken[Mathf.Clamp(slot.Level - 1, 0, CurseTable.DamageTaken.Length - 1)];
                             if (CurseTable.TryGet(slot.Level, slot.Variant, out CurseReward r))
                             {
@@ -297,11 +298,7 @@ namespace CheonMyeong.Progression
                 RemoveById(CandidateBuffer, augmentOffers[i].Id);
                 RemoveById(OneTimeBuffer, augmentOffers[i].Id);
             }
-            if (!allMaxed)
-            {
-                CandidateBuffer.AddRange(OneTimeBuffer);
-            }
-            if (!TryTakeRandom(allMaxed ? OneTimeBuffer : CandidateBuffer, out AugmentOffer replacement))
+            if (!TryTakeWeighted(allMaxed, out AugmentOffer replacement))
             {
                 return false;
             }
@@ -521,7 +518,7 @@ namespace CheonMyeong.Progression
 
         /// <summary>
         /// 기획서 v0.9.9 카드 규칙:
-        /// - 모든 신통력(공통 · 협동 · 일회용 · 내 캐릭터 전용)을 한 덱에 섞어 같은 확률로 3장(산통 흔들기 5단계면 4장).
+        /// - 3장(산통 흔들기 5단계면 4장). 261122 - 한 장마다 일회용 확률을 따로 두고(TryTakeWeighted) 나머지는 공통 · 협동 · 전용(지원 피드백).
         /// - 이미 5단계 · 무기 종류가 안 맞는 · 조건이 안 맞는 카드는 빠진다.
         /// - 6칸이 차면 가진 신통력의 다음 단계와 일회용만, 전부 5단계면 일회용만. 한 번에 같은 카드는 두 장 안 나온다.
         /// </summary>
@@ -532,15 +529,31 @@ namespace CheonMyeong.Progression
 
             augmentOffers.Clear();
             int cards = Mathf.Max(1, catalog.cardsPerChoice + modifiers.CardBonus);
-            if (!allMaxed)
-            {
-                CandidateBuffer.AddRange(OneTimeBuffer);
-            }
-            List<AugmentOffer> pool = allMaxed ? OneTimeBuffer : CandidateBuffer;
             for (int c = 0; c < cards; c++)
             {
-                TakeRandomInto(pool);
+                if (TryTakeWeighted(allMaxed, out AugmentOffer offer))
+                {
+                    augmentOffers.Add(offer);
+                }
             }
+        }
+
+        /// <summary>
+        /// 261122 - 카드 한 장 뽑기: 일회용 확률(catalog.oneTimeCardChance · 6칸 차면 oneTimeCardChanceSlotsFull)로 종류를 먼저 정하고
+        /// 그 안에서 같은 확률. 그 종류가 비었으면 다른 쪽에서. 전부 5단계면 일회용만. 뽑힌 카드는 버퍼에서 빠져 겹치지 않는다.
+        /// </summary>
+        private bool TryTakeWeighted(bool allMaxed, out AugmentOffer offer)
+        {
+            if (allMaxed)
+            {
+                return TryTakeRandom(OneTimeBuffer, out offer);
+            }
+            AugmentCatalogSO catalog = Catalog;
+            float chance = augmentSlots.Count >= catalog.maxSlots ? catalog.oneTimeCardChanceSlotsFull : catalog.oneTimeCardChance;
+            bool oneTime = UnityEngine.Random.value < chance;
+            List<AugmentOffer> first = oneTime ? OneTimeBuffer : CandidateBuffer;
+            List<AugmentOffer> second = oneTime ? CandidateBuffer : OneTimeBuffer;
+            return TryTakeRandom(first, out offer) || TryTakeRandom(second, out offer);
         }
 
         /// <summary>
@@ -616,19 +629,6 @@ namespace CheonMyeong.Progression
 
         private static bool IsHealCard(AugmentId id) =>
             id == AugmentId.RiceBall || id == AugmentId.HerbalTea || id == AugmentId.Prayer || id == AugmentId.HoneyCake || id == AugmentId.Cheongsim;
-
-        /// <summary>목록에서 하나를 무작위로 꺼내(목록에서 빠짐) 카드로 넣는다. 비었으면 false.</summary>
-        private bool TakeRandomInto(List<AugmentOffer> source)
-        {
-            if (source.Count == 0)
-            {
-                return false;
-            }
-            int index = UnityEngine.Random.Range(0, source.Count);
-            augmentOffers.Add(source[index]);
-            source.RemoveAt(index);
-            return true;
-        }
 
         private static bool IsEligible(AugmentEntry entry, bool isRanged, string characterId)
         {

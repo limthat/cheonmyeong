@@ -51,9 +51,29 @@ namespace CheonMyeong.Player
 
         [Tooltip("261119 - 따라가는 플레이어가 화면 세로 어디에 오게 할지(0 = 맨 아래, 0.5 = 정중앙). 위쪽 HUD(원한 · 억쇠 체력바)가\n" +
                  "가리는 만큼 플레이어를 아래(경험치 바 바로 위)에 두어 앞쪽(위)이 더 보이게 한다. 맵 끝에서는 맵 밖이 안 보이게 하는 제한이 우선.")]
-        [Range(0.1f, 0.5f)] [SerializeField] private float playerScreenY = 0.17f;
+        [Range(0.1f, 0.5f)] [SerializeField] private float playerScreenY = 0.25f;
 
-        /// <summary>261119 - 카메라 중심이 플레이어보다 위로 가는 거리(유닛). 소환 거리 계산에도 쓴다.</summary>
+        [Tooltip("261122 - 아래로 내려갈 때 플레이어 화면 세로 위치(0 = 맨 아래). 위로 갈 땐 playerScreenY(앞쪽 = 위가 많이 보임), " +
+                 "아래로 갈 땐 이 값(앞쪽 = 아래가 많이 보임)으로 부드럽게 옮겨 간다(지원 피드백). 위 HUD에 가리지 않게 0.6 정도.")]
+        [Range(0.3f, 0.75f)] [SerializeField] private float playerScreenYDown = 0.6f;
+
+        [Tooltip("261123 - 위 ↔ 아래 화면 위치를 옮겨 가는 부드러움(초, SmoothDamp). 클수록 느리고 부드럽다 - 0.7이면 끝까지 약 1.7초.\n" +
+                 "가다가 방향을 바꿔도 속도가 끊기지 않고 이어진다(예섭: 예전보다 2배 느리고 부드럽게).")]
+        [Min(0.05f)] [SerializeField] private float screenYShiftSeconds = 0.7f;
+
+        [Tooltip("261122 - 이 속도(유닛/초)보다 빠르게 위 · 아래로 움직여야 방향이 바뀐다. 옆으로만 가거나 멈추면 마지막 방향 유지(흔들림 방지).")]
+        [Min(0f)] [SerializeField] private float verticalTurnSpeed = 1f;
+
+        // 0 = 위로 가는 중(playerScreenY), 1 = 아래로 가는 중(playerScreenYDown).
+        private float downBlend;
+        private float downTarget;
+        private float downBlendVelocity;
+        private Vector2 lastTargetPosition;
+        private bool hasLastTargetPosition;
+
+        private float CurrentScreenY => Mathf.Lerp(playerScreenY, playerScreenYDown, downBlend);
+
+        /// <summary>261119 - 카메라 중심이 플레이어보다 위로 가는 거리(유닛, 아래로 갈 땐 음수). 소환 거리 계산에도 쓴다.</summary>
         public float VerticalOffset
         {
             get
@@ -62,8 +82,33 @@ namespace CheonMyeong.Player
                 {
                     rigCamera = Camera.main;
                 }
-                return rigCamera != null && rigCamera.orthographic ? (0.5f - playerScreenY) * 2f * rigCamera.orthographicSize : 0f;
+                return rigCamera != null && rigCamera.orthographic ? (0.5f - CurrentScreenY) * 2f * rigCamera.orthographicSize : 0f;
             }
+        }
+
+        /// <summary>
+        /// 261122 - 위 · 아래 진행 방향 판단. 원격 플레이어는 Rigidbody 속도가 0으로 올 수 있어 위치 변화로 잰다.
+        /// </summary>
+        private void UpdateVerticalDirection(float dt)
+        {
+            Vector2 position = followTarget.position;
+            if (hasLastTargetPosition && dt > 0f)
+            {
+                float vy = (position.y - lastTargetPosition.y) / dt;
+                if (vy > verticalTurnSpeed)
+                {
+                    downTarget = 0f;
+                }
+                else if (vy < -verticalTurnSpeed)
+                {
+                    downTarget = 1f;
+                }
+            }
+            lastTargetPosition = position;
+            hasLastTargetPosition = true;
+            downBlend = dt > 0f
+                ? Mathf.Clamp01(Mathf.SmoothDamp(downBlend, downTarget, ref downBlendVelocity, screenYShiftSeconds, Mathf.Infinity, dt))
+                : downBlend;
         }
 
         private Camera rigCamera;
@@ -153,6 +198,7 @@ namespace CheonMyeong.Player
             }
             followTarget = target;
             hasSmoothedPosition = false;
+            hasLastTargetPosition = false;
             ApplyGameplayZoom();
             // 타겟이 바뀔 때 한 번만 TryGetComponent - 매 프레임 컴포넌트 조회를 피한다.
             // 못 찾으면 null로 둬서 아래에서 lookahead 없이 안전하게 폴백.
@@ -166,6 +212,7 @@ namespace CheonMyeong.Player
                 return;
             }
 
+            UpdateVerticalDirection(Time.deltaTime);
             Vector3 rawTargetPos = new Vector3(followTarget.position.x, followTarget.position.y + VerticalOffset, fixedZ);
             Vector3 targetPos = rawTargetPos;
             if (followTargetBody != null && lookAheadTime > 0f)

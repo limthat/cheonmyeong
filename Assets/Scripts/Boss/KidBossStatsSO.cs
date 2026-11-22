@@ -18,12 +18,14 @@ namespace CheonMyeong.Boss
         [Min(0f)] public float moveSpeed = 160f / 60f;
         [Tooltip("몸 반지름(유닛) - 공격 사거리를 몸 가장자리부터 잰다. 128px · PPU 100 그림 기준.")]
         [Min(0f)] public float bodyRadius = 0.35f;
+        [Tooltip("261122 - 크기 배율(예섭 요청 1.75배). 그림 · 그림자 · 몸 판정 · 잡은 사람 거리가 같이 커지고, 공격 사거리는 몸 가장자리부터라 그만큼 늘어난다.")]
+        [Min(0.5f)] public float sizeScale = 1.75f;
         [Tooltip("등장 연출 시간(초).")]
         [Min(0f)] public float appearSeconds = 1f;
 
         [Header("시전 속도 · 원한 (261122 예섭 요청)")]
-        [Tooltip("스킬 시전 속도 배율 - 모든 예고 · 준비 모션(기본 공격 · 배지기 · 비행 이륙 · 회오리)이 이 배만큼 빨라진다. 1 = 기획서 값.")]
-        [Min(0.5f)] public float castSpeed = 1.5f;
+        [Tooltip("스킬 시전 속도 배율 - 모든 예고 · 준비 모션(기본 공격 · 배지기 · 비행 이륙 · 회오리)이 이 배만큼 빨라진다. 1 = 기획서 값. 261123 - 1.5 → 1.1(예섭: 3분의 1쯤 느리게).")]
+        [Min(0.5f)] public float castSpeed = 1.1f;
         [Tooltip("원한 단계(맑음 · 짙음 · 한 · 폭주)별 체력 배율 - 어린 억쇠는 조금씩만. 기획서 원문은 '원한 영향 없음'(예섭 요청으로 바꿈).")]
         public float[] healthByStage = { 1f, 1.05f, 1.1f, 1.15f };
         [Tooltip("원한 단계별 피해 배율(모든 스킬).")]

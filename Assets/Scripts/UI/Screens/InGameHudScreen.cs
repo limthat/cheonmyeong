@@ -438,7 +438,9 @@ namespace CheonMyeong.UI.Screens
             if (fillImage != null)
             {
                 // 와이어프레임 PDF 기준 - 쓰러진 플레이어는 체력 바 자체를 안 그린다(0으로 비움).
-                fillImage.fillAmount = isDead || maxHealth <= 0f ? 0f : Mathf.Clamp01(health / maxHealth);
+                // 261122 - 바 길이 기준 = 거래 전 최대 체력(바친 칸은 Juice의 잠긴 칸이 덮는다).
+                float barMax = player.BarMaxHealth;
+                fillImage.fillAmount = isDead || barMax <= 0f ? 0f : Mathf.Clamp01(health / barMax);
             }
         }
     }

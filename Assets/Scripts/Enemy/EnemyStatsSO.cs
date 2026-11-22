@@ -20,6 +20,8 @@ namespace CheonMyeong.Data
     {
         public string enemyId;
         public string displayName;
+        [Tooltip("261122 - 크기 배율(그림 · 콜라이더가 같이 커짐). 중형 원귀는 그림 픽셀이 많아 같은 크기면 더 작아 보여서 1.5(지원 피드백, 크면 1.25).")]
+        [Min(0.25f)] public float visualScale = 1f;
 
         [Header("미정 - 플레이스홀더 값")]
         public float maxHealth = 20f;

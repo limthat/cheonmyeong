@@ -55,6 +55,20 @@ namespace CheonMyeong.Player
         /// <summary>261114 - 신통력 외 이동 속도 추가(비율). 고유 패시브 · 신내림이 서버에서 매 프레임 정한다.</summary>
         public float ExtraMoveSpeed { get; set; }
 
+        /// <summary>261122 - ESC 능력치 표시용 이동 속도(유닛/초, 신통력 · 고유 효과 포함, 일시 둔화 제외).</summary>
+        public float DisplayMoveSpeed
+        {
+            get
+            {
+                if (stats == null)
+                {
+                    return 0f;
+                }
+                float speedBonus = progress != null ? progress.Modifiers.MoveSpeedBonus : 0f;
+                return stats.moveSpeed * (1f + speedBonus + ExtraMoveSpeed);
+            }
+        }
+
         /// <summary>261114 - PlayerCharacter가 캐릭터를 정할 때 부른다.</summary>
         public void SetStats(CharacterStatsSO value)
         {

@@ -33,6 +33,8 @@ namespace CheonMyeong.UI.Screens
         private const float VignetteFadePerSecond = 1.4f;
         private const float BigHitRatio = 0.12f;
         private static readonly Color ChipColor = new Color(0.988f, 0.965f, 0.965f, 0.95f); // 백 #FCF6F6
+        private static readonly Color LockedColor = new Color(0.16f, 0.13f, 0.14f, 0.95f); // 261122 - 바친 최대 체력(먹색 바탕)
+        private const float HatchPixelScale = 0.5f; // 빗금 텍스처 1픽셀 = 화면 2px(캔버스 기준)
         private static readonly Color VignetteColor = new Color(0.75f, 0.05f, 0.05f, 1f);
 
         private const float GrudgeFollowSharpness = 8f;
@@ -54,6 +56,13 @@ namespace CheonMyeong.UI.Screens
         {
             public Image Fill;
             public Image Chip;
+            public Image Locked; // 261122 - 원귀와의 거래로 바친 최대 체력(바 오른쪽 어두운 칸)
+            public RectTransform LockedRect;
+            public float LockedRatio = -1f;
+            public Vector2 FillAnchorMin;
+            public Vector2 FillAnchorMax;
+            public Vector2 FillOffsetMin;
+            public Vector2 FillOffsetMax;
             public RectTransform ShakeTarget;
             public Vector2 ShakeBase;
             public Color FillColor;
@@ -89,14 +98,53 @@ namespace CheonMyeong.UI.Screens
 
         private void JuiceAwake()
         {
-            SetupHealthJuice(healthJuice[0], p1HealthFillImage);
-            SetupHealthJuice(healthJuice[1], p2HealthFillImage);
+            CreateHatchSprite();
+            SetupHealthJuice(healthJuice[0], p1HealthFillImage, hatchSprite);
+            SetupHealthJuice(healthJuice[1], p2HealthFillImage, hatchSprite);
             SetupVignette();
             SetupGrudgeFills();
         }
 
+        // 261123 - 바친 최대 체력 칸의 회색 빗금(크산테 궁처럼 "지금 체력이 아닌 부분"). 8×8 사선 한 칸을 바둑판처럼 이어 붙인다.
+        private const int HatchSize = 8;
+        private static readonly Color32 HatchLine = new Color32(150, 146, 150, 255);
+        private Texture2D hatchTexture;
+        private Sprite hatchSprite;
+
+        private void CreateHatchSprite()
+        {
+            hatchTexture = new Texture2D(HatchSize, HatchSize, TextureFormat.RGBA32, false)
+            {
+                wrapMode = TextureWrapMode.Repeat,
+                filterMode = FilterMode.Point, // 도트 그림과 같은 딱딱한 픽셀
+                name = "CurseHatch"
+            };
+            var pixels = new Color32[HatchSize * HatchSize];
+            for (int y = 0; y < HatchSize; y++)
+            {
+                for (int x = 0; x < HatchSize; x++)
+                {
+                    // 오른쪽 위로 올라가는 사선 2픽셀 굵기(8픽셀 간격) - 나머지는 투명(뒤의 먹색 바탕이 보임).
+                    int d = (x - y + HatchSize) % HatchSize;
+                    pixels[y * HatchSize + x] = d < 2 ? HatchLine : new Color32(0, 0, 0, 0);
+                }
+            }
+            hatchTexture.SetPixels32(pixels);
+            hatchTexture.Apply(false, true);
+            // 사방 테두리 0 → Tiled로 이어 붙일 수 있다. PPU 100 기준, Image의 pixelsPerUnitMultiplier로 화면 굵기를 맞춘다.
+            hatchSprite = Sprite.Create(hatchTexture, new Rect(0, 0, HatchSize, HatchSize), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        }
+
         private void JuiceDestroy()
         {
+            if (hatchSprite != null)
+            {
+                Destroy(hatchSprite);
+            }
+            if (hatchTexture != null)
+            {
+                Destroy(hatchTexture);
+            }
             if (vignetteSprite != null)
             {
                 Destroy(vignetteSprite);
@@ -185,7 +233,7 @@ namespace CheonMyeong.UI.Screens
 
         // ───────── 체력 ─────────
 
-        private static void SetupHealthJuice(HealthJuice juice, Image fill)
+        private static void SetupHealthJuice(HealthJuice juice, Image fill, Sprite hatch)
         {
             if (fill == null)
             {
@@ -216,6 +264,37 @@ namespace CheonMyeong.UI.Screens
             chip.raycastTarget = false;
             juice.Chip = chip;
 
+            // 261122 - 잠긴 칸: Fill 위 오른쪽, 바친 최대 체력 비율만큼. 261123 - 먹색 바탕 + 회색 빗금(Tiled)으로
+            // "깎인 체력"이 아니라 "지금은 없는 체력"으로 보이게. 폭은 UpdateHealthJuice가 앵커로 바꾼다.
+            var lockedGo = new GameObject("CurseLocked", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            var lockedRect = (RectTransform)lockedGo.transform;
+            lockedRect.SetParent(fillRect.parent, false);
+            lockedRect.SetSiblingIndex(fillRect.GetSiblingIndex() + 1); // Fill 다음(위에 그려짐)
+            lockedRect.pivot = fillRect.pivot;
+            juice.FillAnchorMin = fillRect.anchorMin;
+            juice.FillAnchorMax = fillRect.anchorMax;
+            juice.FillOffsetMin = fillRect.offsetMin;
+            juice.FillOffsetMax = fillRect.offsetMax;
+            Image locked = lockedGo.GetComponent<Image>();
+            locked.color = LockedColor;
+            locked.raycastTarget = false;
+            juice.Locked = locked;
+            juice.LockedRect = lockedRect;
+
+            var hatchGo = new GameObject("Hatch", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            var hatchRect = (RectTransform)hatchGo.transform;
+            hatchRect.SetParent(lockedRect, false);
+            hatchRect.anchorMin = Vector2.zero;
+            hatchRect.anchorMax = Vector2.one;
+            hatchRect.offsetMin = Vector2.zero;
+            hatchRect.offsetMax = Vector2.zero;
+            Image hatchImage = hatchGo.GetComponent<Image>();
+            hatchImage.sprite = hatch;
+            hatchImage.type = Image.Type.Tiled;
+            hatchImage.pixelsPerUnitMultiplier = HatchPixelScale;
+            hatchImage.raycastTarget = false;
+            lockedGo.SetActive(false);
+
             // 흔들 대상 = 바 전체(Fill의 바 루트: 바/Mask/Fill 구조라 두 단계 위, 없으면 한 단계 위).
             Transform barRoot = fillRect.parent != null && fillRect.parent.parent != null ? fillRect.parent.parent : fillRect.parent;
             juice.ShakeTarget = barRoot as RectTransform;
@@ -233,9 +312,33 @@ namespace CheonMyeong.UI.Screens
             }
 
             PlayerHealth player = playerIndex < PlayerHealth.ActivePlayers.Count ? PlayerHealth.ActivePlayers[playerIndex] : null;
-            float ratio = player != null && !player.IsDead && player.MaxHealth > 0f
+            // 261122 - 바 비율은 거래 전 최대 체력 기준(Fill과 같게), 깜빡임은 실제 최대 체력 기준.
+            float barMax = player != null ? player.BarMaxHealth : 0f;
+            float ratio = player != null && !player.IsDead && barMax > 0f
+                ? Mathf.Clamp01(player.CurrentHealth / barMax)
+                : 0f;
+            float lifeRatio = player != null && !player.IsDead && player.MaxHealth > 0f
                 ? Mathf.Clamp01(player.CurrentHealth / player.MaxHealth)
                 : 0f;
+            float lockedRatio = player != null && barMax > 0f ? Mathf.Clamp01(1f - player.MaxHealth / barMax) : 0f;
+            if (juice.LockedRect != null && !Mathf.Approximately(juice.LockedRatio, lockedRatio))
+            {
+                juice.LockedRatio = lockedRatio;
+                bool show = lockedRatio > 0.001f;
+                if (juice.LockedRect.gameObject.activeSelf != show)
+                {
+                    juice.LockedRect.gameObject.SetActive(show);
+                }
+                if (show)
+                {
+                    // 왼쪽 끝 = Fill 영역의 (1 - 비율) 지점(앵커 · 오프셋을 같은 비율로 섞음), 오른쪽 · 위아래 = Fill과 같게.
+                    float t = 1f - lockedRatio;
+                    juice.LockedRect.anchorMin = new Vector2(Mathf.Lerp(juice.FillAnchorMin.x, juice.FillAnchorMax.x, t), juice.FillAnchorMin.y);
+                    juice.LockedRect.anchorMax = juice.FillAnchorMax;
+                    juice.LockedRect.offsetMin = new Vector2(Mathf.Lerp(juice.FillOffsetMin.x, juice.FillOffsetMax.x, t), juice.FillOffsetMin.y);
+                    juice.LockedRect.offsetMax = juice.FillOffsetMax;
+                }
+            }
 
             if (juice.LastRatio < 0f)
             {
@@ -301,7 +404,7 @@ namespace CheonMyeong.UI.Screens
                 juice.Fill.color = Color.Lerp(juice.FillColor, Color.white, t);
                 juice.LowBlinking = false;
             }
-            else if (ratio > 0f && ratio <= LowHealthRatio)
+            else if (lifeRatio > 0f && lifeRatio <= LowHealthRatio)
             {
                 // 261121 - 기획서 v1.2: 30% 이하면 천천히 깜빡.
                 float pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f / LowHealthBlinkPeriod);

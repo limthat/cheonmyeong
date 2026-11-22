@@ -65,6 +65,7 @@ namespace CheonMyeong.Progression
     public struct AugmentModifiers
     {
         public float MaxHealthBonus;
+        public float CurseMaxHealthLoss;  // 261122 - 원귀와의 거래로 바친 최대 체력 비율(MaxHealthBonus에 이미 빠져 있음, 체력 바 잠긴 칸 표시용)
         public float MoveSpeedBonus;
         public float RegenPercent;        // 최대 체력 %/초 (0.0015 = 0.15%)
         public int ShieldBonus;           // 호신부 최대 횟수

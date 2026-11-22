@@ -142,6 +142,12 @@ namespace CheonMyeong.Player
         /// <summary>261116 - 영력이 반영된 기본 공격력(신통력 보너스 전).</summary>
         public float BaseAttackPower => stats != null ? stats.attackPower * LevelAttackScale : 0f;
 
+        // 261122 - ESC 능력치 표시용(서버 판정 ServerDamageTarget과 같은 식, 상황형 고유 패시브 · 노드 보정은 빠짐).
+        public float DisplayAttackPower => BaseAttackPower * (1f + Mods.AttackBonus);
+        public float DisplayCritChance => stats != null ? Mathf.Clamp01(Mods.CritAlways ? 1f : stats.critChance + Mods.CritChanceBonus) : 0f;
+        public float DisplayCritMultiplier => stats != null ? Mathf.Max(stats.critMultiplier + Mods.CritDamageBonus, Mods.CritMultiplierFloor) : 1f;
+        public float DisplayAttacksPerSecond => AttackInterval > 0f ? 1f / AttackInterval : 0f;
+
         /// <summary>실제 타격 반경 = (attackRange + 근접 사거리 신통력) × 인지 배수.</summary>
         public float HitRadius
         {

@@ -679,6 +679,22 @@ namespace CheonMyeong.EditorTools
         /// 중복으로 쌓이지 않도록 컨트롤러를 지우고 새로 만든다(프리팹 연결은 바로 뒤에서 다시 함).
         /// 상태 이름 "Move"/"Die"는 Enemy.cs의 MoveStateHash/DieTriggerHash와 맞아야 한다.
         /// </summary>
+        private static readonly string[] RealmDecorSpriteNames = { "Obj_stree", "Obj_bamboo_a", "Obj_rock1", "Obj_stree", "Obj_bamboo_b", "Obj_rock2", "Obj_tree", "Obj_tuft1" };
+
+        private static Sprite[] FindRealmDecorSprites()
+        {
+            var found = new List<Sprite>(RealmDecorSpriteNames.Length);
+            for (int i = 0; i < RealmDecorSpriteNames.Length; i++)
+            {
+                Sprite sprite = FindSprite("Assets/Art/Tiles/Sprite-0003-Sheet.png", RealmDecorSpriteNames[i]);
+                if (sprite != null)
+                {
+                    found.Add(sprite);
+                }
+            }
+            return found.ToArray();
+        }
+
         private static AnimatorController CreateGhostAnimator(string animFolder, Sprite[] moveFrames, Sprite[] dieFrames)
         {
             EnsureFolderRecursive(animFolder);
@@ -1065,6 +1081,8 @@ namespace CheonMyeong.EditorTools
                 AssignPrivateObjectArrayField(boss, "slashFxFrames", slashFx);
                 AssignPrivateObjectArrayField(boss, "burstFxFrames", burstFx);
                 AssignPrivateField(boss, "pitSprite", pitSprite);
+                // 261123 - 정신병 차원 원 밖 장식(맵 물체 그림, 앞쪽일수록 자주): 작은 나무 · 대나무 · 바위 · 큰 나무 · 풀포기.
+                AssignPrivateObjectArrayField(boss, "realmDecorSprites", FindRealmDecorSprites());
                 SetSerializedVector2(boss, "visualBaseOffset", visualOffset);
                 EditorUtility.SetDirty(boss);
                 EditorUtility.SetDirty(root);

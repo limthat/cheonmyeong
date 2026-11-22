@@ -240,6 +240,11 @@ namespace CheonMyeong.Progression
         [Min(0f)] public float pickupRangeBase = 2.5f;
         [Tooltip("일회용 회복 카드(주먹밥 · 약탕 · 기도 · 꿀떡 · 청심환)가 나오는 체력 비율 - 기획서 70% 이하.")]
         [Range(0f, 1f)] public float healCardHealthRatio = 0.7f;
+        [Tooltip("261122 - 카드 한 장이 일회용일 확률(6칸이 차기 전). 기획서 v0.9.9는 '한 덱 같은 확률'(약 35%)이었지만 " +
+                 "일회용이 너무 자주 나와 6칸 만렙이 힘들다는 피드백(지원)으로 공통 · 전용 · 협동 위주로 바꿈. 고를 카드가 없으면 다른 쪽에서 나온다.")]
+        [Range(0f, 1f)] public float oneTimeCardChance = 0.12f;
+        [Tooltip("261122 - 6칸이 다 찬 뒤(아직 5단계가 아닌 칸이 있을 때) 카드 한 장이 일회용일 확률.")]
+        [Range(0f, 1f)] public float oneTimeCardChanceSlotsFull = 0.25f;
         [Tooltip("정화수가 나오는 최소 원한 - 기획서 5.")]
         [Min(0)] public int holyWaterMinGrudge = 5;
 

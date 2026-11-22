@@ -38,6 +38,13 @@ namespace CheonMyeong.UI
         private Image[][] stars;
         private Sprite starFilled;
         private Sprite starEmpty;
+        private static Sprite sharedStarEmpty; // 씬에 저장된 원래 빈 별(첫 Bind에서 한 번만 읽음)
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            sharedStarEmpty = null;
+        }
         private CheonMyeong.UI.Screens.UpgradeScreen iconSource;
         private Color[] ringDefaultColors;
         private readonly System.Text.StringBuilder builder = new System.Text.StringBuilder(64);
@@ -89,7 +96,13 @@ namespace CheonMyeong.UI
                     stars[i] = FindStars(slot);
                     if (stars[i] != null && starEmpty == null)
                     {
-                        starEmpty = stars[i][0].sprite;
+                        // 261123 - 판마다 이 컴포넌트를 새로 붙이는데, 지난 판이 칸 별 그림을 채운 별로 바꿔 둔 채라
+                        // 그걸 "빈 별"로 읽으면 다음 판엔 전부 별 5개로 보였다. 처음 읽은 빈 별 그림을 정적으로 기억해 쓴다.
+                        if (sharedStarEmpty == null)
+                        {
+                            sharedStarEmpty = stars[i][0].sprite;
+                        }
+                        starEmpty = sharedStarEmpty;
                     }
                     Transform iconTransform = FindDeep(slot, IconName);
                     if (iconTransform != null)

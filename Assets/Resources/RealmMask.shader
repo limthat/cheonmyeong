@@ -1,32 +1,53 @@
-// 261122 추가 - 억쇠 '정신병' 차원 막(끌려간 본인 화면에만 그린다).
-// - 원 안: 물에 잠긴 느낌 - Default 정렬 레이어까지 그려진 화면(_CameraSortingLayerTexture)을 물결로 일렁이게 굴절시키고
-//   약하게 흐린 뒤 청록 물빛 + 일렁이는 빛 무늬(코스틱) + 가장자리 어둡게.
-// - 원 밖: 검푸른 노이즈 - 가로로 길게 늘어진 물결 띠가 옆으로 흐르며 일렁인다(+ 옅은 지지직). 경계엔 보랏빛 테두리.
-// 261122 2차 - 예섭 요청: 밖은 세로 말고 가로로 일렁이게 · 푸른색 더 많이, 안은 물에 잠긴 듯.
-// 필요 설정: Renderer2D 'Camera Sorting Layer Texture' 켜기 + Foremost Sorting Layer = Default,
-//           이 막은 RealmFx 레이어, 차원 안 플레이어 · 분신 · 경계 원은 RealmTop 레이어(Default 다음에 그려야 텍스처를 읽을 수 있다).
-// 원 모양은 스프라이트 UV로 계산한다(EoksoeBoss가 512px 정사각 스프라이트를 구멍 반지름 32px에 맞춰 늘림).
+// 261122 추가 · 261123 도트 스타일 · 261123c 씨름터 - 억쇠 '정신병' 차원 막.
+// 예섭: "물결 같은 건 다 빼고, 원 밖은 맵 풀밭을 약간 투명하게, 원 안은 씨름터 같은 느낌으로".
+// - 원 밖(끌려간 본인): 어두운 바탕 위에 맵 풀밭 타일(Maptile-Sheet 풀 칸)을 반투명하게 깐다 - 바깥의 원귀 · 동료 · 진짜 억쇠는 안 보인다.
+// - 원 안: 씨름판 모래 - 맵 흙 타일 무늬를 모래 4단계 팔레트로(디더링) 바꿔 불투명하게 깐다. 짚 둘레 가까이는 모래가 살짝 쌓여 진하다.
+// - 경계: 씨름판 짚 둘레(꼰 새끼줄 무늬) - 먹색 외곽선 · 짚 밝은/어두운 사선 · 위쪽 하이라이트, 바깥으로 디더링 그림자.
+// - _RingOnly = 1: 경계(+ 그림자)만, 나머지는 투명 - 바깥 사람 화면의 경계 원(Default 레이어).
+// - _FogOnly = 1: 원 밖(짚 둘레 바깥)만 안개 - 장식 위에 한 장 더 그린다. 261123d: 안개 낀 저녁 숲 - 군데군데 옅게 흐르는 안개 덩어리.
+// 도트 규칙: 모든 계산을 월드 픽셀(_PixelsPerUnit = 맵 타일과 같은 64) 칸 가운데로, 타일은 점 샘플링, 색 섞기는 4×4 Bayer 디더링.
+// 화면 텍스처(Camera Sorting Layer Texture)는 쓰지 않는다. 그리는 순서: 막 = RealmFx, 차원 안 내 캐릭터 · 분신 = RealmTop.
 Shader "CheonMyeong/RealmMask"
 {
     Properties
     {
         [PerRendererData] _MainTex ("Sprite", 2D) = "white" {}
         _HoleUV ("Hole Radius (UV)", Float) = 0.0625
-        _FeatherUV ("Edge Feather (UV)", Float) = 0.006
-        _BlurPixels ("Inside Blur (screen px)", Range(0, 4)) = 1.25
-        _InsideTint ("Inside Water Tint (a = amount)", Color) = (0.08, 0.36, 0.52, 0.28)
-        _WavePixels ("Inside Refraction (screen px)", Range(0, 8)) = 3
-        _WaveSpeed ("Inside Wave Speed", Float) = 1.6
-        _CausticColor ("Caustic Light", Color) = (0.55, 0.9, 1, 0.22)
-        _CausticScale ("Caustic Scale (per unit)", Float) = 1.3
-        _NoiseDark ("Noise Dark", Color) = (0.01, 0.035, 0.11, 1)
-        _NoiseLight ("Noise Light", Color) = (0.07, 0.2, 0.46, 1)
-        _NoiseCells ("Grain Cells per Unit", Float) = 8
-        _NoiseFps ("Grain Frames per Second", Float) = 12
-        _BandScale ("Band Stretch (x, y per unit)", Vector) = (0.25, 2.2, 0, 0)
-        _BandSpeed ("Band Flow Speed", Float) = 0.6
-        _RimColor ("Rim Color", Color) = (0.55, 0.3, 0.95, 1)
-        _RimWidthUV ("Rim Width (UV)", Float) = 0.012
+        _PixelsPerUnit ("Pixels Per Unit", Float) = 64
+        [Toggle] _RingOnly ("Ring Only", Float) = 0
+        [Toggle] _FogOnly ("Fog Only", Float) = 0
+
+        [NoScaleOffset] _TileTex ("Map Tile Sheet", 2D) = "white" {}
+        [NoScaleOffset] _CloudTex ("Pixel Clouds (RealmClouds)", 2D) = "black" {}
+        _TileWorldSize ("Tile World Size", Float) = 0.5
+        _TilePixels ("Tile Pixels", Float) = 32
+        _GrassRect ("Grass Tile UV Rect (x, y, w, h)", Vector) = (0.375, 0.625, 0.0208333, 0.125)
+        _DirtRect ("Dirt Tile UV Rect (x, y, w, h)", Vector) = (0.2083333, 0.625, 0.0208333, 0.125)
+
+        _OutsideBase ("Outside Dark Base", Color) = (0.03, 0.04, 0.05, 1)
+        _GrassAlpha ("Outside Grass Opacity", Range(0, 1)) = 0.85
+        _OutsideDesaturate ("Outside Desaturate", Range(0, 1)) = 0.15
+        _DuskTint ("Evening Tint", Color) = (0.58, 0.62, 0.78, 1)
+        _FogColor ("Fog Color", Color) = (0.72, 0.74, 0.84, 1)
+        _FogAlpha ("Fog Max Opacity", Range(0, 1)) = 0.42
+        _CloudPixel ("Cloud Pixel Size (map pixels)", Float) = 4
+        _CloudCell ("Cloud Spacing (units)", Float) = 5.2
+        _CloudChance ("Cloud Chance", Range(0, 1)) = 0.5
+        _FogSpeed ("Fog Drift (units/s)", Float) = 0.12
+
+        _Sand0 ("Sand Shadow", Color) = (0.55, 0.42, 0.27, 1)
+        _Sand1 ("Sand Dark", Color) = (0.7, 0.56, 0.37, 1)
+        _Sand2 ("Sand", Color) = (0.82, 0.7, 0.49, 1)
+        _Sand3 ("Sand Light", Color) = (0.92, 0.84, 0.63, 1)
+        _SandBrightness ("Sand Brightness", Range(0.5, 3)) = 1.9
+
+        _RopeOutline ("Rope Outline", Color) = (0.24, 0.15, 0.07, 1)
+        _RopeDark ("Rope Dark Straw", Color) = (0.62, 0.45, 0.2, 1)
+        _RopeLight ("Rope Straw", Color) = (0.86, 0.71, 0.38, 1)
+        _RopeHighlight ("Rope Highlight", Color) = (0.98, 0.9, 0.62, 1)
+        _RopePixels ("Rope Width (pixels)", Float) = 12
+        _TwistPixels ("Rope Twist Length (pixels)", Float) = 8
+        _ShadowPixels ("Outside Shadow (pixels)", Float) = 6
     }
 
     SubShader
@@ -45,27 +66,42 @@ Shader "CheonMyeong/RealmMask"
             #pragma fragment Frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-            TEXTURE2D(_CameraSortingLayerTexture);
-            SAMPLER(sampler_CameraSortingLayerTexture);
+            TEXTURE2D(_TileTex);
+            TEXTURE2D(_CloudTex);
+            SamplerState sampler_RealmPointClamp; // 이름에 Point · Clamp → 점 샘플링(도트가 번지지 않게)
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST;
                 float _HoleUV;
-                float _FeatherUV;
-                float _BlurPixels;
-                half4 _InsideTint;
-                float _WavePixels;
-                float _WaveSpeed;
-                half4 _CausticColor;
-                float _CausticScale;
-                float4 _BandScale;
-                float _BandSpeed;
-                half4 _NoiseDark;
-                half4 _NoiseLight;
-                float _NoiseCells;
-                float _NoiseFps;
-                half4 _RimColor;
-                float _RimWidthUV;
+                float _PixelsPerUnit;
+                float _RingOnly;
+                float _FogOnly;
+                half4 _FogColor;
+                float _FogAlpha;
+                float _OutsideDesaturate;
+                half4 _DuskTint;
+                float _CloudPixel;
+                float _CloudCell;
+                float _CloudChance;
+                float _FogSpeed;
+                float _TileWorldSize;
+                float _TilePixels;
+                float4 _GrassRect;
+                float4 _DirtRect;
+                half4 _OutsideBase;
+                float _GrassAlpha;
+                half4 _Sand0;
+                half4 _Sand1;
+                half4 _Sand2;
+                half4 _Sand3;
+                float _SandBrightness;
+                half4 _RopeOutline;
+                half4 _RopeDark;
+                half4 _RopeLight;
+                half4 _RopeHighlight;
+                float _RopePixels;
+                float _TwistPixels;
+                float _ShadowPixels;
             CBUFFER_END
 
             struct Attributes
@@ -77,9 +113,8 @@ Shader "CheonMyeong/RealmMask"
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
-                float2 uv : TEXCOORD0;
-                float2 screenUV : TEXCOORD1;
-                float2 worldXY : TEXCOORD2;
+                float2 worldXY : TEXCOORD0;
+                float3 centerRadius : TEXCOORD1; // xy = 차원 가운데(월드), z = 반지름(월드)
             };
 
             Varyings Vert(Attributes input)
@@ -87,11 +122,30 @@ Shader "CheonMyeong/RealmMask"
                 Varyings o;
                 float3 world = TransformObjectToWorld(input.positionOS);
                 o.positionCS = TransformWorldToHClip(world);
-                o.uv = input.uv;
-                // URP 2D 기본 스프라이트 셰이더가 라이트 텍스처를 읽을 때와 같은 방식(직교 카메라라 w = 1).
-                o.screenUV = ComputeScreenPos(o.positionCS / o.positionCS.w).xy;
                 o.worldXY = world.xy;
+                float3 center = TransformObjectToWorld(float3(0, 0, 0));
+                // 스프라이트 = 512px(PPU 1) 정사각, 구멍 = UV _HoleUV → 월드 반지름 = 512 × _HoleUV × 크기.
+                float scale = length(float3(UNITY_MATRIX_M._m00, UNITY_MATRIX_M._m10, UNITY_MATRIX_M._m20));
+                o.centerRadius = float3(center.xy, 512.0 * _HoleUV * scale);
                 return o;
+            }
+
+            // 4×4 Bayer 행렬 - 픽셀 좌표로 고정되는 순서 디더링 문턱값((값 + 0.5) / 16).
+            static const float BayerMatrix[16] = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
+
+            float Bayer4(float2 pixel)
+            {
+                int2 p = int2(pixel - 4.0 * floor(pixel / 4.0)); // 음수 칸도 0~3
+                return (BayerMatrix[p.x + p.y * 4] + 0.5) / 16.0;
+            }
+
+            // 0~1 값을 팔레트 4단계로(단계 사이는 디더링).
+            half3 Palette4(float v, float threshold, half3 c0, half3 c1, half3 c2, half3 c3)
+            {
+                float x = saturate(v) * 3.0;
+                float step = floor(x);
+                float level = step + ((x - step) > threshold ? 1.0 : 0.0);
+                return level < 0.5 ? c0 : (level < 1.5 ? c1 : (level < 2.5 ? c2 : c3));
             }
 
             float Hash21(float2 p)
@@ -113,64 +167,131 @@ Shader "CheonMyeong/RealmMask"
                 return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
             }
 
-            half3 SampleBlurred(float2 uv)
+            // 261123i 예섭: "보낸 도트 구름을 그대로 찍어" - Resources/RealmClouds.png(참고 그림의 구름 7개를 원래 도트 크기로 옮긴 것, 280×24)를
+            // 칸(_CloudCell 유닛)마다 확률로 하나씩 찍는다. 텍셀 1개 = 맵 픽셀 _CloudPixel칸. 그림 색 그대로(× _FogColor), 점 샘플링.
+            static const float4 CloudRects[7] =   // (x, y, 폭, 높이) 텍셀, 아래 기준
             {
-                // 9탭(가운데 + 십자 + 대각) 가중 평균 - 텍스처를 2배 줄여 받으므로(Bilinear 2x) 이 정도면 '약한' 블러.
-                float2 o = _BlurPixels / _ScreenParams.xy;
-                half3 c = SAMPLE_TEXTURE2D(_CameraSortingLayerTexture, sampler_CameraSortingLayerTexture, uv).rgb * 4.0;
-                c += SAMPLE_TEXTURE2D(_CameraSortingLayerTexture, sampler_CameraSortingLayerTexture, uv + float2(o.x, 0)).rgb * 2.0;
-                c += SAMPLE_TEXTURE2D(_CameraSortingLayerTexture, sampler_CameraSortingLayerTexture, uv - float2(o.x, 0)).rgb * 2.0;
-                c += SAMPLE_TEXTURE2D(_CameraSortingLayerTexture, sampler_CameraSortingLayerTexture, uv + float2(0, o.y)).rgb * 2.0;
-                c += SAMPLE_TEXTURE2D(_CameraSortingLayerTexture, sampler_CameraSortingLayerTexture, uv - float2(0, o.y)).rgb * 2.0;
-                c += SAMPLE_TEXTURE2D(_CameraSortingLayerTexture, sampler_CameraSortingLayerTexture, uv + o).rgb;
-                c += SAMPLE_TEXTURE2D(_CameraSortingLayerTexture, sampler_CameraSortingLayerTexture, uv - o).rgb;
-                c += SAMPLE_TEXTURE2D(_CameraSortingLayerTexture, sampler_CameraSortingLayerTexture, uv + float2(o.x, -o.y)).rgb;
-                c += SAMPLE_TEXTURE2D(_CameraSortingLayerTexture, sampler_CameraSortingLayerTexture, uv + float2(-o.x, o.y)).rgb;
-                return c / 16.0;
+                float4(1, 1, 50, 22), float4(52, 1, 46, 21), float4(99, 1, 37, 22), float4(137, 1, 46, 16),
+                float4(184, 1, 42, 15), float4(227, 1, 30, 15), float4(258, 1, 15, 10)
+            };
+            static const float2 CloudTexSize = float2(280, 24);
+
+            half4 CloudSample(float2 w, float cloudPpu)
+            {
+                float cellSize = max(_CloudCell, 0.5);
+                float2 cell = floor(w / cellSize);
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    for (int dx = -1; dx <= 1; dx++)
+                    {
+                        float2 c = cell + float2(dx, dy);
+                        if (Hash21(c + 0.37) > _CloudChance) continue;
+                        int variant = min(6, (int)(Hash21(c + 2.7) * 7.0));
+                        float4 rect = CloudRects[variant];
+                        float2 origin = (c + 0.1 + 0.5 * float2(Hash21(c + 1.3), Hash21(c + 7.1))) * cellSize; // 그림 왼쪽 아래
+                        float2 texel = floor((w - origin) * cloudPpu);
+                        if (any(texel < 0.0) || any(texel >= rect.zw)) continue;
+                        float2 uv = (rect.xy + texel + 0.5) / CloudTexSize;
+                        half4 t = SAMPLE_TEXTURE2D(_CloudTex, sampler_RealmPointClamp, uv);
+                        if (t.a > 0.5) return t;
+                    }
+                }
+                return half4(0, 0, 0, 0);
             }
 
-            // 물 위에 비치는 빛 무늬 - 두 겹의 비틀린 사인 격자(값이 가늘게 밝은 선만 남도록 pow).
-            float Caustic(float2 p, float t)
+            // 맵 타일 한 칸(rect = 시트 안 UV 사각형)을 월드 좌표로 바둑판처럼 이어 붙여 점 샘플링.
+            half3 SampleTile(float2 world, float4 rect)
             {
-                float2 q = p + float2(sin(p.y * 1.7 + t * 0.9), cos(p.x * 1.3 - t * 0.7)) * 0.6;
-                float a = abs(sin(q.x * 2.1 + t * 0.6) + sin(q.y * 2.4 - t * 0.8));
-                float2 r = p * 1.6 + float2(cos(p.y * 2.3 - t * 1.1), sin(p.x * 1.9 + t)) * 0.5;
-                float b = abs(sin(r.x * 1.8 - t * 0.5) + sin(r.y * 2.0 + t * 0.7));
-                return pow(saturate(1.0 - a * 0.5), 6.0) + pow(saturate(1.0 - b * 0.5), 6.0) * 0.6;
+                float2 tile = frac(world / max(_TileWorldSize, 0.0001));
+                float2 texel = (floor(tile * _TilePixels) + 0.5) / max(_TilePixels, 1.0); // 타일 텍셀 가운데
+                return SAMPLE_TEXTURE2D(_TileTex, sampler_RealmPointClamp, rect.xy + texel * rect.zw).rgb;
             }
 
             half4 Frag(Varyings input) : SV_Target
             {
-                float d = length(input.uv - 0.5);
-                float outside = smoothstep(_HoleUV - _FeatherUV, _HoleUV + _FeatherUV, d);
-                float t = _Time.y;
+                float ppu = max(_PixelsPerUnit, 1.0);
+                float2 pixel = floor(input.worldXY * ppu);   // 월드 픽셀 칸 번호
+                float2 snapped = (pixel + 0.5) / ppu;        // 칸 가운데(월드)
+                float dither = Bayer4(pixel);
 
-                // 원 안 - 물에 잠긴 화면: 물결 굴절 → 약한 블러 → 청록 물빛 + 빛 무늬 + 가장자리로 갈수록 깊고 어둡게.
-                float wt = t * _WaveSpeed;
-                float2 refract = float2(sin(input.worldXY.y * 2.6 + wt) + 0.5 * sin(input.worldXY.y * 5.3 - wt * 1.3),
-                                        cos(input.worldXY.x * 2.2 + wt * 0.8) + 0.5 * cos(input.worldXY.x * 4.7 + wt * 1.1)) / 1.5;
-                float2 screenUV = input.screenUV + refract * (_WavePixels / _ScreenParams.xy);
-                half3 inside = SampleBlurred(screenUV);
-                inside = lerp(inside, inside * _InsideTint.rgb * 2.2, _InsideTint.a);
-                inside += _CausticColor.rgb * (Caustic(input.worldXY * _CausticScale, t) * _CausticColor.a);
-                float depth = saturate(d / max(_HoleUV, 0.0001));
-                inside *= lerp(1.0, 0.72, depth * depth);
+                float2 rel = snapped - input.centerRadius.xy;
+                float radius = input.centerRadius.z;
+                float distPx = (length(rel) - radius) * ppu; // 경계에서 픽셀 수(바깥 +)
 
-                // 원 밖 - 가로로 길게 늘어진 물결 띠가 옆으로 흐르며 위아래로 출렁인다 + 옅은 지지직.
-                float2 bp = input.worldXY * _BandScale.xy;
-                bp.y += sin(input.worldXY.x * 0.55 + t * 1.2) * 0.9 + sin(input.worldXY.x * 1.3 - t * 0.8) * 0.35;
-                bp.x -= t * _BandSpeed;
-                float band = ValueNoise(bp) * 0.65 + ValueNoise(bp * float2(2.1, 1.9) + float2(t * 0.35, 0)) * 0.35;
-                band = smoothstep(0.25, 0.9, band);
-                float frame = floor(t * _NoiseFps);
-                float grain = Hash21(floor(input.worldXY * _NoiseCells) + frame * float2(17.13, 31.71));
-                half3 noise = lerp(_NoiseDark.rgb, _NoiseLight.rgb, saturate(band * 0.85 + grain * 0.18));
+                // ── 경계: 씨름판 짚 둘레(꼰 새끼줄) ──  안쪽 끝 = 0, 바깥 끝 = _RopePixels
+                float rope = _RopePixels;
+                half4 ring = half4(0, 0, 0, 0);
+                if (distPx >= 0.0 && distPx < rope)
+                {
+                    if (distPx < 1.0 || distPx >= rope - 1.0)
+                    {
+                        ring = half4(_RopeOutline.rgb, 1); // 위아래 먹색 외곽선
+                    }
+                    else
+                    {
+                        // 둘레를 따라 비스듬히 꼬인 짚 - 둘레 길이(픽셀) + 두께 위치로 사선 줄무늬.
+                        float arcPx = atan2(rel.y, rel.x) * radius * ppu;
+                        float twist = frac((arcPx + distPx) / max(_TwistPixels, 1.0));
+                        half3 straw = twist < 0.5 ? _RopeLight.rgb : _RopeDark.rgb;
+                        if (twist < 0.5 && distPx >= rope - 4.0 && distPx < rope - 2.0) straw = _RopeHighlight.rgb; // 바깥쪽 위 하이라이트
+                        if (abs(twist - 0.5) < 0.09 || twist > 0.91) straw = lerp(straw, _RopeOutline.rgb, 0.5); // 꼬임 사이 홈
+                        ring = half4(straw, 1);
+                    }
+                }
+                // 회상 안개(_FogOnly): 짚 둘레 바깥만 옅은 회색으로 덮는다 - 장식(나무 · 꽃) 위에 그려 원 밖 전체가 흐릿한 기억처럼.
+                if (_FogOnly > 0.5)
+                {
+                    // 261123f 예섭: 굵고 각진 도트 구름(옅은 구름 느낌). 점무늬 · 번짐 없이 딱 떨어지는 가장자리.
+                    //  - 굵은 픽셀: 맵 픽셀 4칸 = 구름 1칸(_CloudPixel)
+                    //  - 모양 · 음영: 예섭이 준 도트 구름 그림(Resources/RealmClouds.png)을 그대로 찍는다(CloudSample)
+                    //  - 정수 칸 단위로 옆으로 흐름
+                    if (distPx < rope) return half4(0, 0, 0, 0);
+                    float cloudPpu = ppu / max(_CloudPixel, 1.0);
+                    float tf = floor(_Time.y * 6.0) / 6.0;
+                    float shift = floor(tf * _FogSpeed * cloudPpu) / cloudPpu;   // 정수 칸만큼만 이동
+                    float2 cp = (floor(input.worldXY * cloudPpu) + 0.5) / cloudPpu; // 구름 칸 가운데
+                    cp.x -= shift;
+                    half4 cloud = CloudSample(cp, cloudPpu);
+                    if (cloud.a < 0.5) return half4(0, 0, 0, 0);
+                    half3 col = cloud.rgb * _FogColor.rgb;
+                    float alpha = 1.0;
+                    return half4(col, _FogAlpha * alpha);
+                }
+                float shadow = distPx >= rope ? saturate(1.0 - (distPx - rope) / max(_ShadowPixels, 1.0)) : 0.0;
+                bool shadowDot = shadow * 0.75 > dither;
 
-                // 경계 바로 바깥 보랏빛 테두리(안쪽으로 번지지 않게 outside에만).
-                float rim = saturate(1.0 - (d - _HoleUV) / max(_RimWidthUV, 0.0001)) * outside;
-                noise = lerp(noise, _RimColor.rgb, rim * 0.6);
+                if (_RingOnly > 0.5)
+                {
+                    if (ring.a > 0.0) return ring;
+                    return shadowDot ? half4(0, 0, 0, 0.45) : half4(0, 0, 0, 0);
+                }
+                if (ring.a > 0.0)
+                {
+                    return ring;
+                }
 
-                return half4(lerp(inside, noise, outside), 1.0);
+                if (distPx < 0.0)
+                {
+                    // ── 원 안: 씨름판 모래(흙 타일 무늬 → 모래 팔레트) ──
+                    half3 dirt = SampleTile(snapped, _DirtRect);
+                    float luma = dot(dirt, half3(0.299, 0.587, 0.114)) * _SandBrightness;
+                    // 짚 둘레 쪽 10px은 모래가 쌓여 한 단계 진하게(디더링으로 넘어감).
+                    float rim = saturate((distPx + 12.0) / 10.0);
+                    luma -= rim * 0.22;
+                    half3 sand = Palette4(luma, dither, _Sand0.rgb, _Sand1.rgb, _Sand2.rgb, _Sand3.rgb);
+                    return half4(sand, 1);
+                }
+
+                // ── 원 밖: 어두운 바탕 + 반투명 풀밭 ──
+                half3 grass = SampleTile(snapped, _GrassRect);
+                half3 col = lerp(_OutsideBase.rgb, grass, _GrassAlpha);
+                col = lerp(col, dot(col, half3(0.299, 0.587, 0.114)).xxx, _OutsideDesaturate);
+                col *= _DuskTint.rgb; // 저녁 숲: 푸르스름하게 어둡게
+                if (shadowDot)
+                {
+                    col *= 0.55; // 짚 둘레 그림자
+                }
+                return half4(col, 1);
             }
             ENDHLSL
         }

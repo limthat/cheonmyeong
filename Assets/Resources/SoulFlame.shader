@@ -1,14 +1,17 @@
-// 261122 추가 - 영혼 불(도깨비불). 억쇠 '정신병' 차원 바깥 사람 화면에서 끌려간 플레이어 · 분신을 이 불꽃으로 표시한다(모데카이저 궁극기처럼).
-// 그림 없이 셰이더로 그린다: 스프라이트 UV(0~1, 피벗 아래 가운데)에 아래가 둥글고 위로 갈수록 가늘게 흔들리는 불꽃.
-// 색 = SpriteRenderer.color(정점 색). 가운데는 하얗게 밝다.
+// 261122 추가 · 261123 도트 스타일로 다시 그림 - 영혼 불(도깨비불).
+// 억쇠 '정신병' 차원 바깥 사람 화면에서 끌려간 플레이어 · 분신을 이 불꽃으로 표시한다(모데카이저 궁극기처럼).
+// 도트 게임에 맞게: 월드 픽셀 격자(_PixelsPerUnit)로 칸을 나눠 계산하고, 색은 4단계(어두운 테두리 · 몸 · 밝은 속 · 흰 심지)만,
+// 가장자리는 부드러운 알파 대신 4×4 Bayer 디더링 점, 움직임은 초당 _AnimFps 칸으로 끊는다.
+// 색 = SpriteRenderer.color(정점 색). 스프라이트 = 1유닛 정사각(피벗 아래 가운데)을 크기로 늘려 쓴다.
 Shader "CheonMyeong/SoulFlame"
 {
     Properties
     {
         [PerRendererData] _MainTex ("Sprite", 2D) = "white" {}
+        _PixelsPerUnit ("Pixels Per Unit", Float) = 64
+        _AnimFps ("Animation Steps Per Second", Float) = 10
         _Speed ("Rise Speed", Float) = 2.6
-        _CoreWhite ("Core Whiteness", Range(0, 1)) = 0.75
-        _Glow ("Outer Glow", Range(0, 1)) = 0.35
+        _OutlineColor ("Outline", Color) = (0.06, 0.08, 0.2, 1)
     }
 
     SubShader
@@ -29,9 +32,10 @@ Shader "CheonMyeong/SoulFlame"
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST;
+                float _PixelsPerUnit;
+                float _AnimFps;
                 float _Speed;
-                float _CoreWhite;
-                float _Glow;
+                half4 _OutlineColor;
             CBUFFER_END
 
             struct Attributes
@@ -46,7 +50,7 @@ Shader "CheonMyeong/SoulFlame"
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 half4 color : COLOR;
-                float seed : TEXCOORD1;
+                float3 info : TEXCOORD1; // x = 흔들림 씨앗, yz = 불꽃 크기(픽셀 수)
             };
 
             Varyings Vert(Attributes input)
@@ -57,7 +61,10 @@ Shader "CheonMyeong/SoulFlame"
                 o.uv = input.uv;
                 o.color = input.color;
                 float3 origin = TransformObjectToWorld(float3(0, 0, 0));
-                o.seed = frac(dot(floor(origin.xy * 3.0), float2(0.1031, 0.1137))) * 37.0; // 불꽃마다 흔들림이 다르게
+                float sx = length(float3(UNITY_MATRIX_M._m00, UNITY_MATRIX_M._m10, UNITY_MATRIX_M._m20));
+                float sy = length(float3(UNITY_MATRIX_M._m01, UNITY_MATRIX_M._m11, UNITY_MATRIX_M._m21));
+                o.info = float3(frac(dot(floor(origin.xy * 3.0), float2(0.1031, 0.1137))) * 37.0,
+                                max(1.0, round(sx * _PixelsPerUnit)), max(1.0, round(sy * _PixelsPerUnit)));
                 return o;
             }
 
@@ -80,31 +87,55 @@ Shader "CheonMyeong/SoulFlame"
                 return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
             }
 
-            half4 Frag(Varyings input) : SV_Target
+            static const float BayerMatrix[16] = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
+
+            float Bayer4(float2 pixel)
             {
-                float t = _Time.y;
-                float x = (input.uv.x - 0.5) * 2.0;   // -1 ~ 1
-                float y = input.uv.y;                 // 0(발) ~ 1(끝)
+                int2 p = int2(pixel - 4.0 * floor(pixel / 4.0));
+                return (BayerMatrix[p.x + p.y * 4] + 0.5) / 16.0;
+            }
 
-                float n = ValueNoise(float2(x * 2.5 + input.seed, y * 3.5 - t * _Speed));
-                float n2 = ValueNoise(float2(x * 5.0 - input.seed, y * 7.0 - t * _Speed * 1.7));
-                float sway = (sin(y * 5.5 - t * 4.0 + input.seed) * 0.16 + (n - 0.5) * 0.3) * y;
-
-                // 아래는 둥근 몸통(반지름 0.55, 중심 y 0.3), 위로는 혀처럼 가늘어지는 꼬리.
+            // 불꽃 모양 거리(0 = 가운데, 1 = 가장자리): 아래 둥근 몸통 + 위로 흔들리며 가늘어지는 꼬리.
+            float FlameDistance(float2 uv, float t, float seed)
+            {
+                float x = (uv.x - 0.5) * 2.0;
+                float y = uv.y;
+                float n = ValueNoise(float2(x * 2.5 + seed, y * 3.5 - t * _Speed));
+                float n2 = ValueNoise(float2(x * 5.0 - seed, y * 7.0 - t * _Speed * 1.7));
+                float sway = (sin(y * 5.5 - t * 4.0 + seed) * 0.16 + (n - 0.5) * 0.3) * y;
                 float body = length(float2(x - sway * 0.4, (y - 0.3) * 1.4)) / 0.55;
                 float tailWidth = max(0.001, (1.0 - y) * 0.85 * (0.7 + 0.6 * n2));
                 float tail = abs(x - sway) / tailWidth + (1.0 - smoothstep(0.25, 0.4, y)) * 2.0;
-                float d = min(body, tail);
-                d += (n2 - 0.5) * 0.25;
+                return min(body, tail) + (n2 - 0.5) * 0.2;
+            }
 
-                float shape = 1.0 - smoothstep(0.75, 1.0, d);
-                float glow = (1.0 - smoothstep(1.0, 1.6, d)) * _Glow;
-                float core = 1.0 - smoothstep(0.0, 0.55, d);
-                float flicker = 0.85 + 0.15 * sin(t * 13.0 + input.seed * 3.0);
+            half4 Frag(Varyings input) : SV_Target
+            {
+                float2 size = input.info.yz;
+                float2 pixel = floor(input.uv * size);
+                float2 uv = (pixel + 0.5) / size;                       // 픽셀 칸 가운데
+                float t = floor(_Time.y * _AnimFps) / max(_AnimFps, 1.0); // 끊어지는 시간
+                float dither = Bayer4(pixel);
+                float d = FlameDistance(uv, t, input.info.x);
 
-                half3 col = lerp(input.color.rgb, half3(1, 1, 1), core * _CoreWhite);
-                float alpha = saturate(max(shape, glow) * flicker) * input.color.a * saturate(1.15 - y);
-                return half4(col, alpha);
+                // 바깥 → 안: 디더링 테두리 · 어두운 외곽선 · 몸(색) · 밝은 속 · 흰 심지.
+                if (d > 1.0)
+                {
+                    // 1.0~1.25 사이만 듬성듬성 외곽선 점(디더링) - 부드러운 번짐 대신.
+                    float fade = saturate(1.0 - (d - 1.0) / 0.25);
+                    return fade * 0.5 > dither ? half4(_OutlineColor.rgb, input.color.a) : half4(0, 0, 0, 0);
+                }
+                half3 bodyColor = input.color.rgb;
+                half3 col;
+                if (d > 0.82) col = lerp(_OutlineColor.rgb, bodyColor, 0.35);   // 외곽선(진한 색)
+                else if (d > 0.5) col = bodyColor;                               // 몸
+                else if (d > 0.22) col = lerp(bodyColor, half3(1, 1, 1), 0.5);  // 밝은 속
+                else col = half3(1, 1, 1);                                       // 흰 심지
+
+                // 단계 사이 경계를 한 칸씩 디더링으로 섞어 계단이 덜 딱딱하게.
+                if (d > 0.45 && d <= 0.55 && dither > 0.5) col = lerp(bodyColor, half3(1, 1, 1), 0.5);
+                if (d > 0.77 && d <= 0.87 && dither > 0.5) col = bodyColor;
+                return half4(col, input.color.a);
             }
             ENDHLSL
         }

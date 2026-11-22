@@ -136,6 +136,89 @@ namespace CheonMyeong.Maps
             return Vector2.zero;
         }
 
+        /// <summary>
+        /// 261122 - 보스가 플레이어를 내던질 때 떨어질 자리(지원 버그: 억쇠가 대숲 · 울타리 너머 맵 밖으로 던짐).
+        /// from → to 직선에서 to에 가장 가까운 "걸을 수 있는" 점(막힌 칸 · 구덩이를 몸 반지름만큼 피함)을 고른다.
+        /// 직선 위에 하나도 없으면 to 주변에서 가장 가까운 빈 칸, 그것도 없으면 from.
+        /// </summary>
+        public Vector2 ResolveLanding(Vector2 from, Vector2 to, float bodyRadius)
+        {
+            EnsureBuilt();
+            float distance = Vector2.Distance(from, to);
+            int steps = Mathf.Max(1, Mathf.CeilToInt(distance / (cellSize * 0.5f)));
+            for (int i = steps; i >= 0; i--)
+            {
+                Vector2 p = Vector2.Lerp(from, to, i / (float)steps);
+                if (IsFree(p, bodyRadius))
+                {
+                    return p;
+                }
+            }
+            return TryFindNearestFree(to, bodyRadius, LandingSearchCells, out Vector2 free) ? free : from;
+        }
+
+        /// <summary>261122 - 이 자리가 막혀 있으면(벽 · 물체 · 구덩이 안) 가장 가까운 빈 자리로, 아니면 그대로.</summary>
+        public Vector2 ResolveStuck(Vector2 position, float bodyRadius)
+        {
+            EnsureBuilt();
+            if (IsFree(position, bodyRadius))
+            {
+                return position;
+            }
+            return TryFindNearestFree(position, bodyRadius, LandingSearchCells, out Vector2 free) ? free : position;
+        }
+
+        private const int LandingSearchCells = 24; // 12유닛
+
+        private bool IsFree(Vector2 p, float r)
+        {
+            return !IsBlockedFast(p)
+                   && !IsBlockedFast(p + new Vector2(r, 0f)) && !IsBlockedFast(p - new Vector2(r, 0f))
+                   && !IsBlockedFast(p + new Vector2(0f, r)) && !IsBlockedFast(p - new Vector2(0f, r))
+                   && !Boss.BossPitField.Overlaps(p, r);
+        }
+
+        /// <summary>center 칸에서 바깥으로 한 겹씩(정사각 고리) 넓혀 가며 처음 찾은 빈 칸 가운데. 고리 안에서는 가장 가까운 칸.</summary>
+        private bool TryFindNearestFree(Vector2 center, float bodyRadius, int maxRing, out Vector2 result)
+        {
+            result = center;
+            ToCell(center, out int cx, out int cy);
+            for (int ring = 1; ring <= maxRing; ring++)
+            {
+                float best = float.MaxValue;
+                bool found = false;
+                for (int dy = -ring; dy <= ring; dy++)
+                {
+                    for (int dx = -ring; dx <= ring; dx++)
+                    {
+                        if (Mathf.Abs(dx) != ring && Mathf.Abs(dy) != ring)
+                        {
+                            continue; // 고리 테두리만
+                        }
+                        int x = cx + dx;
+                        int y = cy + dy;
+                        if (x < 0 || y < 0 || x >= width || y >= height)
+                        {
+                            continue;
+                        }
+                        Vector2 p = CellCenter(x, y);
+                        float d = (p - center).sqrMagnitude;
+                        if (d < best && IsFree(p, bodyRadius))
+                        {
+                            best = d;
+                            result = p;
+                            found = true;
+                        }
+                    }
+                }
+                if (found)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private bool IsBlockedFast(Vector2 pos)
         {
             return !ToCell(pos, out int cx, out int cy) || blocked[cy * width + cx];

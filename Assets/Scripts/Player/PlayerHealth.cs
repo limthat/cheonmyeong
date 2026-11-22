@@ -96,6 +96,25 @@ namespace CheonMyeong.Player
               * Mathf.Max(0.1f, 1f + (progress != null ? progress.Modifiers.MaxHealthBonus : 0f) + ExtraMaxHealthBonus)
             : 1f;
 
+        /// <summary>
+        /// 261122 - 체력 바 전체 길이 기준 = 원귀와의 거래로 바치기 전 최대 체력. 바친 만큼은 바 오른쪽 잠긴 칸으로 보인다(지원 피드백).
+        /// 거래가 없으면 MaxHealth와 같다.
+        /// </summary>
+        public float BarMaxHealth
+        {
+            get
+            {
+                float loss = progress != null ? progress.Modifiers.CurseMaxHealthLoss : 0f;
+                if (stats == null || loss <= 0f)
+                {
+                    return MaxHealth;
+                }
+                float uncursed = stats.maxHealth * (character != null ? character.HealthScale : 1f)
+                                 * Mathf.Max(0.1f, 1f + progress.Modifiers.MaxHealthBonus + loss + ExtraMaxHealthBonus);
+                return Mathf.Max(MaxHealth, uncursed);
+            }
+        }
+
         /// <summary>261104 - 이 캐릭터의 기준 스탯(신통력 카드 후보 판정에 쓴다).</summary>
         public CharacterStatsSO Stats => stats;
 

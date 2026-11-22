@@ -163,6 +163,17 @@ namespace CheonMyeong.Enemies
             // 카메라가 적을 따라다니진 않지만, 화면에 보이는 움직임 자체가 매끄러워야
             // 일관된 느낌을 준다(실제 이동 계산은 그대로 서버 FixedUpdate에서 함, 영향 없음).
             rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+            ApplyVisualScale();
+        }
+
+        /// <summary>261122 - 종류별 크기(EnemyStatsSO.visualScale). 프리팹마다 스탯이 고정이라 한 번만, 모든 화면에서 같은 값.</summary>
+        private void ApplyVisualScale()
+        {
+            float scale = stats != null ? stats.visualScale : 1f;
+            if (!Mathf.Approximately(scale, 1f))
+            {
+                transform.localScale = new Vector3(scale, scale, 1f);
+            }
         }
 
         public override void OnNetworkSpawn()
