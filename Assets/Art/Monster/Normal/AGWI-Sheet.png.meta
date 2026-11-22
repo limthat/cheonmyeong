@@ -1,0 +1,780 @@
+fileFormatVersion: 2
+guid: 55b841e1a7a213f448fedd53ed31c015
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2960674614196495773
+    second: AGWI-Sheet_0
+  - first:
+      213: -4899392506127636887
+    second: AGWI-Sheet_1
+  - first:
+      213: -1928717691878965287
+    second: AGWI-Sheet_2
+  - first:
+      213: 148688955620094528
+    second: AGWI-Sheet_3
+  - first:
+      213: -7964833204572117850
+    second: AGWI-Sheet_4
+  - first:
+      213: -2082598693637908923
+    second: AGWI-Sheet_5
+  - first:
+      213: 1370284927219203238
+    second: AGWI-Sheet_6
+  - first:
+      213: 7662632493550116559
+    second: AGWI-Sheet_7
+  - first:
+      213: -8426132530404655060
+    second: AGWI-Sheet_8
+  - first:
+      213: -6055785868018213961
+    second: AGWI-Sheet_9
+  - first:
+      213: -6959425813056439181
+    second: AGWI-Sheet_10
+  - first:
+      213: -3905672500315973511
+    second: AGWI-Sheet_11
+  - first:
+      213: -1589767721758141152
+    second: AGWI-Sheet_12
+  - first:
+      213: 3958318633262038020
+    second: AGWI-Sheet_13
+  - first:
+      213: -7404817501025328377
+    second: AGWI-Sheet_14
+  - first:
+      213: 5397128698608697764
+    second: AGWI-Sheet_15
+  - first:
+      213: -2155049137966173965
+    second: AGWI-Sheet_16
+  - first:
+      213: -931585526654856806
+    second: AGWI-Sheet_17
+  - first:
+      213: -3819423475623192254
+    second: AGWI-Sheet_18
+  - first:
+      213: 5231505616664105975
+    second: AGWI-Sheet_19
+  - first:
+      213: 8446873255886180344
+    second: AGWI-Sheet_20
+  - first:
+      213: -8093873150821163762
+    second: AGWI-Sheet_21
+  - first:
+      213: -4450420028073923111
+    second: AGWI-Sheet_22
+  - first:
+      213: -8835016580504571259
+    second: AGWI-Sheet_23
+  - first:
+      213: -8621004859758085707
+    second: AGWI-Sheet_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: AGWI-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 130
+        width: 50
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d95e2b210ed661920800000000000000
+      internalID: 2960674614196495773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 132
+        width: 50
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9662d09497cd10cb0800000000000000
+      internalID: -4899392506127636887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 130
+        width: 48
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dffa8f5a71db35e0800000000000000
+      internalID: -1928717691878965287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 130
+        width: 49
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04272cd31df301200800000000000000
+      internalID: 148688955620094528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 130
+        width: 51
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a42e32666a377190800000000000000
+      internalID: -7964833204572117850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 131
+        width: 50
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5461500b58f1913e0800000000000000
+      internalID: -2082598693637908923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 130
+        width: 49
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6acf8f791ea340310800000000000000
+      internalID: 1370284927219203238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 67
+        width: 49
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fce9b6e87a3275a60800000000000000
+      internalID: 7662632493550116559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 65
+        width: 44
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c200ede6b1d501b80800000000000000
+      internalID: -8426132530404655060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 66
+        width: 44
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bb91f486d685fba0800000000000000
+      internalID: -6055785868018213961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 65
+        width: 50
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37c361c78172b6f90800000000000000
+      internalID: -6959425813056439181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 67
+        width: 50
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97897a9dd834cc9c0800000000000000
+      internalID: -3905672500315973511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 67
+        width: 47
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02559351ea200f9e0800000000000000
+      internalID: -1589767721758141152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 3
+        width: 50
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40cb46b23d5cee630800000000000000
+      internalID: 3958318633262038020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 1
+        width: 50
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7032ac817bdcc3990800000000000000
+      internalID: -7404817501025328377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 5
+        width: 49
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a143a7c4f376ea40800000000000000
+      internalID: 5397128698608697764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 19
+        width: 9
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f0b30a1a3ab712e0800000000000000
+      internalID: -2155049137966173965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 17
+        width: 36
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9197d536e75213f0800000000000000
+      internalID: -931585526654856806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 16
+        width: 11
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24911b8c59eaefac0800000000000000
+      internalID: -3819423475623192254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 22
+        width: 35
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f399b104aa0a9840800000000000000
+      internalID: 5231505616664105975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 27
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ffc7d70972593570800000000000000
+      internalID: 8446873255886180344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 32
+        width: 26
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0d9b34a049ccaf80800000000000000
+      internalID: -8093873150821163762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 26
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ddae55509eec32c0800000000000000
+      internalID: -4450420028073923111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 363
+        y: 32
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 582b65eda37b36580800000000000000
+      internalID: -8835016580504571259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AGWI-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 15
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b9f33f81c90c5880800000000000000
+      internalID: -8621004859758085707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      AGWI-Sheet_0: 2960674614196495773
+      AGWI-Sheet_1: -4899392506127636887
+      AGWI-Sheet_10: -6959425813056439181
+      AGWI-Sheet_11: -3905672500315973511
+      AGWI-Sheet_12: -1589767721758141152
+      AGWI-Sheet_13: 3958318633262038020
+      AGWI-Sheet_14: -7404817501025328377
+      AGWI-Sheet_15: 5397128698608697764
+      AGWI-Sheet_16: -2155049137966173965
+      AGWI-Sheet_17: -931585526654856806
+      AGWI-Sheet_18: -3819423475623192254
+      AGWI-Sheet_19: 5231505616664105975
+      AGWI-Sheet_2: -1928717691878965287
+      AGWI-Sheet_20: 8446873255886180344
+      AGWI-Sheet_21: -8093873150821163762
+      AGWI-Sheet_22: -4450420028073923111
+      AGWI-Sheet_23: -8835016580504571259
+      AGWI-Sheet_24: -8621004859758085707
+      AGWI-Sheet_3: 148688955620094528
+      AGWI-Sheet_4: -7964833204572117850
+      AGWI-Sheet_5: -2082598693637908923
+      AGWI-Sheet_6: 1370284927219203238
+      AGWI-Sheet_7: 7662632493550116559
+      AGWI-Sheet_8: -8426132530404655060
+      AGWI-Sheet_9: -6055785868018213961
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
