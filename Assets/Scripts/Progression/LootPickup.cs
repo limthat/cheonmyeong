@@ -95,6 +95,21 @@ namespace CheonMyeong.Progression
         private const float PickupSoundRange = 1.5f;
         private static bool silentDespawn;
 
+        // 261124 - 예섭: 영혼을 여러 개 한꺼번에 먹으면 소리를 확 줄인다. 앞 소리에서 BurstWindow 안에 또 주우면
+        // 첫 소리만 원래 크기, 나머지는 BurstVolume 배율(이어서 주울 때마다 창이 연장된다).
+        private const float BurstWindow = 0.15f;
+        private const float BurstVolume = 0.15f;
+        private static float lastBurstSoundTime = -999f;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetPickupSoundStatics()
+        {
+            lastBurstSoundTime = -999f;
+        }
+
+        /// <summary>한꺼번에 주울 때 소리를 줄이는 종류(영혼).</summary>
+        protected virtual bool DuckWhenBurst => false;
+
         private void PlayPickupSoundIfCollected()
         {
             if (silentDespawn)
@@ -114,7 +129,17 @@ namespace CheonMyeong.Progression
             string key = PickupSoundKey(visualAmount.Value);
             if (key != null)
             {
-                CheonMyeong.Audio.GameAudio.PlayAt(key, position, !nearest.IsOwner);
+                float volume = 1f;
+                if (DuckWhenBurst)
+                {
+                    float now = Time.unscaledTime;
+                    if (now - lastBurstSoundTime < BurstWindow)
+                    {
+                        volume = BurstVolume;
+                    }
+                    lastBurstSoundTime = now;
+                }
+                CheonMyeong.Audio.GameAudio.PlayAt(key, position, !nearest.IsOwner, volume);
             }
         }
 

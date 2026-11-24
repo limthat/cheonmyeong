@@ -219,12 +219,13 @@ namespace CheonMyeong.Audio
 
         // ---------------- 효과음
 
-        public SoundHandle Play(string key, Vector2? position = null, bool fromAlly = false)
+        public SoundHandle Play(string key, Vector2? position = null, bool fromAlly = false, float volumeScale = 1f)
         {
-            return Play(Resolve(key), position, fromAlly);
+            return Play(Resolve(key), position, fromAlly, volumeScale);
         }
 
-        public SoundHandle Play(SoundCue cue, Vector2? position = null, bool fromAlly = false)
+        /// <param name="volumeScale">261124 - 이번 한 번만 줄이는 배율(영혼 여러 개를 한꺼번에 주울 때 등). 1 = 그대로.</param>
+        public SoundHandle Play(SoundCue cue, Vector2? position = null, bool fromAlly = false, float volumeScale = 1f)
         {
             if (cue == null || !cue.HasClips || voices == null)
             {
@@ -289,7 +290,7 @@ namespace CheonMyeong.Audio
                 src.outputAudioMixerGroup = GroupOf(cue.bus);
                 voice.Cue = cue;
                 voice.FromAlly = fromAlly;
-                voice.BaseVolume = cue.volume * (1f - Random.value * cue.volumeJitter) * distanceGain;
+                voice.BaseVolume = cue.volume * (1f - Random.value * cue.volumeJitter) * distanceGain * Mathf.Clamp01(volumeScale);
                 voice.StartedAt = now;
                 voice.Generation++;
                 float delay = cue.startDelay + r * cue.repeatInterval;

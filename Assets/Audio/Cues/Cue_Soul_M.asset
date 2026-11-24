@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60cf290cf5fd4fe49ccecabdde1f3f2a, type: 3}
   m_Name: Cue_Soul_M
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Audio.SoundCue
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 7054e65d1a2d62a429585d0647a0ed4e, type: 3}
   bus: 0
   volume: 0.45
   volumeJitter: 0.1
@@ -22,9 +23,11 @@ MonoBehaviour:
   minInterval: 0.03
   priority: 200
   repeatCount: 1
+  startDelay: 0
   repeatInterval: 0.3
-  maxDuration: 0.0
+  maxDuration: 0
   positional: 1
   hearRange: 14
   stereoSpread: 0.6
+  reverse: 0
   layered: 0

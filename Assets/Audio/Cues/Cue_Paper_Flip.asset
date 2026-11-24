@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60cf290cf5fd4fe49ccecabdde1f3f2a, type: 3}
   m_Name: Cue_Paper_Flip
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Audio.SoundCue
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 10dfd25049de80c4da99ec0d97a35e78, type: 3}
   bus: 0
   volume: 0.7
   volumeJitter: 0.05
@@ -22,9 +23,11 @@ MonoBehaviour:
   minInterval: 0.05
   priority: 90
   repeatCount: 1
+  startDelay: 0
   repeatInterval: 0.3
-  maxDuration: 0.0
+  maxDuration: 0
   positional: 0
   hearRange: 16
   stereoSpread: 0.6
+  reverse: 0
   layered: 0

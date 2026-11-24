@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Boss.BossStatsSO
   displayName: "\uC5B5\uC1E0"
   midMaxHealth: 3000
-  finalHealthPerBar: 6400
+  finalHealthPerBar: 3000
   finalBars: 3
   midScale: 1
   finalScale: 2
@@ -24,6 +24,7 @@ MonoBehaviour:
   hopHeight: 0.35
   hopsPerSecond: 2.6
   landingSquash: 0.18
+  leapWindupSeconds: 0.18
   basicDamage:
   - 20
   - 25
@@ -36,7 +37,7 @@ MonoBehaviour:
   - 1.2
   basicRange: 2
   basicArcDegrees: 120
-  basicWindup: 0.7
+  basicWindup: 0.41
   basicRecovery: 0.35
   goldCoinCount: 050000000a0000000f00000032000000
   goldTypeWeights: 060000000300000001000000
@@ -75,6 +76,7 @@ MonoBehaviour:
   grabHoldRadius: 0.9
   grabFirstCooldown: 14
   grabCooldown: 22
+  grabWindupSeconds: 0.65
   mentalCloneDamageRatio:
   - 0.4
   - 0.5
@@ -93,6 +95,7 @@ MonoBehaviour:
   - 18
   mentalDuration: 8
   mentalRealmRadius: 4.5
+  mentalWindupSeconds: 0.88
   midDefeatRerollTickets: 1
   midDefeatSoul: 125
   midDefeatGold: 20

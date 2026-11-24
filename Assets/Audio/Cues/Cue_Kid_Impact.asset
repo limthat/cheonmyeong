@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60cf290cf5fd4fe49ccecabdde1f3f2a, type: 3}
   m_Name: Cue_Kid_Impact
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Audio.SoundCue
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: eb36b2b939b75b24a870c140d7d6ae35, type: 3}
   bus: 0
   volume: 0.55
-  volumeJitter: 0.0
+  volumeJitter: 0
   pitchRange: {x: 1.15, y: 1.25}
   loop: 0
   maxInstances: 2
@@ -24,7 +25,7 @@ MonoBehaviour:
   repeatCount: 1
   startDelay: 0
   repeatInterval: 0.3
-  maxDuration: 0.0
+  maxDuration: 0
   positional: 1
   hearRange: 20
   stereoSpread: 0.6

@@ -15,10 +15,10 @@ namespace CheonMyeong.Audio
         }
 
         /// <summary>위치가 있는 소리. fromAlly = 동료가 낸 소리(설정 '동료 소리 크기' 적용).</summary>
-        public static SoundHandle PlayAt(string key, Vector2 position, bool fromAlly = false)
+        public static SoundHandle PlayAt(string key, Vector2 position, bool fromAlly = false, float volumeScale = 1f)
         {
             SoundManager m = SoundManager.Instance;
-            return m != null ? m.Play(key, position, fromAlly) : SoundHandle.None;
+            return m != null ? m.Play(key, position, fromAlly, volumeScale) : SoundHandle.None;
         }
 
         public static void Stop(SoundHandle handle)

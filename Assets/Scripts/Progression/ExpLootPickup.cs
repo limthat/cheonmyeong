@@ -46,6 +46,8 @@ namespace CheonMyeong.Progression
             }
         }
 
+        protected override bool DuckWhenBurst => true; // 261124 - 한꺼번에 주우면 첫 소리만 크게
+
         // 261117 - 영혼 크기별로 같은 방울 소리를 높이만 달리 낸다(작을수록 높게, 사운드 기획서 5장 SFX_Soul).
         protected override string PickupSoundKey(int rewardAmount)
         {

@@ -938,11 +938,10 @@ namespace CheonMyeong.Enemies
                 spriteRenderer.enabled = true;
             }
             // 261116 - 퇴마 소리(모든 화면, 위치 소리 - 폭주 방지는 SoundCue MaxInstances · MinInterval).
-            if (currentValue && !previousValue)
+            // 261124 - 예섭: 일반 원귀 처치 소리("동~")는 거의 때릴 때마다 나서 안 어울려 끔. 중형 원귀 퇴마 소리(낮게)만 남긴다.
+            if (currentValue && !previousValue && elite != null)
             {
-                // 261121 - 중형 원귀는 퇴마 소리를 낮게(사운드 기획서 v1.2).
-                CheonMyeong.Audio.GameAudio.PlayAt(elite != null ? CheonMyeong.Audio.SoundKeys.EliteExorcise : CheonMyeong.Audio.SoundKeys.EnemyDie,
-                    transform.position);
+                CheonMyeong.Audio.GameAudio.PlayAt(CheonMyeong.Audio.SoundKeys.EliteExorcise, transform.position);
             }
 
             if (currentValue && animator != null && animator.runtimeAnimatorController != null)
