@@ -45,6 +45,10 @@ namespace CheonMyeong.Player
             public float Spin;
             public bool UseAlt;        // 두 번째 그림(하영 검기 = 베기 이펙트 첫 장)
             public int Tag;            // 공격 종류(OutgoingHit.Tag)
+            public float PierceFalloff; // 261123 - 관통해서 두 번째부터 맞힌 원귀 피해 감소 비율(0 = 그대로)
+            public int Bounces;         // 261123 - 맞힌 뒤 근처 원귀로 튕기는 횟수(이아라)
+            public float BounceFalloff; // 261123 - 튕긴 뒤 피해 감소 비율
+            public float BounceRadius;  // 261123 - 튕겨 갈 원귀를 찾는 거리
         }
 
         private struct Shot
@@ -58,6 +62,8 @@ namespace CheonMyeong.Player
             public Transform Target;
             public int HitCount;
             public bool Returning;
+            public int BouncesLeft;
+            public int BounceCount;
         }
 
         private struct Visual
@@ -111,6 +117,9 @@ namespace CheonMyeong.Player
         private readonly int[] hitIds = new int[MaxShots * MaxHitsPerShot];
         private readonly Visual[] visuals = new Visual[MaxShots];
         private readonly Collider2D[] buffer = new Collider2D[64];
+        private readonly Collider2D[] bounceBuffer = new Collider2D[32];
+        private const float BounceHomingDegreesPerSecond = 720f;
+        private const float BounceRangeMultiplier = 1.5f;
         private readonly List<HitFeedback> feedback = new List<HitFeedback>(32);
         private readonly List<Collider2D> targetBuffer = new List<Collider2D>(16);
         public Collider2D TargetAt(int index) => targetBuffer[index];
@@ -225,6 +234,10 @@ namespace CheonMyeong.Player
                 Returns = ReturnDamageScale > 0f,
                 ReturnDamageScale = ReturnDamageScale,
                 ForceCritOnReturn = ReturnForceCrit,
+                PierceFalloff = stats.pierceFalloff,
+                Bounces = stats.projectileBounces,
+                BounceFalloff = stats.bounceFalloff,
+                BounceRadius = stats.bounceRadius,
             };
         }
 
@@ -256,6 +269,7 @@ namespace CheonMyeong.Player
                 P = p,
                 Target = target,
                 HitCount = 0,
+                BouncesLeft = Mathf.Max(0, p.Bounces),
             };
             ulong targetId = NoTarget;
             if (target != null && target.TryGetComponent(out NetworkObject netObj))
@@ -420,6 +434,18 @@ namespace CheonMyeong.Player
                 {
                     continue;
                 }
+                if (!s.Returning)
+                {
+                    // 261123 - 지원 피드백: 관통한 두 번째부터 · 튕긴 뒤는 공격력의 절반(기본 공격 값).
+                    if (s.BounceCount > 0)
+                    {
+                        scale *= 1f - s.P.BounceFalloff;
+                    }
+                    else if (s.HitCount > 0)
+                    {
+                        scale *= 1f - s.P.PierceFalloff;
+                    }
+                }
                 if (s.Returning && s.P.ForceCritOnReturn)
                 {
                     attack.ForceNextCrit = true;
@@ -447,6 +473,10 @@ namespace CheonMyeong.Player
                 {
                     if (s.P.Pierce == 0)
                     {
+                        if (s.BouncesLeft > 0 && TryBounce(index, ref s))
+                        {
+                            return false; // 261123 - 이아라: 근처 원귀로 튕겨 간다
+                        }
                         if (s.P.Returns)
                         {
                             // 돌아오는 신칼: 맞은 자리에서 바로 되돌아오며 그 원귀(와 돌아오는 길)를 한 번 더 때린다.
@@ -462,6 +492,51 @@ namespace CheonMyeong.Player
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// 261123 - 맞힌 자리에서 가장 가까운(아직 안 맞힌) 원귀 쪽으로 방향을 바꾼다. 없으면 false(원래대로 끝나거나 돌아온다).
+        /// 맞힌 원귀 목록(hitIds)을 그대로 이어 써서 같은 원귀를 두 번 때리지 않는다.
+        /// </summary>
+        private bool TryBounce(int index, ref Shot s)
+        {
+            float radius = Mathf.Max(0.5f, s.P.BounceRadius);
+            int n = Physics2D.OverlapCircle(s.Position, radius, filter, bounceBuffer);
+            Collider2D best = null;
+            float bestSq = float.MaxValue;
+            for (int k = 0; k < n; k++)
+            {
+                Collider2D col = bounceBuffer[k];
+                if (!Boss.DeathRealm.CanInteract(gameObject, col.gameObject) || Enemies.Enemy.IsHiddenFromRanged(col)
+                    || AlreadyHit(index, s.HitCount, col.GetInstanceID()))
+                {
+                    continue;
+                }
+                if (!col.TryGetComponent(out Enemies.Enemy enemy) || enemy.IsDying)
+                {
+                    continue;
+                }
+                float sq = ((Vector2)col.transform.position - s.Position).sqrMagnitude;
+                if (sq < bestSq)
+                {
+                    bestSq = sq;
+                    best = col;
+                }
+            }
+            if (best == null)
+            {
+                return false;
+            }
+            Vector2 to = (Vector2)best.transform.position - s.Position;
+            s.Direction = to.sqrMagnitude > 0.0001f ? to.normalized : s.Direction;
+            s.Target = best.transform;
+            s.RangeLeft = radius * BounceRangeMultiplier;
+            s.P.HomingDegreesPerSecond = Mathf.Max(s.P.HomingDegreesPerSecond, BounceHomingDegreesPerSecond);
+            s.BouncesLeft--;
+            s.BounceCount++;
+            ulong targetId = best.TryGetComponent(out NetworkObject netObj) ? netObj.NetworkObjectId : NoTarget;
+            RedirectVisualRpc(s.Id, s.Position, s.Direction, s.RangeLeft, s.P.HomingDegreesPerSecond, targetId);
+            return true;
         }
 
         private bool AlreadyHit(int index, int count, int key)
@@ -571,6 +646,30 @@ namespace CheonMyeong.Player
                     visuals[i].Returning = true;
                     visuals[i].Position = position;
                     visuals[i].Target = null;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>261123 - 튕김: 연출 투사체도 같은 자리에서 새 방향 · 새 대상으로.</summary>
+        [Rpc(SendTo.ClientsAndHost)]
+        private void RedirectVisualRpc(ushort id, Vector2 position, Vector2 direction, float rangeLeft, float homing, ulong targetId)
+        {
+            for (int i = 0; i < MaxShots; i++)
+            {
+                if (visuals[i].Alive && visuals[i].Id == id)
+                {
+                    Transform target = null;
+                    if (targetId != NoTarget && NetworkManager != null && NetworkManager.SpawnManager != null
+                        && NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(targetId, out NetworkObject obj))
+                    {
+                        target = obj.transform;
+                    }
+                    visuals[i].Position = position;
+                    visuals[i].Direction = direction;
+                    visuals[i].RangeLeft = rangeLeft;
+                    visuals[i].Homing = homing;
+                    visuals[i].Target = target;
                     return;
                 }
             }

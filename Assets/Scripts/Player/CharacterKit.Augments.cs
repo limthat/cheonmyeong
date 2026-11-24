@@ -23,6 +23,9 @@ namespace CheonMyeong.Player
         private const float RopeMaxLength = 10f;
         private const float RopeTickSeconds = 0.25f;   // (제안) 금줄 피해 간격
         private const float RopeHalfWidth = 0.4f;      // (제안) 금줄에 "닿음" 판정 폭(칸)
+        // 261123 - 지원 피드백 "금줄이 몸이 아니라 머리에 걸림": 캐릭터 피벗(128px 칸 가운데)은 얼굴 높이라
+        // 몸통(허리) 높이로 0.3유닛(30px, PPU 100) 내린다. 그림 · 판정 둘 다 같은 높이를 쓴다.
+        private static readonly Vector2 RopeBodyOffset = new Vector2(0f, -0.3f);
         private const float BounceSearchRadius = 3f;   // (제안) 물수제비가 튕겨 갈 거리(칸)
         private const float SojiPushCells = 1f;        // (제안) 소지가 밀쳐내는 거리(칸)
 
@@ -469,8 +472,8 @@ namespace CheonMyeong.Player
 
         private void RopeHit(float damageScale, bool slow)
         {
-            Vector2 from = transform.position;
-            Vector2 to = teammate.transform.position;
+            Vector2 from = (Vector2)transform.position + RopeBodyOffset;
+            Vector2 to = (Vector2)teammate.transform.position + RopeBodyOffset;
             Vector2 seg = to - from;
             float segLenSq = Mathf.Max(0.0001f, seg.sqrMagnitude);
             Vector2 mid = (from + to) * 0.5f;
@@ -673,8 +676,8 @@ namespace CheonMyeong.Player
                 ropeLine.endColor = new Color(0.96f, 0.80f, 0.36f, 0.95f);
             }
             ropeLine.enabled = true;
-            ropeLine.SetPosition(0, transform.position);
-            ropeLine.SetPosition(1, mate.transform.position);
+            ropeLine.SetPosition(0, transform.position + (Vector3)RopeBodyOffset);
+            ropeLine.SetPosition(1, mate.transform.position + (Vector3)RopeBodyOffset);
         }
 
         private void DestroyAugmentFx()

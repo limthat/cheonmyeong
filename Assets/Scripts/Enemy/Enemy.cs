@@ -88,9 +88,11 @@ namespace CheonMyeong.Enemies
 
         [Header("분리(Separation) - 뭉치지 않고 퍼져서 쫓아오게. 값은 미정, 밸런스에 맞춰 조정")]
         [Tooltip("이 반경 안의 다른 적들로부터 밀려난다.")]
-        [SerializeField] private float separationRadius = 0.8f;
+        [SerializeField] private float separationRadius = 1.1f;
         [Tooltip("추적 방향 대비 분리(밀어내기) 힘의 비중. 높을수록 더 퍼져서 쫓아오지만 추적이 둔해진다.")]
-        [SerializeField] private float separationWeight = 1.2f;
+        [SerializeField] private float separationWeight = 2f;
+        [Tooltip("261123 - 바로 앞을 막은 원귀가 있으면 옆으로 비켜 가는 힘(분리 힘에 더해짐). 줄지어 오는 것을 흩는다.")]
+        [SerializeField] private float sidestepWeight = 1f;
 
         // 261101 추가 - "화면의 원귀 대부분이 덜덜 떤다"(예섭, 1인 호스트) 수정용. 원인은 조향 계산이었다:
         // (1) 추적+분리 합을 항상 길이 1로 정규화해서, 두 힘이 거의 상쇄되는 무리 안에서도 매 물리 스텝 최고 속도로
@@ -109,6 +111,17 @@ namespace CheonMyeong.Enemies
 
         private const float PitBodyRadius = 0.25f;
         private const float FlowDirectChaseDistance = 1.5f;
+
+        // 261123 - 지원 피드백 "원귀가 고르게 퍼지지 않고 일자로 접근":
+        // ① 플레이어까지 막힌 게 없으면 길찾기(거리장) 대신 곧장 쫓는다(확인은 원귀마다 0.25초에 한 번, 서로 엇갈리게).
+        // ② 곧장 쫓을 때 원귀마다 정해진 각도(±35도)만큼 비스듬히 다가와, 멀리서는 옆으로 벌어지고 가까울수록 정면으로 모인다(둘러싸기).
+        private const float LineOfSightInterval = 0.25f;
+        private const float FlankStartDistance = 3f;
+        private const float FlankFullDistance = 9f;
+        private const float MaxFlankDegrees = 35f;
+        private float nextLineOfSightCheck;
+        private bool lineOfSightClear;
+        private float flankDegrees;
 
         private Rigidbody2D rb;
         private float currentHealth;
@@ -248,6 +261,9 @@ namespace CheonMyeong.Enemies
             serverSlowRatio = 0f;
             serverTauntTarget = null;
             serverTauntUntil = 0f;
+            flankDegrees = Random.Range(-MaxFlankDegrees, MaxFlankDegrees);
+            lineOfSightClear = false;
+            nextLineOfSightCheck = Time.time + Random.Range(0f, LineOfSightInterval); // 한 프레임에 몰리지 않게
             ServerClearBrand();
             ServerVulnerableSource = null;
             ServerVulnerableBonus = 0f;
@@ -490,16 +506,33 @@ namespace CheonMyeong.Enemies
                 float slowRange = Mathf.Max(0.0001f, arriveSlowDistance - arriveStopDistance);
                 Vector2 chaseDirection = toTarget / distance;
                 // 261121 - 160 맵: 멀면 길찾기(집 · 물 · 울타리를 돌아서), 가까우면 바로 쫓는다.
+                // 261123 - 막힌 게 없으면 멀어도 곧장 + 원귀마다 다른 각도로 비스듬히(둘러싸기).
                 Maps.MapFlowField field = Maps.MapFlowField.Instance;
-                if (field != null && distance > FlowDirectChaseDistance && field.TryGetDirection(rb.position, out Vector2 flowDirection))
+                bool direct = field == null || distance <= FlowDirectChaseDistance;
+                if (!direct)
+                {
+                    if (Time.time >= nextLineOfSightCheck)
+                    {
+                        nextLineOfSightCheck = Time.time + LineOfSightInterval;
+                        lineOfSightClear = field.HasClearLine(rb.position, nearestPlayer.position);
+                    }
+                    direct = lineOfSightClear;
+                }
+                if (!direct && field.TryGetDirection(rb.position, out Vector2 flowDirection))
                 {
                     chaseDirection = flowDirection;
+                }
+                else if (distance > FlankStartDistance)
+                {
+                    float flank = flankDegrees * Mathf.Clamp01((distance - FlankStartDistance) / (FlankFullDistance - FlankStartDistance));
+                    chaseDirection = Quaternion.Euler(0f, 0f, flank) * chaseDirection;
                 }
                 chase = chaseDirection * Mathf.Clamp01((distance - arriveStopDistance) / slowRange);
             }
 
             float slow = Time.time < serverSlowUntil ? serverSlowRatio : 0f;
-            Vector2 desired = Vector2.ClampMagnitude(chase + ComputeSeparation() * separationWeight, 1f) * (stats.moveSpeed * (1f - slow));
+            Vector2 chaseDir = chase.sqrMagnitude > 0.0001f ? chase.normalized : Vector2.zero;
+            Vector2 desired = Vector2.ClampMagnitude(chase + ComputeSeparation(chaseDir) * separationWeight, 1f) * (stats.moveSpeed * (1f - slow));
             Vector2 velocity = Vector2.MoveTowards(rb.linearVelocity, desired, steeringAcceleration * Time.fixedDeltaTime);
             // 261121 - 땅 꺼짐 구덩이는 원귀도 못 지나간다(원귀는 Map 레이어와 충돌을 꺼 둬서 속도로 막는다).
             Maps.MapFlowField obstacleField = Maps.MapFlowField.Instance;
@@ -683,8 +716,17 @@ namespace CheonMyeong.Enemies
             }
         }
 
-        private Vector2 ComputeSeparation()
+        /// <remarks>
+        /// 261123 - 지원 피드백 "원귀가 일자로 쭉 온다": 앞뒤로 줄 선 원귀끼리는 미는 힘이 진행 방향과 나란해서 서로 상쇄될 뿐
+        /// 옆으로는 안 퍼졌다. 그래서 진행 방향(chaseDir) 바로 앞에 있는 이웃은 옆으로 비켜 가는 힘(sidestep)을 더한다 -
+        /// 어느 쪽으로 비킬지는 그 이웃이 내 왼쪽/오른쪽 어디에 있는지, 거의 일직선이면 원귀마다 정해진 둘러싸기 방향으로.
+        /// 반경 1.1(콜라이더 0.4 + 0.4보다 넓게) · 비중 2로 간격도 더 벌린다.
+        /// </remarks>
+        private Vector2 ComputeSeparation(Vector2 chaseDir)
         {
+            bool hasChase = chaseDir.sqrMagnitude > 0.0001f;
+            Vector2 perp = new Vector2(-chaseDir.y, chaseDir.x);
+            float flankSign = flankDegrees >= 0f ? 1f : -1f;
             EnsureSeparationGrid();
             Vector2 self = gridPositions[gridIndex];
             Vector2 push = Vector2.zero;
@@ -732,7 +774,15 @@ namespace CheonMyeong.Enemies
                             continue;
                         }
                         float dist = Mathf.Sqrt(sqrDist);
-                        push += diff / dist * (1f - dist / separationRadius);
+                        float strength = 1f - dist / separationRadius;
+                        push += diff / dist * strength;
+                        // diff = 나 - 이웃 → Dot(diff, chaseDir) < 0 이면 이웃이 내 앞(가는 길)에 있다.
+                        if (hasChase && Vector2.Dot(diff, chaseDir) < 0f)
+                        {
+                            float side = Vector2.Dot(diff, perp);
+                            float sign = Mathf.Abs(side) > 0.05f ? Mathf.Sign(side) : flankSign;
+                            push += perp * (sign * strength * sidestepWeight);
+                        }
                         neighborCount++;
                     }
                 }

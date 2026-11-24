@@ -120,6 +120,18 @@ namespace CheonMyeong.Data
         [Tooltip("원거리 - 관통 수(맞고 더 지나가는 마리 수). -1 = 무제한(심여레 바람).")]
         public int projectilePierce;
 
+        [Tooltip("261123 - 기본 공격이 관통해 두 번째부터 맞힌 원귀에게 줄어드는 피해 비율(0 = 그대로, 0.5 = 공격력의 절반). 근접 단일 · 투사체 공통.")]
+        [Range(0f, 1f)] public float pierceFalloff;
+
+        [Tooltip("261123 - 원거리 - 맞힌 뒤 근처 원귀로 튕겨 가는 횟수(이아라 2).")]
+        [Min(0)] public int projectileBounces;
+
+        [Tooltip("261123 - 튕긴 뒤 맞힌 원귀에게 줄어드는 피해 비율(0.5 = 절반, 몇 번째 튕김이든 같은 값).")]
+        [Range(0f, 1f)] public float bounceFalloff;
+
+        [Tooltip("261123 - 튕겨 갈 원귀를 찾는 거리(칸).")]
+        [Min(0.5f)] public float bounceRadius = 3f;
+
         [Tooltip("원거리 - 날아가며 도는 속도(도/초). 0이면 날아가는 방향을 바라본다(화살 · 바람).")]
         public float projectileSpinDegreesPerSecond;
 

@@ -1,4 +1,4 @@
-// 261122 추가 · 261123 도트 스타일로 다시 그림 - 영혼 불(도깨비불).
+// 261122 추가 · 261123 도트 스타일로 다시 그림 · 261124 연한 그라데이션(외곽선 없음) - 영혼 불(도깨비불).
 // 억쇠 '정신병' 차원 바깥 사람 화면에서 끌려간 플레이어 · 분신을 이 불꽃으로 표시한다(모데카이저 궁극기처럼).
 // 도트 게임에 맞게: 월드 픽셀 격자(_PixelsPerUnit)로 칸을 나눠 계산하고, 색은 4단계(어두운 테두리 · 몸 · 밝은 속 · 흰 심지)만,
 // 가장자리는 부드러운 알파 대신 4×4 Bayer 디더링 점, 움직임은 초당 _AnimFps 칸으로 끊는다.
@@ -118,24 +118,20 @@ Shader "CheonMyeong/SoulFlame"
                 float dither = Bayer4(pixel);
                 float d = FlameDistance(uv, t, input.info.x);
 
-                // 바깥 → 안: 디더링 테두리 · 어두운 외곽선 · 몸(색) · 밝은 속 · 흰 심지.
+                // 261124 - 예섭: 짙은 단색 · 어두운 외곽선 대신 연한 그라데이션. 가장자리 = 색을 흰색 쪽으로 25% 섞은 연한 색,
+                // 가운데로 갈수록 더 밝게(60%) - 색(하늘 · 보라)은 남게. 계단은 5단계를 Bayer 디더링으로 섞어 도트 느낌은 유지, 가장자리는 반투명.
+                half3 tint = input.color.rgb;
+                half3 edgeColor = lerp(tint, half3(1, 1, 1), 0.25);
+                half3 coreColor = lerp(tint, half3(1, 1, 1), 0.6);
                 if (d > 1.0)
                 {
-                    // 1.0~1.25 사이만 듬성듬성 외곽선 점(디더링) - 부드러운 번짐 대신.
-                    float fade = saturate(1.0 - (d - 1.0) / 0.25);
-                    return fade * 0.5 > dither ? half4(_OutlineColor.rgb, input.color.a) : half4(0, 0, 0, 0);
+                    float fade = saturate(1.0 - (d - 1.0) / 0.3);
+                    return fade * 0.5 > dither ? half4(edgeColor, input.color.a * 0.35) : half4(0, 0, 0, 0);
                 }
-                half3 bodyColor = input.color.rgb;
-                half3 col;
-                if (d > 0.82) col = lerp(_OutlineColor.rgb, bodyColor, 0.35);   // 외곽선(진한 색)
-                else if (d > 0.5) col = bodyColor;                               // 몸
-                else if (d > 0.22) col = lerp(bodyColor, half3(1, 1, 1), 0.5);  // 밝은 속
-                else col = half3(1, 1, 1);                                       // 흰 심지
-
-                // 단계 사이 경계를 한 칸씩 디더링으로 섞어 계단이 덜 딱딱하게.
-                if (d > 0.45 && d <= 0.55 && dither > 0.5) col = lerp(bodyColor, half3(1, 1, 1), 0.5);
-                if (d > 0.77 && d <= 0.87 && dither > 0.5) col = bodyColor;
-                return half4(col, input.color.a);
+                float glow = saturate(1.0 - d);
+                glow = saturate(floor(glow * 5.0 + dither) / 5.0);
+                half3 col = lerp(edgeColor, coreColor, glow);
+                return half4(col, input.color.a * lerp(0.5, 0.95, glow));
             }
             ENDHLSL
         }

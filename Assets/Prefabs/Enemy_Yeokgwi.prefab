@@ -202,8 +202,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   stats: {fileID: 11400000, guid: 6b946ee9c2041424cb3d7803c4897060, type: 2}
   spriteRenderer: {fileID: 7303476737531697446}
-  separationRadius: 0.8
-  separationWeight: 1.2
+  separationRadius: 1.1
+  separationWeight: 2
+  sidestepWeight: 1
   arriveStopDistance: 0.3
   arriveSlowDistance: 0.7
   steeringAcceleration: 20

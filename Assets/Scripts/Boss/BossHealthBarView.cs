@@ -22,6 +22,10 @@ namespace CheonMyeong.Boss
         private RectTransform cloneFill;
         private Text nameText;
         private Text barsText;
+        // 261123 - 지원 피드백: 보스 체력 수치 표기(전체 체력 "현재 / 최대"). 값이 바뀔 때만 글자를 새로 만든다.
+        private Text valueText;
+        private int shownValue = int.MinValue;
+        private int shownMaxValue = int.MinValue;
         private float shownRatio = 1f;
         private float chipRatio = 1f;
         private float chipTimer;
@@ -168,6 +172,7 @@ namespace CheonMyeong.Boss
             view.barsText = AddText(NewRect(root, "Bars", new Vector2(1f, 0f), new Vector2(1f, 1f)), font, 20, TextAnchor.MiddleLeft);
             ((RectTransform)view.barsText.transform).offsetMin = new Vector2(10f, 0f);
             ((RectTransform)view.barsText.transform).offsetMax = new Vector2(70f, 0f);
+            view.valueText = AddText(NewRect(inner, "Value", Vector2.zero, Vector2.one), font, 12, TextAnchor.MiddleCenter);
 
             root.gameObject.SetActive(false);
             return view;
@@ -232,6 +237,10 @@ namespace CheonMyeong.Boss
             view.barsText = AddText(NewRect(area, "Bars", new Vector2(1f, 0f), new Vector2(1f, 1f)), font, 24, TextAnchor.MiddleLeft);
             ((RectTransform)view.barsText.transform).offsetMin = new Vector2(rightEnd + 8f, -20f);
             ((RectTransform)view.barsText.transform).offsetMax = new Vector2(rightEnd + 80f, 20f);
+            // 261123 - 칸 가운데 체력 수치. 칸 높이(화면 px)에 맞춰 12의 배수 크기(Galmuri11)로.
+            float areaHeight = labels.sizeDelta.y + area.offsetMax.y - area.offsetMin.y;
+            int valueSize = areaHeight >= 30f ? 24 : 12;
+            view.valueText = AddText(NewRect(area, "Value", Vector2.zero, Vector2.one), font, valueSize, TextAnchor.MiddleCenter);
 
             root.gameObject.SetActive(false);
             return view;
@@ -300,6 +309,14 @@ namespace CheonMyeong.Boss
             {
                 nameText.text = title;
             }
+            int value = Mathf.Max(0, Mathf.CeilToInt(health));
+            int maxValue = Mathf.Max(1, Mathf.RoundToInt(maxHealth));
+            if (valueText != null && (value != shownValue || maxValue != shownMaxValue))
+            {
+                shownValue = value;
+                shownMaxValue = maxValue;
+                valueText.text = $"{value:N0} / {maxValue:N0}";
+            }
             string barsLabel = bars > 1 ? $"×{barIndex + 1}" : string.Empty;
             if (barsText.text != barsLabel)
             {
@@ -355,6 +372,7 @@ namespace CheonMyeong.Boss
                 gameObject.SetActive(visible);
                 lastBarIndex = -1;
                 shownColorIndex = -1;
+                shownValue = int.MinValue;
             }
         }
 

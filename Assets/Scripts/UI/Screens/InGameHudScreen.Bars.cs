@@ -9,7 +9,7 @@ namespace CheonMyeong.UI.Screens
     /// - 체력(나 · 동료): 적 #B42C3B. 두 사람은 색이 아니라 얼굴 · 이름으로 구분(P2도 적). 잔상 백 · 0.3초, 30% 이하 천천히 깜빡(Juice).
     /// - 호신부: 백 #FCF6F6 - 체력 바 위 작은 네모 칸, 1회 = 1칸, 쓰면 빈 칸(테두리만). 예전 "호신부 N" 글자는 뺐다.
     /// - 영혼(경험치): 청 #2D518B.
-    /// - 원한 4칸: 먹 #080710, 넘긴 단계 칸은 테두리 짙은 적 #882131, 폭주면 4칸 전부 짙은 적 테두리.
+    /// - 원한 4칸: 넘긴 단계 칸은 테두리 짙은 적 #882131, 폭주면 4칸 전부 짙은 적 테두리. 채움은 261123부터 연먹 → 적(먹 #080710은 바탕에 묻혀 안 보였음).
     /// - 보스: 어린 억쇠는 황(BossHealthBarView), 억쇠 최종전은 예섭 요청대로 3겹 색 유지.
     /// 씬 파일은 건드리지 않고 켜질 때 색만 바꾼다(아트 틀 · 배치는 그대로).
     /// </summary>
@@ -19,8 +19,16 @@ namespace CheonMyeong.UI.Screens
         private static readonly Color DeepRed = new Color32(0x88, 0x21, 0x31, 0xFF);
         private static readonly Color HanjiWhite = new Color32(0xFC, 0xF6, 0xF6, 0xFF);
         private static readonly Color SoulBlue = new Color32(0x2D, 0x51, 0x8B, 0xFF);
-        private static readonly Color Ink = new Color32(0x08, 0x07, 0x10, 0xFF);
         private static readonly Color PipEmpty = new Color32(0x61, 0x47, 0x3A, 0xFF); // 빈 곳 짙은 갈 #61473A
+        // 261123 - 지원 피드백 "원한 수치 너무 안 보임": 먹(#080710) 채움이 어두운 칸 바탕에 묻혔다.
+        // 먹 계열을 밝힌 연먹으로 채우고 단계가 오를수록 짙은 적 쪽으로 - 칸 테두리 규칙(넘긴 칸 짙은 적)은 그대로.
+        private static readonly Color[] GrudgeFillColors =
+        {
+            new Color32(0x9A, 0x94, 0xAE, 0xFF), // 맑음 - 연먹
+            new Color32(0x7C, 0x6C, 0x9A, 0xFF), // 짙음 - 보랏빛 먹
+            new Color32(0x9A, 0x3E, 0x5E, 0xFF), // 한 - 검붉은 먹
+            new Color32(0xC8, 0x32, 0x44, 0xFF), // 폭주 - 적
+        };
         private const float LowHealthRatio = 0.3f;
         private const float LowHealthBlinkPeriod = 1.2f;
         private const float PipSize = 14f;
@@ -35,6 +43,12 @@ namespace CheonMyeong.UI.Screens
         private Color[] grudgeFrameColors;
         private int grudgeBorderStage = -1;
 
+        // 261123 - 지원 피드백: 경험치(영혼) 바에 수치 표기. 바(16px)가 얇아서 바로 위 가운데에 "영혼 현재 / 필요".
+        private const int ExpValueFontSize = 24; // Galmuri11은 12의 배수 크기에서 가장 또렷함
+        private Text expValueText;
+        private int shownExpCurrent = int.MinValue;
+        private int shownExpRequired = int.MinValue;
+
         private void BarsAwake()
         {
             if (p1HealthFillImage != null) p1HealthFillImage.color = HpRed;
@@ -46,12 +60,62 @@ namespace CheonMyeong.UI.Screens
                 grudgeFrameColors = new Color[grudgeSegmentImages.Length];
                 for (int i = 0; i < grudgeSegmentImages.Length; i++)
                 {
-                    grudgeSegmentFullColors[i] = Ink;
+                    grudgeSegmentFullColors[i] = GrudgeFillColors[Mathf.Min(i, GrudgeFillColors.Length - 1)];
                     grudgeFrameColors[i] = grudgeSegmentImages[i] != null ? grudgeSegmentImages[i].color : Color.white;
                 }
             }
             BuildShieldPips(0, p1HealthText);
             BuildShieldPips(1, p2HealthText);
+            BuildExpValueText();
+            if (grudgeText != null && grudgeText.TryGetComponent(out Outline grudgeOutline))
+            {
+                grudgeOutline.effectColor = new Color(0f, 0f, 0f, 0.95f); // 261123 - 바닥 위에서도 읽히게 외곽선 진하게
+                grudgeOutline.effectDistance = new Vector2(2f, -2f);
+            }
+        }
+
+        private void BuildExpValueText()
+        {
+            Transform mask = expFillImage != null ? expFillImage.transform.parent : null;
+            if (mask == null || !(mask is RectTransform maskRect))
+            {
+                return;
+            }
+            var go = new GameObject("ExpValueText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Outline));
+            var rect = (RectTransform)go.transform;
+            rect.SetParent(maskRect.parent, false);
+            // 바(Mask)와 같은 가로 범위, 바로 위 한 줄. Mask는 ExpBar를 꽉 채우는 앵커(0,0)-(1,1)에 여백만 둔 구조라
+            // 위쪽 앵커(y = 1) 기준 오프셋으로 Mask 위 끝(offsetMax.y) 바로 위에 붙인다.
+            rect.anchorMin = new Vector2(maskRect.anchorMin.x, 1f);
+            rect.anchorMax = new Vector2(maskRect.anchorMax.x, 1f);
+            rect.pivot = new Vector2(0.5f, 0f);
+            rect.offsetMin = new Vector2(maskRect.offsetMin.x, maskRect.offsetMax.y + 2f);
+            rect.offsetMax = new Vector2(maskRect.offsetMax.x, maskRect.offsetMax.y + 2f + ExpValueFontSize + 6f);
+
+            expValueText = go.GetComponent<Text>();
+            expValueText.font = GameFontSet.Get(FontRole.Body);
+            expValueText.fontSize = ExpValueFontSize;
+            expValueText.alignment = TextAnchor.LowerCenter;
+            expValueText.color = HanjiWhite;
+            expValueText.raycastTarget = false;
+            expValueText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            expValueText.verticalOverflow = VerticalWrapMode.Overflow;
+            expValueText.text = string.Empty;
+            Outline outline = go.GetComponent<Outline>();
+            outline.effectColor = new Color(0f, 0f, 0f, 0.9f);
+            outline.effectDistance = new Vector2(2f, -2f);
+        }
+
+        /// <summary>값이 바뀔 때만 글자를 새로 만든다(매 프레임 문자열 할당 없음).</summary>
+        private void UpdateExpValueText(int currentExp, int requiredExp)
+        {
+            if (expValueText == null || (shownExpCurrent == currentExp && shownExpRequired == requiredExp))
+            {
+                return;
+            }
+            shownExpCurrent = currentExp;
+            shownExpRequired = requiredExp;
+            expValueText.text = requiredExp > 0 ? $"영혼 {currentExp:N0} / {requiredExp:N0}" : string.Empty;
         }
 
         /// <summary>체력 글자 줄 오른쪽 끝에 호신부 네모 칸 자리를 만든다(글자 칸은 그만큼 줄여 겹치지 않게).</summary>

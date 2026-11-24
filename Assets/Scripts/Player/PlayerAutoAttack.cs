@@ -520,10 +520,19 @@ namespace CheonMyeong.Player
                 limit = Mathf.Min(limit, 1 + Mathf.Max(0, stats.meleePierce + MeleePierceBonus));
             }
 
+            // 261123 - 지원 피드백: 근접 단일(임훈 · 박규혁)의 관통 대상은 공격력의 절반(pierceFalloff)만.
+            bool falloff = stats.singleTarget && stats.pierceFalloff > 0f;
+            int previousIndex = NextHitIndex;
             for (int i = 0; i < limit; i++)
             {
-                ServerDamageTarget(SingleTargetBuffer[i], damageScale, dir, stats.knockback, false, HitFeedbackBuffer);
+                float scale = falloff && i > 0 ? damageScale * (1f - stats.pierceFalloff) : damageScale;
+                if (stats.singleTarget)
+                {
+                    NextHitIndex = i;
+                }
+                ServerDamageTarget(SingleTargetBuffer[i], scale, dir, stats.knockback, false, HitFeedbackBuffer);
             }
+            NextHitIndex = previousIndex;
             SingleTargetBuffer.Clear();
             ServerFlushHitFeedback(HitFeedbackBuffer);
         }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Boss.BossStatsSO
   displayName: "\uC5B5\uC1E0"
   midMaxHealth: 3000
-  finalHealthPerBar: 8000
+  finalHealthPerBar: 6400
   finalBars: 3
   midScale: 1
   finalScale: 2

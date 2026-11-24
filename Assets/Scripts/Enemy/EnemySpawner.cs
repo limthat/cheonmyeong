@@ -40,6 +40,9 @@ namespace CheonMyeong.Enemies
         [SerializeField] private float clusterSpread = 1.5f;
         [Tooltip("Line(줄) 패턴에서 원귀 사이 간격.")]
         [SerializeField] private float lineSpacing = 0.8f;
+        [Tooltip("261123 - 문이 있는 맵(160 맵)에서 문 3곳으로 나오는 비율. 나머지는 화면 밖 플레이어 둘레(맵 안 · 걸어갈 수 있는 칸)에서 나온다.\n" +
+                 "지원 피드백 \"원귀가 일자로 접근\" - 문에서만 나오면 줄지어 들어와서 섞었다. 1 = 예전처럼 문에서만.")]
+        [Range(0f, 1f)] [SerializeField] private float gateSpawnRatio = 0.5f;
 
         [Header("WaveManager가 없을 때만 쓰는 대체값 (테스트용)")]
         [Tooltip("pools와 같은 순서의 가중치. 길이가 안 맞으면 균등 확률.")]
@@ -233,7 +236,7 @@ namespace CheonMyeong.Enemies
             float radius = EffectiveSpawnRadius();
             SpawnPatternType pattern = PickPattern(config);
             MapBounds gateBounds = MapBounds.Instance;
-            if (gateBounds != null && gateBounds.HasGateSpawns)
+            if (gateBounds != null && gateBounds.HasGateSpawns && Random.value < gateSpawnRatio)
             {
                 // 261121 - 문에서 나오는 맵: 둘러싸기(Ring)는 문 3곳에 나눠서, 줄 · 무리는 한 문에서 한꺼번에.
                 int gate = Random.Range(0, gateBounds.GateCount);
@@ -304,7 +307,7 @@ namespace CheonMyeong.Enemies
         {
             if (pool != null)
             {
-                pendingSpawns.Enqueue(new PendingSpawn { Pool = pool, Position = position });
+                pendingSpawns.Enqueue(new PendingSpawn { Pool = pool, Position = OpenSpawnPoint(position) });
             }
         }
 
@@ -885,11 +888,32 @@ namespace CheonMyeong.Enemies
                 return false;
             }
 
-            pool.GetAndSpawn(PickSpawnPosition(spawnCenter.position));
+            pool.GetAndSpawn(OpenSpawnPoint(PickSpawnPosition(spawnCenter.position)));
             return true;
         }
 
         private const int SpawnPositionTries = 8;
+        private const float SpawnBodyRadius = 0.3f;
+
+        /// <summary>
+        /// 261123 - 160 맵: 화면 밖 둘레에서 나올 때 물 · 집 · 울타리 안(막힌 칸이나 플레이어에게 못 가는 고립 칸)이면
+        /// 가장 가까운 걸어갈 수 있는 칸으로 옮긴다. 그래도 안 되면 문으로. 길찾기 맵이 없는 씬은 그대로.
+        /// </summary>
+        private static Vector2 OpenSpawnPoint(Vector2 position)
+        {
+            MapFlowField field = MapFlowField.Instance;
+            if (field == null || field.IsReachable(position))
+            {
+                return position;
+            }
+            Vector2 free = field.ResolveStuck(position, SpawnBodyRadius);
+            if (field.IsReachable(free))
+            {
+                return free;
+            }
+            MapBounds bounds = MapBounds.Instance;
+            return bounds != null && bounds.HasGateSpawns ? bounds.RandomGatePoint() : free;
+        }
 
         /// <summary>
         /// 261027 추가 - 기획서 5-2 "화면 밖, 맵 경계 안쪽에서 등장". 플레이어 주변 반경 spawnRadius 원 위에서
@@ -899,7 +923,7 @@ namespace CheonMyeong.Enemies
         private Vector2 PickSpawnPosition(Vector2 center)
         {
             MapBounds bounds = MapBounds.Instance;
-            if (bounds != null && bounds.HasGateSpawns)
+            if (bounds != null && bounds.HasGateSpawns && Random.value < gateSpawnRatio)
             {
                 return bounds.RandomGatePoint(); // 261121 - 160 맵: 원귀는 무너진 문 3곳에서 밀려 들어온다(맵 배치 문서 v1.5)
             }

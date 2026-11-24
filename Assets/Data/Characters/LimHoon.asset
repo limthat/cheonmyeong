@@ -28,7 +28,7 @@ MonoBehaviour:
   critMultiplier: 1.5
   attackStyle: 1
   singleTarget: 1
-  meleePierce: 0
+  meleePierce: 1
   atkFrameCount: 13
   hitFrame: 5
   projectileCount: 1
@@ -36,6 +36,7 @@ MonoBehaviour:
   autoTargets: 0
   homingDegreesPerSecond: 0
   projectilePierce: 0
+  pierceFalloff: 0.5
   projectileSpinDegreesPerSecond: 0
   projectileRadius: 0.3
   projectileScale: 1

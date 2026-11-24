@@ -35,7 +35,8 @@ MonoBehaviour:
   projectileSpeed: 15.0
   autoTargets: 0
   homingDegreesPerSecond: 0
-  projectilePierce: 0
+  projectilePierce: 1
+  pierceFalloff: 0.5
   projectileSpinDegreesPerSecond: 0
   projectileRadius: 0.25
   projectileScale: 1

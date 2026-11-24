@@ -53,7 +53,12 @@ namespace CheonMyeong.Maps
             }
         }
 
-        /// <summary>pos에서 가까운 플레이어 쪽으로 가는 방향(정규화). 길이 없거나 맵 밖이면 false(직선 추격으로).</summary>
+        /// <summary>
+        /// pos에서 가까운 플레이어 쪽으로 가는 방향(정규화). 길이 없거나 맵 밖이면 false(직선 추격으로).
+        /// 261123 - 지원 피드백 "원귀가 일자로 접근": 예전엔 이웃 8칸 중 가장 가까운 한 칸만 골라 방향이 8가지(45도 단위)뿐이라
+        /// 같은 칸 근처 원귀가 똑같은 대각선 · 직선 위로 모였다. 이제 더 가까운 이웃 칸들을 '얼마나 더 가까운지'로 가중 평균해
+        /// 방향이 연속적으로 바뀐다(거리장 기울기). 대각선은 모서리를 깎지 않게 예전처럼 막힌 옆 칸이 있으면 뺀다.
+        /// </summary>
         public bool TryGetDirection(Vector2 pos, out Vector2 direction)
         {
             direction = Vector2.zero;
@@ -68,6 +73,7 @@ namespace CheonMyeong.Maps
             {
                 return false;
             }
+            Vector2 sum = Vector2.zero;
             int best = -1;
             ushort bestDistance = here;
             for (int n = 0; n < 8; n++)
@@ -83,6 +89,15 @@ namespace CheonMyeong.Maps
                     continue; // 대각선으로 모서리를 깎아 지나가지 않게
                 }
                 ushort d = distance[ny * width + nx];
+                if (d >= here)
+                {
+                    continue;
+                }
+                Vector2 to = CellCenter(nx, ny) - pos;
+                if (to.sqrMagnitude > 0.000001f)
+                {
+                    sum += to.normalized * (here - d);
+                }
                 if (d < bestDistance)
                 {
                     bestDistance = d;
@@ -93,14 +108,48 @@ namespace CheonMyeong.Maps
             {
                 return false;
             }
-            Vector2 target = CellCenter(cx + NeighborX[best], cy + NeighborY[best]);
-            Vector2 to = target - pos;
-            if (to.sqrMagnitude < 0.000001f)
+            if (sum.sqrMagnitude < 0.000001f)
+            {
+                Vector2 to = CellCenter(cx + NeighborX[best], cy + NeighborY[best]) - pos;
+                if (to.sqrMagnitude < 0.000001f)
+                {
+                    return false;
+                }
+                sum = to;
+            }
+            direction = sum.normalized;
+            return true;
+        }
+
+        /// <summary>
+        /// 261123 - from → to 직선이 막힌 칸(물 · 물체 · 구덩이)을 지나지 않는지. 반 칸 간격으로 짚어 본다.
+        /// 원귀가 길찾기 없이 곧장 쫓아가도 되는지(벽을 끼고 돌 필요가 없는지) 판단용 - 원귀마다 0.25초에 한 번 정도만 부른다.
+        /// </summary>
+        public bool HasClearLine(Vector2 from, Vector2 to)
+        {
+            EnsureBuilt();
+            float length = Vector2.Distance(from, to);
+            int steps = Mathf.Max(1, Mathf.CeilToInt(length / (cellSize * 0.5f)));
+            for (int i = 1; i <= steps; i++)
+            {
+                if (IsBlockedFast(Vector2.Lerp(from, to, i / (float)steps)))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>261123 - 플레이어에게 걸어서 갈 수 있는 빈 칸인지(막힘 · 울타리 안 고립 지역 제외). 원귀 생성 위치 검사용.</summary>
+        public bool IsReachable(Vector2 pos)
+        {
+            EnsureFresh();
+            if (!ToCell(pos, out int cx, out int cy))
             {
                 return false;
             }
-            direction = to.normalized;
-            return true;
+            int index = cy * width + cx;
+            return !blocked[index] && distance[index] != Unreached;
         }
 
         /// <summary>막힌 칸인지(맵 밖은 막힘).</summary>

@@ -19,7 +19,7 @@ namespace CheonMyeong.Boss
         [Tooltip("5웨이브 중간 보스 체력(억쇠가 대신 나올 때만) - 기획서 v1.1 3,000(1칸). 5웨이브는 어린 억쇠(KidBossStatsSO)가 맡는다.")]
         [Min(1f)] public float midMaxHealth = 3000f;
 
-        [Tooltip("최종전 칸당 체력 - 기획서 v1.1 8,000 × 3칸 = 24,000.")]
+        [Tooltip("최종전 칸당 체력 - 기획서 v1.1 8,000 × 3칸 = 24,000. 261123 지원 피드백으로 에셋은 -20%(6,400 × 3 = 19,200).")]
         [Min(1f)] public float finalHealthPerBar = 8000f;
         [Min(1)] public int finalBars = 3;
 

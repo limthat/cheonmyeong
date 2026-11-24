@@ -202,8 +202,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   stats: {fileID: 11400000, guid: 153efd9a6cb09cd48bddc4a57aa62cfb, type: 2}
   spriteRenderer: {fileID: 7846937431806250168}
-  separationRadius: 0.8
-  separationWeight: 1.2
+  separationRadius: 1.1
+  separationWeight: 2
+  sidestepWeight: 1
   animator: {fileID: 2680419963790327507}
 --- !u!114 &1207763432184600259
 MonoBehaviour:

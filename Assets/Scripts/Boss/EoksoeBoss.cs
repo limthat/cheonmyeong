@@ -313,8 +313,12 @@ namespace CheonMyeong.Boss
             Instance = this;
             visible.OnValueChanged += HandleVisibleChanged;
             realmActive.OnValueChanged += HandleRealmChanged;
+            realmPlayerId.OnValueChanged += HandleRealmTargetChanged;
+            realmCenter.OnValueChanged += HandleRealmCenterChanged;
             animState.OnValueChanged += HandleAnimSound;
             pitCenters.OnListChanged += HandlePitsChanged;
+            realmVisualDirty = realmActive.Value; // 늦게 들어온 클라이언트도 열린 차원을 그린다
+            EditorSyncShaders(true);
             RebuildPits();
             ApplyVisible(visible.Value);
             if (IsServer)
@@ -327,8 +331,12 @@ namespace CheonMyeong.Boss
         {
             visible.OnValueChanged -= HandleVisibleChanged;
             realmActive.OnValueChanged -= HandleRealmChanged;
+            realmPlayerId.OnValueChanged -= HandleRealmTargetChanged;
+            realmCenter.OnValueChanged -= HandleRealmCenterChanged;
             animState.OnValueChanged -= HandleAnimSound;
             pitCenters.OnListChanged -= HandlePitsChanged;
+            realmVisualDirty = false;
+            EditorSyncShaders(false);
             BossPitField.Clear();
             SetRealmVisual(false);
             CheonMyeong.Audio.GameAudio.Stop(realmAmbience);
@@ -347,6 +355,7 @@ namespace CheonMyeong.Boss
 
         public override void OnDestroy()
         {
+            EditorSyncShaders(false); // 플레이를 끝내며 바로 파괴될 때도 에디터 설정을 되돌린다
             if (Instance == this)
             {
                 Instance = null;
@@ -2056,6 +2065,11 @@ namespace CheonMyeong.Boss
             UpdateHealthBar();
             UpdateCoinViews();
             UpdateCloneView();
+            if (realmVisualDirty)
+            {
+                realmVisualDirty = false;
+                SetRealmVisual(realmActive.Value);
+            }
             UpdateRealmFades();
             UpdateWarnIcon();
             UpdateTargetMark();
@@ -2392,9 +2406,58 @@ namespace CheonMyeong.Boss
 
         private CheonMyeong.Audio.SoundHandle realmAmbience;
 
+        // 261123 - 지원 버그(멀티): 클라이언트에서 끌려간 본인 화면에 차원이 안 그려지고 자기 몸이 영혼 불로 보였다.
+        // NGO는 NetworkVariable 변경을 선언 순서대로 읽으며 그 자리에서 OnValueChanged를 부른다 - realmActive가 realmPlayerId ·
+        // realmCenter보다 먼저 선언돼 있어 콜백 시점엔 대상 ID가 아직 옛 값(0)이라 "나는 바깥"으로 판단했다(호스트는 서버가 값을
+        // 순서대로 넣어 문제없음). 그래서 세 값 중 무엇이 바뀌든 표시만 '다시 그림' 표시해 두고, 같은 메시지의 값이 다 들어온 뒤
+        // Update에서 한 번만 그린다.
+        private bool realmVisualDirty;
+
+        // 261124 - 예섭 버그 "끌려가면 잠깐 하늘색 화면": 에디터의 비동기 셰이더 컴파일은 처음 쓰는 셰이더 변형을 컴파일하는 동안
+        // 하늘색(시안) 임시 셰이더로 그린다. 차원 막(RealmMask)은 화면을 다 덮어서 그게 하늘색 화면으로 보였다.
+        // 보스가 있는 동안만 에디터에서 동기 컴파일로 바꿔(첫 사용 때 잠깐 멈출 뿐 하늘색은 안 나옴) 끝나면 원래 설정으로 돌린다.
+        // 빌드는 셰이더가 미리 컴파일돼 있어 이 문제가 없다.
+#if UNITY_EDITOR
+        private static bool editorAsyncOverridden;
+        private static bool editorAsyncPrevious;
+#endif
+
+        private static void EditorSyncShaders(bool on)
+        {
+#if UNITY_EDITOR
+            if (on && !editorAsyncOverridden)
+            {
+                editorAsyncPrevious = UnityEditor.ShaderUtil.allowAsyncCompilation;
+                UnityEditor.ShaderUtil.allowAsyncCompilation = false;
+                editorAsyncOverridden = true;
+            }
+            else if (!on && editorAsyncOverridden)
+            {
+                UnityEditor.ShaderUtil.allowAsyncCompilation = editorAsyncPrevious;
+                editorAsyncOverridden = false;
+            }
+#endif
+        }
+
+        private void HandleRealmTargetChanged(ulong previous, ulong current)
+        {
+            if (realmActive.Value)
+            {
+                realmVisualDirty = true;
+            }
+        }
+
+        private void HandleRealmCenterChanged(Vector2 previous, Vector2 current)
+        {
+            if (realmActive.Value)
+            {
+                realmVisualDirty = true;
+            }
+        }
+
         private void HandleRealmChanged(bool previous, bool current)
         {
-            SetRealmVisual(current);
+            realmVisualDirty = true;
             // 261116 - 정신병 차원: 들어가고 나올 때 휘감기는 소리, 안에 있는 동안 먹먹한 환경음(반복).
             if (current != previous)
             {
@@ -2521,9 +2584,8 @@ namespace CheonMyeong.Boss
             if (flame != null)
             {
                 Transform cloneTransform = cloneView != null && cloneView.activeSelf ? cloneView.transform : null;
-                float cloneScale = cloneTransform != null ? Mathf.Abs(cloneTransform.localScale.x) : 1f;
-                PlaceSoulFlame(ref playerFlame, flame, insideTransform, PlayerFlameColor, PlayerFlameSize, "RealmPlayerFlame");
-                PlaceSoulFlame(ref cloneFlame, flame, cloneTransform, CloneFlameColor, CloneFlameSize * cloneScale, "RealmCloneFlame");
+                PlaceSoulFlame(ref playerFlame, flame, insideTransform, PlayerFlameColor, SoulFlameSize, PlayerFlameBaseY, "RealmPlayerFlame");
+                PlaceSoulFlame(ref cloneFlame, flame, cloneTransform, CloneFlameColor, SoulFlameSize, CloneFlameBaseY, "RealmCloneFlame");
             }
         }
 
@@ -2881,10 +2943,14 @@ namespace CheonMyeong.Boss
         // ---------- 261122 2차 - 바깥 화면 영혼 불 ----------
         private const string SoulFlameMaterialPath = "SoulFlame"; // Assets/Resources/SoulFlame.mat
         private const int SoulFlameSortingOrder = 50;
-        private static readonly Color PlayerFlameColor = new Color(0.33f, 0.72f, 0.96f, 1f);  // 푸른 넋(도트 - 알파 1로 또렷하게)
-        private static readonly Color CloneFlameColor = new Color(0.66f, 0.36f, 0.95f, 1f);   // 보랏빛 분신
-        private static readonly Vector2 PlayerFlameSize = new Vector2(0.9f, 1.35f);
-        private static readonly Vector2 CloneFlameSize = new Vector2(1.3f, 1.9f);
+        // 261124 - 예섭: 아군 = 하늘색, 억쇠(분신) = 보라색. 셰이더가 흰빛 쪽으로 연하게 그라데이션한다.
+        private static readonly Color PlayerFlameColor = new Color(0.40f, 0.78f, 1.00f, 1f);  // 하늘색 넋(아군)
+        private static readonly Color CloneFlameColor = new Color(0.68f, 0.42f, 1.00f, 1f);   // 보라 넋(억쇠 분신)
+        // 261123 - 예섭: 영혼 불은 캐릭터 키(약 1유닛)의 절반, 플레이어 · 분신(보스) 같은 크기에 색만 다르게.
+        private static readonly Vector2 SoulFlameSize = new Vector2(0.34f, 0.5f);
+        // 불꽃 밑동 높이(대상 피벗 기준). 플레이어 피벗은 얼굴 높이라 몸통 가운데(-0.3)에 오게 -0.55, 분신은 피벗이 발치라 거의 그대로.
+        private const float PlayerFlameBaseY = -0.55f;
+        private const float CloneFlameBaseY = -0.05f;
         private static bool soulFlameChecked;
         private static Material soulFlameMaterial;
         private static Sprite soulFlameSprite;
@@ -2911,7 +2977,7 @@ namespace CheonMyeong.Boss
             return soulFlameMaterial;
         }
 
-        private static void PlaceSoulFlame(ref SpriteRenderer flame, Material material, Transform target, Color color, Vector2 size, string name)
+        private static void PlaceSoulFlame(ref SpriteRenderer flame, Material material, Transform target, Color color, Vector2 size, float baseY, string name)
         {
             if (target == null)
             {
@@ -2934,7 +3000,7 @@ namespace CheonMyeong.Boss
                 flame.gameObject.SetActive(true);
             }
             Vector3 p = target.position;
-            flame.transform.position = new Vector3(p.x, p.y - 0.05f, 0f);
+            flame.transform.position = new Vector3(p.x, p.y + baseY, 0f);
             flame.transform.localScale = new Vector3(size.x, size.y, 1f);
             flame.color = color;
         }

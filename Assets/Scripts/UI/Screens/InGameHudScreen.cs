@@ -340,6 +340,7 @@ namespace CheonMyeong.UI.Screens
             {
                 return;
             }
+            UpdateExpValueText(currentExp, requiredExp); // 261123 - 수치 표기(비율이 같아도 숫자는 바뀔 수 있음)
 
             float ratio = Mathf.Clamp01((float)currentExp / requiredExp);
             if (Mathf.Approximately(cachedExpRatio, ratio))

@@ -294,7 +294,7 @@ MonoBehaviour:
     - {fileID: 6333184282940915429, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
     - {fileID: -2893553209880212985, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
     roleTags: "\uADFC\uC811 \xB7 \uB2E8\uC77C \xB7 \uBCF4\uC2A4"
-    basicAttackDescription: "\uC0BC\uC9C0\uCC3D\uC73C\uB85C \uC55E\uC758 \uD55C \uB9C8\uB9AC\uB97C \uBB35\uC9C1\uD558\uAC8C \uCC0C\uB978\uB2E4."
+    basicAttackDescription: "\uC0BC\uC9C0\uCC3D\uC73C\uB85C \uC55E\uC758 \uD55C \uB9C8\uB9AC\uB97C \uBB35\uC9C1\uD558\uAC8C \uCC0C\uB978\uB2E4. \uBC14\uB85C \uB4A4 \uD55C \uB9C8\uB9AC\uAE4C\uC9C0 \uAFF0\uB6AB\uB294\uB2E4(\uC808\uBC18 \uD53C\uD574)."
     passiveDescription: "\uB3D9\uB8CC \uCCB4\uB825 30% \uC774\uD558 \u2192 \uBC1B\uB294 \uD53C\uD574 -20% \xB7 \uB3D9\uB8CC \uCABD \uC774\uB3D9 \uC18D\uB3C4 +15%"
     atkFrames:
     - {fileID: 5418702631838957823, guid: 87e68de39b29ad840bef75870e1b1665, type: 3}
@@ -407,7 +407,7 @@ MonoBehaviour:
     previewHitFrame: 6
     previewSlashFrames: []
     roleTags: "\uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C \xB7 \uCE58\uBA85"
-    basicAttackDescription: "\uC2E0\uCE7C\uC744 \uB358\uC838 \uD55C \uB9C8\uB9AC\uB97C \uD06C\uAC8C \uB178\uB9B0\uB2E4. \uCE58\uBA85\uD0C0 \uD655\uB960\uC774 \uB192\uB2E4."
+    basicAttackDescription: "\uC2E0\uCE7C\uC744 \uB358\uC838 \uD55C \uB9C8\uB9AC\uB97C \uD06C\uAC8C \uB178\uB9B0\uB2E4. \uCE58\uBA85\uD0C0 \uD655\uB960\uC774 \uB192\uB2E4. \uB9DE\uD788\uBA74 \uADFC\uCC98 \uC6D0\uADC0\uB85C \uB450 \uBC88 \uD295\uAE34\uB2E4(\uC808\uBC18 \uD53C\uD574)."
     passiveDescription: "\uC6E8\uC774\uBE0C \uC2DC\uC791\uB9C8\uB2E4 \uC810\uAD18 (\uAE38 50%) \xB7 \uAE38: \uCE58\uBA85 +10% / \uD749: \uBC1B\uB294 \uD53C\uD574 +10%, \uB3D9\uB8CC \uCE58\uBA85 +10%"
     atkFrames:
     - {fileID: 3188984892568085655, guid: 7435390de07e450429702d593689dff6, type: 3}
@@ -516,7 +516,7 @@ MonoBehaviour:
     previewHitFrame: 7
     previewSlashFrames: []
     roleTags: "\uC6D0\uAC70\uB9AC \xB7 \uB2E8\uC77C \xB7 \uC800\uACA9"
-    basicAttackDescription: "\uAC00\uC7A5 \uBA40\uB9AC, \uAC00\uC7A5 \uBE60\uB974\uAC8C \uD654\uC0B4\uC744 \uC3DC\uB2E4."
+    basicAttackDescription: "\uAC00\uC7A5 \uBA40\uB9AC, \uAC00\uC7A5 \uBE60\uB974\uAC8C \uD654\uC0B4\uC744 \uC3DC\uB2E4. \uD654\uC0B4\uC774 \uD55C \uB9C8\uB9AC\uB97C \uAFF0\uB6AB\uB294\uB2E4(\uC808\uBC18 \uD53C\uD574)."
     passiveDescription: "8\uCE78 \uB118\uAC8C \uB5A8\uC5B4\uC9C4 \uC6D0\uADC0\uC5D0\uAC8C \uC8FC\uB294 \uD53C\uD574 +15%"
     atkFrames:
     - {fileID: -7006768764116336250, guid: ce50661c8235e1344a2585a6919cbbb8, type: 3}
@@ -764,7 +764,7 @@ MonoBehaviour:
     - {fileID: -6447486345248750025, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
     - {fileID: 8319808282600326277, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
     roleTags: "\uADFC\uC811 \xB7 \uB2E8\uC77C \xB7 \uAD6C\uC6D0"
-    basicAttackDescription: "\uAC00\uC7A5 \uAE34 \uB9AC\uCE58\uB85C \uC55E\uC758 \uD55C \uB9C8\uB9AC\uB97C \uAE38\uAC8C \uCC0C\uB978\uB2E4."
+    basicAttackDescription: "\uAC00\uC7A5 \uAE34 \uB9AC\uCE58\uB85C \uC55E\uC758 \uD55C \uB9C8\uB9AC\uB97C \uAE38\uAC8C \uCC0C\uB978\uB2E4. \uBC14\uB85C \uB4A4 \uD55C \uB9C8\uB9AC\uAE4C\uC9C0 \uAFF0\uB6AB\uB294\uB2E4(\uC808\uBC18 \uD53C\uD574)."
     passiveDescription: "\uB3D9\uB8CC\uAC00 \uB9DE\uC73C\uBA74 3\uCD08 \uB3D9\uC548 \uC774\uB3D9 \uC18D\uB3C4 +20% \xB7 \uB3D9\uB8CC\uAC00 \uC4F0\uB7EC\uC9C0\uBA74 \uADF8 \uC6E8\uC774\uBE0C \uB3D9\uC548 \uACF5\uACA9\uB825 +20%"
     atkFrames:
     - {fileID: -324862363130059849, guid: a3c6115e1f11d2d43bdfc98a43d3ed3b, type: 3}
