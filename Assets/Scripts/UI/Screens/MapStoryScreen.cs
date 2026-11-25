@@ -515,7 +515,7 @@ namespace CheonMyeong.UI.Screens
                 }
                 Sprite[] frames = p.Entry.lobbyIdleFrames;
                 p.AnimTime += dt;
-                float fps = p.Entry.lobbyIdleFps > 0f ? p.Entry.lobbyIdleFps : DefaultIdleFps;
+                float fps = (p.Entry.lobbyIdleFps > 0f ? p.Entry.lobbyIdleFps : DefaultIdleFps) * CheonMyeong.Data.CharacterCatalogSO.IdleSpeedScale;
                 int frame = (int)(p.AnimTime * fps) % frames.Length;
                 if (frame != p.ShownFrame)
                 {

@@ -23,9 +23,18 @@ namespace CheonMyeong.UI.Screens
 
         [SerializeField] private Text tipText;
         [SerializeField] private Text progressText;
+        [Tooltip("261125 - 로딩이 빨리 끝나도 이 시간(초)만큼은 로딩 화면을 보여준다.")]
+        [SerializeField, Min(0f)] private float minimumShowSeconds = 3f;
+
+        private float shownAt;
+        private bool sceneReady;
+        private bool advanced;
 
         private void OnEnable()
         {
+            shownAt = Time.unscaledTime;
+            sceneReady = false;
+            advanced = false;
             if (tipText != null)
             {
                 tipText.text = Tips[Random.Range(0, Tips.Length)];
@@ -50,6 +59,11 @@ namespace CheonMyeong.UI.Screens
             if (loader != null && !string.IsNullOrEmpty(loader.LoadedGameplayScene)
                 && network != null && network.IsConnectedClient && !network.IsServer)
             {
+                sceneReady = true;
+            }
+
+            if (sceneReady && !advanced && Time.unscaledTime - shownAt >= minimumShowSeconds)
+            {
                 AdvanceToStory();
             }
         }
@@ -64,7 +78,7 @@ namespace CheonMyeong.UI.Screens
 
         private void HandleGameplaySceneLoaded(string sceneName)
         {
-            AdvanceToStory();
+            sceneReady = true;
         }
 
         /// <summary>0~1 진행률 - 실제 로딩 진행 신호가 생기면 외부에서 호출.</summary>
@@ -79,6 +93,7 @@ namespace CheonMyeong.UI.Screens
         /// <summary>MapStory로 전환 - 위 HandleGameplaySceneLoaded가 정상 경로로 호출하지만, 공개로 둬서 디버그/수동 전환에도 쓸 수 있게 한다.</summary>
         public void AdvanceToStory()
         {
+            advanced = true;
             UIFlowManager.Instance.ShowScreen(UIFlowManager.MapStory);
         }
     }

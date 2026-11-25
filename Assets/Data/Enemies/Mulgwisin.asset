@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Data.EnemyStatsSO
   enemyId: mulgwisin
   displayName: "\uBB3C\uADC0\uC2E0"
-  visualScale: 1.5
+  visualScale: 1.8
   maxHealth: 220
   moveSpeed: 2
   contactDamage: 10

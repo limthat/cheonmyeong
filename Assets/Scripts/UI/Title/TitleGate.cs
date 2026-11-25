@@ -26,6 +26,8 @@ namespace CheonMyeong.UI.Title
         }
 
         [SerializeField] private Sprite[] frames;
+        [Tooltip("261125 - 닫힌 문 위쪽 여백의 게임 제목(천명). 문이 열리기 시작하면 바로 끈다.")]
+        [SerializeField] private GameObject titleLogo;
         [SerializeField] private TalismanTrack[] talismanTracks;
         [Tooltip("문 열림 재생 속도 - 프로젝트 공통 100ms(10fps).")]
         [SerializeField, Min(1f)] private float framesPerSecond = 10f;
@@ -51,6 +53,7 @@ namespace CheonMyeong.UI.Title
 
         private void OnEnable()
         {
+            SetTitleLogo(true);
             ShowFrame(0);
             FitToCamera(true);
         }
@@ -76,6 +79,7 @@ namespace CheonMyeong.UI.Title
             {
                 return;
             }
+            SetTitleLogo(false);
             opening = StartCoroutine(OpenRoutine(onOpened));
             CheonMyeong.Audio.GameAudio.Play(CheonMyeong.Audio.SoundKeys.UiGateOpen);
         }
@@ -95,6 +99,14 @@ namespace CheonMyeong.UI.Title
             }
             opening = null;
             onOpened?.Invoke();
+        }
+
+        private void SetTitleLogo(bool visible)
+        {
+            if (titleLogo != null && titleLogo.activeSelf != visible)
+            {
+                titleLogo.SetActive(visible);
+            }
         }
 
         private void ShowFrame(int index)

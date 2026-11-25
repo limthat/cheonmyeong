@@ -17,6 +17,9 @@ namespace CheonMyeong.Data
     [CreateAssetMenu(fileName = "CharacterCatalog", menuName = "CheonMyeong/Character Catalog")]
     public class CharacterCatalogSO : ScriptableObject
     {
+        /// <summary>261125 - 대기(아이들) 모션 재생 배율. 인게임 · 로비 · 모집(대기실) · 컷씬 · 결과 화면 공통.</summary>
+        public const float IdleSpeedScale = 0.6f;
+
         [Serializable]
         public class CharacterEntry
         {
@@ -34,6 +37,7 @@ namespace CheonMyeong.Data
 
             public Sprite[] lobbyIdleFrames = Array.Empty<Sprite>();
             [Min(0.1f)] public float lobbyIdleFps = 8f;
+            public float IdlePlaybackFps => lobbyIdleFps * IdleSpeedScale;
             public Sprite[] lobbyWalkFrames = Array.Empty<Sprite>();
             [Min(0.1f)] public float lobbyWalkFps = 10f;
 

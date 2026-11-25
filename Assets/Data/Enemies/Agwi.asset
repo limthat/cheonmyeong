@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Data.EnemyStatsSO
   enemyId: agwi
   displayName: "\uC544\uADC0"
-  visualScale: 1.5
+  visualScale: 1.8
   maxHealth: 260
   moveSpeed: 2.25
   contactDamage: 12

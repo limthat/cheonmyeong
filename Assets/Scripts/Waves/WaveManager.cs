@@ -841,6 +841,12 @@ namespace CheonMyeong.Waves
                 return;
             }
 
+            // 261125 - 클리어한 사람(방장 · 참가자 각자 PC)에게 스토리 저장소 1화를 연다.
+            if (current == PhaseCleared)
+            {
+                CheonMyeong.Data.StoryProgressStore.MarkCleared(CheonMyeong.Data.StoryProgressStore.EpisodeEoksoe);
+            }
+
             RewardScreen rewardScreen = FindFirstObjectByType<RewardScreen>(FindObjectsInactive.Include);
             if (rewardScreen != null)
             {

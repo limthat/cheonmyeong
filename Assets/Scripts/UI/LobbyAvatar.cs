@@ -261,7 +261,7 @@ namespace CheonMyeong.UI
             }
 
             Sprite[] frames = isMoving && HasFrames(entry.lobbyWalkFrames) ? entry.lobbyWalkFrames : entry.lobbyIdleFrames;
-            float fps = isMoving && HasFrames(entry.lobbyWalkFrames) ? entry.lobbyWalkFps : entry.lobbyIdleFps;
+            float fps = isMoving && HasFrames(entry.lobbyWalkFrames) ? entry.lobbyWalkFps : entry.IdlePlaybackFps;
             if (!HasFrames(frames))
             {
                 return;

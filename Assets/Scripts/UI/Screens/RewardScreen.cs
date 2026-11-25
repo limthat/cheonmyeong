@@ -215,7 +215,7 @@ namespace CheonMyeong.UI.Screens
                 }
                 if (entry != null && entry.lobbyIdleFrames != null && entry.lobbyIdleFrames.Length > 0)
                 {
-                    Sprite frame = entry.lobbyIdleFrames[(int)(playerAnimTime * 10f) % entry.lobbyIdleFrames.Length];
+                    Sprite frame = entry.lobbyIdleFrames[(int)(playerAnimTime * entry.IdlePlaybackFps) % entry.lobbyIdleFrames.Length];
                     if (image.sprite != frame)
                     {
                         image.sprite = frame;

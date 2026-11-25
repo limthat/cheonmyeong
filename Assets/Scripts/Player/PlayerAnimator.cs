@@ -25,6 +25,7 @@ namespace CheonMyeong.Player
         private const string IdleStateName = "Idle";
 
         private const float LoopFrameSeconds = 0.1f;
+        private const float IdleFrameSeconds = LoopFrameSeconds / CharacterCatalogSO.IdleSpeedScale;
         private const float DieFrameSeconds = 0.3f;
 
         [SerializeField] private Animator animator;
@@ -165,7 +166,7 @@ namespace CheonMyeong.Player
             Sprite[] loop = moving ? walkFrames : idleFrames;
             SetLoopState(moving ? 1 : 0);
             loopTime += dt;
-            spriteRenderer.sprite = loop[(int)(loopTime / LoopFrameSeconds) % loop.Length];
+            spriteRenderer.sprite = loop[(int)(loopTime / (moving ? LoopFrameSeconds : IdleFrameSeconds)) % loop.Length];
         }
 
         private void SetLoopState(int state)

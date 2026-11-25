@@ -466,7 +466,7 @@ namespace CheonMyeong.UI.Screens
                 return;
             }
             heroAnimTime += Time.unscaledDeltaTime;
-            Sprite frame = entry.lobbyIdleFrames[(int)(heroAnimTime * 10f) % entry.lobbyIdleFrames.Length];
+            Sprite frame = entry.lobbyIdleFrames[(int)(heroAnimTime * entry.IdlePlaybackFps) % entry.lobbyIdleFrames.Length];
             if (heroImage.sprite != frame)
             {
                 heroImage.sprite = frame;
