@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: "\uBC15\uADDC\uD601"
   maxHealth: 170
   moveSpeed: 4.5
-  attackPower: 25
+  attackPower: 43
   attacksPerSecond: 0.9
   attackRange: 2.4
   attackAwarenessRangeMultiplier: 1

@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyId: yeokgwi
   displayName: "\uC5ED\uADC0"
   visualScale: 1.8
-  maxHealth: 180
+  maxHealth: 160
   moveSpeed: 1.8333334
   contactDamage: 8
   contactDamageInterval: 1

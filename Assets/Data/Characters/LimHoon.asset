@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: "\uC784\uD6C8"
   maxHealth: 135
   moveSpeed: 5.0
-  attackPower: 18
+  attackPower: 35
   attacksPerSecond: 1.24
   attackRange: 3
   attackAwarenessRangeMultiplier: 1

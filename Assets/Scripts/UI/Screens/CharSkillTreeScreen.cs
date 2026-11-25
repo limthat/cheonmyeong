@@ -395,9 +395,9 @@ namespace CheonMyeong.UI.Screens
                 if (stats != null)
                 {
                     builder.Append("<color=#9e1f1f><b>능력치</b></color> 체력 ").Append((stats.maxHealth * SpiritLevel.HealthScale(level)).ToString("0"))
-                        .Append(" · 공격력 ").Append((stats.attackPower * SpiritLevel.AttackScale(level)).ToString("0.#"))
+                        .Append(" · 공격력 ").Append((stats.attackPower * SpiritLevel.AttackScale(level, entry.characterId)).ToString("0.#"))
                         .Append(" · 이동 ").Append((stats.moveSpeed * 60f).ToString("0")).Append('\n')
-                        .Append("공속 ").Append((stats.attacksPerSecond * SpiritLevel.AttackSpeedScale(level)).ToString("0.##")).Append("회/초 · 사거리 ")
+                        .Append("공속 ").Append((stats.attacksPerSecond * SpiritLevel.AttackSpeedScale(level, entry.characterId)).ToString("0.##")).Append("회/초 · 사거리 ")
                         .Append(stats.attackRange.ToString("0.#")).Append("칸 · 치명 ").Append((stats.critChance * 100f).ToString("0")).Append('%');
                 }
                 heroInfoText.text = builder.ToString();

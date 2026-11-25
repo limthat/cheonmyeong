@@ -138,9 +138,9 @@ namespace CheonMyeong.UI.Screens
             if (stats != null)
             {
                 SetPair(healthNow, healthNext, stats.maxHealth * SpiritLevel.HealthScale(level), stats.maxHealth * SpiritLevel.HealthScale(next), "0", max);
-                SetPair(attackNow, attackNext, stats.attackPower * SpiritLevel.AttackScale(level), stats.attackPower * SpiritLevel.AttackScale(next), "0.#", max);
-                SetPair(speedNow, speedNext, stats.attacksPerSecond * SpiritLevel.AttackSpeedScale(level),
-                    stats.attacksPerSecond * SpiritLevel.AttackSpeedScale(next), "0.00", max, "회/초");
+                SetPair(attackNow, attackNext, stats.attackPower * SpiritLevel.AttackScale(level, entry.characterId), stats.attackPower * SpiritLevel.AttackScale(next, entry.characterId), "0.#", max);
+                SetPair(speedNow, speedNext, stats.attacksPerSecond * SpiritLevel.AttackSpeedScale(level, entry.characterId),
+                    stats.attacksPerSecond * SpiritLevel.AttackSpeedScale(next, entry.characterId), "0.00", max, "회/초");
             }
 
             if (cost != null)

@@ -229,6 +229,11 @@ namespace CheonMyeong.Player
                 ComputeNodes(ref self, ref aura);
                 ComputeHero(ref self, ref aura, ref active);
                 ComputeAugments(ref self);
+                if (character != null)
+                {
+                    self.Shield += SpiritLevel.ShieldBonus(character.Level);
+                    self.Crit += SpiritLevel.CritBonus(character.Level);
+                }
             }
             else if (ropeShown.Value)
             {

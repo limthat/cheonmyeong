@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Eoksoe
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Boss.BossStatsSO
   displayName: "\uC5B5\uC1E0"
-  midMaxHealth: 3000
-  finalHealthPerBar: 3000
+  midMaxHealth: 3500
+  finalHealthPerBar: 2000
   finalBars: 3
   midScale: 1
   finalScale: 2
@@ -26,10 +26,10 @@ MonoBehaviour:
   landingSquash: 0.18
   leapWindupSeconds: 0.18
   basicDamage:
+  - 15
   - 20
   - 25
-  - 30
-  - 40
+  - 35
   basicCooldown:
   - 2
   - 1.8
@@ -67,9 +67,9 @@ MonoBehaviour:
   - 5
   grabSlamDamage:
   - 20
-  - 30
-  - 60
-  - 120
+  - 25
+  - 45
+  - 90
   grabRange: 2
   grabThrowMultiplier: 2
   grabSecondsPerTurn: 0.6
@@ -100,3 +100,14 @@ MonoBehaviour:
   midDefeatSoul: 125
   midDefeatGold: 20
   midFailGrudge: 250
+  healthByStage:
+  - 1
+  - 1.5
+  - 2
+  - 4
+  quakeDamage:
+  - 30
+  - 35
+  - 45
+  - 60
+  finalDamageMultiplier: 1

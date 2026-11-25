@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyId: agwi
   displayName: "\uC544\uADC0"
   visualScale: 1.8
-  maxHealth: 260
+  maxHealth: 320
   moveSpeed: 2.25
   contactDamage: 12
   contactDamageInterval: 1

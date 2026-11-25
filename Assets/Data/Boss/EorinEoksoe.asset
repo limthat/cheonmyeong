@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EorinEoksoe
   m_EditorClassIdentifier: Assembly-CSharp::CheonMyeong.Boss.KidBossStatsSO
   displayName: "\uC5B4\uB9B0 \uC5B5\uC1E0"
-  maxHealth: 3000
+  maxHealth: 3500
   moveSpeed: 2.6666667
   bodyRadius: 0.35
   appearSeconds: 1
@@ -67,3 +67,13 @@ MonoBehaviour:
   defeatSoul: 125
   defeatGold: 20
   failGrudge: 250
+  healthByStage:
+  - 1
+  - 1.5
+  - 2.5
+  - 4
+  damageByStage:
+  - 1
+  - 1.5
+  - 2.5
+  - 4

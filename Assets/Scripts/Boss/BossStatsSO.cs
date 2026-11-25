@@ -38,7 +38,7 @@ namespace CheonMyeong.Boss
 
         [Header("원한 단계별 기본 스펙 (261122 예섭 요청 · 제안값)")]
         [Tooltip("체력 배율(맑음 · 짙음 · 한 · 폭주) - 보스전 시작 때의 단계로 정한다. 분신 체력도 이 체력 기준이라 같이 오른다.")]
-        public float[] healthByStage = { 1f, 1.15f, 1.3f, 1.5f };
+        public float[] healthByStage = { 1f, 1.5f, 2f, 4f }; // 261125 - 기획서 v1.3 조정안(×1 · 1.5 · 2 · 4)
         [Tooltip("이동 속도 배율 - 지금 단계로 계속 바뀐다.")]
         public float[] moveSpeedByStage = { 1f, 1.05f, 1.1f, 1.2f };
 
@@ -65,7 +65,7 @@ namespace CheonMyeong.Boss
         [Tooltip("최종전 뛰는 횟수 배율 - 작을수록 쿵 · 쿵 간격이 길다.")]
         [Min(0.1f)] public float finalHopRateMultiplier = 0.6f;
         [Tooltip("최종전 피해 배율(모든 기술 · 분신) - 미정.")]
-        [Min(0f)] public float finalDamageMultiplier = 1.5f;
+        [Min(0f)] public float finalDamageMultiplier = 1f; // 261125 - 기획서 v1.3 표 피해가 실제 피해가 되게 1
         [Tooltip("최종전 연출 배율(흔들림 · 히트스톱 · 이펙트 크기 · 밀어내기).")]
         [Min(1f)] public float finalImpactMultiplier = 2.5f;
         [Tooltip("최종전 발걸음 흔들림(유닛) - 착지할 때마다 화면이 울린다. 중간 보스는 없음.")]
@@ -170,7 +170,7 @@ namespace CheonMyeong.Boss
         [Tooltip("예고 시간(초) - QUAKE 71번 장에서 이만큼 멈춘다.")]
         public float[] quakeTelegraphSeconds = { 1.5f, 1.4f, 1.3f, 1f };
         [Tooltip("바깥 원 피해(HP) - 기획서 값 그대로(최종전 피해 배율 안 곱함).")]
-        public float[] quakeDamage = { 40f, 50f, 60f, 80f };
+        public float[] quakeDamage = { 30f, 35f, 45f, 60f }; // 261125 - 기획서 v1.3 조정안
         [Tooltip("연속 횟수.")]
         public int[] quakeChain = { 1, 1, 2, 3 };
         [Tooltip("쿨타임(초).")]

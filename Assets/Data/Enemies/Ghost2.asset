@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyId: dalgyal_gwisin
   displayName: "\uB2EC\uAC40\uADC0\uC2E0"
   maxHealth: 10
-  moveSpeed: 3
+  moveSpeed: 3.3333333
   contactDamage: 8
   contactDamageInterval: 1
   hitFlashBlinkCount: 2

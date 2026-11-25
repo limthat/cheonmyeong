@@ -49,6 +49,7 @@ namespace CheonMyeong.Player
             public int Bounces;         // 261123 - 맞힌 뒤 근처 원귀로 튕기는 횟수(이아라)
             public float BounceFalloff; // 261123 - 튕긴 뒤 피해 감소 비율
             public float BounceRadius;  // 261123 - 튕겨 갈 원귀를 찾는 거리
+            public bool SkipBoss;       // 261125 - 흩날림으로 늘어난 투사체: 보스(어린 억쇠 · 억쇠)는 그냥 지나간다
         }
 
         private struct Shot
@@ -197,8 +198,14 @@ namespace CheonMyeong.Player
             {
                 count = targets; // 지정 대상이 늘면(겹부적) 부적도 그만큼
             }
+            int baseCount = Mathf.Max(1, stats.projectileCount);
+            if (targets > 0)
+            {
+                baseCount = Mathf.Max(baseCount, Mathf.Min(targets, stats.autoTargets + ExtraTargets));
+            }
             for (int i = 0; i < count; i++)
             {
+                p.SkipBoss = i >= baseCount;
                 Transform target = null;
                 Vector2 dir;
                 if (targets > 0)
@@ -421,6 +428,10 @@ namespace CheonMyeong.Player
             {
                 Collider2D col = buffer[k];
                 if (!Boss.DeathRealm.CanInteract(gameObject, col.gameObject))
+                {
+                    continue;
+                }
+                if (s.P.SkipBoss && CharacterKit.IsBoss(col))
                 {
                     continue;
                 }

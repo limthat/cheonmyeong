@@ -427,7 +427,10 @@ namespace CheonMyeong.Player
                     extraSwingsRemaining--;
                     extraSwingTimer = PlayerProgress.Catalog.multiSwingInterval;
                     // 261118 - 칼춤 5단계 「마지막 춤사위」: 연속 공격의 마지막 휘두르기 피해 +50%.
+                    // 261125 - 기획서 v1.3 조정안: 칼춤 추가 휘두르기는 보스(어린 억쇠 · 억쇠)에게 안 들어감.
+                    skipBossTargets = true;
                     ResolveHit(lockedAimDir, extraSwingsRemaining == 0 ? 1f + Mods.LastSwingBonus : 1f);
+                    skipBossTargets = false;
                 }
             }
             if (followUpTimer >= 0f)
@@ -445,6 +448,7 @@ namespace CheonMyeong.Player
         }
 
         private static readonly List<Collider2D> SingleTargetBuffer = new List<Collider2D>(MaxHitsPerAttack);
+        private bool skipBossTargets;
 
         /// <summary>
         /// 근접 판정 한 번. aimDir 방향 판정 모양(베기 = 사다리꼴 부채꼴, 찌르기 = 좁고 긴 사다리꼴) 안 적에게 피해.
@@ -495,6 +499,10 @@ namespace CheonMyeong.Player
                     continue;
                 }
                 if (!col.TryGetComponent(out IDamageable _))
+                {
+                    continue;
+                }
+                if (skipBossTargets && CharacterKit.IsBoss(col))
                 {
                     continue;
                 }

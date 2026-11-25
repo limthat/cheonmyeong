@@ -31,11 +31,11 @@ MonoBehaviour:
   meleePierce: 0
   atkFrameCount: 10
   hitFrame: 7
-  projectileCount: 2
+  projectileCount: 3
   projectileSpeed: 7.0
-  autoTargets: 2
+  autoTargets: 3
   homingDegreesPerSecond: 120
-  projectilePierce: 0
+  projectilePierce: 1
   projectileSpinDegreesPerSecond: 720
   projectileRadius: 0.3
   projectileScale: 3

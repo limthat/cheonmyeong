@@ -45,8 +45,8 @@ namespace CheonMyeong.Player
         /// <summary>261116 - 이 캐릭터 공격 소리 이름(SoundKeys.AttackKey). 캐릭터를 입힐 때 한 번 만든다.</summary>
         public string AttackSoundKey { get; private set; }
         public float HealthScale => SpiritLevel.HealthScale(spiritLevel.Value);
-        public float AttackScale => SpiritLevel.AttackScale(spiritLevel.Value);
-        public float AttackSpeedScale => SpiritLevel.AttackSpeedScale(spiritLevel.Value);
+        public float AttackScale => SpiritLevel.AttackScale(spiritLevel.Value, CharacterId);
+        public float AttackSpeedScale => SpiritLevel.AttackSpeedScale(spiritLevel.Value, CharacterId);
 
         /// <summary>캐릭터(또는 신내림)가 바뀌어 적용이 끝났을 때(전원).</summary>
         public event Action CharacterApplied;

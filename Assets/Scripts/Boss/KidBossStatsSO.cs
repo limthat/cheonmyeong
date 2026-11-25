@@ -27,9 +27,9 @@ namespace CheonMyeong.Boss
         [Tooltip("스킬 시전 속도 배율 - 모든 예고 · 준비 모션(기본 공격 · 배지기 · 비행 이륙 · 회오리)이 이 배만큼 빨라진다. 1 = 기획서 값. 261123 - 1.5 → 1.1(예섭: 3분의 1쯤 느리게).")]
         [Min(0.5f)] public float castSpeed = 1.1f;
         [Tooltip("원한 단계(맑음 · 짙음 · 한 · 폭주)별 체력 배율 - 어린 억쇠는 조금씩만. 기획서 원문은 '원한 영향 없음'(예섭 요청으로 바꿈).")]
-        public float[] healthByStage = { 1f, 1.05f, 1.1f, 1.15f };
+        public float[] healthByStage = { 1f, 1.5f, 2.5f, 4f }; // 261125 - 기획서 v1.3 조정안
         [Tooltip("원한 단계별 피해 배율(모든 스킬).")]
-        public float[] damageByStage = { 1f, 1.05f, 1.1f, 1.15f };
+        public float[] damageByStage = { 1f, 1.5f, 2.5f, 4f }; // 261125 - 기획서 v1.3 조정안
         [Tooltip("원한 단계별 이동 속도 배율.")]
         public float[] speedByStage = { 1f, 1.02f, 1.04f, 1.06f };
 
